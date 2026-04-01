@@ -1,0 +1,31 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: recifecultural
+      POSTGRES_USER: recifecultural
+      POSTGRES_PASSWORD: recifecultural
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U recifecultural -d recifecultural"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/recifecultural
+      SPRING_DATASOURCE_USERNAME: recifecultural
+      SPRING_DATASOURCE_PASSWORD: recifecultural
+
+volumes:
+  postgres_data:

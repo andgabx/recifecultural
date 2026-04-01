@@ -1,0 +1,7 @@
+**/target/
+.git
+.gitattributes
+.idea
+*.iml
+HELP.md
+.cursor

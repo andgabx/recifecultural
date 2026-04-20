@@ -5,6 +5,7 @@ import io.cucumber.java.pt.E;
 import io.cucumber.java.pt.Então;
 import io.cucumber.java.pt.Quando;
 import recifecultural.dominio.agenda.evento.Evento;
+import recifecultural.dominio.agenda.evento.EventoId;
 import recifecultural.dominio.agenda.evento.FeedbackReprovacao;
 import recifecultural.dominio.agenda.evento.Periodo;
 import recifecultural.dominio.agenda.evento.Preco;
@@ -33,7 +34,7 @@ public class PassosAprovarReprovarEvento {
     public void umEventoSubmetidoParaAnalise() {
         LocalDateTime agora = LocalDateTime.now();
         contexto.evento = new Evento(
-                UUID.randomUUID(), UUID.randomUUID(),
+                EventoId.gerar(), UUID.randomUUID(), UUID.randomUUID(),
                 "Peça de Teatro Clássico",
                 "Apresentação no Parque Dona Lindu",
                 "Descrição longa do espetáculo",
@@ -42,9 +43,9 @@ public class PassosAprovarReprovarEvento {
                 new Preco(new BigDecimal("40.00"), new BigDecimal("20.00"), null)
         );
         contexto.evento.programarApresentacao(agora.plusDays(2));
-        when(contexto.repositorio.obter(any())).thenReturn(Optional.of(contexto.evento));
-        contexto.servico.salvar(contexto.evento);
-        contexto.servico.submeterParaAnalise(contexto.evento.getId());
+        when(contexto.eventoRepositorio.obter(any())).thenReturn(Optional.of(contexto.evento));
+        contexto.eventoServico.salvar(contexto.evento);
+        contexto.eventoServico.submeterParaAnalise(contexto.evento.getId());
     }
 
     @Então("o status do evento deve ser {string}")
@@ -54,14 +55,14 @@ public class PassosAprovarReprovarEvento {
 
     @Quando("o gestor aprovar o evento")
     public void oGestorAprovarOEvento() {
-        contexto.servico.aprovar(contexto.evento.getId());
+        contexto.eventoServico.aprovar(contexto.evento.getId());
     }
 
     @Dado("um evento já aprovado")
     public void umEventoJaAprovado() {
         LocalDateTime agora = LocalDateTime.now();
         contexto.evento = new Evento(
-                UUID.randomUUID(), UUID.randomUUID(),
+                EventoId.gerar(), UUID.randomUUID(), UUID.randomUUID(),
                 "Exposição de Fotografia",
                 "Mostra de fotógrafos pernambucanos",
                 "Descrição longa da exposição",
@@ -70,16 +71,16 @@ public class PassosAprovarReprovarEvento {
                 new Preco(new BigDecimal("20.00"), new BigDecimal("10.00"), null)
         );
         contexto.evento.programarApresentacao(agora.plusDays(2));
-        when(contexto.repositorio.obter(any())).thenReturn(Optional.of(contexto.evento));
-        contexto.servico.salvar(contexto.evento);
-        contexto.servico.submeterParaAnalise(contexto.evento.getId());
-        contexto.servico.aprovar(contexto.evento.getId());
+        when(contexto.eventoRepositorio.obter(any())).thenReturn(Optional.of(contexto.evento));
+        contexto.eventoServico.salvar(contexto.evento);
+        contexto.eventoServico.submeterParaAnalise(contexto.evento.getId());
+        contexto.eventoServico.aprovar(contexto.evento.getId());
     }
 
     @Quando("o gestor tentar aprovar o evento novamente")
     public void oGestorTentarAprovarOEventoNovamente() {
         try {
-            contexto.servico.aprovar(contexto.evento.getId());
+            contexto.eventoServico.aprovar(contexto.evento.getId());
         } catch (Exception e) {
             contexto.excecaoCapturada = e;
         }
@@ -94,7 +95,7 @@ public class PassosAprovarReprovarEvento {
     @Quando("o gestor tentar reprovar o evento com feedback vazio")
     public void oGestorTentarReprovarOEventoComFeedbackVazio() {
         try {
-            contexto.servico.reprovar(contexto.evento.getId(), new FeedbackReprovacao(""));
+            contexto.eventoServico.reprovar(contexto.evento.getId(), new FeedbackReprovacao(""));
         } catch (Exception e) {
             contexto.excecaoCapturada = e;
         }
@@ -108,7 +109,7 @@ public class PassosAprovarReprovarEvento {
 
     @Quando("o gestor reprovar o evento com feedback {string}")
     public void oGestorReprovarOEventoComFeedback(String textoFeedback) {
-        contexto.servico.reprovar(contexto.evento.getId(), new FeedbackReprovacao(textoFeedback));
+        contexto.eventoServico.reprovar(contexto.evento.getId(), new FeedbackReprovacao(textoFeedback));
     }
 
     @E("o feedback de reprovação deve estar registrado no evento")
@@ -120,7 +121,7 @@ public class PassosAprovarReprovarEvento {
     public void umEventoCadastradoSemDatasDeApresentacao() {
         LocalDateTime agora = LocalDateTime.now();
         contexto.evento = new Evento(
-                UUID.randomUUID(), UUID.randomUUID(),
+                EventoId.gerar(), UUID.randomUUID(), UUID.randomUUID(),
                 "Show de Jazz no Marco Zero",
                 "Show ao vivo com artistas locais",
                 "Descrição longa do evento",
@@ -128,14 +129,14 @@ public class PassosAprovarReprovarEvento {
                 null,
                 new Preco(new BigDecimal("50.00"), new BigDecimal("25.00"), null)
         );
-        when(contexto.repositorio.obter(any())).thenReturn(Optional.of(contexto.evento));
-        contexto.servico.salvar(contexto.evento);
+        when(contexto.eventoRepositorio.obter(any())).thenReturn(Optional.of(contexto.evento));
+        contexto.eventoServico.salvar(contexto.evento);
     }
 
     @Quando("o promotor tentar submeter o evento para análise")
     public void oPromotorTentarSubmeterOEventoParaAnalise() {
         try {
-            contexto.servico.submeterParaAnalise(contexto.evento.getId());
+            contexto.eventoServico.submeterParaAnalise(contexto.evento.getId());
         } catch (Exception e) {
             contexto.excecaoCapturada = e;
         }
@@ -151,7 +152,7 @@ public class PassosAprovarReprovarEvento {
     public void umEventoCadastradoComUmaDataDeApresentacaoProgramada() {
         LocalDateTime agora = LocalDateTime.now();
         contexto.evento = new Evento(
-                UUID.randomUUID(), UUID.randomUUID(),
+                EventoId.gerar(), UUID.randomUUID(), UUID.randomUUID(),
                 "Show de Jazz no Marco Zero",
                 "Show ao vivo com artistas locais",
                 "Descrição longa do evento",
@@ -160,12 +161,12 @@ public class PassosAprovarReprovarEvento {
                 new Preco(new BigDecimal("50.00"), new BigDecimal("25.00"), null)
         );
         contexto.evento.programarApresentacao(agora.plusDays(2));
-        when(contexto.repositorio.obter(any())).thenReturn(Optional.of(contexto.evento));
-        contexto.servico.salvar(contexto.evento);
+        when(contexto.eventoRepositorio.obter(any())).thenReturn(Optional.of(contexto.evento));
+        contexto.eventoServico.salvar(contexto.evento);
     }
 
     @Quando("o promotor submeter o evento para análise")
     public void oPromotorSubmeterOEventoParaAnalise() {
-        contexto.servico.submeterParaAnalise(contexto.evento.getId());
+        contexto.eventoServico.submeterParaAnalise(contexto.evento.getId());
     }
 }

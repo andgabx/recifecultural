@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class Evento {
-    private final UUID id;
+    private final EventoId id;
     private final UUID promotorId;
     private final UUID localId;
 
@@ -25,7 +25,7 @@ public class Evento {
     private StatusEvento status;
     private FeedbackReprovacao feedbackReprovacao;
 
-    public UUID getId() {
+    public EventoId getId() {
         return id;
     }
 
@@ -81,6 +81,7 @@ public class Evento {
     }
 
     public Evento(
+            EventoId id,
             UUID promotorId,
             UUID localId,
             String titulo,
@@ -90,7 +91,7 @@ public class Evento {
             URI enderecoIngresso,
             Preco preco
     ) {
-        this.id = UUID.randomUUID();
+        this.id = id;
         this.promotorId = promotorId;
         this.localId = localId;
 

@@ -1,11 +1,6 @@
 package recifecultural.dominio.agenda.evento;
 
-import recifecultural.dominio.agenda.evento.Evento;
-import recifecultural.dominio.agenda.evento.EventoRepositorio;
-import recifecultural.dominio.agenda.evento.FeedbackReprovacao;
-
 import java.util.Optional;
-import java.util.UUID;
 
 public class EventoService {
 
@@ -19,33 +14,33 @@ public class EventoService {
         repositorio.salvar(evento);
     }
 
-    public Optional<Evento> obter(UUID id) {
+    public Optional<Evento> obter(EventoId id) {
         return repositorio.obter(id);
     }
 
-    public void submeterParaAnalise(UUID id) {
+    public void submeterParaAnalise(EventoId id) {
         Evento evento = buscarOuLancar(id);
         evento.submeterParaAnalise();
         repositorio.atualizar(evento);
     }
 
-    public void aprovar(UUID id) {
+    public void aprovar(EventoId id) {
         Evento evento = buscarOuLancar(id);
         evento.aprovar();
         repositorio.atualizar(evento);
     }
 
-    public void reprovar(UUID id, FeedbackReprovacao feedback) {
+    public void reprovar(EventoId id, FeedbackReprovacao feedback) {
         Evento evento = buscarOuLancar(id);
         evento.reprovar(feedback);
         repositorio.atualizar(evento);
     }
 
-    public void deletar(UUID id) {
+    public void deletar(EventoId id) {
         repositorio.deletar(id);
     }
 
-    private Evento buscarOuLancar(UUID id) {
+    private Evento buscarOuLancar(EventoId id) {
         return repositorio.obter(id)
                 .orElseThrow(() -> new IllegalArgumentException("Evento não encontrado: " + id));
     }

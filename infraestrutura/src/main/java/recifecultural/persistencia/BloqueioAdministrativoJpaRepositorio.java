@@ -6,4 +6,4 @@ import org.springframework.stereotype.Repository;
 import java.util.UUID;
 
 @Repository
-public interface BloqueioAdministrativoRepositorio extends JpaRepository<BloqueioAdministrativoJpa, UUID> { }
+public interface BloqueioAdministrativoJpaRepositorio extends JpaRepository<BloqueioAdministrativoJpa, UUID> { }

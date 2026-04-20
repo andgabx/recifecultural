@@ -24,14 +24,11 @@ public class Evento {
 
     private StatusEvento status;
     private FeedbackReprovacao feedbackReprovacao;
+    private String motivoCancelamento;
 
-    public UUID getId() {
-        return id;
-    }
+    public UUID getId() { return id; }
 
-    public UUID getPromotorId() {
-        return promotorId;
-    }
+    public UUID getPromotorId() { return promotorId; }
 
     public UUID getLocalId() {
         return localId;
@@ -67,6 +64,10 @@ public class Evento {
 
     public FeedbackReprovacao getFeedbackReprovacao() {
         return feedbackReprovacao;
+    }
+
+    public String getMotivoCancelamento() {
+        return motivoCancelamento;
     }
 
     public List<LocalDateTime> getDatasApresentacao() {
@@ -117,13 +118,22 @@ public class Evento {
         this.status = StatusEvento.APROVADO;
     }
 
-
     public void reprovar(FeedbackReprovacao feedback) {
         exigirStatusEmAnalise("reprovar");
         this.feedbackReprovacao = feedback;
         this.status = StatusEvento.REPROVADO;
     }
 
+    public void cancelar(String motivo) {
+        if (this.status == StatusEvento.REALIZADO) {
+            throw new IllegalStateException("Não é possível cancelar um evento que já foi realizado.");
+        }
+        if (motivo == null || motivo.isBlank()) {
+            throw new IllegalArgumentException("Motivo do cancelamento é obrigatório.");
+        }
+        this.status = StatusEvento.CANCELADO;
+        this.motivoCancelamento = motivo;
+    }
 
     private void exigirStatusEmAnalise(String acao) {
         if (this.status != StatusEvento.EM_ANALISE)
@@ -136,6 +146,4 @@ public class Evento {
             throw new IllegalArgumentException("Apresentação fora do período do evento.");
         this.datasApresentacao.add(dataHora);
     }
-
-
 }

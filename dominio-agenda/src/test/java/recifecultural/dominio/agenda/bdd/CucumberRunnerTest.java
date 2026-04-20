@@ -1,4 +1,4 @@
-package recife.cultural.dominio.agenda.bdd;
+package recifecultural.dominio.agenda.bdd;
 
 import org.junit.platform.suite.api.ConfigurationParameter;
 import org.junit.platform.suite.api.IncludeEngines;
@@ -11,6 +11,6 @@ import static io.cucumber.junit.platform.engine.Constants.PLUGIN_PROPERTY_NAME;
 @Suite
 @IncludeEngines("cucumber")
 @SelectClasspathResource("features")
-@ConfigurationParameter(key = GLUE_PROPERTY_NAME, value = "recife.cultural.dominio.agenda.bdd")
+@ConfigurationParameter(key = GLUE_PROPERTY_NAME, value = "recifecultural.dominio.agenda.bdd")
 @ConfigurationParameter(key = PLUGIN_PROPERTY_NAME, value = "pretty")
 public class CucumberRunnerTest {}

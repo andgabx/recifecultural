@@ -1,30 +1,29 @@
 package recifecultural.dominio.agenda.bloqueioadministrativo;
 
-import recifecultural.dominio.agenda.Evento;
-import recifecultural.dominio.agenda.IEventoRepositorio;
+import recifecultural.dominio.agenda.evento.Evento;
+import recifecultural.dominio.agenda.evento.IEventoRepositorio;
 
-import java.security.InvalidParameterException;
 import java.util.List;
 
 public class BloqueioAdministrativoServico {
     private final IBloqueioAdministrativoRepositorio bloqueioRepositorio;
-    private final IEventoRepositorio eventoRepositorio;
+    private final IEventoRepositorio eventoRepositorio; // Utilizando repositório unificado
 
     public BloqueioAdministrativoServico(
             IBloqueioAdministrativoRepositorio bloqueioRepositorio,
             IEventoRepositorio eventoRepositorio) {
 
-        if(bloqueioRepositorio == null) throw new InvalidParameterException("[BloqueioAdministrativoRepositorio] Repositório não pode ser nulo.");
-        if(eventoRepositorio == null) throw new InvalidParameterException("[IEventoRepositorio] Repositório não pode ser nulo.");
+        if(bloqueioRepositorio == null) throw new IllegalArgumentException("[IBloqueioAdministrativoRepositorio] Repositório não pode ser nulo.");
+        if(eventoRepositorio == null) throw new IllegalArgumentException("[EventoRepositorio] Repositório não pode ser nulo.");
 
         this.bloqueioRepositorio = bloqueioRepositorio;
         this.eventoRepositorio = eventoRepositorio;
     }
 
     public void criarBloqueio(BloqueioAdministrativo bloqueio) {
-        if(bloqueio == null) throw new InvalidParameterException("Bloqueio Administrativo não pode ser nulo.");
+        if(bloqueio == null) throw new IllegalArgumentException("Bloqueio Administrativo não pode ser nulo.");
 
-        List<Evento> eventosConflitantes = eventoRepositorio.getEventosPorLocalEIntervalo(
+        List<Evento> eventosConflitantes = eventoRepositorio.obterPorLocalEIntervalo(
                 bloqueio.getIdLocal(),
                 bloqueio.getDataInicio(),
                 bloqueio.getDataFim()
@@ -33,7 +32,7 @@ public class BloqueioAdministrativoServico {
         String motivoCancelamento = "Cancelado devido a bloqueio administrativo: " + bloqueio.getMotivo();
         for (Evento evento : eventosConflitantes) {
             evento.cancelar(motivoCancelamento);
-            eventoRepositorio.salvar(evento); // Persiste a mudança de estado
+            eventoRepositorio.atualizar(evento);
         }
 
         bloqueioRepositorio.salvar(bloqueio);

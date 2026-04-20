@@ -1,17 +1,15 @@
 package recifecultural.dominio.agenda.evento;
 
-import recifecultural.dominio.agenda.evento.Evento;
-import recifecultural.dominio.agenda.evento.EventoRepositorio;
-import recifecultural.dominio.agenda.evento.FeedbackReprovacao;
-
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public class EventoService {
+public class EventoServico {
 
-    private final EventoRepositorio repositorio;
+    private final IEventoRepositorio repositorio;
 
-    public EventoService(EventoRepositorio repositorio) {
+    public EventoServico(IEventoRepositorio repositorio) {
         this.repositorio = repositorio;
     }
 

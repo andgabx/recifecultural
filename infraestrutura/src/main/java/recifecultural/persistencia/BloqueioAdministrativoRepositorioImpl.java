@@ -11,9 +11,9 @@ import java.util.stream.Collectors;
 @Component
 public class BloqueioAdministrativoRepositorioImpl implements IBloqueioAdministrativoRepositorio {
 
-    private final BloqueioAdministrativoRepositorio repositorio;
+    private final BloqueioAdministrativoJpaRepositorio repositorio;
 
-    public BloqueioAdministrativoRepositorioImpl(BloqueioAdministrativoRepositorio repositorio) {
+    public BloqueioAdministrativoRepositorioImpl(BloqueioAdministrativoJpaRepositorio repositorio) {
         this.repositorio = repositorio;
     }
 

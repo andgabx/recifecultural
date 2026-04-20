@@ -11,6 +11,11 @@ import java.util.UUID;
 
 @Getter
 public class Evento {
+
+    public enum StatusEvento {
+        AGENDADO, CANCELADO, REALIZADO
+    }
+
     private final UUID id;
     private final UUID promotorId;
     private final UUID localId;
@@ -28,6 +33,8 @@ public class Evento {
     private BigDecimal precoInteira;
     private BigDecimal precoMeia;
     private String precoSocial;
+
+    private StatusEvento status;
 
     public Evento(
             UUID promotorId,
@@ -61,6 +68,7 @@ public class Evento {
         this.precoInteira = precoInteira;
         this.precoMeia = precoMeia;
         this.precoSocial = precoSocial;
+        this.status = StatusEvento.AGENDADO;
     }
 
     public void setTitulo(String titulo) {
@@ -76,6 +84,13 @@ public class Evento {
             throw new IllegalArgumentException("Apresentação fora do período do evento.");
         }
         this.datasApresentacao.add(dataHora);
+    }
+
+    public void cancelar(String motivoCancelamento) {
+        if (this.status == StatusEvento.CANCELADO) {
+            return;
+        }
+        this.status = StatusEvento.CANCELADO;
     }
 
     private void validarPeriodo(LocalDateTime inicio, LocalDateTime fim) {

@@ -1,5 +1,7 @@
 package recifecultural.dominio.artistas;
 
+import static org.apache.commons.lang3.Validate.notNull;
+
 import java.util.UUID;
 
 public class ArtistaServico {
@@ -7,13 +9,15 @@ public class ArtistaServico {
     private final IArtistaRepositorio repositorio;
 
     public ArtistaServico(IArtistaRepositorio repositorio) {
+        notNull(repositorio, "O repositório de artista não pode ser nulo.");
         this.repositorio = repositorio;
     }
 
     public Artista cadastrar(String nome, String bio, String email, String telefone) {
-        repositorio.buscarPorNome(nome).ifPresent(existente -> {
+        Artista existente = repositorio.buscarPorNome(nome);
+        if (existente != null) {
             throw new IllegalStateException("Já existe um artista cadastrado com o nome: " + nome);
-        });
+        }
 
         Artista artista = new Artista(nome, bio, email, telefone);
         repositorio.salvar(artista);
@@ -39,7 +43,8 @@ public class ArtistaServico {
     }
 
     private Artista buscarOuLancarExcecao(ArtistId id) {
-        return repositorio.buscarPorId(id)
-                .orElseThrow(() -> new IllegalArgumentException("Artista não encontrado com id: " + id));
+        Artista artista = repositorio.buscarPorId(id);
+        notNull(artista, "Artista não encontrado com id: " + id);
+        return artista;
     }
 }

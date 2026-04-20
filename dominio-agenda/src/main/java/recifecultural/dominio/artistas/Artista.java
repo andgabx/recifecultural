@@ -1,6 +1,8 @@
 package recifecultural.dominio.artistas;
 
-import lombok.Getter;
+import static org.apache.commons.lang3.Validate.isTrue;
+import static org.apache.commons.lang3.Validate.notBlank;
+import static org.apache.commons.lang3.Validate.notNull;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -8,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-@Getter
 public class Artista {
 
     private final ArtistId id;
@@ -37,31 +38,49 @@ public class Artista {
     }
 
     public void aprovar(UUID promotorId) {
-        if (promotorId == null) throw new IllegalArgumentException("Promotor é obrigatório para aprovar.");
-        if (status != StatusArtista.PENDENTE) throw new IllegalStateException("Apenas artistas com status PENDENTE podem ser aprovados.");
+        notNull(promotorId, "Promotor é obrigatório para aprovar.");
+        isTrue(status == StatusArtista.PENDENTE, "Apenas artistas com status PENDENTE podem ser aprovados.");
         this.status = StatusArtista.APROVADO;
         this.aprovadoPorId = promotorId;
         this.motivoRejeicao = null;
     }
 
     public void rejeitar(UUID promotorId, String motivo) {
-        if (promotorId == null) throw new IllegalArgumentException("Promotor é obrigatório para rejeitar.");
-        if (status != StatusArtista.PENDENTE) throw new IllegalStateException("Apenas artistas com status PENDENTE podem ser rejeitados.");
-        if (motivo == null || motivo.isBlank()) throw new IllegalArgumentException("Motivo de rejeição é obrigatório.");
+        notNull(promotorId, "Promotor é obrigatório para rejeitar.");
+        isTrue(status == StatusArtista.PENDENTE, "Apenas artistas com status PENDENTE podem ser rejeitados.");
+        notBlank(motivo, "Motivo de rejeição é obrigatório.");
         this.status = StatusArtista.REJEITADO;
         this.motivoRejeicao = motivo;
         this.aprovadoPorId = promotorId;
     }
 
     public void resubmeter() {
-        if (status != StatusArtista.REJEITADO) throw new IllegalStateException("Apenas artistas com status REJEITADO podem resubmeter o cadastro.");
+        isTrue(status == StatusArtista.REJEITADO, "Apenas artistas com status REJEITADO podem resubmeter o cadastro.");
         this.status = StatusArtista.PENDENTE;
         this.motivoRejeicao = null;
         this.aprovadoPorId = null;
     }
 
+    public ArtistId getId() { return id; }
+
+    public LocalDateTime getDataSubmissao() { return dataSubmissao; }
+
+    public String getNome() { return nome; }
+
+    public String getBio() { return bio; }
+
+    public String getEmail() { return email; }
+
+    public String getTelefone() { return telefone; }
+
+    public StatusArtista getStatus() { return status; }
+
+    public String getMotivoRejeicao() { return motivoRejeicao; }
+
+    public UUID getAprovadoPorId() { return aprovadoPorId; }
+
     public void adicionarRedeSocial(RedeSocial redeSocial) {
-        if (redeSocial == null) throw new IllegalArgumentException("Rede social não pode ser nula.");
+        notNull(redeSocial, "Rede social não pode ser nula.");
         this.redesSociais.add(redeSocial);
     }
 
@@ -70,17 +89,18 @@ public class Artista {
     }
 
     private void setNome(String nome) {
-        if (nome == null || nome.isBlank()) throw new IllegalArgumentException("Nome do artista é obrigatório.");
+        notBlank(nome, "Nome do artista é obrigatório.");
         this.nome = nome;
     }
 
     private void setBio(String bio) {
-        if (bio == null || bio.isBlank()) throw new IllegalArgumentException("Bio do artista é obrigatória.");
+        notBlank(bio, "Bio do artista é obrigatória.");
         this.bio = bio;
     }
 
     private void setEmail(String email) {
-        if (email == null || !email.contains("@")) throw new IllegalArgumentException("E-mail do artista é inválido.");
+        notBlank(email, "E-mail do artista é obrigatório.");
+        isTrue(email.contains("@"), "E-mail do artista é inválido.");
         this.email = email;
     }
 }

@@ -20,11 +20,11 @@ public class BloqueioAdministrativoRepositorioImpl implements IBloqueioAdministr
     @Override
     public boolean salvar(BloqueioAdministrativo bloqueioAdministrativo) {
         BloqueioAdministrativoJpa jpa = new BloqueioAdministrativoJpa(
-                bloqueioAdministrativo.getId().valor(),
-                bloqueioAdministrativo.getIdEspaco(),
-                bloqueioAdministrativo.getMotivo(),
-                bloqueioAdministrativo.getDataInicio(),
-                bloqueioAdministrativo.getDataFim()
+            bloqueioAdministrativo.getId().valor(),
+            bloqueioAdministrativo.getIdEspaco(),
+            bloqueioAdministrativo.getMotivo(),
+            bloqueioAdministrativo.getDataInicio(),
+            bloqueioAdministrativo.getDataFim()
         );
         repositorio.save(jpa);
         return true;
@@ -42,11 +42,11 @@ public class BloqueioAdministrativoRepositorioImpl implements IBloqueioAdministr
 
     private BloqueioAdministrativo toDomain(BloqueioAdministrativoJpa jpa) {
         return new BloqueioAdministrativo(
-                new BloqueioAdministrativoId(jpa.getId()),
-                jpa.getIdLocal(),
-                jpa.getMotivo(),
-                jpa.getDataInicio(),
-                jpa.getDataFim()
+            new BloqueioAdministrativoId(jpa.getId()),
+            jpa.getIdLocal(),
+            jpa.getMotivo(),
+            jpa.getDataInicio(),
+            jpa.getDataFim()
         );
     }
 }

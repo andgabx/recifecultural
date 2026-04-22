@@ -6,33 +6,36 @@ import java.util.UUID;
 
 @Getter
 public class BloqueioAdministrativo {
-    private final UUID id;
-    private final UUID idLocal;
+    private final BloqueioAdministrativoId id;
+    private final UUID idEspaco;
     private String motivo;
     private LocalDateTime dataInicio;
     private LocalDateTime dataFim;
 
     public BloqueioAdministrativo(
-            UUID idLocal,
+            UUID idEspaco,
             String motivo,
             LocalDateTime dataInicio,
             LocalDateTime dataFim
     ) {
-        this.id = UUID.randomUUID();
-        this.idLocal = idLocal;
+        this.id = BloqueioAdministrativoId.gerar();
+        this.idEspaco = idEspaco;
         setMotivo(motivo);
         setPeriodo(dataInicio, dataFim);
     }
 
     public BloqueioAdministrativo(
-            UUID id,
-            UUID idLocal,
+            BloqueioAdministrativoId id,
+            UUID idEspaco,
             String motivo,
             LocalDateTime dataInicio,
             LocalDateTime dataFim
     ) {
+        if (id == null) {
+            throw new IllegalArgumentException("O ID do bloqueio é obrigatório.");
+        }
         this.id = id;
-        this.idLocal = idLocal;
+        this.idEspaco = idEspaco;
         this.motivo = motivo;
         this.dataInicio = dataInicio;
         this.dataFim = dataFim;

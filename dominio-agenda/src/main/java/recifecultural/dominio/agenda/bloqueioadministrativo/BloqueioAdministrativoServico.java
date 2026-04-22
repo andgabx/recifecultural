@@ -24,7 +24,7 @@ public class BloqueioAdministrativoServico {
         if(bloqueio == null) throw new IllegalArgumentException("Bloqueio Administrativo não pode ser nulo.");
 
         List<Evento> eventosConflitantes = eventoRepositorio.obterPorLocalEIntervalo(
-                bloqueio.getIdLocal(),
+                bloqueio.getIdEspaco(),
                 bloqueio.getDataInicio(),
                 bloqueio.getDataFim()
         );

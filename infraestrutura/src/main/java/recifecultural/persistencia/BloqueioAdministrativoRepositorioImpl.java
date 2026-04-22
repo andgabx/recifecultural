@@ -2,10 +2,10 @@ package recifecultural.persistencia;
 
 import org.springframework.stereotype.Component;
 import recifecultural.dominio.agenda.bloqueioadministrativo.BloqueioAdministrativo;
+import recifecultural.dominio.agenda.bloqueioadministrativo.BloqueioAdministrativoId;
 import recifecultural.dominio.agenda.bloqueioadministrativo.IBloqueioAdministrativoRepositorio;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Component
@@ -20,8 +20,8 @@ public class BloqueioAdministrativoRepositorioImpl implements IBloqueioAdministr
     @Override
     public boolean salvar(BloqueioAdministrativo bloqueioAdministrativo) {
         BloqueioAdministrativoJpa jpa = new BloqueioAdministrativoJpa(
-                bloqueioAdministrativo.getId(),
-                bloqueioAdministrativo.getIdLocal(),
+                bloqueioAdministrativo.getId().valor(),
+                bloqueioAdministrativo.getIdEspaco(),
                 bloqueioAdministrativo.getMotivo(),
                 bloqueioAdministrativo.getDataInicio(),
                 bloqueioAdministrativo.getDataFim()
@@ -31,8 +31,8 @@ public class BloqueioAdministrativoRepositorioImpl implements IBloqueioAdministr
     }
 
     @Override
-    public BloqueioAdministrativo obter(UUID id) {
-        return repositorio.findById(id).map(this::toDomain).orElse(null);
+    public BloqueioAdministrativo obter(BloqueioAdministrativoId id) {
+        return repositorio.findById(id.valor()).map(this::toDomain).orElse(null);
     }
 
     @Override
@@ -42,7 +42,7 @@ public class BloqueioAdministrativoRepositorioImpl implements IBloqueioAdministr
 
     private BloqueioAdministrativo toDomain(BloqueioAdministrativoJpa jpa) {
         return new BloqueioAdministrativo(
-                jpa.getId(),
+                new BloqueioAdministrativoId(jpa.getId()),
                 jpa.getIdLocal(),
                 jpa.getMotivo(),
                 jpa.getDataInicio(),

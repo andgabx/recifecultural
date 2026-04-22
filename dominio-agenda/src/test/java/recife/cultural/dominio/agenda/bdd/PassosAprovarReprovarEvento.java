@@ -18,7 +18,10 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class PassosAprovarReprovarEvento {
@@ -29,14 +32,16 @@ public class PassosAprovarReprovarEvento {
         this.contexto = contexto;
     }
 
+    // === HU-1: Gestor aprova evento em analise ===
+
     @Dado("um evento submetido para análise")
     public void umEventoSubmetidoParaAnalise() {
         LocalDateTime agora = LocalDateTime.now();
         contexto.evento = new Evento(
                 UUID.randomUUID(), UUID.randomUUID(),
-                "Peça de Teatro Clássico",
-                "Apresentação no Parque Dona Lindu",
-                "Descrição longa do espetáculo",
+                "Peca de Teatro Classico",
+                "Apresentacao no Parque Dona Lindu",
+                "Descricao longa do espetaculo",
                 new Periodo(agora.plusDays(1), agora.plusDays(5)),
                 null,
                 new Preco(new BigDecimal("40.00"), new BigDecimal("20.00"), null)
@@ -47,24 +52,27 @@ public class PassosAprovarReprovarEvento {
         contexto.servico.submeterParaAnalise(contexto.evento.getId());
     }
 
-    @Então("o status do evento deve ser {string}")
-    public void oStatusDoEventoDeveSer(String statusEsperado) {
-        assertEquals(StatusEvento.valueOf(statusEsperado), contexto.evento.getStatus());
-    }
-
     @Quando("o gestor aprovar o evento")
     public void oGestorAprovarOEvento() {
         contexto.servico.aprovar(contexto.evento.getId());
     }
+
+    @Então("o status do evento deve ser {string}")
+    public void oStatusDoEventoDeveSer(String statusEsperado) {
+        assertEquals(StatusEvento.valueOf(statusEsperado), contexto.evento.getStatus());
+        verify(contexto.repositorio, atLeastOnce()).atualizar(contexto.evento);
+    }
+
+    // === HU-1: Gestor tenta aprovar evento ja aprovado ===
 
     @Dado("um evento já aprovado")
     public void umEventoJaAprovado() {
         LocalDateTime agora = LocalDateTime.now();
         contexto.evento = new Evento(
                 UUID.randomUUID(), UUID.randomUUID(),
-                "Exposição de Fotografia",
-                "Mostra de fotógrafos pernambucanos",
-                "Descrição longa da exposição",
+                "Exposicao de Fotografia",
+                "Mostra de fotografos pernambucanos",
+                "Descricao longa da exposicao",
                 new Periodo(agora.plusDays(1), agora.plusDays(5)),
                 null,
                 new Preco(new BigDecimal("20.00"), new BigDecimal("10.00"), null)
@@ -91,6 +99,9 @@ public class PassosAprovarReprovarEvento {
         assertInstanceOf(IllegalStateException.class, contexto.excecaoCapturada);
     }
 
+    // === HU-2: Gestor tenta reprovar com feedback vazio ===
+    // (Dado: reutiliza "um evento submetido para analise")
+
     @Quando("o gestor tentar reprovar o evento com feedback vazio")
     public void oGestorTentarReprovarOEventoComFeedbackVazio() {
         try {
@@ -106,6 +117,10 @@ public class PassosAprovarReprovarEvento {
         assertInstanceOf(IllegalArgumentException.class, contexto.excecaoCapturada);
     }
 
+    // === HU-2: Gestor reprova com feedback valido ===
+    // (Dado: reutiliza "um evento submetido para analise")
+    // (Entao: reutiliza "o status do evento deve ser {string}")
+
     @Quando("o gestor reprovar o evento com feedback {string}")
     public void oGestorReprovarOEventoComFeedback(String textoFeedback) {
         contexto.servico.reprovar(contexto.evento.getId(), new FeedbackReprovacao(textoFeedback));
@@ -116,6 +131,44 @@ public class PassosAprovarReprovarEvento {
         assertNotNull(contexto.evento.getFeedbackReprovacao());
     }
 
+    // === HU-2: Gestor tenta reprovar apos prazo de 30 dias em analise ===
+
+    @Dado("um evento submetido para análise há mais de 30 dias")
+    public void umEventoSubmetidoParaAnaliseHaMaisDe30Dias() {
+        LocalDateTime agora = LocalDateTime.now();
+        contexto.evento = new Evento(
+                UUID.randomUUID(), UUID.randomUUID(),
+                "Festival de Cinema Pernambucano",
+                "Mostra anual de curtametragens locais",
+                "Descricao longa do festival",
+                new Periodo(agora.minusDays(40), agora.plusDays(5)),
+                null,
+                new Preco(new BigDecimal("30.00"), new BigDecimal("15.00"), null)
+        );
+        contexto.evento.programarApresentacao(agora.minusDays(35));
+        // Simula estado vindo do banco: evento foi submetido ha 31 dias
+        contexto.evento.submeterParaAnalise(agora.minusDays(31));
+        when(contexto.repositorio.obter(any())).thenReturn(Optional.of(contexto.evento));
+    }
+
+    @Quando("o gestor tentar reprovar o evento com feedback {string}")
+    public void oGestorTentarReprovarOEventoComFeedback(String textoFeedback) {
+        try {
+            contexto.servico.reprovar(contexto.evento.getId(), new FeedbackReprovacao(textoFeedback));
+        } catch (Exception e) {
+            contexto.excecaoCapturada = e;
+        }
+    }
+
+    @Então("o sistema deve lançar um erro de prazo de reprovação expirado")
+    public void oSistemaDeveLancarErroDePrazoDeReprovacaoExpirado() {
+        assertNotNull(contexto.excecaoCapturada);
+        assertInstanceOf(IllegalStateException.class, contexto.excecaoCapturada);
+        assertTrue(contexto.excecaoCapturada.getMessage().contains("Prazo de reprovação"));
+    }
+
+    // === HU-3: Promotor tenta submeter sem apresentacoes ===
+
     @Dado("um evento cadastrado sem datas de apresentação")
     public void umEventoCadastradoSemDatasDeApresentacao() {
         LocalDateTime agora = LocalDateTime.now();
@@ -123,7 +176,7 @@ public class PassosAprovarReprovarEvento {
                 UUID.randomUUID(), UUID.randomUUID(),
                 "Show de Jazz no Marco Zero",
                 "Show ao vivo com artistas locais",
-                "Descrição longa do evento",
+                "Descricao longa do evento",
                 new Periodo(agora.plusDays(1), agora.plusDays(5)),
                 null,
                 new Preco(new BigDecimal("50.00"), new BigDecimal("25.00"), null)
@@ -147,6 +200,9 @@ public class PassosAprovarReprovarEvento {
         assertInstanceOf(IllegalStateException.class, contexto.excecaoCapturada);
     }
 
+    // === HU-3: Promotor submete com apresentacao ===
+    // (Entao: reutiliza "o status do evento deve ser {string}")
+
     @Dado("um evento cadastrado com uma data de apresentação programada")
     public void umEventoCadastradoComUmaDataDeApresentacaoProgramada() {
         LocalDateTime agora = LocalDateTime.now();
@@ -154,7 +210,7 @@ public class PassosAprovarReprovarEvento {
                 UUID.randomUUID(), UUID.randomUUID(),
                 "Show de Jazz no Marco Zero",
                 "Show ao vivo com artistas locais",
-                "Descrição longa do evento",
+                "Descricao longa do evento",
                 new Periodo(agora.plusDays(1), agora.plusDays(5)),
                 null,
                 new Preco(new BigDecimal("50.00"), new BigDecimal("25.00"), null)

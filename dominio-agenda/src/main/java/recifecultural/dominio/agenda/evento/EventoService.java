@@ -1,9 +1,6 @@
 package recifecultural.dominio.agenda.evento;
 
-import recifecultural.dominio.agenda.evento.Evento;
-import recifecultural.dominio.agenda.evento.EventoRepositorio;
-import recifecultural.dominio.agenda.evento.FeedbackReprovacao;
-
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -25,7 +22,7 @@ public class EventoService {
 
     public void submeterParaAnalise(UUID id) {
         Evento evento = buscarOuLancar(id);
-        evento.submeterParaAnalise();
+        evento.submeterParaAnalise(LocalDateTime.now());
         repositorio.atualizar(evento);
     }
 
@@ -37,7 +34,7 @@ public class EventoService {
 
     public void reprovar(UUID id, FeedbackReprovacao feedback) {
         Evento evento = buscarOuLancar(id);
-        evento.reprovar(feedback);
+        evento.reprovar(feedback, LocalDateTime.now());
         repositorio.atualizar(evento);
     }
 

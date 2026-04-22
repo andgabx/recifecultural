@@ -32,6 +32,15 @@ Funcionalidade: Aprovar/Reprovar evento
       Então o status do evento deve ser "REPROVADO"
       E o feedback de reprovação deve estar registrado no evento
 
+  # HU-2: Prazo para reprovação
+  # O gestor deve reprovar o evento dentro de 30 dias após a submissão para análise
+  Regra: Evento não pode ser reprovado após 30 dias em análise
+
+    Cenário: Gestor tenta reprovar evento após prazo de 30 dias em análise
+      Dado um evento submetido para análise há mais de 30 dias
+      Quando o gestor tentar reprovar o evento com feedback "O projeto não atende aos requisitos de acessibilidade exigidos pelo edital cultural"
+      Então o sistema deve lançar um erro de prazo de reprovação expirado
+
   # HU-3: Submissão de eventos para análise
   # O evento precisa estar completo (com datas de apresentação) antes de ser avaliado pelo gestor
   Regra: Evento deve ter pelo menos uma data de apresentação para ser submetido à análise

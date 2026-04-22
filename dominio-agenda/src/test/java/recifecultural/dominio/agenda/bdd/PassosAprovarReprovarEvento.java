@@ -1,4 +1,4 @@
-package recife.cultural.dominio.agenda.bdd;
+package recifecultural.dominio.agenda.bdd;
 
 import io.cucumber.java.pt.Dado;
 import io.cucumber.java.pt.E;
@@ -42,9 +42,9 @@ public class PassosAprovarReprovarEvento {
                 new Preco(new BigDecimal("40.00"), new BigDecimal("20.00"), null)
         );
         contexto.evento.programarApresentacao(agora.plusDays(2));
-        when(contexto.repositorio.obter(any())).thenReturn(Optional.of(contexto.evento));
-        contexto.servico.salvar(contexto.evento);
-        contexto.servico.submeterParaAnalise(contexto.evento.getId());
+        when(contexto.repositorioEvento.obter(any())).thenReturn(Optional.of(contexto.evento));
+        contexto.servicoEvento.salvar(contexto.evento);
+        contexto.servicoEvento.submeterParaAnalise(contexto.evento.getId());
     }
 
     @Então("o status do evento deve ser {string}")
@@ -54,7 +54,7 @@ public class PassosAprovarReprovarEvento {
 
     @Quando("o gestor aprovar o evento")
     public void oGestorAprovarOEvento() {
-        contexto.servico.aprovar(contexto.evento.getId());
+        contexto.servicoEvento.aprovar(contexto.evento.getId());
     }
 
     @Dado("um evento já aprovado")
@@ -70,16 +70,16 @@ public class PassosAprovarReprovarEvento {
                 new Preco(new BigDecimal("20.00"), new BigDecimal("10.00"), null)
         );
         contexto.evento.programarApresentacao(agora.plusDays(2));
-        when(contexto.repositorio.obter(any())).thenReturn(Optional.of(contexto.evento));
-        contexto.servico.salvar(contexto.evento);
-        contexto.servico.submeterParaAnalise(contexto.evento.getId());
-        contexto.servico.aprovar(contexto.evento.getId());
+        when(contexto.repositorioEvento.obter(any())).thenReturn(Optional.of(contexto.evento));
+        contexto.servicoEvento.salvar(contexto.evento);
+        contexto.servicoEvento.submeterParaAnalise(contexto.evento.getId());
+        contexto.servicoEvento.aprovar(contexto.evento.getId());
     }
 
     @Quando("o gestor tentar aprovar o evento novamente")
     public void oGestorTentarAprovarOEventoNovamente() {
         try {
-            contexto.servico.aprovar(contexto.evento.getId());
+            contexto.servicoEvento.aprovar(contexto.evento.getId());
         } catch (Exception e) {
             contexto.excecaoCapturada = e;
         }
@@ -94,7 +94,7 @@ public class PassosAprovarReprovarEvento {
     @Quando("o gestor tentar reprovar o evento com feedback vazio")
     public void oGestorTentarReprovarOEventoComFeedbackVazio() {
         try {
-            contexto.servico.reprovar(contexto.evento.getId(), new FeedbackReprovacao(""));
+            contexto.servicoEvento.reprovar(contexto.evento.getId(), new FeedbackReprovacao(""));
         } catch (Exception e) {
             contexto.excecaoCapturada = e;
         }
@@ -108,7 +108,7 @@ public class PassosAprovarReprovarEvento {
 
     @Quando("o gestor reprovar o evento com feedback {string}")
     public void oGestorReprovarOEventoComFeedback(String textoFeedback) {
-        contexto.servico.reprovar(contexto.evento.getId(), new FeedbackReprovacao(textoFeedback));
+        contexto.servicoEvento.reprovar(contexto.evento.getId(), new FeedbackReprovacao(textoFeedback));
     }
 
     @E("o feedback de reprovação deve estar registrado no evento")
@@ -128,14 +128,14 @@ public class PassosAprovarReprovarEvento {
                 null,
                 new Preco(new BigDecimal("50.00"), new BigDecimal("25.00"), null)
         );
-        when(contexto.repositorio.obter(any())).thenReturn(Optional.of(contexto.evento));
-        contexto.servico.salvar(contexto.evento);
+        when(contexto.repositorioEvento.obter(any())).thenReturn(Optional.of(contexto.evento));
+        contexto.servicoEvento.salvar(contexto.evento);
     }
 
     @Quando("o promotor tentar submeter o evento para análise")
     public void oPromotorTentarSubmeterOEventoParaAnalise() {
         try {
-            contexto.servico.submeterParaAnalise(contexto.evento.getId());
+            contexto.servicoEvento.submeterParaAnalise(contexto.evento.getId());
         } catch (Exception e) {
             contexto.excecaoCapturada = e;
         }
@@ -160,12 +160,12 @@ public class PassosAprovarReprovarEvento {
                 new Preco(new BigDecimal("50.00"), new BigDecimal("25.00"), null)
         );
         contexto.evento.programarApresentacao(agora.plusDays(2));
-        when(contexto.repositorio.obter(any())).thenReturn(Optional.of(contexto.evento));
-        contexto.servico.salvar(contexto.evento);
+        when(contexto.repositorioEvento.obter(any())).thenReturn(Optional.of(contexto.evento));
+        contexto.servicoEvento.salvar(contexto.evento);
     }
 
     @Quando("o promotor submeter o evento para análise")
     public void oPromotorSubmeterOEventoParaAnalise() {
-        contexto.servico.submeterParaAnalise(contexto.evento.getId());
+        contexto.servicoEvento.submeterParaAnalise(contexto.evento.getId());
     }
 }

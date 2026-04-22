@@ -1,10 +1,8 @@
 package recifecultural.dominio.agenda.bloqueioadministrativo;
 
-import lombok.Getter;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Getter
 public class BloqueioAdministrativo {
     private final BloqueioAdministrativoId id;
     private final UUID idEspaco;
@@ -55,4 +53,10 @@ public class BloqueioAdministrativo {
         }
         this.motivo = motivo;
     }
+
+    public BloqueioAdministrativoId getId() { return id; }
+    public UUID getIdEspaco() { return idEspaco; }
+    public String getMotivo() { return motivo; }
+    public LocalDateTime getDataInicio() { return dataInicio; }
+    public LocalDateTime getDataFim() { return dataFim; }
 }

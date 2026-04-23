@@ -23,9 +23,9 @@ import static org.mockito.Mockito.when;
 
 public class PassosAprovarReprovarEvento {
 
-    private final ContextoCenario contexto;
+    private final ContextoAprovarReprovarEvento contexto;
 
-    public PassosAprovarReprovarEvento(ContextoCenario contexto) {
+    public PassosAprovarReprovarEvento(ContextoAprovarReprovarEvento contexto) {
         this.contexto = contexto;
     }
 
@@ -33,7 +33,7 @@ public class PassosAprovarReprovarEvento {
     public void umEventoSubmetidoParaAnalise() {
         LocalDateTime agora = LocalDateTime.now();
         contexto.evento = new Evento(
-                UUID.randomUUID(), UUID.randomUUID(),
+                UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
                 "Peça de Teatro Clássico",
                 "Apresentação no Parque Dona Lindu",
                 "Descrição longa do espetáculo",
@@ -61,7 +61,7 @@ public class PassosAprovarReprovarEvento {
     public void umEventoJaAprovado() {
         LocalDateTime agora = LocalDateTime.now();
         contexto.evento = new Evento(
-                UUID.randomUUID(), UUID.randomUUID(),
+                UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
                 "Exposição de Fotografia",
                 "Mostra de fotógrafos pernambucanos",
                 "Descrição longa da exposição",
@@ -120,7 +120,7 @@ public class PassosAprovarReprovarEvento {
     public void umEventoCadastradoSemDatasDeApresentacao() {
         LocalDateTime agora = LocalDateTime.now();
         contexto.evento = new Evento(
-                UUID.randomUUID(), UUID.randomUUID(),
+                UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
                 "Show de Jazz no Marco Zero",
                 "Show ao vivo com artistas locais",
                 "Descrição longa do evento",
@@ -151,7 +151,7 @@ public class PassosAprovarReprovarEvento {
     public void umEventoCadastradoComUmaDataDeApresentacaoProgramada() {
         LocalDateTime agora = LocalDateTime.now();
         contexto.evento = new Evento(
-                UUID.randomUUID(), UUID.randomUUID(),
+                UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
                 "Show de Jazz no Marco Zero",
                 "Show ao vivo com artistas locais",
                 "Descrição longa do evento",

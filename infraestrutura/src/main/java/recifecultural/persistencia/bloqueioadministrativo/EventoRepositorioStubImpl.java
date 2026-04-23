@@ -1,4 +1,4 @@
-package recifecultural.persistencia;
+package recifecultural.persistencia.bloqueioadministrativo;
 
 import org.springframework.stereotype.Component;
 import recifecultural.dominio.agenda.evento.Evento;

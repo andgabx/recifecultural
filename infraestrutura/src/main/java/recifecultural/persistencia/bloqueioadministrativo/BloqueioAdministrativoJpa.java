@@ -1,4 +1,4 @@
-package recifecultural.persistencia;
+package recifecultural.persistencia.bloqueioadministrativo;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -18,11 +18,9 @@ public class BloqueioAdministrativoJpa {
     private LocalDateTime dataInicio;
     private LocalDateTime dataFim;
 
-    // Construtor vazio exigido pelo JPA
     public BloqueioAdministrativoJpa() {
     }
 
-    // Construtor com todos os argumentos
     public BloqueioAdministrativoJpa(UUID id, UUID idLocal, String motivo, LocalDateTime dataInicio, LocalDateTime dataFim) {
         this.id = id;
         this.idLocal = idLocal;

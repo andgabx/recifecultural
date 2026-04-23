@@ -3,11 +3,12 @@ package recifecultural.dominio.agenda.bloqueioadministrativo;
 import recifecultural.dominio.agenda.evento.Evento;
 import recifecultural.dominio.agenda.evento.IEventoRepositorio;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class BloqueioAdministrativoServico {
     private final IBloqueioAdministrativoRepositorio bloqueioRepositorio;
-    private final IEventoRepositorio eventoRepositorio; // Utilizando repositório unificado
+    private final IEventoRepositorio eventoRepositorio;
 
     public BloqueioAdministrativoServico(
             IBloqueioAdministrativoRepositorio bloqueioRepositorio,
@@ -23,6 +24,38 @@ public class BloqueioAdministrativoServico {
     public void criarBloqueio(BloqueioAdministrativo bloqueio) {
         if(bloqueio == null) throw new IllegalArgumentException("Bloqueio Administrativo não pode ser nulo.");
 
+        cancelarEventosConflitantes(bloqueio);
+        bloqueioRepositorio.salvar(bloqueio);
+    }
+
+    public BloqueioAdministrativo obterPorId(BloqueioAdministrativoId id) {
+        if(id == null) throw new IllegalArgumentException("ID do bloqueio é obrigatório.");
+        BloqueioAdministrativo bloqueio = bloqueioRepositorio.obter(id);
+        if (bloqueio == null) throw new IllegalArgumentException("Bloqueio Administrativo não encontrado.");
+        return bloqueio;
+    }
+
+    public void atualizarBloqueio(BloqueioAdministrativoId id, String novoMotivo, LocalDateTime novoInicio, LocalDateTime novoFim) {
+        BloqueioAdministrativo bloqueio = obterPorId(id);
+
+        bloqueio.setMotivo(novoMotivo);
+        bloqueio.setPeriodo(novoInicio, novoFim);
+
+        cancelarEventosConflitantes(bloqueio);
+
+        bloqueioRepositorio.atualizar(bloqueio);
+    }
+
+    public void deletarBloqueio(BloqueioAdministrativoId id) {
+        BloqueioAdministrativo bloqueio = obterPorId(id);
+        bloqueioRepositorio.deletar(bloqueio.getId());
+    }
+
+    public List<BloqueioAdministrativo> obterTodosBloqueios() {
+        return bloqueioRepositorio.obterTodos();
+    }
+
+    private void cancelarEventosConflitantes(BloqueioAdministrativo bloqueio) {
         List<Evento> eventosConflitantes = eventoRepositorio.obterPorLocalEIntervalo(
                 bloqueio.getIdEspaco(),
                 bloqueio.getDataInicio(),
@@ -34,11 +67,5 @@ public class BloqueioAdministrativoServico {
             evento.cancelar(motivoCancelamento);
             eventoRepositorio.atualizar(evento);
         }
-
-        bloqueioRepositorio.salvar(bloqueio);
-    }
-
-    public List<BloqueioAdministrativo> obterTodosBloqueios() {
-        return bloqueioRepositorio.obterTodos();
     }
 }

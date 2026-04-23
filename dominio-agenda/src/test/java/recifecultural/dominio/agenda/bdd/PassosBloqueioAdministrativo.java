@@ -5,6 +5,7 @@ import io.cucumber.java.pt.E;
 import io.cucumber.java.pt.Então;
 import io.cucumber.java.pt.Quando;
 import recifecultural.dominio.agenda.bloqueioadministrativo.BloqueioAdministrativo;
+import recifecultural.dominio.agenda.bloqueioadministrativo.BloqueioAdministrativoId;
 import recifecultural.dominio.agenda.evento.Evento;
 import recifecultural.dominio.agenda.evento.Periodo;
 import recifecultural.dominio.agenda.evento.Preco;
@@ -26,6 +27,9 @@ public class PassosBloqueioAdministrativo {
 
     private final ContextoCenario contexto;
     private List<Evento> eventosSimuladosNoBanco = new ArrayList<>();
+
+    private BloqueioAdministrativoId idBloqueioAtual;
+    private BloqueioAdministrativo bloqueioRetornado;
 
     public PassosBloqueioAdministrativo(ContextoCenario contexto) {
         this.contexto = contexto;
@@ -82,7 +86,6 @@ public class PassosBloqueioAdministrativo {
         );
 
         eventoConflitante.programarApresentacao(inicio.plusDays(2));
-
         eventoConflitante.submeterParaAnalise();
         eventoConflitante.aprovar();
 
@@ -141,5 +144,73 @@ public class PassosBloqueioAdministrativo {
         assertNotNull(contexto.excecaoCapturada);
         assertInstanceOf(IllegalArgumentException.class, contexto.excecaoCapturada);
         assertTrue(contexto.excecaoCapturada.getMessage().contains("Motivo é obrigatório"));
+    }
+
+    @Dado("que existe um bloqueio salvo no repositório com ID {string} e motivo {string}")
+    public void queExisteUmBloqueioSalvoNoRepositorioComIDE(String idStr, String motivo) {
+        idBloqueioAtual = BloqueioAdministrativoId.de(idStr);
+        BloqueioAdministrativo bloqueioMock = new BloqueioAdministrativo(
+                idBloqueioAtual, UUID.randomUUID(), motivo,
+                LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(5)
+        );
+        when(contexto.repositorioBloqueio.obter(idBloqueioAtual)).thenReturn(bloqueioMock);
+    }
+
+    @Dado("que existe um bloqueio salvo no repositório com ID {string}")
+    public void queExisteUmBloqueioSalvoNoRepositorioComID(String idStr) {
+        queExisteUmBloqueioSalvoNoRepositorioComIDE(idStr, "Motivo Padrão Qualquer");
+    }
+
+    @Quando("eu solicitar a busca deste bloqueio por ID")
+    public void euSolicitarABuscaDesteBloqueioPorID() {
+        try {
+            bloqueioRetornado = contexto.servicoBloqueio.obterPorId(idBloqueioAtual);
+        } catch (Exception e) {
+            contexto.excecaoCapturada = e;
+        }
+    }
+
+    @Então("o sistema deve retornar o bloqueio com motivo {string}")
+    public void oSistemaDeveRetornarOBloqueioComMotivo(String motivoEsperado) {
+        assertNull(contexto.excecaoCapturada);
+        assertNotNull(bloqueioRetornado);
+        assertEquals(motivoEsperado, bloqueioRetornado.getMotivo());
+    }
+
+    @Quando("eu solicitar a atualização deste bloqueio para o motivo {string} de {string} até {string}")
+    public void euSolicitarAAtualizacaoDesteBloqueioParaOMotivoDeAte(String novoMotivo, String inicioStr, String fimStr) {
+        LocalDateTime novoInicio = LocalDateTime.parse(inicioStr);
+        LocalDateTime novoFim = LocalDateTime.parse(fimStr);
+        try {
+            contexto.servicoBloqueio.atualizarBloqueio(idBloqueioAtual, novoMotivo, novoInicio, novoFim);
+        } catch (Exception e) {
+            contexto.excecaoCapturada = e;
+        }
+    }
+
+    @Então("o bloqueio deve ser atualizado com sucesso")
+    public void oBloqueioDeveSerAtualizadoComSucesso() {
+        assertNull(contexto.excecaoCapturada);
+        verify(contexto.repositorioBloqueio, times(1)).atualizar(any(BloqueioAdministrativo.class));
+    }
+
+    @E("possíveis eventos conflitantes no novo período devem ser verificados para cancelamento")
+    public void possiveisEventosConflitantesNoNovoPeriodoDevemSerCancelados() {
+        verify(contexto.repositorioEvento, atLeastOnce()).obterPorLocalEIntervalo(any(), any(), any());
+    }
+
+    @Quando("eu solicitar a exclusão deste bloqueio")
+    public void euSolicitarAExclusaoDesteBloqueio() {
+        try {
+            contexto.servicoBloqueio.deletarBloqueio(idBloqueioAtual);
+        } catch (Exception e) {
+            contexto.excecaoCapturada = e;
+        }
+    }
+
+    @Então("o bloqueio deve ser removido do repositório")
+    public void oBloqueioDeveSerRemovidoDoRepositorio() {
+        assertNull(contexto.excecaoCapturada);
+        verify(contexto.repositorioBloqueio, times(1)).deletar(idBloqueioAtual);
     }
 }

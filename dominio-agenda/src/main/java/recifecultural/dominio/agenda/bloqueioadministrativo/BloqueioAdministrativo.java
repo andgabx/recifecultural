@@ -1,10 +1,8 @@
 package recifecultural.dominio.agenda.bloqueioadministrativo;
 
-import lombok.Getter;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Getter
 public class BloqueioAdministrativo {
     private final BloqueioAdministrativoId id;
     private final UUID idEspaco;
@@ -41,7 +39,7 @@ public class BloqueioAdministrativo {
         this.dataFim = dataFim;
     }
 
-    private void setPeriodo(LocalDateTime inicio, LocalDateTime fim) {
+    public void setPeriodo(LocalDateTime inicio, LocalDateTime fim) {
         if (inicio == null || fim == null) throw new IllegalArgumentException("Datas são obrigatórias.");
         if (fim.isBefore(inicio)) throw new IllegalArgumentException("Fim antes do início.");
 
@@ -55,4 +53,10 @@ public class BloqueioAdministrativo {
         }
         this.motivo = motivo;
     }
+
+    public BloqueioAdministrativoId getId() { return id; }
+    public UUID getIdEspaco() { return idEspaco; }
+    public String getMotivo() { return motivo; }
+    public LocalDateTime getDataInicio() { return dataInicio; }
+    public LocalDateTime getDataFim() { return dataFim; }
 }

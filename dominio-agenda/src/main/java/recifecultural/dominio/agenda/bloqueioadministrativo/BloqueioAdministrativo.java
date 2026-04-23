@@ -39,7 +39,7 @@ public class BloqueioAdministrativo {
         this.dataFim = dataFim;
     }
 
-    private void setPeriodo(LocalDateTime inicio, LocalDateTime fim) {
+    public void setPeriodo(LocalDateTime inicio, LocalDateTime fim) {
         if (inicio == null || fim == null) throw new IllegalArgumentException("Datas são obrigatórias.");
         if (fim.isBefore(inicio)) throw new IllegalArgumentException("Fim antes do início.");
 

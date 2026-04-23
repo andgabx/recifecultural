@@ -1,4 +1,4 @@
-package recifecultural.persistencia;
+package recifecultural.persistencia.bloqueioadministrativo;
 
 import org.springframework.stereotype.Component;
 import recifecultural.dominio.agenda.bloqueioadministrativo.BloqueioAdministrativo;
@@ -19,14 +19,19 @@ public class BloqueioAdministrativoRepositorioImpl implements IBloqueioAdministr
 
     @Override
     public boolean salvar(BloqueioAdministrativo bloqueioAdministrativo) {
-        BloqueioAdministrativoJpa jpa = new BloqueioAdministrativoJpa(
-            bloqueioAdministrativo.getId().valor(),
-            bloqueioAdministrativo.getIdEspaco(),
-            bloqueioAdministrativo.getMotivo(),
-            bloqueioAdministrativo.getDataInicio(),
-            bloqueioAdministrativo.getDataFim()
-        );
-        repositorio.save(jpa);
+        repositorio.save(toJpa(bloqueioAdministrativo));
+        return true;
+    }
+
+    @Override
+    public boolean atualizar(BloqueioAdministrativo bloqueioAdministrativo) {
+        repositorio.save(toJpa(bloqueioAdministrativo));
+        return true;
+    }
+
+    @Override
+    public boolean deletar(BloqueioAdministrativoId id) {
+        repositorio.deleteById(id.valor());
         return true;
     }
 
@@ -40,13 +45,23 @@ public class BloqueioAdministrativoRepositorioImpl implements IBloqueioAdministr
         return repositorio.findAll().stream().map(this::toDomain).collect(Collectors.toList());
     }
 
+    private BloqueioAdministrativoJpa toJpa(BloqueioAdministrativo dominio) {
+        return new BloqueioAdministrativoJpa(
+                dominio.getId().valor(),
+                dominio.getIdEspaco(),
+                dominio.getMotivo(),
+                dominio.getDataInicio(),
+                dominio.getDataFim()
+        );
+    }
+
     private BloqueioAdministrativo toDomain(BloqueioAdministrativoJpa jpa) {
         return new BloqueioAdministrativo(
-            new BloqueioAdministrativoId(jpa.getId()),
-            jpa.getIdLocal(),
-            jpa.getMotivo(),
-            jpa.getDataInicio(),
-            jpa.getDataFim()
+                new BloqueioAdministrativoId(jpa.getId()),
+                jpa.getIdLocal(),
+                jpa.getMotivo(),
+                jpa.getDataInicio(),
+                jpa.getDataFim()
         );
     }
 }

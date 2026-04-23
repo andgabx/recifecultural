@@ -6,6 +6,9 @@ import recifecultural.dominio.agenda.bloqueioadministrativo.IBloqueioAdministrat
 import recifecultural.dominio.agenda.evento.IEventoRepositorio;
 import recifecultural.dominio.agenda.evento.EventoServico;
 import recifecultural.dominio.agenda.evento.Evento;
+import recifecultural.dominio.agenda.notificacao.INotificacaoRepositorio;
+import recifecultural.dominio.agenda.notificacao.Notificacao;
+import recifecultural.dominio.agenda.notificacao.NotificacaoServico;
 
 import java.util.UUID;
 
@@ -19,4 +22,9 @@ public class ContextoCenario {
     public UUID idLocalAtual;
     public IBloqueioAdministrativoRepositorio repositorioBloqueio = Mockito.mock(IBloqueioAdministrativoRepositorio.class);
     public BloqueioAdministrativoServico servicoBloqueio = new BloqueioAdministrativoServico(repositorioBloqueio, repositorioEvento);
+
+    public UUID idUsuarioAtual;
+    public Notificacao notificacaoAtual;
+    public INotificacaoRepositorio repositorioNotificacao = Mockito.mock(INotificacaoRepositorio.class);
+    public NotificacaoServico servicoNotificacao = new NotificacaoServico(repositorioNotificacao);
 }

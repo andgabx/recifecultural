@@ -1,4 +1,3 @@
 package recifecultural.dominio.agenda.setor;
 
-public class TipoSetor {
-}
+public enum TipoSetor { PLATEIA, CAMAROTE, BALCAO, PISTA }

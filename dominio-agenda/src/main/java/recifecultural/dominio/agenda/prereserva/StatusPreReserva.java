@@ -1,4 +1,3 @@
 package recifecultural.dominio.agenda.prereserva;
 
-public class StatusPreReserva {
-}
+public enum StatusPreReserva { ATIVA, EXPIRADA, CONVERTIDA, CANCELADA }

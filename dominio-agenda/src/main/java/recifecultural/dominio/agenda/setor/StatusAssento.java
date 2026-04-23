@@ -1,4 +1,3 @@
 package recifecultural.dominio.agenda.setor;
 
-public class StatusAssento {
-}
+public enum StatusAssento { LIVRE, PRE_RESERVADO, OCUPADO, BLOQUEADO }

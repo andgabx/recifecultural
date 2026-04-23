@@ -19,6 +19,7 @@
     <modules>
         <module>dominio-compartilhado</module>
         <module>dominio-agenda</module>
+        <module>dominio-ingressos</module>
         <module>aplicacao</module>
         <module>infraestrutura</module>
         <module>apresentacao-backend</module>

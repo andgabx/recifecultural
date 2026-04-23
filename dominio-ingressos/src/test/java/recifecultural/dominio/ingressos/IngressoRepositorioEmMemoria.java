@@ -2,6 +2,7 @@ package recifecultural.dominio.ingressos;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -34,5 +35,13 @@ public class IngressoRepositorioEmMemoria implements IIngressoRepositorio {
                         && i.getDataHoraApresentacao().equals(dataHora)
                         && i.getStatus() == StatusIngresso.ATIVO)
                 .count();
+    }
+
+    @Override
+    public List<Ingresso> buscarPorPeriodo(LocalDateTime inicio, LocalDateTime fim) {
+        return ingressos.values().stream()
+                .filter(i -> !i.getDataCompra().isBefore(inicio)
+                        && !i.getDataCompra().isAfter(fim))
+                .toList();
     }
 }

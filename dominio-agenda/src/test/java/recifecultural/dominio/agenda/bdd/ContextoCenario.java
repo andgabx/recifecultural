@@ -13,6 +13,10 @@ import recifecultural.dominio.agenda.espaco.EspacoId;
 import recifecultural.dominio.agenda.notificacao.INotificacaoRepositorio;
 import recifecultural.dominio.agenda.notificacao.Notificacao;
 import recifecultural.dominio.agenda.notificacao.NotificacaoServico;
+import recifecultural.dominio.agenda.equipamento.EquipamentoId;
+import recifecultural.dominio.agenda.equipamento.AlocacaoRiderTecnicoServico;
+import recifecultural.dominio.agenda.equipamento.IEquipamentoRepositorio;
+import recifecultural.dominio.agenda.equipamento.EquipamentoServico;
 
 import java.util.UUID;
 
@@ -34,5 +38,9 @@ public class ContextoCenario {
     public UUID idUsuarioAtual;
     public Notificacao notificacaoAtual;
     public INotificacaoRepositorio repositorioNotificacao = Mockito.mock(INotificacaoRepositorio.class);
-    public NotificacaoServico servicoNotificacao = new NotificacaoServico(repositorioNotificacao);
+    public NotificacaoServico servicoNotificacao = Mockito.spy(new NotificacaoServico(repositorioNotificacao));
+
+    public IEquipamentoRepositorio repositorioEquipamento = Mockito.mock(IEquipamentoRepositorio.class);
+    public AlocacaoRiderTecnicoServico servicoAlocacao = new AlocacaoRiderTecnicoServico(repositorioEquipamento, repositorioEvento, servicoNotificacao);    public EquipamentoId idEquipamentoAtual;
+    public  EquipamentoServico servicoEquipamento = new EquipamentoServico(repositorioEquipamento);
 }

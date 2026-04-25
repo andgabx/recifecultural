@@ -35,6 +35,7 @@ public class ContextoCenario {
     public EspacoId idEspacoAtual;
     public IEspacoRepositorio repositorioEspaco = Mockito.mock(IEspacoRepositorio.class);
     public EspacoServico servicoEspaco = new EspacoServico(repositorioEspaco);
+
     public UUID idUsuarioAtual;
     public Notificacao notificacaoAtual;
     public INotificacaoRepositorio repositorioNotificacao = Mockito.mock(INotificacaoRepositorio.class);

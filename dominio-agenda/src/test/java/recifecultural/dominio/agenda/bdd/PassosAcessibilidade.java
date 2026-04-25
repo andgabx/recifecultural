@@ -139,7 +139,7 @@ public class PassosAcessibilidade {
     private Evento criarEventoBase() {
         LocalDateTime agora = LocalDateTime.now();
         Evento evento = new Evento(
-                UUID.randomUUID(), UUID.randomUUID(),
+                UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
                 "Hamlet em Libras",
                 "Adaptação acessível",
                 "Espetáculo com tradução para Libras",

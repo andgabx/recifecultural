@@ -178,7 +178,7 @@ public class PassosSorteio {
     private Evento criarEventoBase() {
         LocalDateTime agora = LocalDateTime.now();
         Evento evento = new Evento(
-                UUID.randomUUID(), UUID.randomUUID(),
+                UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
                 "Romeu e Julieta",
                 "Clássico de Shakespeare",
                 "Montagem do Grupo Teatral do Recife",

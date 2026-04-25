@@ -80,7 +80,7 @@ public class PassosBloqueioAdministrativo {
         LocalDateTime fim = LocalDateTime.parse(fimStr);
 
         Evento eventoConflitante = new Evento(
-                UUID.randomUUID(), contexto.idLocalAtual, "Show", "Curta", "Longa",
+                UUID.randomUUID(), UUID.randomUUID(), contexto.idLocalAtual, "Show", "Curta", "Longa",
                 new Periodo(inicio.plusDays(1), fim.minusDays(1)), null,
                 new Preco(BigDecimal.TEN, BigDecimal.ONE, null)
         );

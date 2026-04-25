@@ -1,4 +1,3 @@
 package recifecultural.dominio.artista.artista;
 
-public class StatusArtista {
-}
+public enum StatusArtista { ATIVO, INATIVO }

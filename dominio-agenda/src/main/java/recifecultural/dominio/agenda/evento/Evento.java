@@ -82,6 +82,7 @@ public class Evento {
     }
 
     public Evento(
+            UUID id,
             UUID promotorId,
             UUID localId,
             String titulo,
@@ -91,7 +92,7 @@ public class Evento {
             URI enderecoIngresso,
             Preco preco
     ) {
-        this.id = UUID.randomUUID();
+        this.id = id;
         this.promotorId = promotorId;
         this.localId = localId;
 

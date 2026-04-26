@@ -19,12 +19,12 @@ public class ContextoCenario {
     public IEventoRepositorio repositorioEvento = Mockito.mock(IEventoRepositorio.class);
     public EventoServico servicoEvento = new EventoServico(repositorioEvento);
 
-    public UUID idLocalAtual;
-    public IBloqueioAdministrativoRepositorio repositorioBloqueio = Mockito.mock(IBloqueioAdministrativoRepositorio.class);
-    public BloqueioAdministrativoServico servicoBloqueio = new BloqueioAdministrativoServico(repositorioBloqueio, repositorioEvento);
-
     public UUID idUsuarioAtual;
     public Notificacao notificacaoAtual;
     public INotificacaoRepositorio repositorioNotificacao = Mockito.mock(INotificacaoRepositorio.class);
     public NotificacaoServico servicoNotificacao = new NotificacaoServico(repositorioNotificacao);
+
+    public UUID idLocalAtual;
+    public IBloqueioAdministrativoRepositorio repositorioBloqueio = Mockito.mock(IBloqueioAdministrativoRepositorio.class);
+    public BloqueioAdministrativoServico servicoBloqueio = new BloqueioAdministrativoServico(repositorioBloqueio, repositorioEvento, servicoNotificacao);
 }

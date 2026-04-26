@@ -13,6 +13,7 @@ Feature: Gerenciamento de Bloqueios Administrativos
     When eu solicitar a criação de um bloqueio administrativo para este local neste período com o motivo "Interdição da Defesa Civil"
     Then os eventos conflitantes devem ser cancelados
     And o bloqueio deve ser salvo com sucesso
+    And os promotores dos eventos cancelados devem receber uma notificação com o contexto "CANCELAMENTO_POR_BLOQUEIO"
 
   Scenario: Falha ao tentar criar bloqueio com data de fim anterior a data de início
     Given que existe um local com ID "123e4567-e89b-12d3-a456-426614174000"

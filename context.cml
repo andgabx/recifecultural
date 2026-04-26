@@ -1,0 +1,296 @@
+ContextMap RecifeCulturalMap {
+    type = SYSTEM_LANDSCAPE
+    state = AS_IS
+
+    contains BloqueioContext
+    contains SorteioContext
+    contains AcessibilidadeContext
+    contains NotificacaoContext
+    contains AgendaContext
+
+    BloqueioContext [U, OHS, PL] -> [D, ACL] NotificacaoContext {
+        implementationTechnology = "Eventos de Domínio (Mensageria)"
+    }
+    
+    SorteioContext [U, OHS, PL] -> [D, ACL] NotificacaoContext {
+        implementationTechnology = "Eventos de Domínio (Mensageria)"
+    }
+    
+    AcessibilidadeContext [U, OHS, PL] -> [D, ACL] NotificacaoContext {
+        implementationTechnology = "Eventos de Domínio (Mensageria)"
+    }
+
+    AgendaContext [U, OHS, PL] -> [D, ACL] NotificacaoContext {
+        implementationTechnology = "Eventos de Domínio (Mensageria)"
+    }
+
+    AgendaContext [U, OHS, PL] -> [D, ACL] SorteioContext {
+        implementationTechnology = "Eventos de Domínio (Mensageria)"
+    }
+    
+    AgendaContext [U, OHS, PL] -> [D, ACL] AcessibilidadeContext {
+        implementationTechnology = "Eventos de Domínio (Mensageria)"
+    }
+}
+
+BoundedContext AgendaContext {
+    domainVisionStatement = "Responsável pela gestão dos espaços culturais, submissão de eventos e suas aprovações."
+    type = APPLICATION
+
+    Module AgendaModule {
+        Aggregate EventoAggregate {
+            Entity Evento {
+                aggregateRoot
+
+                UUID id
+                UUID promotorId
+                UUID localId
+                String titulo
+                String descricaoCurta
+                String descricaoLonga
+                @Periodo periodo
+                List<LocalDateTime> datasApresentacao
+                URI enderecoIngresso
+                @Preco preco
+                StatusEvento status
+                @FeedbackReprovacao feedbackReprovacao
+                String motivoCancelamento
+
+                void submeterParaAnalise();
+                void aprovar();
+                void reprovar(@FeedbackReprovacao feedback);
+                void cancelar(String motivo);
+                void programarApresentacao(LocalDateTime dataHora);
+            }
+
+            enum StatusEvento {
+                RASCUNHO, EM_ANALISE, APROVADO, REPROVADO, REALIZADO, CANCELADO
+            }
+
+            ValueObject Periodo {
+                LocalDateTime inicio
+                LocalDateTime fim
+            }
+
+            ValueObject Preco {
+                BigDecimal inteira
+                BigDecimal meia
+                String social
+            }
+
+            ValueObject FeedbackReprovacao {
+                String texto
+            }
+
+            Repository IEventoRepositorio {
+                void salvar(@Evento evento);
+                void atualizar(@Evento evento);
+                void deletar(UUID id);
+                @Evento obter(UUID id);
+                List<@Evento> obterTodos();
+                List<@Evento> obterPorLocalEIntervalo(UUID localId, LocalDateTime inicio, LocalDateTime fim);
+            }
+
+            Service EventoServico {
+                void salvar(@Evento evento);
+                @Evento obter(UUID id);
+                void submeterParaAnalise(UUID id);
+                void aprovar(UUID id);
+                void reprovar(UUID id, @FeedbackReprovacao feedback);
+                void deletar(UUID id);
+            }
+        }
+    }
+}
+
+BoundedContext BloqueioContext {
+    domainVisionStatement = "Responsável por gerenciar indisponibilidades, manutenções e interdições nos espaços culturais."
+    type = APPLICATION
+
+    Module BloqueioModule {
+        Aggregate BloqueioAggregate {
+            Entity BloqueioAdministrativo {
+                aggregateRoot
+
+                @BloqueioId id
+                @EspacoId espacoId
+                LocalDateTime dataInicio
+                LocalDateTime dataFim
+                String motivo
+
+                void registrarBloqueio();
+                void cancelarBloqueio();
+            }
+
+            ValueObject BloqueioId {
+                UUID valor
+            }
+
+            ValueObject EspacoId {
+                UUID valor
+            }
+
+            Repository BloqueioRepository {
+                @BloqueioAdministrativo findById(@BloqueioId id);
+                void salvar(@BloqueioAdministrativo bloqueio);
+                List<@BloqueioAdministrativo> buscarPorEspaco(@EspacoId espacoId);
+                List<@BloqueioAdministrativo> buscarAtivosPorPeriodo(LocalDateTime inicio, LocalDateTime fim);
+            }
+        }
+    }
+}
+
+BoundedContext SorteioContext {
+    domainVisionStatement = "Distribui vagas para apresentações via sorteio aleatório, com inscrição, apuração e promoção automática de suplentes."
+    type = APPLICATION
+
+    Module SorteioModule {
+        Aggregate SorteioAggregate {
+            Entity Sorteio {
+                aggregateRoot
+
+                @SorteioId id
+                @ApresentacaoId apresentacaoId
+                @EventoId eventoId
+                Integer vagas
+                LocalDateTime prazoInscricao
+                LocalDateTime dataApresentacao
+                StatusSorteio status
+                List<@Inscricao> inscricoes
+
+                void inscrever(@EspectadorId espectadorId);
+                void apurar();
+                void desistir(@EspectadorId espectadorId);
+                void cancelar();
+            }
+
+            ValueObject Inscricao {
+                @EspectadorId espectadorId
+                LocalDateTime momentoInscricao
+                StatusInscricao status
+            }
+
+            ValueObject SorteioId      { UUID valor }
+            ValueObject ApresentacaoId { UUID valor }
+            ValueObject EventoId       { UUID valor }
+            ValueObject EspectadorId   { UUID valor }
+
+            enum StatusSorteio {
+                INSCRICOES_ABERTAS, EM_APURACAO, CONCLUIDO, CANCELADO
+            }
+
+            enum StatusInscricao {
+                INSCRITO, GANHADOR, SUPLENTE, DESISTENTE, CANCELADA
+            }
+
+            Repository SorteioRepository {
+                void salvar(@Sorteio sorteio);
+                @Sorteio obter(@SorteioId id);
+                void atualizar(@Sorteio sorteio);
+                void deletar(@SorteioId id);
+            }
+
+            Service SorteioServico {
+                @Sorteio criar(
+                    @ApresentacaoId apresentacaoId,
+                    @EventoId eventoId,
+                    Integer vagas,
+                    LocalDateTime prazoInscricao,
+                    LocalDateTime dataApresentacao
+                );
+                void inscrever(@SorteioId sorteioId, @EspectadorId espectadorId);
+                void apurar(@SorteioId sorteioId);
+                void desistir(@SorteioId sorteioId, @EspectadorId espectadorId);
+                void cancelar(@SorteioId sorteioId);
+            }
+        }
+    }
+}
+
+BoundedContext AcessibilidadeContext {
+    domainVisionStatement = "Marca recursos de acessibilidade disponíveis em uma apresentação (LIBRAS, audiodescrição, etc.). Garante unicidade por tipo e exige justificativa para remoção."
+    type = APPLICATION
+
+    Module AcessibilidadeModule {
+        Aggregate RecursoAcessibilidadeAggregate {
+            Entity RecursoAcessibilidade {
+                aggregateRoot
+
+                @RecursoAcessibilidadeId id
+                @ApresentacaoId apresentacaoId
+                @EventoId eventoId
+                TipoRecursoAcessibilidade tipo
+                StatusRecurso status
+                String justificativaRemocao
+
+                void remover(String justificativa);
+            }
+
+            ValueObject RecursoAcessibilidadeId { UUID valor }
+            ValueObject ApresentacaoId          { UUID valor }
+            ValueObject EventoId                { UUID valor }
+
+            enum TipoRecursoAcessibilidade {
+                LIBRAS, AUDIODESCRICAO, LEGENDA_DESCRITIVA, ESPACO_PCD, PROGRAMA_BRAILE
+            }
+
+            enum StatusRecurso {
+                CONFIRMADO, REMOVIDO
+            }
+
+            Repository RecursoAcessibilidadeRepository {
+                void salvar(@RecursoAcessibilidade recurso);
+                @RecursoAcessibilidade obter(@RecursoAcessibilidadeId id);
+                List<@RecursoAcessibilidade> listarPorApresentacao(@ApresentacaoId apresentacaoId);
+                void atualizar(@RecursoAcessibilidade recurso);
+            }
+
+            Service RecursoAcessibilidadeServico {
+                @RecursoAcessibilidade marcar(
+                    @ApresentacaoId apresentacaoId,
+                    @EventoId eventoId,
+                    @TipoRecursoAcessibilidade tipo
+                );
+                void remover(@RecursoAcessibilidadeId recursoId, String justificativa);
+            }
+        }
+    }
+}
+
+BoundedContext NotificacaoContext {
+    domainVisionStatement = "Responsável por padronizar e despachar avisos, e-mails e alertas sistêmicos para os usuários e produtores culturais (Padrão Publisher-Subscriber)."
+    type = FEATURE
+
+    Module NotificacaoModule {
+        Aggregate NotificacaoAggregate {
+            Entity Notificacao {
+                aggregateRoot
+
+                @NotificacaoId id
+                String destinatario
+                String titulo
+                String mensagem
+                LocalDateTime dataCriacao
+                StatusNotificacao status
+
+                void enviar();
+                void marcarComoFalha();
+            }
+
+            ValueObject NotificacaoId {
+                UUID valor
+            }
+
+            enum StatusNotificacao {
+                PENDENTE, ENVIADA, FALHA
+            }
+
+            Repository NotificacaoRepository {
+                @Notificacao findById(@NotificacaoId id);
+                void salvar(@Notificacao notificacao);
+                List<@Notificacao> buscarPendentes();
+                List<@Notificacao> buscarPorDestinatario(String destinatario);
+            }
+        }
+    }
+}

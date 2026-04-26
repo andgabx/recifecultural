@@ -53,7 +53,7 @@ public class BloqueioAdministrativoServico {
 
     public void deletarBloqueio(BloqueioAdministrativoId id) {
         BloqueioAdministrativo bloqueio = obterPorId(id);
-        bloqueioRepositorio.deletar(bloqueio.getId());
+        bloqueioRepositorio.deletar(id);
     }
 
     public List<BloqueioAdministrativo> obterTodosBloqueios() {
@@ -76,7 +76,13 @@ public class BloqueioAdministrativoServico {
                     "Atenção: Seu evento '%s' foi cancelado por motivos técnicos. Justificativa: %s",
                     evento.getTitulo(), bloqueio.getMotivo()
             );
-            notificacaoServico.enviarNotificacao(evento.getPromotorId(), mensagemNotificacao);
+
+            notificacaoServico.enviarNotificacao(
+                    evento.getPromotorId(),
+                    mensagemNotificacao,
+                    "CANCELAMENTO_POR_BLOQUEIO",
+                    evento.getId()
+            );
         }
     }
 }

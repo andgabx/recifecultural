@@ -23,33 +23,31 @@ import java.util.UUID;
 public class ContextoCenario {
     public Exception excecaoCapturada;
 
+    // Evento
     public Evento evento;
     public IEventoRepositorio repositorioEvento = Mockito.mock(IEventoRepositorio.class);
     public EventoServico servicoEvento = new EventoServico(repositorioEvento);
 
-    public UUID idUsuarioAtual;
-    public Notificacao notificacaoAtual;
-    public INotificacaoRepositorio repositorioNotificacao = Mockito.mock(INotificacaoRepositorio.class);
-    public NotificacaoServico servicoNotificacao = new NotificacaoServico(repositorioNotificacao);
-
-    public UUID idLocalAtual;
-    public IBloqueioAdministrativoRepositorio repositorioBloqueio = Mockito.mock(IBloqueioAdministrativoRepositorio.class);
-    public BloqueioAdministrativoServico servicoBloqueio = new BloqueioAdministrativoServico(repositorioBloqueio, repositorioEvento, servicoNotificacao);
-    public UUID idLocalAtual;
-    public IBloqueioAdministrativoRepositorio repositorioBloqueio = Mockito.mock(IBloqueioAdministrativoRepositorio.class);
-    public BloqueioAdministrativoServico servicoBloqueio = new BloqueioAdministrativoServico(repositorioBloqueio, repositorioEvento);
-
-    public Espaco espaco;
-    public EspacoId idEspacoAtual;
-    public IEspacoRepositorio repositorioEspaco = Mockito.mock(IEspacoRepositorio.class);
-    public EspacoServico servicoEspaco = new EspacoServico(repositorioEspaco);
-
+    // Notificação
     public UUID idUsuarioAtual;
     public Notificacao notificacaoAtual;
     public INotificacaoRepositorio repositorioNotificacao = Mockito.mock(INotificacaoRepositorio.class);
     public NotificacaoServico servicoNotificacao = Mockito.spy(new NotificacaoServico(repositorioNotificacao));
 
+    // Bloqueio Administrativo
+    public UUID idLocalAtual;
+    public IBloqueioAdministrativoRepositorio repositorioBloqueio = Mockito.mock(IBloqueioAdministrativoRepositorio.class);
+    public BloqueioAdministrativoServico servicoBloqueio = new BloqueioAdministrativoServico(repositorioBloqueio, repositorioEvento, servicoNotificacao);
+
+    // Espaço
+    public Espaco espaco;
+    public EspacoId idEspacoAtual;
+    public IEspacoRepositorio repositorioEspaco = Mockito.mock(IEspacoRepositorio.class);
+    public EspacoServico servicoEspaco = new EspacoServico(repositorioEspaco);
+
+    // Equipamentos
     public IEquipamentoRepositorio repositorioEquipamento = Mockito.mock(IEquipamentoRepositorio.class);
-    public AlocacaoRiderTecnicoServico servicoAlocacao = new AlocacaoRiderTecnicoServico(repositorioEquipamento, repositorioEvento, servicoNotificacao);    public EquipamentoId idEquipamentoAtual;
-    public  EquipamentoServico servicoEquipamento = new EquipamentoServico(repositorioEquipamento);
+    public AlocacaoRiderTecnicoServico servicoAlocacao = new AlocacaoRiderTecnicoServico(repositorioEquipamento, repositorioEvento, servicoNotificacao);
+    public EquipamentoId idEquipamentoAtual;
+    public EquipamentoServico servicoEquipamento = new EquipamentoServico(repositorioEquipamento);
 }

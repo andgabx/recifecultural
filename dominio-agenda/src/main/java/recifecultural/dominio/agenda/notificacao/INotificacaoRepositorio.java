@@ -9,4 +9,5 @@ public interface INotificacaoRepositorio {
     Notificacao obter(NotificacaoId id);
     List<Notificacao> obterPorUsuario(UUID usuarioAlvo);
     List<Notificacao> obterNaoLidasPorUsuario(UUID usuarioAlvo);
+    List<Notificacao> obterPorContexto(UUID usuarioAlvo, String contexto);
 }

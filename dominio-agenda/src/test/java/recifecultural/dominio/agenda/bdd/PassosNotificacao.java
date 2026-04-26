@@ -10,13 +10,13 @@ import recifecultural.dominio.agenda.notificacao.Notificacao;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 public class PassosNotificacao {
 
     private final ContextoCenario contexto;
     private ArgumentCaptor<Notificacao> notificacaoCaptor;
+    private UUID idReferenciaAtual; // Utilizado no teste de contexto/referência
 
     public PassosNotificacao(ContextoCenario contexto) {
         this.contexto = contexto;
@@ -121,5 +121,55 @@ public class PassosNotificacao {
         assertTrue(contexto.notificacaoAtual.isLidaPor(contexto.idUsuarioAtual), "Broadcast deveria estar lido pelo usuário especificado");
         assertTrue(contexto.notificacaoAtual.getLidaPor().contains(contexto.idUsuarioAtual));
         verify(contexto.repositorioNotificacao, times(1)).atualizar(contexto.notificacaoAtual);
+    }
+
+    @Dado("que o usuário {string} possui uma notificação direta lida com a mensagem {string}")
+    public void queOUsuarioPossuiUmaNotificacaoDiretaLidaComAMensagem(String idUsuario, String mensagem) {
+        contexto.idUsuarioAtual = UUID.fromString(idUsuario);
+        contexto.notificacaoAtual = new Notificacao(contexto.idUsuarioAtual, mensagem);
+        contexto.notificacaoAtual.marcarComoLida(contexto.idUsuarioAtual);
+
+        when(contexto.repositorioNotificacao.obter(contexto.notificacaoAtual.getId())).thenReturn(contexto.notificacaoAtual);
+    }
+
+    @Quando("o usuário solicitar a marcação desta notificação como não lida")
+    public void oUsuarioSolicitarAMarcacaoDestaNotificacaoComoNaoLida() {
+        try {
+            contexto.servicoNotificacao.marcarComoNaoLida(contexto.notificacaoAtual.getId(), contexto.idUsuarioAtual);
+        } catch (Exception e) {
+            contexto.excecaoCapturada = e;
+        }
+    }
+
+    @Então("a notificação deve ser atualizada e constar como não lida pelo sistema")
+    public void aNotificacaoDeveSerAtualizadaEConstarComoNaoLidaPeloSistema() {
+        assertNull(contexto.excecaoCapturada);
+        assertFalse(contexto.notificacaoAtual.isFoiLida(), "A notificação deveria constar como não lida");
+        verify(contexto.repositorioNotificacao, times(1)).atualizar(contexto.notificacaoAtual);
+    }
+
+    @Dado("um evento de referência com ID {string}")
+    public void umEventoDeReferenciaComID(String idReferencia) {
+        this.idReferenciaAtual = UUID.fromString(idReferencia);
+    }
+
+    @Quando("eu solicitar o envio de uma notificação com a mensagem {string}, contexto {string} e referência do evento")
+    public void euSolicitarOEnvioDeUmaNotificacaoComAMensagemContextoEReferenciaDoEvento(String mensagem, String contextoNotificacao) {
+        try {
+            contexto.servicoNotificacao.enviarNotificacao(contexto.idUsuarioAtual, mensagem, contextoNotificacao, this.idReferenciaAtual);
+        } catch (Exception e) {
+            contexto.excecaoCapturada = e;
+        }
+    }
+
+    @Então("a notificação deve ser salva contendo o contexto {string} e a referência correta")
+    public void aNotificacaoDeveSerSalvaContendoOContextoEAReferenciaCorreta(String contextoEsperado) {
+        assertNull(contexto.excecaoCapturada, "Não deveria ter lançado exceção");
+        verify(contexto.repositorioNotificacao, times(1)).salvar(notificacaoCaptor.capture());
+
+        Notificacao salva = notificacaoCaptor.getValue();
+        assertNotNull(salva);
+        assertEquals(contextoEsperado, salva.getContexto());
+        assertEquals(this.idReferenciaAtual, salva.getIdReferencia());
     }
 }

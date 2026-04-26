@@ -2,6 +2,7 @@ package recifecultural.dominio.agenda.bloqueioadministrativo;
 
 import recifecultural.dominio.agenda.evento.Evento;
 import recifecultural.dominio.agenda.evento.IEventoRepositorio;
+import recifecultural.dominio.agenda.notificacao.NotificacaoServico;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -9,16 +10,20 @@ import java.util.List;
 public class BloqueioAdministrativoServico {
     private final IBloqueioAdministrativoRepositorio bloqueioRepositorio;
     private final IEventoRepositorio eventoRepositorio;
+    private final NotificacaoServico notificacaoServico;
 
     public BloqueioAdministrativoServico(
             IBloqueioAdministrativoRepositorio bloqueioRepositorio,
-            IEventoRepositorio eventoRepositorio) {
+            IEventoRepositorio eventoRepositorio,
+            NotificacaoServico notificacaoServico) {
 
         if(bloqueioRepositorio == null) throw new IllegalArgumentException("[IBloqueioAdministrativoRepositorio] Repositório não pode ser nulo.");
         if(eventoRepositorio == null) throw new IllegalArgumentException("[EventoRepositorio] Repositório não pode ser nulo.");
+        if(notificacaoServico == null) throw new IllegalArgumentException("[NotificacaoServico] Serviço não pode ser nulo.");
 
         this.bloqueioRepositorio = bloqueioRepositorio;
         this.eventoRepositorio = eventoRepositorio;
+        this.notificacaoServico = notificacaoServico;
     }
 
     public void criarBloqueio(BloqueioAdministrativo bloqueio) {
@@ -48,7 +53,7 @@ public class BloqueioAdministrativoServico {
 
     public void deletarBloqueio(BloqueioAdministrativoId id) {
         BloqueioAdministrativo bloqueio = obterPorId(id);
-        bloqueioRepositorio.deletar(bloqueio.getId());
+        bloqueioRepositorio.deletar(id);
     }
 
     public List<BloqueioAdministrativo> obterTodosBloqueios() {
@@ -66,6 +71,18 @@ public class BloqueioAdministrativoServico {
         for (Evento evento : eventosConflitantes) {
             evento.cancelar(motivoCancelamento);
             eventoRepositorio.atualizar(evento);
+
+            String mensagemNotificacao = String.format(
+                    "Atenção: Seu evento '%s' foi cancelado por motivos técnicos. Justificativa: %s",
+                    evento.getTitulo(), bloqueio.getMotivo()
+            );
+
+            notificacaoServico.enviarNotificacao(
+                    evento.getPromotorId(),
+                    mensagemNotificacao,
+                    "CANCELAMENTO_POR_BLOQUEIO",
+                    evento.getId()
+            );
         }
     }
 }

@@ -36,3 +36,14 @@ Funcionalidade: Alocação de Rider Técnico (Inventário)
     Dado que uma "Mesa de Som" esta com status "ALOCADO" para o "Show de Rock"
     Quando eu tentar excluir definitivamente a "Mesa de Som"
     Entao o sistema deve impedir a exclusao informando que o item esta em uso
+
+  Cenario: Conflito de infraestrutura por falta de equipamentos
+      Dado que o teatro possui 1 unidades de "Mesa de Som" disponíveis
+      Quando eu tentar alocar 2 unidades de "Mesa de Som" para um novo evento
+      Entao o sistema deve impedir a alocacao informando "Conflito de Infraestrutura"
+
+  Cenario: Manutencao preventiva de equipamento que nao esta em uso
+    Dado que uma "Mesa de Som" esta com status "DISPONIVEL"
+    Quando o zelador registrar que a "Mesa de Som" foi para manutencao
+    Entao o status do equipamento deve mudar para "EM_MANUTENCAO"
+    E o sistema nao deve enviar nenhuma notificacao para promotores

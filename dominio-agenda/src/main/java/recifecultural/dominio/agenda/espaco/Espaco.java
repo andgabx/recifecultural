@@ -49,6 +49,23 @@ public class Espaco {
         this.status = StatusEspaco.INTERDITADO;
     }
 
+    private List<Ocupacao> ocupacoesExistentes = new ArrayList<>();
+
+    public void validarDisponibilidade(Ocupacao novaOcupacao, List<Ocupacao> ocupacoesNoPeriodo) {
+        if (this.status == StatusEspaco.INTERDITADO) {
+            throw new IllegalStateException("Espaço interditado não aceita novas pautas.");
+        }
+
+        for (Ocupacao existente : ocupacoesNoPeriodo) {
+            if (novaOcupacao.sobrepoe(existente)) {
+                throw new IllegalStateException(
+                        String.format("Conflito de Horário: O intervalo efetivo (%s - %s) sobrepõe uma pauta existente.",
+                                novaOcupacao.inicioEfetivo(), novaOcupacao.fimEfetivo())
+                );
+            }
+        }
+    }
+
     public String getNome() { return nome; }
     public int getCapacidadeMaxima() { return capacidadeMaxima; }
     public StatusEspaco getStatus() { return status; }

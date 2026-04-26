@@ -4,12 +4,14 @@ import io.cucumber.java.pt.Dado;
 import io.cucumber.java.pt.E;
 import io.cucumber.java.pt.Então;
 import io.cucumber.java.pt.Quando;
+import org.mockito.ArgumentCaptor;
 import recifecultural.dominio.agenda.bloqueioadministrativo.BloqueioAdministrativo;
 import recifecultural.dominio.agenda.bloqueioadministrativo.BloqueioAdministrativoId;
 import recifecultural.dominio.agenda.evento.Evento;
 import recifecultural.dominio.agenda.evento.Periodo;
 import recifecultural.dominio.agenda.evento.Preco;
 import recifecultural.dominio.agenda.evento.StatusEvento;
+import recifecultural.dominio.agenda.notificacao.Notificacao;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -80,7 +82,7 @@ public class PassosBloqueioAdministrativo {
         LocalDateTime fim = LocalDateTime.parse(fimStr);
 
         Evento eventoConflitante = new Evento(
-                UUID.randomUUID(), contexto.idLocalAtual, "Show", "Curta", "Longa",
+                UUID.randomUUID(), UUID.randomUUID(), contexto.idLocalAtual, "Show", "Curta", "Longa",
                 new Periodo(inicio.plusDays(1), fim.minusDays(1)), null,
                 new Preco(BigDecimal.TEN, BigDecimal.ONE, null)
         );
@@ -103,6 +105,24 @@ public class PassosBloqueioAdministrativo {
             assertNotNull(evento.getMotivoCancelamento());
             assertTrue(evento.getMotivoCancelamento().contains("bloqueio administrativo"));
             verify(contexto.repositorioEvento, atLeastOnce()).atualizar(evento);
+        }
+    }
+
+    @E("os promotores dos eventos cancelados devem receber uma notificação com o contexto {string}")
+    public void osPromotoresDosEventosCanceladosDevemReceberUmaNotificacaoComOContexto(String contextoEsperado) {
+        ArgumentCaptor<Notificacao> captor = ArgumentCaptor.forClass(Notificacao.class);
+        verify(contexto.repositorioNotificacao, atLeastOnce()).salvar(captor.capture());
+
+        List<Notificacao> notificacoesSalvas = captor.getAllValues();
+        assertFalse(notificacoesSalvas.isEmpty(), "Nenhuma notificação foi salva.");
+
+        for (Evento evento : eventosSimuladosNoBanco) {
+            boolean notificacaoEncontrada = notificacoesSalvas.stream().anyMatch(n ->
+                    contextoEsperado.equals(n.getContexto()) &&
+                            evento.getId().equals(n.getIdReferencia()) &&
+                            evento.getPromotorId().equals(n.getUsuarioAlvo())
+            );
+            assertTrue(notificacaoEncontrada, "Faltou a notificação com contexto e referência correta para o evento " + evento.getId());
         }
     }
 

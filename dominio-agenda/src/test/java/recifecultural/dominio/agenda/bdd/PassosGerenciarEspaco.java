@@ -2,13 +2,17 @@ package recifecultural.dominio.agenda.bdd;
 
 import io.cucumber.java.pt.Dado;
 import io.cucumber.java.pt.E;
+import io.cucumber.java.pt.Entao;
 import io.cucumber.java.pt.Então;
 import io.cucumber.java.pt.Quando;
 import recifecultural.dominio.agenda.espaco.Espaco;
 import recifecultural.dominio.agenda.espaco.StatusEspaco;
 import recifecultural.dominio.agenda.espaco.EspacoId;
+import recifecultural.dominio.agenda.espaco.Ocupacao;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -22,6 +26,8 @@ public class PassosGerenciarEspaco {
     private String nomeInput;
     private int capacidadeInput;
     private int ingressosVendidosMock;
+
+    private List<Ocupacao> ocupacoesExistentesMock = new ArrayList<>();
 
     public PassosGerenciarEspaco(ContextoCenario contexto) {
         this.contexto = contexto;
@@ -43,16 +49,14 @@ public class PassosGerenciarEspaco {
         try {
             contexto.idEspacoAtual = contexto.servicoEspaco.cadastrarEspaco(nomeInput, capacidadeInput, new ArrayList<>());
 
-            // Simulando o salvamento para os asserts futuros
             contexto.espaco = new Espaco(nomeInput, capacidadeInput, new ArrayList<>());
             when(contexto.repositorioEspaco.obterPorId(any(EspacoId.class))).thenReturn(Optional.of(contexto.espaco));
-
         } catch (Exception e) {
             contexto.excecaoCapturada = e;
         }
     }
 
-    @Então("o espaco deve ser criado com o status {string}")
+    @Entao("o espaco deve ser criado com o status {string}")
     public void oEspacoDeveSerCriadoComOStatus(String statusEsperado) {
         assertNull(contexto.excecaoCapturada, "Não deveria ter lançado exceção");
         verify(contexto.repositorioEspaco, times(1)).salvar(any(Espaco.class));
@@ -81,25 +85,22 @@ public class PassosGerenciarEspaco {
         }
     }
 
-    @Então("a nova capacidade do teatro deve ser {int} lugares")
+    @Entao("a nova capacidade do teatro deve ser {int} lugares")
     public void aNovaCapacidadeDoTeatroDeveSerLugares(int capacidadeEsperada) {
-        assertNull(contexto.excecaoCapturada);
+        assertNull(contexto.excecaoCapturada, "Exceção inesperada ao reduzir capacidade");
         assertEquals(capacidadeEsperada, contexto.espaco.getCapacidadeMaxima());
         verify(contexto.repositorioEspaco, times(1)).atualizar(contexto.espaco);
-    }
-
-    @Então("o sistema deve bloquear a acao com uma mensagem de {string}")
-    public void oSistemaDeveBloquearAAcaoComUmaMensagemDe(String trechoMensagem) {
-        assertNotNull(contexto.excecaoCapturada);
-        assertInstanceOf(IllegalStateException.class, contexto.excecaoCapturada);
-        assertTrue(contexto.excecaoCapturada.getMessage().contains(trechoMensagem));
     }
 
     @Dado("que o {string} esta {string}")
     public void queOEsta(String nome, String status) {
         contexto.espaco = new Espaco(nome, 500, new ArrayList<>());
+        if ("INTERDITADO".equals(status)) {
+            contexto.espaco.interditar();
+        }
         contexto.idEspacoAtual = contexto.espaco.getId();
         when(contexto.repositorioEspaco.obterPorId(contexto.idEspacoAtual)).thenReturn(Optional.of(contexto.espaco));
+        contexto.excecaoCapturada = null;
     }
 
     @Quando("eu solicito a interdicao do espaco")
@@ -111,10 +112,58 @@ public class PassosGerenciarEspaco {
         }
     }
 
-    @Então("o status do espaco deve mudar para {string}")
+    @Entao("o status do espaco deve mudar para {string}")
     public void oStatusDoEspacoDeveMudarPara(String statusEsperado) {
         assertNull(contexto.excecaoCapturada);
         assertEquals(StatusEspaco.valueOf(statusEsperado), contexto.espaco.getStatus());
         verify(contexto.repositorioEspaco, times(1)).atualizar(contexto.espaco);
+    }
+
+    @E("não há nenhuma ocupação agendada para o dia {string}")
+    public void naoHaNenhumaOcupacaoAgendadaParaODia(String data) {
+        this.ocupacoesExistentesMock.clear();
+        when(contexto.repositorioEspaco.buscarOcupacoesPorPeriodo(any(), any(), any()))
+                .thenReturn(this.ocupacoesExistentesMock);
+    }
+
+    @E("existe uma ocupação no dia {string} das {string} às {string} com {int} min de montagem, {int} min de desmontagem e {int} min de buffer extra")
+    public void existeUmaOcupacaoNoDia(String data, String horaInicio, String horaFim, int montagem, int desmontagem, int buffer) {
+        LocalDateTime inicio = LocalDateTime.parse(data + "T" + horaInicio + ":00");
+        LocalDateTime fim = LocalDateTime.parse(data + "T" + horaFim + ":00");
+
+        Ocupacao ocupacao = new Ocupacao(inicio, fim, montagem, desmontagem, buffer);
+        this.ocupacoesExistentesMock.add(ocupacao);
+
+        when(contexto.repositorioEspaco.buscarOcupacoesPorPeriodo(any(), any(), any()))
+                .thenReturn(this.ocupacoesExistentesMock);
+    }
+
+    @Quando("eu agendo uma pauta no dia {string} das {string} às {string} com {int} min de montagem, {int} min de desmontagem e {int} min de buffer")
+    public void euAgendoUmaPautaNoDia(String data, String horaInicio, String horaFim, int montagem, int desmontagem, int buffer) {
+        LocalDateTime inicio = LocalDateTime.parse(data + "T" + horaInicio + ":00");
+        LocalDateTime fim = LocalDateTime.parse(data + "T" + horaFim + ":00");
+
+        Ocupacao novaOcupacao = new Ocupacao(inicio, fim, montagem, desmontagem, buffer);
+
+        try {
+            contexto.servicoEspaco.agendarEvento(contexto.idEspacoAtual, novaOcupacao);
+        } catch (Exception e) {
+            contexto.excecaoCapturada = e;
+        }
+    }
+
+    @Entao("o agendamento deve ser salvo com sucesso")
+    public void oAgendamentoDeveSerSalvoComSucesso() {
+        assertNull(contexto.excecaoCapturada, "Exceção não esperada: " +
+                (contexto.excecaoCapturada != null ? contexto.excecaoCapturada.getMessage() : ""));
+        verify(contexto.repositorioEspaco, times(1)).salvarOcupacao(eq(contexto.idEspacoAtual), any(Ocupacao.class));
+    }
+
+    @Entao("o sistema deve bloquear a acao com uma mensagem de {string}")
+    public void oSistemaDeveBloquearAAcaoComUmaMensagemDe(String trechoMensagem) {
+        assertNotNull(contexto.excecaoCapturada, "Era esperada uma exceção, mas a ação passou com sucesso.");
+        assertInstanceOf(IllegalStateException.class, contexto.excecaoCapturada);
+        assertTrue(contexto.excecaoCapturada.getMessage().contains(trechoMensagem),
+                "Mensagem esperada: " + trechoMensagem + " | Atual: " + contexto.excecaoCapturada.getMessage());
     }
 }

@@ -5,6 +5,7 @@ import recifecultural.dominio.agenda.espaco.Espaco;
 import recifecultural.dominio.agenda.espaco.IEspacoRepositorio;
 import java.util.List;
 import recifecultural.dominio.agenda.espaco.EspacoId;
+import recifecultural.dominio.agenda.espaco.Ocupacao;
 
 
 public class EspacoServico {
@@ -38,8 +39,17 @@ public class EspacoServico {
 
         espaco.interditar();
         espacoRepositorio.atualizar(espaco);
+    }
 
-        // Aqui ocorreria o Evento de Domínio para notificar os artistas e alterar pautas:
-        // eventoPublicador.publicar(new EspacoInterditadoEvent(espacoId));
+    public void agendarEvento(EspacoId id, Ocupacao novaOcupacao) {
+        Espaco espaco = espacoRepositorio.obterPorId(id)
+                .orElseThrow(() -> new IllegalArgumentException("Espaço não encontrado."));
+
+        List<Ocupacao> ocupacoesConflitantesPotenciais = espacoRepositorio
+                .buscarOcupacoesPorPeriodo(id, novaOcupacao.inicioEfetivo(), novaOcupacao.fimEfetivo());
+
+        espaco.validarDisponibilidade(novaOcupacao, ocupacoesConflitantesPotenciais);
+
+        espacoRepositorio.salvarOcupacao(id, novaOcupacao);
     }
 }

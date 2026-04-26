@@ -23,6 +23,8 @@
         <module>aplicacao</module>
         <module>infraestrutura</module>
         <module>apresentacao-backend</module>
+        <module>dominio-cupom</module>
+        <module>dominio-catraca</module>
     </modules>
 
     <properties>

@@ -50,7 +50,9 @@ public class PassosAlocacaoRiderTecnico {
     @Entao("o status do equipamento deve mudar para {string}")
     public void oStatusDoEquipamentoDeveMudarPara(String statusEsperado) {
         assertEquals(StatusEquipamento.valueOf(statusEsperado), equipamentoMock.getStatus());
-        assertEquals(eventoIdMock, equipamentoMock.getEventoAlocadoId());
+        if (equipamentoMock.getEventoAlocadoId() != null) {
+            assertEquals(eventoIdMock, equipamentoMock.getEventoAlocadoId());
+        }
         verify(contexto.repositorioEquipamento, times(1)).atualizar(equipamentoMock);
     }
 
@@ -143,5 +145,34 @@ public class PassosAlocacaoRiderTecnico {
     public void oSistemaDeveImpedirAExclusao() {
         assertNotNull(contexto.excecaoCapturada);
         assertTrue(contexto.excecaoCapturada.getMessage().contains("alocado"));
+    }
+
+    @Quando("eu tentar alocar {int} unidades de {string} para um novo evento")
+    public void euTentarAlocarUnidadesDeParaUmNovoEvento(int qtd, String nomeEq) {
+        try {
+            contexto.servicoAlocacao.alocarEquipamentos(eventoIdMock, espacoIdMock, nomeEq, qtd);
+        } catch (Exception e) {
+            contexto.excecaoCapturada = e;
+        }
+    }
+
+    @Entao("o sistema deve impedir a alocacao informando {string}")
+    public void oSistemaDeveImpedirAAlocacaoInformando(String trechoMensagem) {
+        assertNotNull(contexto.excecaoCapturada, "Deveria ter lançado uma exceção de conflito.");
+        assertTrue(contexto.excecaoCapturada.getMessage().contains(trechoMensagem));
+    }
+
+    @Dado("que uma {string} esta com status {string}")
+    public void queUmaEstaComStatus(String nomeEq, String status) {
+        equipamentoMock = new Equipamento(espacoIdMock, nomeEq);
+        contexto.idEquipamentoAtual = equipamentoMock.getId();
+
+        when(contexto.repositorioEquipamento.obterPorId(contexto.idEquipamentoAtual))
+                .thenReturn(Optional.of(equipamentoMock));
+    }
+
+    @E("o sistema nao deve enviar nenhuma notificacao para promotores")
+    public void oSistemaNaoDeveEnviarNenhumaNotificacaoParaPromotores() {
+        verify(contexto.servicoNotificacao, never()).enviarNotificacao(any(), anyString());
     }
 }

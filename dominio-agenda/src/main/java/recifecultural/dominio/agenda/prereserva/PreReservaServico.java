@@ -33,10 +33,8 @@ public class PreReservaServico {
         Setor setor = setorRepositorio.obterPorId(SetorId.de(setorId.toString()))
                 .orElseThrow(() -> new IllegalArgumentException("Setor não encontrado."));
 
-        // marcarPreReservado lança IllegalStateException se assento não LIVRE
         setor.preReservar(assentoId);
         setorRepositorio.atualizar(setor);
-        // ^ aqui o JPA pode lançar OptimisticLockException → infraestrutura relança como ConcorrenciaException
 
         PreReserva preReserva = new PreReserva(assentoId, setorId, usuarioId, duracao, agora);
         preReservaRepositorio.salvar(preReserva);

@@ -1,9 +1,7 @@
-package recife.cultural.dominio.catraca;
+package recifecultural.dominio.catraca;
 
 import io.cucumber.java.pt.*;
 import org.junit.jupiter.api.Assertions;
-import org.mockito.Mockito;
-import recifecultural.dominio.catraca.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

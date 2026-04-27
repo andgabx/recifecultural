@@ -43,10 +43,6 @@ public class Setor {
         this.assentos = new ArrayList<>(novosAssentos);
     }
 
-    /**
-     * Pré-reserva um assento. Chamado pelo PreReservaServico.
-     * O versionamento do Assento é controlado pelo JPA via @Version na entidade de infraestrutura.
-     */
     public Assento preReservar(UUID assentoId) {
         Assento assento = assentos.stream()
                 .filter(a -> a.getId().equals(assentoId))

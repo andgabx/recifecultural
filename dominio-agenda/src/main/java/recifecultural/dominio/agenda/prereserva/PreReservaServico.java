@@ -20,16 +20,7 @@ public class PreReservaServico {
         this.setorRepositorio = setorRepositorio;
     }
 
-    /**
-     * Tenta pré-reservar um assento.
-     * O controle de concorrência é garantido pela combinação:
-     *   1. verificação de pré-reservas ativas no domínio (guard rápido)
-     *   2. @Version no AssentoJpaEntity (optimistic locking no JPA)
-     *
-     * Se dois threads passam pela verificação simultaneamente, o JPA
-     * garante que apenas um commit terá sucesso. A infraestrutura captura
-     * OptimisticLockException e relança como ConcorrenciaException.
-     */
+
     public PreReservaId reservar(UUID setorId, UUID assentoId, UUID usuarioId,
                                  DuracaoPreReserva duracao) {
         LocalDateTime agora = LocalDateTime.now();

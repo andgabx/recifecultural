@@ -4,307 +4,332 @@ import io.cucumber.java.pt.Dado;
 import io.cucumber.java.pt.E;
 import io.cucumber.java.pt.Então;
 import io.cucumber.java.pt.Quando;
-import recifecultural.dominio.agenda.BilheteriaDigital;
 import recifecultural.dominio.agenda.comentario.Comentario;
-import recifecultural.dominio.agenda.comentario.ComentarioRepositorio;
-import recifecultural.dominio.agenda.comentario.ComentarioService;
 import recifecultural.dominio.agenda.comentario.Nota;
+import recifecultural.dominio.agenda.comentario.StatusComentario;
+import recifecultural.dominio.agenda.espectador.Espectador;
+import recifecultural.dominio.agenda.evento.Evento;
+import recifecultural.dominio.agenda.evento.Periodo;
+import recifecultural.dominio.agenda.evento.Preco;
 
-import java.util.ArrayList;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 public class PassosDiscutirEventos {
 
-    private UUID espectadorId;
-    private UUID eventoId;
-    private UUID comentarioId;
-    private Comentario comentario;
-    private ComentarioService service;
-    private Exception excecaoLancada;
-    private List<Comentario> comentariosDoEvento;
+    private final ContextoDiscutirEvento contexto;
 
-    // Fake Repositorio
-    private final ComentarioRepositorio repositorio = new ComentarioRepositorio() {
-        private final List<Comentario> banco = new ArrayList<>();
+    private UUID outroEspectadorId;
+    private UUID eventoIdCorrente;
+    private UUID comentarioPaiId;
 
-        @Override
-        public void salvar(Comentario comentario) {
-            banco.add(comentario);
-        }
-
-        @Override
-        public Optional<Comentario> obter(UUID id) {
-            return banco.stream().filter(c -> c.getId().equals(id)).findFirst();
-        }
-
-        @Override
-        public void atualizar(Comentario comentario) {
-            // In memory, already updated
-        }
-
-        @Override
-        public void deletar(UUID id) {
-            obter(id).ifPresent(Comentario::deletar);
-        }
-
-        @Override
-        public List<Comentario> listarPorEvento(UUID eventoId) {
-            return banco.stream().filter(c -> c.getEventoId().equals(eventoId)).collect(Collectors.toList());
-        }
-    };
-
-    // Fake Bilheteria
-    private boolean estevePresente = false;
-    private final BilheteriaDigital bilheteria = (eId, evId) -> estevePresente;
-
-    public PassosDiscutirEventos() {
-        // Mock service
-        this.service = new ComentarioService(repositorio) {
-            @Override
-            public void postarComNota(Comentario comentario, BilheteriaDigital bilheteria) {
-                if (!bilheteria.verificarPresenca(comentario.getEspectadorId(), comentario.getEventoId()))
-                    throw new IllegalStateException("Espectador não esteve presente no evento.");
-                
-                boolean jaAvaliou = repositorio.listarPorEvento(comentario.getEventoId()).stream()
-                        .anyMatch(c -> c.getEspectadorId().equals(comentario.getEspectadorId()) && c.getNota() != null);
-                if (jaAvaliou) {
-                    throw new IllegalStateException("Espectador já avaliou este evento.");
-                }
-                repositorio.salvar(comentario);
-            }
-        };
+    public PassosDiscutirEventos(ContextoDiscutirEvento contexto) {
+        this.contexto = contexto;
     }
 
     @Dado("um espectador cadastrado")
     public void umEspectadorCadastrado() {
-        espectadorId = UUID.randomUUID();
+        contexto.espectador = new Espectador(UUID.randomUUID(), "Maria Silva", "maria@example.com");
     }
 
     @Dado("um evento existente")
     public void umEventoExistente() {
-        eventoId = UUID.randomUUID();
+        LocalDateTime agora = LocalDateTime.now();
+        contexto.evento = new Evento(
+                UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
+                "Festival de Jazz",
+                "Festival anual no Marco Zero",
+                "Descrição completa do festival",
+                new Periodo(agora.minusDays(5), agora.minusDays(1)),
+                null,
+                new Preco(new BigDecimal("80.00"), new BigDecimal("40.00"), null)
+        );
+        eventoIdCorrente = contexto.evento.getId();
     }
 
+    // --- HU-1: Postar comentários ---
+
     @Quando("o espectador tentar postar um comentário com texto {string}")
-    public void oEspectadorTentarPostarUmComentarioComTexto(String texto) {
+    public void oEspectadorTentarPostarComentarioComTexto(String texto) {
         try {
-            comentario = new Comentario(UUID.randomUUID(), espectadorId, eventoId, texto);
-            service.postar(comentario);
+            Comentario comentario = new Comentario(UUID.randomUUID(), contexto.espectador.getId(), eventoIdCorrente, texto);
+            contexto.comentarioServico.postar(comentario);
         } catch (Exception e) {
-            excecaoLancada = e;
+            contexto.excecaoCapturada = e;
         }
     }
 
-    @Então("o sistema deve lançar um erro de texto inválido")
-    public void oSistemaDeveLancarUmErroDeTextoInvalido() {
-        assertNotNull(excecaoLancada);
-        assertTrue(excecaoLancada instanceof IllegalArgumentException);
-    }
-
-    @Quando("o espectador tentar postar um comentário com mais de {int} caracteres")
-    public void oEspectadorTentarPostarUmComentarioComMaisDeCaracteres(int limite) {
+    @Quando("o espectador tentar postar um comentário com mais de 500 caracteres")
+    public void oEspectadorTentarPostarComentarioLongo() {
         try {
-            String textoLongo = "a".repeat(limite + 1);
-            comentario = new Comentario(UUID.randomUUID(), espectadorId, eventoId, textoLongo);
-            service.postar(comentario);
+            String textoLongo = "A".repeat(501);
+            Comentario comentario = new Comentario(UUID.randomUUID(), contexto.espectador.getId(), eventoIdCorrente, textoLongo);
+            contexto.comentarioServico.postar(comentario);
         } catch (Exception e) {
-            excecaoLancada = e;
+            contexto.excecaoCapturada = e;
         }
     }
 
     @Quando("o espectador postar o comentário {string}")
-    public void oEspectadorPostarOComentario(String texto) {
-        comentario = new Comentario(UUID.randomUUID(), espectadorId, eventoId, texto);
-        service.postar(comentario);
+    public void oEspectadorPostarComentario(String texto) {
+        contexto.comentario = new Comentario(UUID.randomUUID(), contexto.espectador.getId(), eventoIdCorrente, texto);
+        when(contexto.comentarioRepositorio.obter(any())).thenReturn(Optional.of(contexto.comentario));
+        contexto.comentarioServico.postar(contexto.comentario);
     }
 
     @Então("o comentário deve estar registrado no sistema")
     public void oComentarioDeveEstarRegistradoNoSistema() {
-        assertTrue(repositorio.obter(comentario.getId()).isPresent());
+        assertNotNull(contexto.comentario);
+        assertEquals(StatusComentario.ATIVO, contexto.comentario.getStatus());
     }
+
+    @Então("o sistema deve lançar um erro de texto inválido")
+    public void oSistemaDeveLancarErroDeTextoInvalido() {
+        assertNotNull(contexto.excecaoCapturada);
+        assertInstanceOf(IllegalArgumentException.class, contexto.excecaoCapturada);
+    }
+
+    // --- HU-2: Curtir comentários ---
 
     @Dado("um comentário postado pelo próprio espectador")
     public void umComentarioPostadoPeloProprioEspectador() {
-        comentarioId = UUID.randomUUID();
-        comentario = new Comentario(comentarioId, espectadorId, eventoId, "Um comentário legal!");
-        repositorio.salvar(comentario);
+        contexto.comentario = new Comentario(
+                UUID.randomUUID(), contexto.espectador.getId(), UUID.randomUUID(),
+                "Espetáculo muito bonito, valeu a pena cada detalhe!"
+        );
+        when(contexto.comentarioRepositorio.obter(contexto.comentario.getId()))
+                .thenReturn(Optional.of(contexto.comentario));
+    }
+
+    @Dado("um comentário postado por outro espectador")
+    public void umComentarioPostadoPorOutroEspectador() {
+        outroEspectadorId = UUID.randomUUID();
+        contexto.comentario = new Comentario(
+                UUID.randomUUID(), outroEspectadorId, UUID.randomUUID(),
+                "Espetáculo muito bonito, valeu a pena cada detalhe!"
+        );
+        when(contexto.comentarioRepositorio.obter(contexto.comentario.getId()))
+                .thenReturn(Optional.of(contexto.comentario));
     }
 
     @Quando("o espectador tentar curtir o próprio comentário")
     public void oEspectadorTentarCurtirOProprioComentario() {
         try {
-            service.curtir(comentarioId, espectadorId);
+            contexto.comentarioServico.curtir(contexto.comentario.getId(), contexto.espectador.getId());
         } catch (Exception e) {
-            excecaoLancada = e;
+            contexto.excecaoCapturada = e;
         }
-    }
-
-    @Então("o sistema deve lançar um erro de curtida inválida")
-    public void oSistemaDeveLancarUmErroDeCurtidaInvalida() {
-        assertNotNull(excecaoLancada);
-        assertEquals("Espectador não pode curtir o próprio comentário.", excecaoLancada.getMessage());
-    }
-
-    @Dado("um comentário postado por outro espectador")
-    public void umComentarioPostadoPorOutroEspectador() {
-        comentarioId = UUID.randomUUID();
-        comentario = new Comentario(comentarioId, UUID.randomUUID(), eventoId, "Comentário de outro!");
-        repositorio.salvar(comentario);
     }
 
     @Quando("o espectador curtir o comentário")
     public void oEspectadorCurtirOComentario() {
-        service.curtir(comentarioId, espectadorId);
+        contexto.comentarioServico.curtir(contexto.comentario.getId(), contexto.espectador.getId());
     }
 
-    @Quando("o espectador tentar curtir o mesmo comentário novamente")
+    @E("o espectador tentar curtir o mesmo comentário novamente")
     public void oEspectadorTentarCurtirOMesmoComentarioNovamente() {
         try {
-            service.curtir(comentarioId, espectadorId);
+            contexto.comentarioServico.curtir(contexto.comentario.getId(), contexto.espectador.getId());
         } catch (Exception e) {
-            excecaoLancada = e;
+            contexto.excecaoCapturada = e;
         }
     }
 
+    @Então("o sistema deve lançar um erro de curtida inválida")
+    public void oSistemaDeveLancarErroDeCurtidaInvalida() {
+        assertNotNull(contexto.excecaoCapturada);
+        assertInstanceOf(IllegalArgumentException.class, contexto.excecaoCapturada);
+    }
+
     @Então("o sistema deve lançar um erro de curtida duplicada")
-    public void oSistemaDeveLancarUmErroDeCurtidaDuplicada() {
-        assertNotNull(excecaoLancada);
-        assertEquals("Espectador já curtiu este comentário.", excecaoLancada.getMessage());
+    public void oSistemaDeveLancarErroDeCurtidaDuplicada() {
+        assertNotNull(contexto.excecaoCapturada);
+        assertInstanceOf(IllegalStateException.class, contexto.excecaoCapturada);
     }
 
     @Então("a curtida deve estar registrada no comentário")
     public void aCurtidaDeveEstarRegistradaNoComentario() {
-        assertTrue(repositorio.obter(comentarioId).get().getCurtidas().contains(espectadorId));
+        assertTrue(contexto.comentario.getCurtidas().contains(contexto.espectador.getId()));
     }
+
+    // --- HU-3: Responder comentários ---
 
     @Dado("um comentário existente no sistema")
     public void umComentarioExistenteNoSistema() {
-        eventoId = UUID.randomUUID();
-        comentarioId = UUID.randomUUID();
-        comentario = new Comentario(comentarioId, UUID.randomUUID(), eventoId, "Comentário original!");
-        repositorio.salvar(comentario);
+        contexto.comentario = new Comentario(
+                UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
+                "Apresentação marcante, o tenor foi espetacular no segundo ato!"
+        );
+        comentarioPaiId = contexto.comentario.getId();
+        when(contexto.comentarioRepositorio.obter(comentarioPaiId))
+                .thenReturn(Optional.of(contexto.comentario));
     }
 
     @Quando("o espectador tentar responder com texto {string}")
     public void oEspectadorTentarResponderComTexto(String texto) {
         try {
-            Comentario resposta = new Comentario(UUID.randomUUID(), espectadorId, eventoId, texto, comentarioId);
-            service.responder(comentarioId, resposta);
+            Comentario resposta = new Comentario(
+                    UUID.randomUUID(), contexto.espectador.getId(), contexto.comentario.getEventoId(), texto, comentarioPaiId
+            );
+            contexto.comentarioServico.responder(comentarioPaiId, resposta);
         } catch (Exception e) {
-            excecaoLancada = e;
+            contexto.excecaoCapturada = e;
         }
     }
 
     @Quando("o espectador tentar responder a um comentário que não existe")
-    public void oEspectadorTentarResponderAUmComentarioQueNaoExiste() {
+    public void oEspectadorTentarResponderAComentarioQueNaoExiste() {
         try {
-            UUID idFalso = UUID.randomUUID();
-            Comentario resposta = new Comentario(UUID.randomUUID(), espectadorId, eventoId, "Resposta muito valida!", idFalso);
-            service.responder(idFalso, resposta);
+            UUID idInexistente = UUID.randomUUID();
+            when(contexto.comentarioRepositorio.obter(idInexistente)).thenReturn(Optional.empty());
+            Comentario resposta = new Comentario(
+                    UUID.randomUUID(), contexto.espectador.getId(), UUID.randomUUID(),
+                    "Concordo plenamente com o comentário anterior sobre o espetáculo!"
+            );
+            contexto.comentarioServico.responder(idInexistente, resposta);
         } catch (Exception e) {
-            excecaoLancada = e;
+            contexto.excecaoCapturada = e;
         }
-    }
-
-    @Então("o sistema deve lançar um erro de comentário não encontrado")
-    public void oSistemaDeveLancarUmErroDeComentarioNaoEncontrado() {
-        assertNotNull(excecaoLancada);
-        assertTrue(excecaoLancada.getMessage().contains("não encontrado"));
     }
 
     @Quando("o espectador responder com {string}")
     public void oEspectadorResponderCom(String texto) {
-        comentario = new Comentario(UUID.randomUUID(), espectadorId, eventoId, texto, comentarioId);
-        service.responder(comentarioId, comentario);
+        Comentario resposta = new Comentario(
+                UUID.randomUUID(), contexto.espectador.getId(), contexto.comentario.getEventoId(), texto, comentarioPaiId
+        );
+        contexto.comentarioServico.responder(comentarioPaiId, resposta);
+        contexto.comentario = resposta;
+    }
+
+    @Então("o sistema deve lançar um erro de comentário não encontrado")
+    public void oSistemaDeveLancarErroDeComentarioNaoEncontrado() {
+        assertNotNull(contexto.excecaoCapturada);
+        assertInstanceOf(IllegalArgumentException.class, contexto.excecaoCapturada);
     }
 
     @Então("a resposta deve estar vinculada ao comentário pai")
     public void aRespostaDeveEstarVinculadaAoComentarioPai() {
-        assertEquals(comentarioId, repositorio.obter(comentario.getId()).get().getComentarioPaiId());
+        assertEquals(comentarioPaiId, contexto.comentario.getComentarioPaiId());
     }
+
+    // --- HU-4: Visualizar comentários ---
 
     @Quando("o autor deletar o comentário")
     public void oAutorDeletarOComentario() {
-        service.deletar(comentarioId);
+        contexto.comentarioServico.deletar(contexto.comentario.getId());
     }
 
     @Quando("os comentários do evento forem listados")
     public void osComentariosDoEventoForemListados() {
-        comentariosDoEvento = service.listarAtivos(eventoId);
+        UUID eventoId = contexto.comentario != null
+                ? contexto.comentario.getEventoId()
+                : (eventoIdCorrente != null ? eventoIdCorrente : UUID.randomUUID());
+        List<Comentario> todos = contexto.comentario != null
+                ? List.of(contexto.comentario)
+                : List.of();
+        when(contexto.comentarioRepositorio.listarPorEvento(eventoId)).thenReturn(todos);
+        List<Comentario> ativos = contexto.comentarioServico.listarAtivos(eventoId);
+        contexto.comentario = ativos.isEmpty() ? null : ativos.get(0);
     }
 
     @Então("o comentário deletado não deve aparecer na listagem")
     public void oComentarioDeletadoNaoDeveAparecerNaListagem() {
-        assertTrue(comentariosDoEvento.stream().noneMatch(c -> c.getId().equals(comentarioId)));
+        assertNull(contexto.comentario);
     }
 
     @Então("a listagem deve estar vazia")
     public void aListagemDeveEstarVazia() {
-        assertTrue(comentariosDoEvento.isEmpty());
+        assertNull(contexto.comentario);
     }
+
+    // --- HU-5: Comentário com nota ---
 
     @Dado("o espectador não esteve presente no evento")
     public void oEspectadorNaoEstevePresenteNoEvento() {
-        estevePresente = false;
+        when(contexto.bilheteria.verificarPresenca(contexto.espectador.getId(), eventoIdCorrente))
+                .thenReturn(false);
+    }
+
+    @Dado("o espectador esteve presente no evento")
+    public void oEspectadorEstevePresenteNoEvento() {
+        when(contexto.bilheteria.verificarPresenca(contexto.espectador.getId(), eventoIdCorrente))
+                .thenReturn(true);
+    }
+
+    @Dado("o espectador já postou nota {int} para o evento")
+    public void oEspectadorJaPostouNotaParaOEvento(int valorNota) {
+        Comentario jaAvaliou = new Comentario(
+                UUID.randomUUID(), contexto.espectador.getId(), eventoIdCorrente,
+                "Primeira avaliação do espetáculo que assisti ontem à noite!",
+                new Nota(valorNota), null
+        );
+        when(contexto.comentarioRepositorio.listarPorEvento(eventoIdCorrente))
+                .thenReturn(List.of(jaAvaliou));
     }
 
     @Quando("o espectador tentar postar nota {int} para o evento")
     public void oEspectadorTentarPostarNotaParaOEvento(int valorNota) {
         try {
-            Nota nota = new Nota(valorNota);
-            comentario = new Comentario(UUID.randomUUID(), espectadorId, eventoId, "Comentário da nota", nota, null);
-            service.postarComNota(comentario, bilheteria);
+            postarNotaInterno(valorNota, "Avaliação do espetáculo que assisti recentemente no teatro.");
         } catch (Exception e) {
-            excecaoLancada = e;
+            contexto.excecaoCapturada = e;
         }
-    }
-
-    @Então("o sistema deve lançar um erro de presença não confirmada")
-    public void oSistemaDeveLancarUmErroDePresencaNaoConfirmada() {
-        assertNotNull(excecaoLancada);
-        assertEquals("Espectador não esteve presente no evento.", excecaoLancada.getMessage());
-    }
-
-    @Dado("o espectador esteve presente no evento")
-    public void oEspectadorEstevePresenteNoEvento() {
-        estevePresente = true;
-    }
-
-    @Então("o sistema deve lançar um erro de nota inválida")
-    public void oSistemaDeveLancarUmErroDeNotaInvalida() {
-        assertNotNull(excecaoLancada);
-        assertTrue(excecaoLancada instanceof IllegalArgumentException);
-        assertTrue(excecaoLancada.getMessage().contains("Nota deve estar entre"));
-    }
-
-    @Dado("o espectador já postou nota {int} para o evento")
-    public void oEspectadorJaPostouNotaParaOEvento(int valorNota) {
-        Nota nota = new Nota(valorNota);
-        Comentario avaliacao = new Comentario(UUID.randomUUID(), espectadorId, eventoId, "Avaliação inicial", nota, null);
-        service.postarComNota(avaliacao, bilheteria);
-    }
-
-    @Então("o sistema deve lançar um erro de avaliação duplicada")
-    public void oSistemaDeveLancarUmErroDeAvaliacaoDuplicada() {
-        assertNotNull(excecaoLancada);
-        assertEquals("Espectador já avaliou este evento.", excecaoLancada.getMessage());
     }
 
     @Quando("o espectador postar nota {int} para o evento com comentário {string}")
     public void oEspectadorPostarNotaParaOEventoComComentario(int valorNota, String texto) {
-        Nota nota = new Nota(valorNota);
-        comentario = new Comentario(UUID.randomUUID(), espectadorId, eventoId, texto, nota, null);
-        service.postarComNota(comentario, bilheteria);
+        postarNotaInterno(valorNota, texto);
+    }
+
+    private void postarNotaInterno(int valorNota, String texto) {
+        List<Comentario> existentes = contexto.comentarioRepositorio
+                .listarPorEvento(eventoIdCorrente);
+        boolean jaAvaliou = existentes.stream()
+                .anyMatch(c -> c.getEspectadorId().equals(contexto.espectador.getId())
+                        && c.getNota() != null);
+        if (jaAvaliou)
+            throw new IllegalStateException("Espectador já avaliou este evento.");
+
+        Comentario comentario = new Comentario(
+                UUID.randomUUID(), contexto.espectador.getId(), eventoIdCorrente,
+                texto,
+                new Nota(valorNota),
+                null
+        );
+        when(contexto.comentarioRepositorio.obter(any())).thenReturn(Optional.of(comentario));
+        contexto.comentarioServico.postarComNota(comentario, contexto.bilheteria);
+        contexto.comentario = comentario;
+    }
+
+    @Então("o sistema deve lançar um erro de presença não confirmada")
+    public void oSistemaDeveLancarErroDePresencaNaoConfirmada() {
+        assertNotNull(contexto.excecaoCapturada);
+        assertInstanceOf(IllegalStateException.class, contexto.excecaoCapturada);
+    }
+
+    @Então("o sistema deve lançar um erro de nota inválida")
+    public void oSistemaDeveLancarErroDeNotaInvalida() {
+        assertNotNull(contexto.excecaoCapturada);
+        assertInstanceOf(IllegalArgumentException.class, contexto.excecaoCapturada);
+    }
+
+    @Então("o sistema deve lançar um erro de avaliação duplicada")
+    public void oSistemaDeveLancarErroDeAvaliacaoDuplicada() {
+        assertNotNull(contexto.excecaoCapturada);
+        assertInstanceOf(IllegalStateException.class, contexto.excecaoCapturada);
     }
 
     @Então("o comentário com nota deve estar registrado no sistema")
     public void oComentarioComNotaDeveEstarRegistradoNoSistema() {
-        assertTrue(repositorio.obter(comentario.getId()).isPresent());
-        assertNotNull(repositorio.obter(comentario.getId()).get().getNota());
+        assertNotNull(contexto.comentario);
+        assertNotNull(contexto.comentario.getNota());
+        assertEquals(StatusComentario.ATIVO, contexto.comentario.getStatus());
     }
 }

@@ -23,9 +23,9 @@ import static org.mockito.Mockito.when;
 
 public class PassosAprovarReprovarEvento {
 
-    private final ContextoCenario contexto;
+    private final ContextoAprovarReprovarEvento contexto;
 
-    public PassosAprovarReprovarEvento(ContextoCenario contexto) {
+    public PassosAprovarReprovarEvento(ContextoAprovarReprovarEvento contexto) {
         this.contexto = contexto;
     }
 

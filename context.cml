@@ -7,6 +7,7 @@ eaContextMap RecifeCulturalMap {
     contains AcessibilidadeContext
     contains NotificacaoContext
     contains AgendaContext
+    contains Agenda
     contains BilheteriaContext
     contains FinanceiroContext
 
@@ -47,7 +48,9 @@ eaContextMap RecifeCulturalMap {
     }
 }
 
-BoundedContext AgendaContext {
+Domain RecifeCultural {}
+
+BoundedContext AgendaContext implements RecifeCultural {
     domainVisionStatement = "Responsável pela gestão dos espaços culturais, submissão de eventos e suas aprovações."
     type = APPLICATION
 
@@ -112,6 +115,47 @@ BoundedContext AgendaContext {
                 void aprovar(UUID id);
                 void reprovar(UUID id, @FeedbackReprovacao feedback);
                 void deletar(UUID id);
+            }
+        }
+
+        Aggregate Espaco {
+            Entity Espaco {
+                aggregateRoot
+
+                @EspacoId id
+                String nome
+                Integer capacidade
+                StatusEspaco status
+
+                void ativar();
+                void desativar();
+            }
+
+            ValueObject EspacoId {
+                UUID valor
+            }
+
+            ValueObject Ocupacao {
+                LocalDateTime inicio
+                LocalDateTime fim
+            }
+
+            enum StatusEspaco {
+                ATIVO, INATIVO
+            }
+
+            Repository EspacoRepository {
+                void salvar(@Espaco espaco);
+                @Espaco buscarPorId(@EspacoId id);
+                List<@Espaco> listarAtivos();
+                void atualizar(@Espaco espaco);
+            }
+
+            Service EspacoServico {
+                @Espaco criar(String nome, Integer capacidade);
+                void ativar(@EspacoId id);
+                void desativar(@EspacoId id);
+                @Espaco buscar(@EspacoId id);
             }
         }
     }
@@ -467,6 +511,60 @@ BoundedContext FinanceiroContext {
                 @ResultadoRegistroDespesa registrarDespesa(@OrcamentoId id, String descricao, BigDecimal valor, @CategoriaDespesa categoria);
                 @IndicadoresDesempenho calcularIndicadores(@Periodo periodo, int capacidadeTotal);
                 @ComparativoPeriodos compararPeriodos(@Periodo anterior, @Periodo atual, int capacidadeTotal);
+            }
+        }
+    }
+}
+
+BoundedContext Agenda implements RecifeCultural {
+    domainVisionStatement = "Responsável pelo gerenciamento de equipamentos técnicos dos espaços culturais e alocação de rider técnico para apresentações."
+    type = APPLICATION
+
+    Module AgendaEquipamentoModule {
+        Aggregate EquipamentoAggregate {
+            Entity Equipamento {
+                aggregateRoot
+
+                @EquipamentoId id
+                @EspacoId espacoId
+                String nome
+                String descricao
+                StatusEquipamento status
+
+                void ativar();
+                void desativar();
+            }
+
+            ValueObject EquipamentoId {
+                UUID valor
+            }
+
+            ValueObject EspacoId {
+                UUID valor
+            }
+
+            enum StatusEquipamento {
+                DISPONIVEL, EM_USO, MANUTENCAO, INATIVO
+            }
+
+            Repository EquipamentoRepository {
+                void salvar(@Equipamento equipamento);
+                @Equipamento buscarPorId(@EquipamentoId id);
+                List<@Equipamento> listarPorEspaco(@EspacoId espacoId);
+                List<@Equipamento> listarDisponiveis(@EspacoId espacoId);
+                void atualizar(@Equipamento equipamento);
+            }
+
+            Service EquipamentoServico {
+                @Equipamento cadastrar(@EspacoId espacoId, String nome, String descricao);
+                void ativar(@EquipamentoId id);
+                void desativar(@EquipamentoId id);
+                List<@Equipamento> listarDisponiveis(@EspacoId espacoId);
+            }
+
+            Service AlocacaoRiderTecnicoServico {
+                void alocar(@EquipamentoId equipamentoId, UUID apresentacaoId);
+                void liberar(@EquipamentoId equipamentoId);
             }
         }
     }

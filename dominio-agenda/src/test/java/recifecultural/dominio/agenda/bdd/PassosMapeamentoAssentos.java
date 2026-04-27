@@ -176,4 +176,30 @@ public class PassosMapeamentoAssentos {
         assertEquals(StatusAssento.valueOf(status), assentoMock.getStatus());
         assertEquals(StatusPreReserva.CANCELADA, prAtiva.getStatus());
     }
+
+    @Quando("o usuário {string} tenta pré-reservar o assento {string}")
+    public void oUsuarioTentaPreReservarOAssento(String usuario, String assentoCodigo) {
+        try {
+            preReservaServico.reservar(setorIdMock, assentoIdMock, UUID.randomUUID(), new DuracaoPreReserva(java.time.Duration.ofMinutes(10)));
+        } catch (Exception e) {
+            excecaoLancada = e;
+        }
+    }
+
+    @Então("o sistema deve lançar um erro de assento não disponível")
+    public void oSistemaDeveLancarUmErroDeAssentoNaoDisponivel() {
+        assertNotNull(excecaoLancada);
+        assertTrue(excecaoLancada instanceof IllegalStateException);
+        assertTrue(excecaoLancada.getMessage().contains("não está disponível"));
+    }
+
+    @Quando("o administrador bloquear o assento {string}")
+    public void oAdministradorBloquearOAssento(String assentoCodigo) {
+        setorMock.bloquearAssento(assentoIdMock);
+    }
+
+    @Quando("a compra for confirmada e o assento {string} for ocupado")
+    public void aCompraForConfirmadaEOAssentoForOcupado(String assentoCodigo) {
+        setorMock.ocuparAssento(assentoIdMock);
+    }
 }

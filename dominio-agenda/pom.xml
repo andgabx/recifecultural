@@ -46,11 +46,5 @@
             <version>5.17.0</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>br.com.cesar</groupId>
-            <artifactId>recifecultural-dominio-artista</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 </project>

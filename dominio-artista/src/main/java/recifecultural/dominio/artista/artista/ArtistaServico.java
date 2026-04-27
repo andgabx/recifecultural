@@ -40,6 +40,7 @@ public class ArtistaServico {
     public void inativar(ArtistaId artistaId) {
         Artista artista = artistaRepositorio.obterPorId(artistaId)
                 .orElseThrow(() -> new IllegalArgumentException("Artista não encontrado."));
+                
         artista.inativar();
         artistaRepositorio.atualizar(artista);
     }

@@ -18,6 +18,7 @@
 
     <modules>
         <module>dominio-compartilhado</module>
+        <module>dominio-artista</module>
         <module>dominio-agenda</module>
         <module>dominio-ingressos</module>
         <module>dominio-financeiro</module>

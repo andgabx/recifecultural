@@ -408,7 +408,7 @@ BoundedContext BilheteriaContext {
     domainVisionStatement = "Responsável pela venda de ingressos, geração de QR code e reembolso escalonado por proximidade da data do espetáculo."
     type = APPLICATION
 
-    Module BilheteriaModule {
+    Module IngressoModule {
         Aggregate IngressoAggregate {
             Entity Ingresso {
                 aggregateRoot

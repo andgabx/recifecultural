@@ -34,3 +34,9 @@ Funcionalidade: Aplicação de Cupom de Desconto Dinâmico
   Cenário: Falha ao usar cupom com data de validade expirada (Time Travel)
     Quando o espectador com CPF "11122233344" tenta aplicar o cupom "CULTURA20" em um ingresso de "TEATRO" no valor de 150 reais na data "01/01/2027"
     Então o sistema deve negar a aplicação com o erro "Cupom expirado ou ainda não iniciado."
+
+  Cenário: Integração - Serviço de Compras calcula desconto e gera o ingresso final
+    Dado que o sistema possui o cupom "PROMO20" com 20% de desconto
+    Quando o espectador com CPF "11122233344" compra um ingresso da categoria "TEATRO" com valor base de 150.0 reais usando o cupom "PROMO20"
+    Então o sistema valida o desconto com sucesso
+    E o ingresso deve ser salvo no banco de dados com o valor final pago de 120.0 reais

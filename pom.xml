@@ -21,6 +21,7 @@
         <module>dominio-agenda</module>
         <module>dominio-ingressos</module>
         <module>dominio-financeiro</module>
+        <module>dominio-patrocinio</module>
         <module>aplicacao</module>
         <module>infraestrutura</module>
         <module>apresentacao-backend</module>

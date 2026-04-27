@@ -10,6 +10,7 @@ eaContextMap RecifeCulturalMap {
     contains Agenda
     contains BilheteriaContext
     contains FinanceiroContext
+    contains PatrocinioContext
 
     BloqueioAdministrativoContext [U, OHS, PL] -> [D, ACL] NotificacaoContext {
         implementationTechnology = "Eventos de Domínio (Mensageria)"
@@ -39,11 +40,23 @@ eaContextMap RecifeCulturalMap {
         implementationTechnology = "Eventos de Domínio (Mensageria)"
     }
 
+    AgendaContext [U, OHS, PL] -> [D, ACL] PatrocinioContext {
+        implementationTechnology = "Eventos de Domínio (Mensageria)"
+    }
+
     BilheteriaContext [U, OHS, PL] -> [D, ACL] NotificacaoContext {
         implementationTechnology = "Eventos de Domínio (Mensageria)"
     }
 
     BilheteriaContext [U, OHS, PL] -> [D, ACL] FinanceiroContext {
+        implementationTechnology = "Eventos de Domínio (Mensageria)"
+    }
+
+    PatrocinioContext [U, OHS, PL] -> [D, ACL] NotificacaoContext {
+        implementationTechnology = "Eventos de Domínio (Mensageria)"
+    }
+
+    PatrocinioContext [U, OHS, PL] -> [D, ACL] BilheteriaContext {
         implementationTechnology = "Eventos de Domínio (Mensageria)"
     }
 }
@@ -616,6 +629,92 @@ BoundedContext Agenda implements RecifeCultural {
             Service AlocacaoRiderTecnicoServico {
                 void alocar(@EquipamentoId equipamentoId, UUID apresentacaoId);
                 void liberar(@EquipamentoId equipamentoId);
+            }
+        }
+    }
+}
+
+BoundedContext PatrocinioContext implements RecifeCultural {
+    domainVisionStatement = "Responsável por vincular patrocinadores a eventos aprovados, controlando exclusividade por categoria, naming rights para o patrocinador master, cancelamentos com reembolso escalonado e subsídio de ingresso social com piso mínimo."
+    type = APPLICATION
+
+    Module PatrocinioModule {
+
+        Aggregate PatrocinioAggregate {
+
+            Entity Patrocinio {
+                aggregateRoot
+
+                @PatrocinioId id
+                @EventoId eventoId
+                String patrocinadorNome
+                String categoriaPatrocinio
+                TipoPatrocinio tipo
+                ModalidadeContribuicao modalidade
+                BigDecimal valorContribuicao
+                LocalDateTime dataEvento
+                StatusPatrocinio status
+                BigDecimal valorReembolsado
+                BigDecimal multaAplicada
+
+                void ativar();
+                void encerrar();
+                @ResultadoCancelamento cancelarPorEvento(LocalDateTime agora);
+                @ResultadoCancelamento cancelarPorPatrocinador(LocalDateTime agora);
+                @ResultadoSubsidio calcularSubsidio(BigDecimal precoSocialAtual);
+            }
+
+            ValueObject PatrocinioId { UUID valor }
+            ValueObject EventoId     { UUID valor }
+
+            ValueObject ResultadoCancelamento {
+                BigDecimal valorReembolsado
+                BigDecimal multaAplicada
+                String motivo
+            }
+
+            ValueObject ResultadoSubsidio {
+                BigDecimal novoPrecoSocial
+                boolean pisoAplicado
+            }
+
+            enum TipoPatrocinio {
+                MASTER, ASSOCIADO
+            }
+
+            enum StatusPatrocinio {
+                PROPOSTA, ATIVO, ENCERRADO, CANCELADO_EVENTO, CANCELADO_PATROCINADOR
+            }
+
+            enum ModalidadeContribuicao {
+                FINANCEIRO, SUBSIDIO_INGRESSO_SOCIAL
+            }
+
+            Repository IPatrocinioRepositorio {
+                void salvar(@Patrocinio patrocinio);
+                @Patrocinio buscarPorId(@PatrocinioId id);
+                List<@Patrocinio> buscarPorEvento(@EventoId eventoId);
+                @Patrocinio buscarMasterPorEvento(@EventoId eventoId);
+                @Patrocinio buscarPorEventoECategoria(@EventoId eventoId, String categoria);
+                void atualizar(@Patrocinio patrocinio);
+            }
+
+            DomainService PatrocinioServico {
+                @Patrocinio criar(
+                    @EventoId eventoId,
+                    String patrocinadorNome,
+                    String categoriaPatrocinio,
+                    TipoPatrocinio tipo,
+                    ModalidadeContribuicao modalidade,
+                    BigDecimal valorContribuicao,
+                    LocalDateTime dataEvento,
+                    boolean eventoAprovado
+                );
+                void ativar(@PatrocinioId id);
+                void encerrar(@PatrocinioId id);
+                @ResultadoCancelamento cancelarPorEvento(@PatrocinioId id, LocalDateTime agora);
+                @ResultadoCancelamento cancelarPorPatrocinador(@PatrocinioId id, LocalDateTime agora);
+                @ResultadoSubsidio calcularSubsidio(@PatrocinioId id, BigDecimal precoSocialAtual);
             }
         }
     }

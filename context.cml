@@ -2,7 +2,7 @@ eaContextMap RecifeCulturalMap {
     type = SYSTEM_LANDSCAPE
     state = AS_IS
 
-    contains BloqueioContext
+    contains BloqueioAdministrativoContext
     contains SorteioContext
     contains AcessibilidadeContext
     contains NotificacaoContext
@@ -11,7 +11,7 @@ eaContextMap RecifeCulturalMap {
     contains BilheteriaContext
     contains FinanceiroContext
 
-    BloqueioContext [U, OHS, PL] -> [D, ACL] NotificacaoContext {
+    BloqueioAdministrativoContext [U, OHS, PL] -> [D, ACL] NotificacaoContext {
         implementationTechnology = "Eventos de Domínio (Mensageria)"
     }
 
@@ -161,39 +161,58 @@ BoundedContext AgendaContext implements RecifeCultural {
     }
 }
 
-BoundedContext BloqueioContext {
-    domainVisionStatement = "Responsável por gerenciar indisponibilidades, manutenções e interdições nos espaços culturais."
-    type = APPLICATION
+BoundedContext BloqueioAdministrativoContext {
+    domainVisionStatement = "Responsável por gerenciar bloqueios administrativos de espaços culturais, garantindo integridade de agenda e comunicação com usuários impactados."
+    type = CORE_DOMAIN
 
-    Module BloqueioModule {
-        Aggregate BloqueioAggregate {
+    Module BloqueioAdministrativoModule {
+
+        Aggregate BloqueioAdministrativoAggregate {
+
             Entity BloqueioAdministrativo {
                 aggregateRoot
 
-                @BloqueioId id
-                @EspacoId espacoId
+                @BloqueioAdministrativoId id
+                UUID idEspaco
+                String motivo
                 LocalDateTime dataInicio
                 LocalDateTime dataFim
-                String motivo
 
-                void registrarBloqueio();
-                void cancelarBloqueio();
+                void setPeriodo(LocalDateTime inicio, LocalDateTime fim);
+                void setMotivo(String motivo);
             }
 
-            ValueObject BloqueioId {
+            ValueObject BloqueioAdministrativoId {
                 UUID valor
             }
 
-            ValueObject EspacoId {
-                UUID valor
-            }
-
-            Repository BloqueioRepository {
-                @BloqueioAdministrativo findById(@BloqueioId id);
+            Repository IBloqueioAdministrativoRepositorio {
                 void salvar(@BloqueioAdministrativo bloqueio);
-                List<@BloqueioAdministrativo> buscarPorEspaco(@EspacoId espacoId);
-                List<@BloqueioAdministrativo> buscarAtivosPorPeriodo(LocalDateTime inicio, LocalDateTime fim);
+                @BloqueioAdministrativo obter(@BloqueioAdministrativoId id);
+                void atualizar(@BloqueioAdministrativo bloqueio);
+                void deletar(@BloqueioAdministrativoId id);
+                List<@BloqueioAdministrativo> obterTodos();
             }
+        }
+
+        DomainService BloqueioAdministrativoServico {
+
+            void criarBloqueio(@BloqueioAdministrativo bloqueio);
+
+            @BloqueioAdministrativo obterPorId(@BloqueioAdministrativoId id);
+
+            void atualizarBloqueio(
+                @BloqueioAdministrativoId id,
+                String novoMotivo,
+                LocalDateTime novoInicio,
+                LocalDateTime novoFim
+            );
+
+            void deletarBloqueio(@BloqueioAdministrativoId id);
+
+            List<@BloqueioAdministrativo> obterTodosBloqueios();
+
+            void cancelarEventosConflitantes(@BloqueioAdministrativo bloqueio);
         }
     }
 }
@@ -316,39 +335,71 @@ BoundedContext AcessibilidadeContext {
 }
 
 BoundedContext NotificacaoContext {
-    domainVisionStatement = "Responsável por padronizar e despachar avisos, e-mails e alertas sistêmicos para os usuários e produtores culturais (Padrão Publisher-Subscriber)."
-    type = FEATURE
+    domainVisionStatement = "Responsável por gerenciar o envio e controle de notificações para usuários, incluindo notificações diretas e broadcasts."
+    type = GENERIC_SUBDOMAIN
 
     Module NotificacaoModule {
+
         Aggregate NotificacaoAggregate {
+
             Entity Notificacao {
                 aggregateRoot
 
                 @NotificacaoId id
-                String destinatario
-                String titulo
+                UUID usuarioAlvo
                 String mensagem
+                String contexto
+                UUID idReferencia
+                boolean foiLida
+                boolean broadcast
+                Set<UUID> lidaPor
                 LocalDateTime dataCriacao
-                StatusNotificacao status
 
-                void enviar();
-                void marcarComoFalha();
+                void marcarComoLida(UUID usuarioId);
+                void marcarComoNaoLida(UUID usuarioId);
+                boolean isLidaPor(UUID usuarioId);
             }
 
             ValueObject NotificacaoId {
                 UUID valor
             }
 
-            enum StatusNotificacao {
-                PENDENTE, ENVIADA, FALHA
+            Repository INotificacaoRepositorio {
+                boolean salvar(@Notificacao notificacao);
+                boolean atualizar(@Notificacao notificacao);
+                @Notificacao obter(@NotificacaoId id);
+                List<@Notificacao> obterPorUsuario(UUID usuarioAlvo);
+                List<@Notificacao> obterNaoLidasPorUsuario(UUID usuarioAlvo);
+                List<@Notificacao> obterPorContexto(UUID usuarioAlvo, String contexto);
             }
+        }
 
-            Repository NotificacaoRepository {
-                @Notificacao findById(@NotificacaoId id);
-                void salvar(@Notificacao notificacao);
-                List<@Notificacao> buscarPendentes();
-                List<@Notificacao> buscarPorDestinatario(String destinatario);
-            }
+        DomainService NotificacaoServico {
+
+            void enviarNotificacao(UUID usuarioAlvo, String mensagem);
+
+            void enviarNotificacao(
+                UUID usuarioAlvo,
+                String mensagem,
+                String contexto,
+                UUID idReferencia
+            );
+
+            void enviarBroadcast(String mensagem);
+
+            void enviarBroadcast(
+                String mensagem,
+                String contexto,
+                UUID idReferencia
+            );
+
+            void marcarComoLida(@NotificacaoId id, UUID usuarioId);
+
+            void marcarComoNaoLida(@NotificacaoId id, UUID usuarioId);
+
+            List<@Notificacao> obterNotificacoesDoUsuario(UUID usuarioAlvo);
+
+            List<@Notificacao> obterNotificacoesNaoLidas(UUID usuarioAlvo);
         }
     }
 }

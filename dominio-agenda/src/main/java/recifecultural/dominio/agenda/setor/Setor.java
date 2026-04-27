@@ -27,8 +27,7 @@ public class Setor {
         this.versao = 0;
     }
 
-    public Setor(SetorId id, EspacoId espacoId, String nome, TipoSetor tipoSetor,
-                 List<Assento> assentos, int versao) {
+    public Setor(SetorId id, EspacoId espacoId, String nome, TipoSetor tipoSetor, List<Assento> assentos, int versao) {
         this.id = id; this.espacoId = espacoId; this.nome = nome;
         this.tipoSetor = tipoSetor; this.assentos = new ArrayList<>(assentos); this.versao = versao;
     }

@@ -4,6 +4,7 @@ import recifecultural.dominio.agenda.espaco.EspacoId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 public class Setor {
 

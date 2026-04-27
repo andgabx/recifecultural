@@ -1,4 +1,4 @@
-ContextMap RecifeCulturalMap {
+eaContextMap RecifeCulturalMap {
     type = SYSTEM_LANDSCAPE
     state = AS_IS
 
@@ -7,15 +7,17 @@ ContextMap RecifeCulturalMap {
     contains AcessibilidadeContext
     contains NotificacaoContext
     contains AgendaContext
+    contains BilheteriaContext
+    contains FinanceiroContext
 
     BloqueioContext [U, OHS, PL] -> [D, ACL] NotificacaoContext {
         implementationTechnology = "Eventos de Domínio (Mensageria)"
     }
-    
+
     SorteioContext [U, OHS, PL] -> [D, ACL] NotificacaoContext {
         implementationTechnology = "Eventos de Domínio (Mensageria)"
     }
-    
+
     AcessibilidadeContext [U, OHS, PL] -> [D, ACL] NotificacaoContext {
         implementationTechnology = "Eventos de Domínio (Mensageria)"
     }
@@ -27,8 +29,20 @@ ContextMap RecifeCulturalMap {
     AgendaContext [U, OHS, PL] -> [D, ACL] SorteioContext {
         implementationTechnology = "Eventos de Domínio (Mensageria)"
     }
-    
+
     AgendaContext [U, OHS, PL] -> [D, ACL] AcessibilidadeContext {
+        implementationTechnology = "Eventos de Domínio (Mensageria)"
+    }
+
+    AgendaContext [U, OHS, PL] -> [D, ACL] BilheteriaContext {
+        implementationTechnology = "Eventos de Domínio (Mensageria)"
+    }
+
+    BilheteriaContext [U, OHS, PL] -> [D, ACL] NotificacaoContext {
+        implementationTechnology = "Eventos de Domínio (Mensageria)"
+    }
+
+    BilheteriaContext [U, OHS, PL] -> [D, ACL] FinanceiroContext {
         implementationTechnology = "Eventos de Domínio (Mensageria)"
     }
 }
@@ -290,6 +304,169 @@ BoundedContext NotificacaoContext {
                 void salvar(@Notificacao notificacao);
                 List<@Notificacao> buscarPendentes();
                 List<@Notificacao> buscarPorDestinatario(String destinatario);
+            }
+        }
+    }
+}
+
+BoundedContext BilheteriaContext {
+    domainVisionStatement = "Responsável pela venda de ingressos, geração de QR code e reembolso escalonado por proximidade da data do espetáculo."
+    type = APPLICATION
+
+    Module BilheteriaModule {
+        Aggregate IngressoAggregate {
+            Entity Ingresso {
+                aggregateRoot
+
+                @IngressoId id
+                UUID eventoId
+                LocalDateTime dataHoraApresentacao
+                @TipoIngresso tipo
+                @StatusIngresso status
+                BigDecimal valorPago
+                String codigoQr
+                String codigoTransacao
+                @MetodoPagamento metodoPagamento
+                LocalDateTime dataCompra
+                BigDecimal valorReembolsado
+
+                BigDecimal calcularReembolso(LocalDateTime agora);
+                void reembolsar(BigDecimal valor);
+                void marcarComoUtilizado();
+            }
+
+            ValueObject IngressoId {
+                UUID valor
+            }
+
+            ValueObject ResultadoPagamento {
+                String codigoTransacao
+                boolean aprovado
+            }
+
+            ValueObject ResultadoReembolso {
+                BigDecimal valorReembolsado
+                boolean processado
+                String prazoProcessamento
+            }
+
+            enum TipoIngresso {
+                INTEIRA, MEIA_ENTRADA, SOCIAL
+            }
+
+            enum StatusIngresso {
+                ATIVO, REEMBOLSADO, UTILIZADO
+            }
+
+            enum MetodoPagamento {
+                CARTAO_CREDITO, PIX
+            }
+
+            Repository IIngressoRepositorio {
+                void salvar(@Ingresso ingresso);
+                @Ingresso buscarPorId(@IngressoId id);
+                @Ingresso buscarPorCodigoQr(String codigoQr);
+                int contarAtivosPorApresentacao(UUID eventoId, LocalDateTime dataHora);
+                List<@Ingresso> buscarPorPeriodo(LocalDateTime inicio, LocalDateTime fim);
+            }
+
+            Service IngressoServico {
+                @Ingresso comprar(UUID eventoId, LocalDateTime dataHora, @TipoIngresso tipo, BigDecimal valor, @MetodoPagamento metodo, int capacidadeMaxima);
+                @ResultadoReembolso solicitarReembolso(@IngressoId id, LocalDateTime agora);
+            }
+        }
+    }
+}
+
+BoundedContext FinanceiroContext {
+    domainVisionStatement = "Responsável pelo controle de orçamento por período, registro de despesas operacionais e cálculo de indicadores de desempenho do teatro."
+    type = APPLICATION
+
+    Module FinanceiroModule {
+        Aggregate OrcamentoAggregate {
+            Entity OrcamentoPeriodo {
+                aggregateRoot
+
+                @OrcamentoId id
+                @Periodo periodo
+                BigDecimal valorTotal
+                @StatusOrcamento status
+
+                void reduzir(BigDecimal novoValor, BigDecimal totalDespesasRegistradas);
+                void encerrar();
+            }
+
+            ValueObject OrcamentoId {
+                UUID valor
+            }
+
+            ValueObject Periodo {
+                LocalDateTime dataInicio
+                LocalDateTime dataFim
+
+                boolean contem(LocalDateTime dataHora);
+                boolean sobrepoe(@Periodo outro);
+            }
+
+            enum StatusOrcamento {
+                ABERTO, ENCERRADO
+            }
+
+            Repository IOrcamentoRepositorio {
+                void salvar(@OrcamentoPeriodo orcamento);
+                @OrcamentoPeriodo buscarPorId(@OrcamentoId id);
+                @OrcamentoPeriodo buscarPorPeriodo(@Periodo periodo);
+            }
+        }
+
+        Aggregate DespesaAggregate {
+            Entity Despesa {
+                aggregateRoot
+
+                @DespesaId id
+                @OrcamentoId orcamentoId
+                String descricao
+                BigDecimal valor
+                @CategoriaDespesa categoria
+                LocalDateTime dataRegistro
+            }
+
+            ValueObject DespesaId {
+                UUID valor
+            }
+
+            ValueObject ResultadoRegistroDespesa {
+                @Despesa despesa
+                boolean alertaOrcamento
+            }
+
+            ValueObject IndicadoresDesempenho {
+                BigDecimal taxaOcupacao
+                BigDecimal receitaBruta
+                BigDecimal receitaLiquida
+                BigDecimal totalDespesas
+                BigDecimal crescimentoPublico
+            }
+
+            ValueObject ComparativoPeriodos {
+                @IndicadoresDesempenho periodoAnterior
+                @IndicadoresDesempenho periodoAtual
+            }
+
+            enum CategoriaDespesa {
+                MANUTENCAO, PESSOAL, MARKETING, EQUIPAMENTO, OUTROS
+            }
+
+            Repository IDespesaRepositorio {
+                void salvar(@Despesa despesa);
+                List<@Despesa> buscarPorOrcamento(@OrcamentoId id);
+                BigDecimal somarPorOrcamento(@OrcamentoId id);
+            }
+
+            Service DesempenhoTeatroServico {
+                @ResultadoRegistroDespesa registrarDespesa(@OrcamentoId id, String descricao, BigDecimal valor, @CategoriaDespesa categoria);
+                @IndicadoresDesempenho calcularIndicadores(@Periodo periodo, int capacidadeTotal);
+                @ComparativoPeriodos compararPeriodos(@Periodo anterior, @Periodo atual, int capacidadeTotal);
             }
         }
     }

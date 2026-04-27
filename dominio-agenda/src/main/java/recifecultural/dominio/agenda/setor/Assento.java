@@ -22,8 +22,7 @@ public class Assento {
         this.versao = 0;
     }
 
-    public Assento(UUID id, String codigo, String fileira, int numero,
-                   StatusAssento status, int versao) {
+    public Assento(UUID id, String codigo, String fileira, int numero, StatusAssento status, int versao) {
         this.id = id; this.codigo = codigo; this.fileira = fileira;
         this.numero = numero; this.status = status; this.versao = versao;
     }

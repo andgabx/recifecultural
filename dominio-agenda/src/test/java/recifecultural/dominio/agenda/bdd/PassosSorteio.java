@@ -186,6 +186,8 @@ public class PassosSorteio {
                 null,
                 new Preco(new BigDecimal("60.00"), new BigDecimal("30.00"), null)
         );
+        evento.adicionarArtista(UUID.randomUUID());
+        evento.definirCategoria("Teatro");
         evento.programarApresentacao(agora.plusDays(20));
         return evento;
     }

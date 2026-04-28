@@ -10,7 +10,6 @@ import recifecultural.dominio.agenda.evento.FeedbackReprovacao;
 import recifecultural.dominio.agenda.evento.Periodo;
 import recifecultural.dominio.agenda.evento.Preco;
 import recifecultural.dominio.agenda.evento.StatusEvento;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -19,6 +18,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
@@ -44,6 +44,8 @@ public class PassosAprovarReprovarEvento {
                 null,
                 new Preco(new BigDecimal("40.00"), new BigDecimal("20.00"), null)
         );
+        contexto.evento.adicionarArtista(UUID.randomUUID());
+        contexto.evento.definirCategoria("Teatro");
         contexto.evento.programarApresentacao(agora.plusDays(2));
         when(contexto.repositorioEvento.obter(any())).thenReturn(Optional.of(contexto.evento));
         contexto.servicoEvento.salvar(contexto.evento);
@@ -72,6 +74,8 @@ public class PassosAprovarReprovarEvento {
                 null,
                 new Preco(new BigDecimal("20.00"), new BigDecimal("10.00"), null)
         );
+        contexto.evento.adicionarArtista(UUID.randomUUID());
+        contexto.evento.definirCategoria("Fotografia");
         contexto.evento.programarApresentacao(agora.plusDays(2));
         when(contexto.repositorioEvento.obter(any())).thenReturn(Optional.of(contexto.evento));
         contexto.servicoEvento.salvar(contexto.evento);
@@ -162,6 +166,8 @@ public class PassosAprovarReprovarEvento {
                 null,
                 new Preco(new BigDecimal("50.00"), new BigDecimal("25.00"), null)
         );
+        contexto.evento.adicionarArtista(UUID.randomUUID());
+        contexto.evento.definirCategoria("Música");
         contexto.evento.programarApresentacao(agora.plusDays(2));
         when(contexto.repositorioEvento.obter(any())).thenReturn(Optional.of(contexto.evento));
         contexto.servicoEvento.salvar(contexto.evento);
@@ -186,6 +192,8 @@ public class PassosAprovarReprovarEvento {
                 null,
                 new Preco(new BigDecimal("30.00"), new BigDecimal("15.00"), null)
         );
+        contexto.evento.adicionarArtista(UUID.randomUUID());
+        contexto.evento.definirCategoria("Circo");
         contexto.evento.programarApresentacao(agora.plusDays(12));
         when(contexto.repositorioEvento.obter(any())).thenReturn(Optional.of(contexto.evento));
         contexto.servicoEvento.salvar(contexto.evento);
@@ -213,6 +221,8 @@ public class PassosAprovarReprovarEvento {
                 null,
                 new Preco(new BigDecimal("30.00"), new BigDecimal("15.00"), null)
         );
+        contexto.evento.adicionarArtista(UUID.randomUUID());
+        contexto.evento.definirCategoria("Artesanato");
         contexto.evento.programarApresentacao(agora.plusDays(12));
         when(contexto.repositorioEvento.obter(any())).thenReturn(Optional.of(contexto.evento));
         contexto.servicoEvento.salvar(contexto.evento);
@@ -230,5 +240,110 @@ public class PassosAprovarReprovarEvento {
     public void oSistemaDeveLancarErroDeBloqueio() {
         assertNotNull(contexto.excecaoCapturada);
         assertInstanceOf(IllegalStateException.class, contexto.excecaoCapturada);
+    }
+
+    // HU-5: artistas obrigatórios
+    @Dado("um evento cadastrado com apresentação e categoria mas sem artistas")
+    public void umEventoCadastradoComApresentacaoECategoriaMasSemArtistas() {
+        LocalDateTime agora = LocalDateTime.now();
+        contexto.evento = new Evento(
+                UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
+                "Show de Jazz",
+                "Show ao vivo com artistas locais",
+                "Descrição longa do evento",
+                new Periodo(agora.plusDays(1), agora.plusDays(5)),
+                null,
+                new Preco(new BigDecimal("50.00"), new BigDecimal("25.00"), null)
+        );
+        contexto.evento.definirCategoria("Música");
+        contexto.evento.programarApresentacao(agora.plusDays(2));
+        when(contexto.repositorioEvento.obter(any())).thenReturn(Optional.of(contexto.evento));
+        contexto.servicoEvento.salvar(contexto.evento);
+    }
+
+    // HU-6: categoria obrigatória
+    @Dado("um evento cadastrado com apresentação e artistas mas sem categoria")
+    public void umEventoCadastradoComApresentacaoEArtistasMasSemCategoria() {
+        LocalDateTime agora = LocalDateTime.now();
+        contexto.evento = new Evento(
+                UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
+                "Show de Jazz",
+                "Show ao vivo com artistas locais",
+                "Descrição longa do evento",
+                new Periodo(agora.plusDays(1), agora.plusDays(5)),
+                null,
+                new Preco(new BigDecimal("50.00"), new BigDecimal("25.00"), null)
+        );
+        contexto.evento.adicionarArtista(UUID.randomUUID());
+        contexto.evento.programarApresentacao(agora.plusDays(2));
+        when(contexto.repositorioEvento.obter(any())).thenReturn(Optional.of(contexto.evento));
+        contexto.servicoEvento.salvar(contexto.evento);
+    }
+
+    // HU-5 e HU-6 (positivo) e HU-8 (positivo): evento completo
+    @Dado("um evento completo cadastrado")
+    public void umEventoCompletoCadastrado() {
+        LocalDateTime agora = LocalDateTime.now();
+        contexto.evento = new Evento(
+                UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
+                "Festival de Teatro Recife",
+                "Grande festival de teatro do Nordeste",
+                "Descrição longa do festival",
+                new Periodo(agora.plusDays(1), agora.plusDays(5)),
+                null,
+                new Preco(new BigDecimal("45.00"), new BigDecimal("22.50"), null)
+        );
+        contexto.evento.adicionarArtista(UUID.randomUUID());
+        contexto.evento.definirCategoria("Teatro");
+        contexto.evento.programarApresentacao(agora.plusDays(2));
+        when(contexto.repositorioEvento.obter(any())).thenReturn(Optional.of(contexto.evento));
+        contexto.servicoEvento.salvar(contexto.evento);
+    }
+
+    // HU-7: rascunho
+    @Dado("um evento criado sem artistas, sem categoria e sem datas de apresentação")
+    public void umEventoCriadoSemArtistasSemCategoriaESemDatasDeApresentacao() {
+        LocalDateTime agora = LocalDateTime.now();
+        contexto.evento = new Evento(
+                UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
+                "Festival Cultural",
+                "Evento em planejamento",
+                "Descrição longa",
+                new Periodo(agora.plusDays(1), agora.plusDays(5)),
+                null,
+                null
+        );
+        when(contexto.repositorioEvento.obter(any())).thenReturn(Optional.of(contexto.evento));
+        contexto.servicoEvento.salvar(contexto.evento);
+    }
+
+    @Quando("o promotor adicionar um artista ao evento")
+    public void oPromotorAdicionarUmArtistaAoEvento() {
+        contexto.evento.adicionarArtista(UUID.randomUUID());
+    }
+
+    @Então("o evento deve ter pelo menos um artista registrado")
+    public void oEventoDeveTerPeloMenosUmArtistaRegistrado() {
+        assertFalse(contexto.evento.getArtistas().isEmpty());
+    }
+
+    // HU-8: espaço definido obrigatório
+    @Dado("um evento completo cadastrado sem espaço definido")
+    public void umEventoCompletoCadastradoSemEspacoDefinido() {
+        LocalDateTime agora = LocalDateTime.now();
+        contexto.evento = new Evento(
+                UUID.randomUUID(), UUID.randomUUID(), null,
+                "Espetáculo de Dança",
+                "Show de dança contemporânea",
+                "Descrição longa do espetáculo",
+                new Periodo(agora.plusDays(1), agora.plusDays(5)),
+                null,
+                new Preco(new BigDecimal("60.00"), new BigDecimal("30.00"), null)
+        );
+        contexto.evento.adicionarArtista(UUID.randomUUID());
+        contexto.evento.definirCategoria("Dança");
+        contexto.evento.programarApresentacao(agora.plusDays(2));
+        when(contexto.repositorioEvento.obter(any())).thenReturn(Optional.of(contexto.evento));
+        contexto.servicoEvento.salvar(contexto.evento);
     }
 }

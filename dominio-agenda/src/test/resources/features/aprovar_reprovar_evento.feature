@@ -59,3 +59,59 @@ Funcionalidade: Aprovar/Reprovar evento
       Dado um evento pronto para submissão de um promotor com 3 reprovações há mais de 90 dias
       Quando o promotor submeter o evento para análise
       Então o status do evento deve ser "EM_ANALISE"
+
+  # HU-5: Lista de artistas obrigatória na submissão
+  # O promotor deve vincular ao menos um artista antes de submeter o evento para avaliação
+  Regra: Evento deve ter pelo menos um artista incluído para ser submetido à análise
+
+    Cenário: Promotor tenta submeter evento sem artistas
+      Dado um evento cadastrado com apresentação e categoria mas sem artistas
+      Quando o promotor tentar submeter o evento para análise
+      Então o sistema deve lançar um erro de submissão inválida
+
+    Cenário: Promotor submete evento com artista incluído
+      Dado um evento completo cadastrado
+      Quando o promotor submeter o evento para análise
+      Então o status do evento deve ser "EM_ANALISE"
+
+  # HU-6: Categoria obrigatória na submissão
+  # O evento precisa ter uma categoria cultural definida para que o gestor possa avaliá-lo
+  Regra: Evento deve ter categoria definida para ser submetido à análise
+
+    Cenário: Promotor tenta submeter evento sem categoria
+      Dado um evento cadastrado com apresentação e artistas mas sem categoria
+      Quando o promotor tentar submeter o evento para análise
+      Então o sistema deve lançar um erro de submissão inválida
+
+    Cenário: Promotor submete evento com categoria definida
+      Dado um evento completo cadastrado
+      Quando o promotor submeter o evento para análise
+      Então o status do evento deve ser "EM_ANALISE"
+
+  # HU-7: Salvar como rascunho
+  # O promotor pode criar e manter o evento como rascunho enquanto preenche os dados gradualmente,
+  # sem precisar completar todos os campos exigidos na submissão
+  Regra: Promotor pode salvar evento como rascunho sem preencher todos os campos de submissão
+
+    Cenário: Promotor salva evento com dados incompletos como rascunho
+      Dado um evento criado sem artistas, sem categoria e sem datas de apresentação
+      Então o status do evento deve ser "RASCUNHO"
+
+    Cenário: Promotor adiciona artista a evento em rascunho
+      Dado um evento criado sem artistas, sem categoria e sem datas de apresentação
+      Quando o promotor adicionar um artista ao evento
+      Então o evento deve ter pelo menos um artista registrado
+
+  # HU-8: Espaço definido obrigatório na submissão
+  # O promotor deve selecionar um espaço existente antes de submeter o evento para análise
+  Regra: Evento deve ter um espaço definido para ser submetido à análise
+
+    Cenário: Promotor tenta submeter evento sem espaço definido
+      Dado um evento completo cadastrado sem espaço definido
+      Quando o promotor tentar submeter o evento para análise
+      Então o sistema deve lançar um erro de submissão inválida
+
+    Cenário: Promotor submete evento com espaço selecionado
+      Dado um evento completo cadastrado
+      Quando o promotor submeter o evento para análise
+      Então o status do evento deve ser "EM_ANALISE"

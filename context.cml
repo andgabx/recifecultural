@@ -1,4 +1,4 @@
-eaContextMap RecifeCulturalMap {
+ContextMap RecifeCulturalMap {
     type = SYSTEM_LANDSCAPE
     state = AS_IS
 
@@ -11,6 +11,8 @@ eaContextMap RecifeCulturalMap {
     contains BilheteriaContext
     contains FinanceiroContext
     contains ArtistaContext
+    contains CupomContext
+    contains CatracaContext
 
     ArtistaContext [U, OHS, PL] -> [D, ACL] AgendaContext {
         implementationTechnology = "Referência por ID"
@@ -50,6 +52,18 @@ eaContextMap RecifeCulturalMap {
 
     BilheteriaContext [U, OHS, PL] -> [D, ACL] FinanceiroContext {
         implementationTechnology = "Eventos de Domínio (Mensageria)"
+    }
+
+    CupomContext [U, OHS, PL] -> [D, ACL] BilheteriaContext {
+        implementationTechnology = "Chamada de Serviço"
+    }
+
+    BilheteriaContext [U, OHS, PL] -> [D, ACL] CatracaContext {
+        implementationTechnology = "Chamada de Serviço"
+    }
+
+    AgendaContext [U, OHS, PL] -> [D, ACL] CatracaContext {
+        implementationTechnology = "Chamada de Serviço"
     }
 }
 
@@ -727,6 +741,7 @@ BoundedContext Agenda implements RecifeCultural {
         }
     }
 }
+
 BoundedContext ArtistaContext implements RecifeCultural {
     domainVisionStatement = "Responsável pelo cadastro de artistas e produtores culturais, incluindo a gestão de rider técnico."
     type = APPLICATION
@@ -821,6 +836,71 @@ BoundedContext ArtistaContext implements RecifeCultural {
                 @ArtistaId cadastrar(@ProdutorId produtorId, String nome, @RiderTecnico riderTecnico);
                 void atualizarRider(@ArtistaId artistaId, @RiderTecnico novoRider);
                 void inativar(@ArtistaId artistaId);
+            }
+        }
+    }
+}
+
+BoundedContext CupomContext implements RecifeCultural {
+    domainVisionStatement = "Gerencia campanhas de desconto, validando regras de elegibilidade (tempo, limites por CPF e categoria)."
+    type = FEATURE
+    
+    Module CupomModule {
+        Aggregate CupomAggregate {
+            Entity Cupom {
+                aggregateRoot
+                
+                @CupomId id
+                String codigo
+                double percentualDesconto
+                double valorMinimoPedido
+                int limiteGlobal
+                int usosGlobais
+                int limitePorCpf
+                Date dataInicio
+                Date dataFim
+                String categoriaPermitida
+                
+                void validarElegibilidade(String cpf, double valor, String categoria, Date dataAtual);
+                void registrarUso(String cpf);
+            }
+            
+            ValueObject CupomId {
+                String valor
+            }
+        }
+    }
+}
+
+BoundedContext CatracaContext implements RecifeCultural {
+    domainVisionStatement = "Orquestra o controle de acesso físico, prevenindo fraudes (double-entry), validando portões e aplicando travas temporais."
+    type = FEATURE
+
+    Module CatracaModule {
+        Aggregate CatracaAggregate {
+            Entity IngressoCatraca {
+                aggregateRoot
+                
+                @IngressoCatracaId id
+                String idEvento
+                @StatusIngressoCatraca status
+                Date horarioInicioEvento
+                @TipoIngressoCatraca tipoIngresso
+                String portaoAcesso
+                
+                void registrarEntrada(Date horarioLeitura, String portaoFisico);
+            }
+            
+            ValueObject IngressoCatracaId {
+                String valor
+            }
+            
+            enum StatusIngressoCatraca {
+                VALIDO, UTILIZADO, CANCELADO_OU_REEMBOLSADO
+            }
+            
+            enum TipoIngressoCatraca {
+                COMUM, VIP, MEIA_ENTRADA
             }
         }
     }

@@ -24,6 +24,7 @@ public class Evento {
 
     private StatusEvento status;
     private FeedbackReprovacao feedbackReprovacao;
+    private LocalDateTime dataReprovacao;
     private String motivoCancelamento;
 
     public UUID getId() { return id; }
@@ -68,6 +69,10 @@ public class Evento {
 
     public String getMotivoCancelamento() {
         return motivoCancelamento;
+    }
+
+    public LocalDateTime getDataReprovacao() {
+        return dataReprovacao;
     }
 
     public List<LocalDateTime> getDatasApresentacao() {
@@ -122,6 +127,7 @@ public class Evento {
     public void reprovar(FeedbackReprovacao feedback) {
         exigirStatusEmAnalise("reprovar");
         this.feedbackReprovacao = feedback;
+        this.dataReprovacao = LocalDateTime.now();
         this.status = StatusEvento.REPROVADO;
     }
 

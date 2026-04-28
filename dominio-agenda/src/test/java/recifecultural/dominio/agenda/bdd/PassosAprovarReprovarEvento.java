@@ -4,6 +4,7 @@ import io.cucumber.java.pt.Dado;
 import io.cucumber.java.pt.E;
 import io.cucumber.java.pt.Então;
 import io.cucumber.java.pt.Quando;
+import org.mockito.Mockito;
 import recifecultural.dominio.agenda.evento.Evento;
 import recifecultural.dominio.agenda.evento.FeedbackReprovacao;
 import recifecultural.dominio.agenda.evento.Periodo;
@@ -12,6 +13,8 @@ import recifecultural.dominio.agenda.evento.StatusEvento;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -167,5 +170,65 @@ public class PassosAprovarReprovarEvento {
     @Quando("o promotor submeter o evento para análise")
     public void oPromotorSubmeterOEventoParaAnalise() {
         contexto.servicoEvento.submeterParaAnalise(contexto.evento.getId());
+    }
+
+    @Dado("um evento pronto para submissão de um promotor com 3 reprovações nos últimos 90 dias")
+    public void umEventoDePromotorComReprovacoesRecentes() {
+        LocalDateTime agora = LocalDateTime.now();
+        UUID promotorId = UUID.randomUUID();
+
+        contexto.evento = new Evento(
+                UUID.randomUUID(), promotorId, UUID.randomUUID(),
+                "Festival de Circo",
+                "Espetáculo circense no Parque Dona Lindu",
+                "Descrição longa do festival de circo",
+                new Periodo(agora.plusDays(10), agora.plusDays(20)),
+                null,
+                new Preco(new BigDecimal("30.00"), new BigDecimal("15.00"), null)
+        );
+        contexto.evento.programarApresentacao(agora.plusDays(12));
+        when(contexto.repositorioEvento.obter(any())).thenReturn(Optional.of(contexto.evento));
+        contexto.servicoEvento.salvar(contexto.evento);
+
+        List<Evento> reprovacoes = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            Evento eventoReprovado = Mockito.mock(Evento.class);
+            when(eventoReprovado.getDataReprovacao()).thenReturn(agora.minusDays(10 + i * 5L));
+            reprovacoes.add(eventoReprovado);
+        }
+        when(contexto.repositorioEvento.obterReprovacoesPorPromotor(promotorId)).thenReturn(reprovacoes);
+    }
+
+    @Dado("um evento pronto para submissão de um promotor com 3 reprovações há mais de 90 dias")
+    public void umEventoDePromotorComReprovacoesAntigas() {
+        LocalDateTime agora = LocalDateTime.now();
+        UUID promotorId = UUID.randomUUID();
+
+        contexto.evento = new Evento(
+                UUID.randomUUID(), promotorId, UUID.randomUUID(),
+                "Feira Cultural de Artesanato",
+                "Mostra de artesanato pernambucano",
+                "Descrição longa da feira cultural",
+                new Periodo(agora.plusDays(10), agora.plusDays(20)),
+                null,
+                new Preco(new BigDecimal("30.00"), new BigDecimal("15.00"), null)
+        );
+        contexto.evento.programarApresentacao(agora.plusDays(12));
+        when(contexto.repositorioEvento.obter(any())).thenReturn(Optional.of(contexto.evento));
+        contexto.servicoEvento.salvar(contexto.evento);
+
+        List<Evento> reprovacoes = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            Evento eventoReprovado = Mockito.mock(Evento.class);
+            when(eventoReprovado.getDataReprovacao()).thenReturn(agora.minusDays(100 + i * 10L));
+            reprovacoes.add(eventoReprovado);
+        }
+        when(contexto.repositorioEvento.obterReprovacoesPorPromotor(promotorId)).thenReturn(reprovacoes);
+    }
+
+    @Então("o sistema deve lançar um erro de bloqueio por excesso de reprovações")
+    public void oSistemaDeveLancarErroDeBloqueio() {
+        assertNotNull(contexto.excecaoCapturada);
+        assertInstanceOf(IllegalStateException.class, contexto.excecaoCapturada);
     }
 }

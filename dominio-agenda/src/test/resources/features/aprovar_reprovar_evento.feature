@@ -45,3 +45,17 @@ Funcionalidade: Aprovar/Reprovar evento
       Dado um evento cadastrado com uma data de apresentação programada
       Quando o promotor submeter o evento para análise
       Então o status do evento deve ser "EM_ANALISE"
+
+  # HU-4: Bloqueio por histórico de reprovações
+  # Um promotor com muitas reprovações recentes fica temporariamente impedido de submeter novos eventos
+  Regra: Promotor com 3 ou mais reprovações nos últimos 90 dias fica bloqueado por 30 dias
+
+    Cenário: Promotor tenta submeter evento após acumular 3 reprovações recentes
+      Dado um evento pronto para submissão de um promotor com 3 reprovações nos últimos 90 dias
+      Quando o promotor tentar submeter o evento para análise
+      Então o sistema deve lançar um erro de bloqueio por excesso de reprovações
+
+    Cenário: Promotor com reprovações antigas não é bloqueado
+      Dado um evento pronto para submissão de um promotor com 3 reprovações há mais de 90 dias
+      Quando o promotor submeter o evento para análise
+      Então o status do evento deve ser "EM_ANALISE"

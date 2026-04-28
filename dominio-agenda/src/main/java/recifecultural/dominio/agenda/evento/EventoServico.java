@@ -43,7 +43,6 @@ public class EventoServico {
             );
         }
 
-        // RN-S1: taxa histórica de aprovação inferior a 30% (mínimo 5 eventos em 12 meses) → revisão adicional
         List<Evento> finalizados = repositorio.obterEventosFinalizadosPorPromotor(evento.getPromotorId());
         LocalDateTime dozesMesesAtras = LocalDateTime.now().minusMonths(12);
         List<Evento> finalizadosRecentes = finalizados.stream()
@@ -71,7 +70,6 @@ public class EventoServico {
     public void aprovar(UUID id) {
         Evento evento = buscarOuLancar(id);
 
-        // RN-A1: conflito de espaço — bloqueia se outro evento APROVADO ocupa o mesmo espaço no mesmo período
         List<Evento> noEspaco = repositorio.obterPorLocalEIntervalo(
                 evento.getLocalId(),
                 evento.getPeriodo().getInicio(),
@@ -86,7 +84,6 @@ public class EventoServico {
             );
         }
 
-        // RN-A2: limite de 5 eventos aprovados por promotor simultaneamente
         List<Evento> aprovadosDoPromotor = repositorio.obterEventosAprovadosPorPromotor(evento.getPromotorId());
         if (aprovadosDoPromotor.size() >= 5) {
             throw new IllegalStateException(

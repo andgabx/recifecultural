@@ -12,11 +12,8 @@ import static org.mockito.Mockito.*;
 
 public class PassosCatraca {
 
-    // Dependências Mockadas
     private ICatracaRepositorio repositorioMock = mock(ICatracaRepositorio.class);
     private CatracaServico servico = new CatracaServico(repositorioMock);
-
-    // Estado do Teste
     private IngressoCatraca ingressoNoBanco;
     private LocalDateTime horarioEvento;
     private Exception excecaoCapturada;
@@ -57,7 +54,7 @@ public class PassosCatraca {
         String portaoFisico = horarioOuPortao.contains(":") ? portaoOuId : horarioOuPortao;
         String horarioStr = horarioOuPortao.contains(":") ? horarioOuPortao : portaoOuId;
 
-        if (horarioStr.length() < 5) horarioStr = portaoOuId; // fallback para IDs curtos
+        if (horarioStr.length() < 5) horarioStr = portaoOuId;
 
         LocalDateTime horaAcesso = LocalDateTime.of(LocalDate.now(), LocalTime.parse(horarioStr));
 
@@ -86,7 +83,6 @@ public class PassosCatraca {
     public void verifica_erro(String erro) {
         Assertions.assertNotNull(excecaoCapturada);
         Assertions.assertEquals(erro, excecaoCapturada.getMessage());
-        // Garante que o Mockito NÃO salvou nada se a regra falhou
         verify(repositorioMock, never()).salvar(any());
     }
 }

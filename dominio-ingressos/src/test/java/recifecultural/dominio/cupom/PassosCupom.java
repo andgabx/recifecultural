@@ -94,7 +94,6 @@ public class PassosCupom {
     public void verificaSucesso() {
         Assertions.assertNull(contexto.excecao, "Não deveria ter ocorrido nenhum erro de validação.");
 
-        // Verifica se o Mockito registrou o salvamento 1 vez
         verify(repositorioMock, times(1)).salvar(cupomValido);
     }
 
@@ -107,8 +106,6 @@ public class PassosCupom {
     public void verificaErro(String erroEsperado) {
         Assertions.assertNotNull(contexto.excecao, "Era esperada uma exceção de validação.");
         Assertions.assertEquals(erroEsperado, contexto.excecao.getMessage());
-
-        // Garante que o Mockito bloqueou a gravação no banco se a regra falhou
         verify(repositorioMock, never()).salvar(any(Cupom.class));
     }
 }

@@ -23,11 +23,15 @@ public class Cupom {
 
     private final Set<String> cpfsQueJaUsaram;
 
-    public Cupom(CupomId id, String codigo, double percentualDesconto,
-                 double valorMinimoPedido, int limiteGlobal, int limitePorCpf,
-                 LocalDateTime dataInicio, LocalDateTime dataFim, String categoriaPermitida) {
+    public Cupom(CupomId id, String codigo,
+                 double percentualDesconto,
+                 double valorMinimoPedido,
+                 int limiteGlobal,
+                 int limitePorCpf,
+                 LocalDateTime dataInicio,
+                 LocalDateTime dataFim,
+                 String categoriaPermitida) {
 
-        // Validações de Invariantes com Apache
         Validate.notNull(id, "Id do cupom é obrigatório.");
         Validate.notBlank(codigo, "O código textual do cupom é obrigatório.");
         Validate.isTrue(percentualDesconto > 0 && percentualDesconto <= 100, "Desconto deve ser entre 1 e 100%.");
@@ -49,7 +53,6 @@ public class Cupom {
         this.cpfsQueJaUsaram = new HashSet<>();
     }
 
-    // Comportamentos de Negócio (Encapsulados)
     public void validarElegibilidade(String cpfUsuario, double valorPedido, String categoriaEvento, LocalDateTime dataAtual) {
         Validate.isTrue(dataAtual.isAfter(dataInicio) && dataAtual.isBefore(dataFim),
                 "Cupom expirado ou ainda não iniciado.");

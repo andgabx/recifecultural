@@ -172,6 +172,108 @@ BoundedContext AgendaContext implements RecifeCultural {
             }
         }
     }
+
+    Module AgendaSetorModule {
+        Aggregate SetorAggregate {
+            Entity Setor {
+                aggregateRoot
+
+                @SetorId id
+                @EspacoId espacoId
+                String nome
+                @TipoSetor tipoSetor
+                List<@Assento> assentos
+
+                void mapearAssentos(List<@Assento> novosAssentos);
+                @Assento preReservar(UUID assentoId);
+                @Assento liberarAssento(UUID assentoId);
+                @Assento ocuparAssento(UUID assentoId);
+                @Assento bloquearAssento(UUID assentoId);
+            }
+
+            Entity Assento {
+                UUID id
+                String codigo
+                String fileira
+                int numero
+                @StatusAssento status
+
+                void marcarPreReservado();
+                void liberar();
+                void ocupar();
+                void bloquear();
+            }
+
+            ValueObject SetorId {
+                UUID valor
+            }
+
+            enum TipoSetor {
+                PLATEIA, FRISA, CAMAROTE, BALCAO, GERAL
+            }
+
+            enum StatusAssento {
+                LIVRE, PRE_RESERVADO, OCUPADO, BLOQUEADO
+            }
+
+            Repository ISetorRepositorio {
+                void salvar(@Setor setor);
+                void atualizar(@Setor setor);
+                @Setor obterPorId(@SetorId id);
+            }
+
+            Service SetorServico {
+                @Setor configurarSetor(@EspacoId espacoId, String nome, @TipoSetor tipoSetor, int fileiras, int assentosPorFileira);
+            }
+        }
+    }
+
+    Module AgendaPreReservaModule {
+        Aggregate PreReservaAggregate {
+            Entity PreReserva {
+                aggregateRoot
+
+                @PreReservaId id
+                UUID assentoId
+                UUID setorId
+                UUID usuarioId
+                LocalDateTime criadaEm
+                LocalDateTime expiraEm
+                @StatusPreReserva status
+
+                boolean estaExpirada(LocalDateTime agora);
+                void expirar(LocalDateTime agora);
+                void cancelar();
+                void confirmar();
+            }
+
+            ValueObject PreReservaId {
+                UUID valor
+            }
+
+            ValueObject DuracaoPreReserva {
+                Duration valor
+            }
+
+            enum StatusPreReserva {
+                ATIVA, EXPIRADA, CANCELADA, CONVERTIDA
+            }
+
+            Repository IPreReservaRepositorio {
+                void salvar(@PreReserva preReserva);
+                void atualizar(@PreReserva preReserva);
+                @PreReserva obterPorId(@PreReservaId id);
+                List<@PreReserva> listarAtivasPorAssento(UUID assentoId);
+                List<@PreReserva> listarAtivasExpiradas(LocalDateTime agora);
+            }
+
+            Service PreReservaServico {
+                @PreReservaId reservar(UUID setorId, UUID assentoId, UUID usuarioId, @DuracaoPreReserva duracao);
+                void cancelar(@PreReservaId preReservaId);
+                void expirarVencidas();
+            }
+        }
+    }
 }
 
 BoundedContext BloqueioAdministrativoContext {
@@ -715,6 +817,104 @@ BoundedContext PatrocinioContext implements RecifeCultural {
                 @ResultadoCancelamento cancelarPorEvento(@PatrocinioId id, LocalDateTime agora);
                 @ResultadoCancelamento cancelarPorPatrocinador(@PatrocinioId id, LocalDateTime agora);
                 @ResultadoSubsidio calcularSubsidio(@PatrocinioId id, BigDecimal precoSocialAtual);
+            }
+        }
+    }
+}
+BoundedContext ArtistaContext implements RecifeCultural {
+    domainVisionStatement = "Responsável pelo cadastro de artistas e produtores culturais, incluindo a gestão de rider técnico."
+    type = APPLICATION
+
+    Module ArtistaModule {
+        Aggregate ProdutorAggregate {
+            Entity Produtor {
+                aggregateRoot
+
+                @ProdutorId id
+                String nomeFantasia
+                @Cnpj cnpj
+                String email
+                String telefone
+                @StatusProdutor status
+
+                void atualizarContato(String novoEmail, String novoTelefone);
+                void suspender();
+                void reativar();
+                void inativar();
+                void anonimizarDadosPessoais();
+            }
+
+            ValueObject ProdutorId {
+                UUID valor
+            }
+
+            ValueObject Cnpj {
+                String valor
+            }
+
+            enum StatusProdutor {
+                ATIVO, SUSPENSO, INATIVO
+            }
+
+            Repository IProdutorRepositorio {
+                void salvar(@Produtor produtor);
+                void atualizar(@Produtor produtor);
+                @Produtor obterPorId(@ProdutorId id);
+                boolean existePorCnpj(@Cnpj cnpj);
+            }
+
+            Service ProdutorServico {
+                @ProdutorId cadastrar(String nomeFantasia, @Cnpj cnpj, String email, String telefone);
+                void atualizarContato(@ProdutorId produtorId, String novoEmail, String novoTelefone);
+                void suspender(@ProdutorId produtorId);
+                void reativar(@ProdutorId produtorId);
+                void inativar(@ProdutorId produtorId);
+            }
+        }
+
+        Aggregate ArtistaAggregate {
+            Entity Artista {
+                aggregateRoot
+
+                @ArtistaId id
+                @ProdutorId produtorId
+                String nome
+                @RiderTecnico riderTecnico
+                @StatusArtista status
+
+                void atualizarRider(@RiderTecnico novoRider);
+                void inativar();
+            }
+
+            ValueObject ArtistaId {
+                UUID valor
+            }
+
+            ValueObject RiderTecnico {
+                Set<@ItemRider> itens
+            }
+
+            enum StatusArtista {
+                ATIVO, INATIVO
+            }
+
+            enum ItemRider {
+                MICROFONE, MESA_DE_SOM, PROJETOR, PIANO, BATERIA,
+                ILUMINACAO_CENA, GERACAO_ENERGIA, CAMARIM, OUTRO
+            }
+
+            Repository IArtistaRepositorio {
+                void salvar(@Artista artista);
+                void atualizar(@Artista artista);
+                @Artista obterPorId(@ArtistaId id);
+                List<@Artista> listarPorProdutor(@ProdutorId produtorId);
+                boolean existePorNomeEProdutor(String nome, @ProdutorId produtorId);
+            }
+
+            Service ArtistaServico {
+                @ArtistaId cadastrar(@ProdutorId produtorId, String nome, @RiderTecnico riderTecnico);
+                void atualizarRider(@ArtistaId artistaId, @RiderTecnico novoRider);
+                void inativar(@ArtistaId artistaId);
             }
         }
     }

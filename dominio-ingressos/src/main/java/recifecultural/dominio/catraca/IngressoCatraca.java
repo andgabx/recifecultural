@@ -14,12 +14,13 @@ public class IngressoCatraca {
 
     private final TipoIngresso tipoIngresso;
     private final String portaoAcesso;
-    public IngressoCatraca(IngressoCatracaId id,
-                           String idEvento,
-                           StatusIngressoCatraca status,
-                           LocalDateTime horarioInicioEvento,
-                           TipoIngresso tipoIngresso,
-                           String portaoAcesso) {
+    public IngressoCatraca(
+            IngressoCatracaId id,
+            String idEvento,
+            StatusIngressoCatraca status,
+            LocalDateTime horarioInicioEvento,
+            TipoIngresso tipoIngresso,
+            String portaoAcesso) {
 
         Validate.notNull(id, "ID do ingresso é obrigatório.");
         Validate.notBlank(idEvento, "ID do evento é obrigatório.");

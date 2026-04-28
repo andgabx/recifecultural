@@ -23,14 +23,16 @@ public class Cupom {
 
     private final Set<String> cpfsQueJaUsaram;
 
-    public Cupom(CupomId id, String codigo,
-                 double percentualDesconto,
-                 double valorMinimoPedido,
-                 int limiteGlobal,
-                 int limitePorCpf,
-                 LocalDateTime dataInicio,
-                 LocalDateTime dataFim,
-                 String categoriaPermitida) {
+    public Cupom(
+            CupomId id,
+            String codigo,
+            double percentualDesconto,
+            double valorMinimoPedido,
+            int limiteGlobal,
+            int limitePorCpf,
+            LocalDateTime dataInicio,
+            LocalDateTime dataFim,
+            String categoriaPermitida) {
 
         Validate.notNull(id, "Id do cupom é obrigatório.");
         Validate.notBlank(codigo, "O código textual do cupom é obrigatório.");

@@ -15,4 +15,6 @@ public interface IEventoRepositorio {
     List<Evento> obterTodos();
     List<Evento> obterPorLocalEIntervalo(UUID localId, LocalDateTime inicio, LocalDateTime fim);
     List<Evento> obterReprovacoesPorPromotor(UUID promotorId);
+    List<Evento> obterEventosAprovadosPorPromotor(UUID promotorId);
+    List<Evento> obterEventosFinalizadosPorPromotor(UUID promotorId);
 }

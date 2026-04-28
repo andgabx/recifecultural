@@ -43,12 +43,57 @@ public class EventoServico {
             );
         }
 
+        // RN-S1: taxa histórica de aprovação inferior a 30% (mínimo 5 eventos em 12 meses) → revisão adicional
+        List<Evento> finalizados = repositorio.obterEventosFinalizadosPorPromotor(evento.getPromotorId());
+        LocalDateTime dozesMesesAtras = LocalDateTime.now().minusMonths(12);
+        List<Evento> finalizadosRecentes = finalizados.stream()
+                .filter(e -> {
+                    LocalDateTime data = e.getStatus() == StatusEvento.APROVADO
+                            ? e.getDataAprovacao()
+                            : e.getDataReprovacao();
+                    return data != null && data.isAfter(dozesMesesAtras);
+                })
+                .toList();
+        if (finalizadosRecentes.size() >= 5) {
+            long aprovados = finalizadosRecentes.stream()
+                    .filter(e -> e.getStatus() == StatusEvento.APROVADO)
+                    .count();
+            double taxa = (double) aprovados / finalizadosRecentes.size();
+            if (taxa < 0.30) {
+                evento.marcarComoRequerRevisaoAdicional();
+            }
+        }
+
         evento.submeterParaAnalise();
         repositorio.atualizar(evento);
     }
 
     public void aprovar(UUID id) {
         Evento evento = buscarOuLancar(id);
+
+        // RN-A1: conflito de espaço — bloqueia se outro evento APROVADO ocupa o mesmo espaço no mesmo período
+        List<Evento> noEspaco = repositorio.obterPorLocalEIntervalo(
+                evento.getLocalId(),
+                evento.getPeriodo().getInicio(),
+                evento.getPeriodo().getFim()
+        );
+        boolean temConflito = noEspaco.stream()
+                .filter(e -> !e.getId().equals(evento.getId()))
+                .anyMatch(e -> e.getStatus() == StatusEvento.APROVADO);
+        if (temConflito) {
+            throw new IllegalStateException(
+                    "Não é possível aprovar: o espaço já possui evento aprovado no mesmo período."
+            );
+        }
+
+        // RN-A2: limite de 5 eventos aprovados por promotor simultaneamente
+        List<Evento> aprovadosDoPromotor = repositorio.obterEventosAprovadosPorPromotor(evento.getPromotorId());
+        if (aprovadosDoPromotor.size() >= 5) {
+            throw new IllegalStateException(
+                    "Promotor já atingiu o limite de 5 eventos aprovados simultaneamente."
+            );
+        }
+
         evento.aprovar();
         repositorio.atualizar(evento);
     }

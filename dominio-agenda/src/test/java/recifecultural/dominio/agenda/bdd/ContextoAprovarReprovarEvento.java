@@ -18,8 +18,10 @@ public class ContextoAprovarReprovarEvento {
 
     public ContextoAprovarReprovarEvento() {
         repositorioEvento = Mockito.mock(IEventoRepositorio.class);
-        Mockito.when(repositorioEvento.obterReprovacoesPorPromotor(any()))
-               .thenReturn(List.of());
+        Mockito.when(repositorioEvento.obterReprovacoesPorPromotor(any())).thenReturn(List.of());
+        Mockito.when(repositorioEvento.obterEventosFinalizadosPorPromotor(any())).thenReturn(List.of());
+        Mockito.when(repositorioEvento.obterEventosAprovadosPorPromotor(any())).thenReturn(List.of());
+        Mockito.when(repositorioEvento.obterPorLocalEIntervalo(any(), any(), any())).thenReturn(List.of());
         servicoEvento = new EventoServico(repositorioEvento);
     }
 }

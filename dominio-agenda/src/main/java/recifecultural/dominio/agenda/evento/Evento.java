@@ -26,6 +26,8 @@ public class Evento {
     private StatusEvento status;
     private FeedbackReprovacao feedbackReprovacao;
     private LocalDateTime dataReprovacao;
+    private LocalDateTime dataAprovacao;
+    private boolean requerRevisaoAdicional = false;
     private String motivoCancelamento;
 
     public UUID getId() { return id; }
@@ -74,6 +76,18 @@ public class Evento {
 
     public LocalDateTime getDataReprovacao() {
         return dataReprovacao;
+    }
+
+    public LocalDateTime getDataAprovacao() {
+        return dataAprovacao;
+    }
+
+    public boolean isRequerRevisaoAdicional() {
+        return requerRevisaoAdicional;
+    }
+
+    public void marcarComoRequerRevisaoAdicional() {
+        this.requerRevisaoAdicional = true;
     }
 
     public List<LocalDateTime> getDatasApresentacao() {
@@ -149,6 +163,7 @@ public class Evento {
     public void aprovar() {
         exigirStatusEmAnalise("aprovar");
         this.status = StatusEvento.APROVADO;
+        this.dataAprovacao = LocalDateTime.now();
     }
 
     public void reprovar(FeedbackReprovacao feedback) {

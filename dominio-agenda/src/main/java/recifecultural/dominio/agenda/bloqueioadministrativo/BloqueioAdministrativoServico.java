@@ -2,7 +2,7 @@ package recifecultural.dominio.agenda.bloqueioadministrativo;
 
 import recifecultural.dominio.agenda.evento.Evento;
 import recifecultural.dominio.agenda.evento.IEventoRepositorio;
-import recifecultural.dominio.agenda.notificacao.NotificacaoServico;
+import recifecultural.dominio.compartilhado.notificacao.NotificacaoServico;
 
 import java.time.LocalDateTime;
 import java.util.List;

@@ -10,13 +10,14 @@ import recifecultural.dominio.agenda.espaco.Espaco;
 import recifecultural.dominio.agenda.espaco.EspacoServico;
 import recifecultural.dominio.agenda.espaco.IEspacoRepositorio;
 import recifecultural.dominio.agenda.espaco.EspacoId;
-import recifecultural.dominio.agenda.notificacao.INotificacaoRepositorio;
-import recifecultural.dominio.agenda.notificacao.Notificacao;
-import recifecultural.dominio.agenda.notificacao.NotificacaoServico;
 import recifecultural.dominio.agenda.equipamento.EquipamentoId;
 import recifecultural.dominio.agenda.equipamento.AlocacaoRiderTecnicoServico;
 import recifecultural.dominio.agenda.equipamento.IEquipamentoRepositorio;
 import recifecultural.dominio.agenda.equipamento.EquipamentoServico;
+
+import recifecultural.dominio.compartilhado.notificacao.Notificacao;
+import recifecultural.dominio.compartilhado.notificacao.NotificacaoServico;
+import recifecultural.dominio.compartilhado.notificacao.INotificacaoRepositorio;
 
 import java.util.UUID;
 

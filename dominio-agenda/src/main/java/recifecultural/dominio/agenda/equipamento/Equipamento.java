@@ -8,7 +8,7 @@ public class Equipamento {
     private final EspacoId espacoId;
     private String nome;
     private StatusEquipamento status;
-    private UUID eventoAlocadoId; // ID do evento que está usando a peça
+    private UUID eventoAlocadoId;
 
     public Equipamento(EspacoId espacoId, String nome) {
         if (espacoId == null) throw new IllegalArgumentException("Espaço é obrigatório.");
@@ -31,8 +31,6 @@ public class Equipamento {
 
     public void enviarParaManutencao() {
         this.status = StatusEquipamento.EM_MANUTENCAO;
-        // Não limpamos o eventoAlocadoId aqui de propósito!
-        // O serviço usará essa informação para alertar o evento antes de desvincular.
     }
 
     public void liberar() {

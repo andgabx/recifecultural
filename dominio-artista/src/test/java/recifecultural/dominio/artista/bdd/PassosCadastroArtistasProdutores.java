@@ -61,10 +61,6 @@ public class PassosCadastroArtistasProdutores {
         produtorServico = new ProdutorServico(produtorRepo, artistaRepo);
     }
 
-    // =========================================================================
-    // DADO — Produtor
-    // =========================================================================
-
     @Dado("que existe um produtor salvo no repositório com status {string}")
     public void queExisteUmProdutorSalvoNoRepositorioComStatus(String status) {
         produtorIdAtual = ProdutorId.novo();
@@ -81,7 +77,7 @@ public class PassosCadastroArtistasProdutores {
         try {
             when(produtorRepo.existePorCnpj(new Cnpj(cnpj))).thenReturn(false);
         } catch (IllegalArgumentException ignored) {
-            // CNPJ inválido: repositório nunca será consultado
+
         }
     }
 
@@ -89,10 +85,6 @@ public class PassosCadastroArtistasProdutores {
     public void queExisteUmProdutorCadastradoComOCnpj(String cnpj) {
         when(produtorRepo.existePorCnpj(new Cnpj(cnpj))).thenReturn(true);
     }
-
-    // =========================================================================
-    // DADO — Artista
-    // =========================================================================
 
     @Dado("que existe um artista salvo no repositório com status {string}")
     public void queExisteUmArtistaSalvoNoRepositorioComStatus(String status) {
@@ -115,10 +107,6 @@ public class PassosCadastroArtistasProdutores {
         when(artistaRepo.existePorNomeEProdutor(nome, produtorIdAtual)).thenReturn(false);
     }
 
-    // =========================================================================
-    // DADO — Artistas vinculados ao produtor
-    // =========================================================================
-
     @Dado("o produtor possui ao menos um artista com status {string}")
     public void oProdutorPossuiAoMenosUmArtistaComStatus(String status) {
         Artista a = new Artista(
@@ -132,10 +120,6 @@ public class PassosCadastroArtistasProdutores {
     public void oProdutorNaoPossuiArtistasAtivosVinculados() {
         when(artistaRepo.listarPorProdutor(produtorIdAtual)).thenReturn(Collections.emptyList());
     }
-
-    // =========================================================================
-    // QUANDO — Cadastro de Produtor
-    // =========================================================================
 
     @Quando("eu solicitar o cadastro de um produtor com nome fantasia {string}, CNPJ {string}, e-mail {string} e telefone {string}")
     public void euSolicitarOCadastroDeProdutorCompleto(String nome, String cnpj, String email, String telefone) {
@@ -151,10 +135,6 @@ public class PassosCadastroArtistasProdutores {
         }
     }
 
-    // =========================================================================
-    // QUANDO — Cadastro de Artista (gênero musical ignorado — campo removido)
-    // =========================================================================
-
     @Quando("eu solicitar o cadastro de um artista com nome {string}, gênero musical {string} e este produtor")
     public void euSolicitarOCadastroDeArtista(String nome, String generoMusical) {
         excecaoCapturada = null;
@@ -168,10 +148,6 @@ public class PassosCadastroArtistasProdutores {
             excecaoCapturada = e;
         }
     }
-
-    // =========================================================================
-    // QUANDO — Ciclo de vida do Produtor
-    // =========================================================================
 
     @Quando("eu solicitar a inativação deste produtor")
     public void euSolicitarAInativacaoDesteProdutor() {
@@ -193,10 +169,6 @@ public class PassosCadastroArtistasProdutores {
         try { produtorServico.reativar(produtorIdAtual); }
         catch (Exception e) { excecaoCapturada = e; }
     }
-
-    // =========================================================================
-    // QUANDO — Ciclo de vida do Artista
-    // =========================================================================
 
     @Quando("eu solicitar a inativação deste artista")
     public void euSolicitarAInativacaoDesteArtista() {
@@ -226,10 +198,6 @@ public class PassosCadastroArtistasProdutores {
         }
     }
 
-    // =========================================================================
-    // ENTÃO — Sucesso no cadastro de Produtor
-    // =========================================================================
-
     @Então("o produtor deve ser cadastrado com sucesso")
     public void oProdutorDeveSerCadastradoComSucesso() {
         assertNull(excecaoCapturada, mensagemFalha());
@@ -243,10 +211,6 @@ public class PassosCadastroArtistasProdutores {
         assertEquals(StatusProdutor.valueOf(status), produtorSalvo.getStatus());
     }
 
-    // =========================================================================
-    // ENTÃO — Sucesso no cadastro de Artista
-    // =========================================================================
-
     @Então("o artista deve ser cadastrado com sucesso")
     public void oArtistaDeveSerCadastradoComSucesso() {
         assertNull(excecaoCapturada, mensagemFalha());
@@ -259,10 +223,6 @@ public class PassosCadastroArtistasProdutores {
         assertNotNull(artistaSalvo);
         assertEquals(StatusArtista.valueOf(status), artistaSalvo.getStatus());
     }
-
-    // =========================================================================
-    // ENTÃO — Atualização de status via repositório
-    // =========================================================================
 
     @Então("o produtor deve ser atualizado para o status {string}")
     public void oProdutorDeveSerAtualizadoParaOStatus(String status) {
@@ -278,10 +238,6 @@ public class PassosCadastroArtistasProdutores {
                 argThat(a -> a.getStatus() == StatusArtista.valueOf(status)));
     }
 
-    // =========================================================================
-    // ENTÃO — Rider Técnico
-    // =========================================================================
-
     @Então("o rider técnico deve ser atualizado com sucesso")
     public void oRiderTecnicoDeveSerAtualizadoComSucesso() {
         assertNull(excecaoCapturada, mensagemFalha());
@@ -289,19 +245,11 @@ public class PassosCadastroArtistasProdutores {
                 argThat(a -> !a.getRiderTecnico().itens().isEmpty()));
     }
 
-    // =========================================================================
-    // ENTÃO — Anonimização LGPD
-    // =========================================================================
-
     @Então("os dados de e-mail e telefone devem ser anonimizados")
     public void osDadosDeEmailETelefoneDevemSerAnonimizados() {
         verify(produtorRepo, times(1)).atualizar(argThat(p ->
                 "anonimizado@lgpd.recife.br".equals(p.getEmail()) && p.getTelefone() == null));
     }
-
-    // =========================================================================
-    // ENTÃO — Rejeições genéricas
-    // =========================================================================
 
     @Então("a operação deve ser rejeitada")
     public void aOperacaoDeveSerRejeitada() {
@@ -312,10 +260,6 @@ public class PassosCadastroArtistasProdutores {
     public void oCadastroDeveSerRejeitado() {
         assertNotNull(excecaoCapturada, "Esperava rejeição do cadastro, mas ele teve sucesso.");
     }
-
-    // =========================================================================
-    // ENTÃO — Mensagens de validação
-    // =========================================================================
 
     @Então("a validação deve informar que o CNPJ é inválido")
     public void aValidacaoDeveInformarQueCnpjEhInvalido() {
@@ -366,10 +310,6 @@ public class PassosCadastroArtistasProdutores {
         assertTrue(excecaoCapturada.getMessage().toLowerCase().contains("inativo"),
                 "Esperava mensagem sobre produtor inativo. Obtido: " + excecaoCapturada.getMessage());
     }
-
-    // =========================================================================
-    // Utilitário
-    // =========================================================================
 
     private String mensagemFalha() {
         return excecaoCapturada != null

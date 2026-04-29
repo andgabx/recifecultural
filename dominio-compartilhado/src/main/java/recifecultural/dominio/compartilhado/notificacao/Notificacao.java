@@ -1,4 +1,4 @@
-package recifecultural.dominio.agenda.notificacao;
+package recifecultural.dominio.compartilhado.notificacao;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;

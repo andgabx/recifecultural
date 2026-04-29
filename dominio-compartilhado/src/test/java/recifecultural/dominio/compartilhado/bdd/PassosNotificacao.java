@@ -1,24 +1,25 @@
-package recifecultural.dominio.agenda.bdd;
+package recifecultural.dominio.compartilhado.bdd;
 
 import io.cucumber.java.pt.Dado;
 import io.cucumber.java.pt.E;
 import io.cucumber.java.pt.Então;
 import io.cucumber.java.pt.Quando;
+import org.junit.jupiter.api.Assertions;
 import org.mockito.ArgumentCaptor;
-import recifecultural.dominio.agenda.notificacao.Notificacao;
+import org.mockito.Mockito;
+import recifecultural.dominio.compartilhado.notificacao.Notificacao;
 
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 public class PassosNotificacao {
 
-    private final ContextoCenario contexto;
+    private final NotificacaoCenario contexto;
     private ArgumentCaptor<Notificacao> notificacaoCaptor;
     private UUID idReferenciaAtual; // Utilizado no teste de contexto/referência
 
-    public PassosNotificacao(ContextoCenario contexto) {
+    public PassosNotificacao(NotificacaoCenario contexto) {
         this.contexto = contexto;
         this.notificacaoCaptor = ArgumentCaptor.forClass(Notificacao.class);
     }
@@ -40,8 +41,8 @@ public class PassosNotificacao {
 
     @Então("a notificação direta deve ser salva com sucesso no repositório")
     public void aNotificacaoDiretaDeveSerSalvaComSucessoNoRepositorio() {
-        assertNull(contexto.excecaoCapturada, "Não deveria ter lançado exceção");
-        verify(contexto.repositorioNotificacao, times(1)).salvar(notificacaoCaptor.capture());
+        Assertions.assertNull(contexto.excecaoCapturada, "Não deveria ter lançado exceção");
+        Mockito.verify(contexto.repositorioNotificacao, Mockito.times(1)).salvar(notificacaoCaptor.capture());
 
         Notificacao salva = notificacaoCaptor.getValue();
         assertNotNull(salva);
@@ -60,8 +61,8 @@ public class PassosNotificacao {
 
     @Então("a notificação de broadcast deve ser salva com sucesso no repositório")
     public void aNotificacaoDeBroadcastDeveSerSalvaComSucessoNoRepositorio() {
-        assertNull(contexto.excecaoCapturada, "Não deveria ter lançado exceção");
-        verify(contexto.repositorioNotificacao, times(1)).salvar(notificacaoCaptor.capture());
+        Assertions.assertNull(contexto.excecaoCapturada, "Não deveria ter lançado exceção");
+        Mockito.verify(contexto.repositorioNotificacao, Mockito.times(1)).salvar(notificacaoCaptor.capture());
 
         Notificacao salva = notificacaoCaptor.getValue();
         assertNotNull(salva);
@@ -74,7 +75,7 @@ public class PassosNotificacao {
         contexto.idUsuarioAtual = UUID.fromString(idUsuario);
         contexto.notificacaoAtual = new Notificacao(contexto.idUsuarioAtual, mensagem);
 
-        when(contexto.repositorioNotificacao.obter(contexto.notificacaoAtual.getId())).thenReturn(contexto.notificacaoAtual);
+        Mockito.when(contexto.repositorioNotificacao.obter(contexto.notificacaoAtual.getId())).thenReturn(contexto.notificacaoAtual);
     }
 
     @Quando("o usuário solicitar a marcação desta notificação como lida")
@@ -90,14 +91,14 @@ public class PassosNotificacao {
     public void aNotificacaoDeveSerAtualizadaEConstarComoLidaPeloSistema() {
         assertNull(contexto.excecaoCapturada);
         assertTrue(contexto.notificacaoAtual.isFoiLida(), "A notificação direta deveria estar marcada como lida");
-        verify(contexto.repositorioNotificacao, times(1)).atualizar(contexto.notificacaoAtual);
+        Mockito.verify(contexto.repositorioNotificacao, Mockito.times(1)).atualizar(contexto.notificacaoAtual);
     }
 
     @Dado("que existe um broadcast pendente com a mensagem {string}")
     public void queExisteUmBroadcastPendenteComAMensagem(String mensagem) {
         contexto.notificacaoAtual = Notificacao.criarBroadcast(mensagem);
 
-        when(contexto.repositorioNotificacao.obter(contexto.notificacaoAtual.getId())).thenReturn(contexto.notificacaoAtual);
+        Mockito.when(contexto.repositorioNotificacao.obter(contexto.notificacaoAtual.getId())).thenReturn(contexto.notificacaoAtual);
     }
 
     @E("um usuário leitor com ID {string}")
@@ -120,7 +121,7 @@ public class PassosNotificacao {
         assertTrue(contexto.notificacaoAtual.isBroadcast(), "Deveria ser um broadcast");
         assertTrue(contexto.notificacaoAtual.isLidaPor(contexto.idUsuarioAtual), "Broadcast deveria estar lido pelo usuário especificado");
         assertTrue(contexto.notificacaoAtual.getLidaPor().contains(contexto.idUsuarioAtual));
-        verify(contexto.repositorioNotificacao, times(1)).atualizar(contexto.notificacaoAtual);
+        Mockito.verify(contexto.repositorioNotificacao, Mockito.times(1)).atualizar(contexto.notificacaoAtual);
     }
 
     @Dado("que o usuário {string} possui uma notificação direta lida com a mensagem {string}")
@@ -129,7 +130,7 @@ public class PassosNotificacao {
         contexto.notificacaoAtual = new Notificacao(contexto.idUsuarioAtual, mensagem);
         contexto.notificacaoAtual.marcarComoLida(contexto.idUsuarioAtual);
 
-        when(contexto.repositorioNotificacao.obter(contexto.notificacaoAtual.getId())).thenReturn(contexto.notificacaoAtual);
+        Mockito.when(contexto.repositorioNotificacao.obter(contexto.notificacaoAtual.getId())).thenReturn(contexto.notificacaoAtual);
     }
 
     @Quando("o usuário solicitar a marcação desta notificação como não lida")
@@ -145,7 +146,7 @@ public class PassosNotificacao {
     public void aNotificacaoDeveSerAtualizadaEConstarComoNaoLidaPeloSistema() {
         assertNull(contexto.excecaoCapturada);
         assertFalse(contexto.notificacaoAtual.isFoiLida(), "A notificação deveria constar como não lida");
-        verify(contexto.repositorioNotificacao, times(1)).atualizar(contexto.notificacaoAtual);
+        Mockito.verify(contexto.repositorioNotificacao, Mockito.times(1)).atualizar(contexto.notificacaoAtual);
     }
 
     @Dado("um evento de referência com ID {string}")
@@ -164,8 +165,8 @@ public class PassosNotificacao {
 
     @Então("a notificação deve ser salva contendo o contexto {string} e a referência correta")
     public void aNotificacaoDeveSerSalvaContendoOContextoEAReferenciaCorreta(String contextoEsperado) {
-        assertNull(contexto.excecaoCapturada, "Não deveria ter lançado exceção");
-        verify(contexto.repositorioNotificacao, times(1)).salvar(notificacaoCaptor.capture());
+        Assertions.assertNull(contexto.excecaoCapturada, "Não deveria ter lançado exceção");
+        Mockito.verify(contexto.repositorioNotificacao, Mockito.times(1)).salvar(notificacaoCaptor.capture());
 
         Notificacao salva = notificacaoCaptor.getValue();
         assertNotNull(salva);

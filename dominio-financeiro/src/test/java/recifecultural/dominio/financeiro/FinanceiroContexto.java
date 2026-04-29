@@ -13,7 +13,6 @@ public class FinanceiroContexto {
     public final IIngressoRepositorio ingressoRepositorio;
     public final DesempenhoTeatroServico servico;
 
-    // estado compartilhado entre step definitions
     public OrcamentoId orcamentoId;
     public ResultadoRegistroDespesa resultado;
     public Periodo periodoAtual;

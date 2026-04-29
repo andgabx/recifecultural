@@ -54,8 +54,6 @@ public class PassosDiscutirEventos {
         eventoIdCorrente = contexto.evento.getId();
     }
 
-    // --- HU-1: Postar comentários ---
-
     @Quando("o espectador tentar postar um comentário com texto {string}")
     public void oEspectadorTentarPostarComentarioComTexto(String texto) {
         try {
@@ -95,8 +93,6 @@ public class PassosDiscutirEventos {
         assertNotNull(contexto.excecaoCapturada);
         assertInstanceOf(IllegalArgumentException.class, contexto.excecaoCapturada);
     }
-
-    // --- HU-2: Curtir comentários ---
 
     @Dado("um comentário postado pelo próprio espectador")
     public void umComentarioPostadoPeloProprioEspectador() {
@@ -159,8 +155,6 @@ public class PassosDiscutirEventos {
         assertTrue(contexto.comentario.getCurtidas().contains(contexto.espectador.getId()));
     }
 
-    // --- HU-3: Responder comentários ---
-
     @Dado("um comentário existente no sistema")
     public void umComentarioExistenteNoSistema() {
         contexto.comentario = new Comentario(
@@ -219,8 +213,6 @@ public class PassosDiscutirEventos {
         assertEquals(comentarioPaiId, contexto.comentario.getComentarioPaiId());
     }
 
-    // --- HU-4: Visualizar comentários ---
-
     @Quando("o autor deletar o comentário")
     public void oAutorDeletarOComentario() {
         contexto.comentarioServico.deletar(contexto.comentario.getId());
@@ -248,8 +240,6 @@ public class PassosDiscutirEventos {
     public void aListagemDeveEstarVazia() {
         assertNull(contexto.comentario);
     }
-
-    // --- HU-5: Comentário com nota ---
 
     @Dado("o espectador não esteve presente no evento")
     public void oEspectadorNaoEstevePresenteNoEvento() {

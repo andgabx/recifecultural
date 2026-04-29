@@ -11,7 +11,7 @@ import recifecultural.dominio.agenda.evento.Evento;
 import recifecultural.dominio.agenda.evento.Periodo;
 import recifecultural.dominio.agenda.evento.Preco;
 import recifecultural.dominio.agenda.evento.StatusEvento;
-import recifecultural.dominio.agenda.notificacao.Notificacao;
+import recifecultural.dominio.compartilhado.notificacao.Notificacao;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

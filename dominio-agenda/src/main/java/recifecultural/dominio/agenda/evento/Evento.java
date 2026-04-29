@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-
 public class Evento {
     private final UUID id;
     private final UUID promotorId;
@@ -18,12 +17,17 @@ public class Evento {
 
     private Periodo periodo;
     private final List<LocalDateTime> datasApresentacao;
+    private final List<UUID> artistas;
+    private String categoria;
     private URI enderecoIngresso;
 
     private Preco preco;
 
     private StatusEvento status;
     private FeedbackReprovacao feedbackReprovacao;
+    private LocalDateTime dataReprovacao;
+    private LocalDateTime dataAprovacao;
+    private boolean requerRevisaoAdicional = false;
     private String motivoCancelamento;
 
     public UUID getId() { return id; }
@@ -70,8 +74,32 @@ public class Evento {
         return motivoCancelamento;
     }
 
+    public LocalDateTime getDataReprovacao() {
+        return dataReprovacao;
+    }
+
+    public LocalDateTime getDataAprovacao() {
+        return dataAprovacao;
+    }
+
+    public boolean isRequerRevisaoAdicional() {
+        return requerRevisaoAdicional;
+    }
+
+    public void marcarComoRequerRevisaoAdicional() {
+        this.requerRevisaoAdicional = true;
+    }
+
     public List<LocalDateTime> getDatasApresentacao() {
         return Collections.unmodifiableList(datasApresentacao);
+    }
+
+    public List<UUID> getArtistas() {
+        return Collections.unmodifiableList(artistas);
+    }
+
+    public String getCategoria() {
+        return categoria;
     }
 
     private void setTitulo(String titulo) {
@@ -102,26 +130,46 @@ public class Evento {
 
         this.periodo = periodo;
         this.datasApresentacao = new ArrayList<>();
+        this.artistas = new ArrayList<>();
         this.enderecoIngresso = enderecoIngresso;
         this.preco = preco;
 
         this.status = StatusEvento.RASCUNHO;
     }
 
+    public void adicionarArtista(UUID artistaId) {
+        if (artistaId == null) throw new IllegalArgumentException("ID do artista é obrigatório.");
+        this.artistas.add(artistaId);
+    }
+
+    public void definirCategoria(String categoria) {
+        if (categoria == null || categoria.isBlank())
+            throw new IllegalArgumentException("Categoria é obrigatória.");
+        this.categoria = categoria;
+    }
+
     public void submeterParaAnalise() {
         if (datasApresentacao.isEmpty())
             throw new IllegalStateException("O evento deve ter pelo menos uma data de apresentação para ser submetido à análise.");
+        if (artistas.isEmpty())
+            throw new IllegalStateException("O evento deve ter pelo menos um artista incluído para ser submetido à análise.");
+        if (categoria == null || categoria.isBlank())
+            throw new IllegalStateException("O evento deve ter uma categoria definida para ser submetido à análise.");
+        if (localId == null)
+            throw new IllegalStateException("O evento deve ter um espaço definido para ser submetido à análise.");
         this.status = StatusEvento.EM_ANALISE;
     }
 
     public void aprovar() {
         exigirStatusEmAnalise("aprovar");
         this.status = StatusEvento.APROVADO;
+        this.dataAprovacao = LocalDateTime.now();
     }
 
     public void reprovar(FeedbackReprovacao feedback) {
         exigirStatusEmAnalise("reprovar");
         this.feedbackReprovacao = feedback;
+        this.dataReprovacao = LocalDateTime.now();
         this.status = StatusEvento.REPROVADO;
     }
 

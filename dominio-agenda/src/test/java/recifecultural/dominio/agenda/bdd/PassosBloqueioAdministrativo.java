@@ -87,6 +87,8 @@ public class PassosBloqueioAdministrativo {
                 new Preco(BigDecimal.TEN, BigDecimal.ONE, null)
         );
 
+        eventoConflitante.adicionarArtista(UUID.randomUUID());
+        eventoConflitante.definirCategoria("Música");
         eventoConflitante.programarApresentacao(inicio.plusDays(2));
         eventoConflitante.submeterParaAnalise();
         eventoConflitante.aprovar();

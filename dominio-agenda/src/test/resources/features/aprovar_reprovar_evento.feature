@@ -45,3 +45,112 @@ Funcionalidade: Aprovar/Reprovar evento
       Dado um evento cadastrado com uma data de apresentação programada
       Quando o promotor submeter o evento para análise
       Então o status do evento deve ser "EM_ANALISE"
+
+  # Um promotor com muitas reprovações recentes fica temporariamente impedido de submeter novos eventos
+  Regra: Promotor com 3 ou mais reprovações nos últimos 90 dias fica bloqueado por 30 dias
+
+    Cenário: Promotor tenta submeter evento após acumular 3 reprovações recentes
+      Dado um evento pronto para submissão de um promotor com 3 reprovações nos últimos 90 dias
+      Quando o promotor tentar submeter o evento para análise
+      Então o sistema deve lançar um erro de bloqueio por excesso de reprovações
+
+    Cenário: Promotor com reprovações antigas não é bloqueado
+      Dado um evento pronto para submissão de um promotor com 3 reprovações há mais de 90 dias
+      Quando o promotor submeter o evento para análise
+      Então o status do evento deve ser "EM_ANALISE"
+
+  # O promotor deve vincular ao menos um artista antes de submeter o evento para avaliação
+  Regra: Evento deve ter pelo menos um artista incluído para ser submetido à análise
+
+    Cenário: Promotor tenta submeter evento sem artistas
+      Dado um evento cadastrado com apresentação e categoria mas sem artistas
+      Quando o promotor tentar submeter o evento para análise
+      Então o sistema deve lançar um erro de submissão inválida
+
+    Cenário: Promotor submete evento com artista incluído
+      Dado um evento completo cadastrado
+      Quando o promotor submeter o evento para análise
+      Então o status do evento deve ser "EM_ANALISE"
+
+  # O evento precisa ter uma categoria cultural definida para que o gestor possa avaliá-lo
+  Regra: Evento deve ter categoria definida para ser submetido à análise
+
+    Cenário: Promotor tenta submeter evento sem categoria
+      Dado um evento cadastrado com apresentação e artistas mas sem categoria
+      Quando o promotor tentar submeter o evento para análise
+      Então o sistema deve lançar um erro de submissão inválida
+
+    Cenário: Promotor submete evento com categoria definida
+      Dado um evento completo cadastrado
+      Quando o promotor submeter o evento para análise
+      Então o status do evento deve ser "EM_ANALISE"
+
+  # O promotor pode criar e manter o evento como rascunho enquanto preenche os dados gradualmente,
+  # sem precisar completar todos os campos exigidos na submissão
+  Regra: Promotor pode salvar evento como rascunho sem preencher todos os campos de submissão
+
+    Cenário: Promotor salva evento com dados incompletos como rascunho
+      Dado um evento criado sem artistas, sem categoria e sem datas de apresentação
+      Então o status do evento deve ser "RASCUNHO"
+
+    Cenário: Promotor adiciona artista a evento em rascunho
+      Dado um evento criado sem artistas, sem categoria e sem datas de apresentação
+      Quando o promotor adicionar um artista ao evento
+      Então o evento deve ter pelo menos um artista registrado
+
+  # O promotor deve selecionar um espaço existente antes de submeter o evento para análise
+  Regra: Evento deve ter um espaço definido para ser submetido à análise
+
+    Cenário: Promotor tenta submeter evento sem espaço definido
+      Dado um evento completo cadastrado sem espaço definido
+      Quando o promotor tentar submeter o evento para análise
+      Então o sistema deve lançar um erro de submissão inválida
+
+    Cenário: Promotor submete evento com espaço selecionado
+      Dado um evento completo cadastrado
+      Quando o promotor submeter o evento para análise
+      Então o status do evento deve ser "EM_ANALISE"
+
+  # O gestor não pode aprovar um evento se o espaço já estiver ocupado por outro evento aprovado no mesmo período
+  Regra: Não é permitido aprovar evento quando o espaço já está ocupado no mesmo período
+
+    Cenário: Gestor tenta aprovar evento com conflito de espaço
+      Dado um evento submetido para análise em espaço ocupado por evento aprovado no mesmo período
+      Quando o gestor tentar aprovar o evento
+      Então o sistema deve lançar um erro de conflito de espaço
+
+    Cenário: Gestor aprova evento em espaço disponível no período
+      Dado um evento submetido para análise em espaço disponível no período
+      Quando o gestor aprovar o evento
+      Então o status do evento deve ser "APROVADO"
+
+  # Um promotor não pode ter mais de 5 eventos aprovados ao mesmo tempo
+  Regra: Promotor não pode ter mais de 5 eventos aprovados simultaneamente
+
+    Cenário: Gestor tenta aprovar evento de promotor que atingiu o limite
+      Dado um evento submetido para análise de um promotor com 5 eventos já aprovados
+      Quando o gestor tentar aprovar o evento
+      Então o sistema deve lançar um erro de limite de eventos aprovados atingido
+
+    Cenário: Gestor aprova evento de promotor abaixo do limite
+      Dado um evento submetido para análise de um promotor com 4 eventos já aprovados
+      Quando o gestor aprovar o evento
+      Então o status do evento deve ser "APROVADO"
+
+  # Promotores com baixo índice de aprovação nos últimos 12 meses têm eventos sinalizados para revisão adicional
+  Regra: Evento de promotor com taxa histórica de aprovação inferior a 30% é marcado para revisão adicional
+
+    Cenário: Promotor com baixa taxa de aprovação tem evento marcado para revisão
+      Dado um evento pronto para submissão de um promotor com taxa de aprovação de 20% nos últimos 12 meses
+      Quando o promotor submeter o evento para análise
+      Então o evento deve estar marcado como requer revisão adicional
+
+    Cenário: Promotor com boa taxa de aprovação não tem evento marcado para revisão
+      Dado um evento pronto para submissão de um promotor com taxa de aprovação de 60% nos últimos 12 meses
+      Quando o promotor submeter o evento para análise
+      Então o evento não deve estar marcado como requer revisão adicional
+
+    Cenário: Promotor com histórico insuficiente não é penalizado
+      Dado um evento pronto para submissão de um promotor com apenas 3 eventos finalizados nos últimos 12 meses
+      Quando o promotor submeter o evento para análise
+      Então o evento não deve estar marcado como requer revisão adicional

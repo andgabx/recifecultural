@@ -147,6 +147,8 @@ public class PassosAcessibilidade {
                 null,
                 new Preco(new BigDecimal("50.00"), new BigDecimal("25.00"), null)
         );
+        evento.adicionarArtista(UUID.randomUUID());
+        evento.definirCategoria("Teatro");
         evento.programarApresentacao(agora.plusDays(20));
         return evento;
     }

@@ -1,11 +1,13 @@
 package recifecultural.dominio.cupom;
 
-import lombok.AllArgsConstructor;
 import java.time.LocalDateTime;
 
-@AllArgsConstructor
 public class AplicarCupomServico {
     private final ICupomRepositorio repositorio;
+
+    public AplicarCupomServico(ICupomRepositorio repositorio) {
+        this.repositorio = repositorio;
+    }
 
     public double aplicarDesconto(String codigo, String cpf, double valor, String categoria) {
         Cupom cupom = repositorio.buscarPorCodigo(codigo);

@@ -1,12 +1,10 @@
 package recifecultural.dominio.cupom;
 
-import lombok.Getter;
 import org.apache.commons.lang3.Validate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
-@Getter
 public class Cupom {
     private final CupomId id;
     private final String codigo;
@@ -76,5 +74,9 @@ public class Cupom {
     public void registrarUso(String cpfUsuario) {
         this.usosGlobais++;
         this.cpfsQueJaUsaram.add(cpfUsuario);
+    }
+
+    public double getPercentualDesconto() {
+        return percentualDesconto;
     }
 }

@@ -1,10 +1,7 @@
-# language: pt
 Funcionalidade: Aprovar/Reprovar evento
 
   O gestor do teatro avalia os projetos submetidos e decide por aprovar ou reprovar.
 
-  # HU-1: Aprovação e reprovação de eventos
-  # O gestor pode aprovar ou reprovar somente eventos que estejam em análise
   Regra: Apenas eventos em análise podem ser aprovados ou reprovados
 
     Cenário: Gestor aprova evento em análise
@@ -17,8 +14,6 @@ Funcionalidade: Aprovar/Reprovar evento
       Quando o gestor tentar aprovar o evento novamente
       Então o sistema deve lançar um erro de transição de status inválida
 
-  # HU-2: Feedback obrigatório na reprovação
-  # Ao reprovar um evento, o gestor deve registrar uma justificativa detalhada para o promotor
   Regra: Feedback de reprovação deve ter no mínimo 20 caracteres
 
     Cenário: Gestor tenta reprovar evento com feedback vazio
@@ -32,8 +27,6 @@ Funcionalidade: Aprovar/Reprovar evento
       Então o status do evento deve ser "REPROVADO"
       E o feedback de reprovação deve estar registrado no evento
 
-  # HU-3: Submissão de eventos para análise
-  # O evento precisa estar completo (com datas de apresentação) antes de ser avaliado pelo gestor
   Regra: Evento deve ter pelo menos uma data de apresentação para ser submetido à análise
 
     Cenário: Promotor tenta submeter evento sem apresentações programadas
@@ -46,7 +39,6 @@ Funcionalidade: Aprovar/Reprovar evento
       Quando o promotor submeter o evento para análise
       Então o status do evento deve ser "EM_ANALISE"
 
-  # Um promotor com muitas reprovações recentes fica temporariamente impedido de submeter novos eventos
   Regra: Promotor com 3 ou mais reprovações nos últimos 90 dias fica bloqueado por 30 dias
 
     Cenário: Promotor tenta submeter evento após acumular 3 reprovações recentes
@@ -59,7 +51,6 @@ Funcionalidade: Aprovar/Reprovar evento
       Quando o promotor submeter o evento para análise
       Então o status do evento deve ser "EM_ANALISE"
 
-  # O promotor deve vincular ao menos um artista antes de submeter o evento para avaliação
   Regra: Evento deve ter pelo menos um artista incluído para ser submetido à análise
 
     Cenário: Promotor tenta submeter evento sem artistas
@@ -72,7 +63,6 @@ Funcionalidade: Aprovar/Reprovar evento
       Quando o promotor submeter o evento para análise
       Então o status do evento deve ser "EM_ANALISE"
 
-  # O evento precisa ter uma categoria cultural definida para que o gestor possa avaliá-lo
   Regra: Evento deve ter categoria definida para ser submetido à análise
 
     Cenário: Promotor tenta submeter evento sem categoria
@@ -85,8 +75,6 @@ Funcionalidade: Aprovar/Reprovar evento
       Quando o promotor submeter o evento para análise
       Então o status do evento deve ser "EM_ANALISE"
 
-  # O promotor pode criar e manter o evento como rascunho enquanto preenche os dados gradualmente,
-  # sem precisar completar todos os campos exigidos na submissão
   Regra: Promotor pode salvar evento como rascunho sem preencher todos os campos de submissão
 
     Cenário: Promotor salva evento com dados incompletos como rascunho
@@ -98,7 +86,6 @@ Funcionalidade: Aprovar/Reprovar evento
       Quando o promotor adicionar um artista ao evento
       Então o evento deve ter pelo menos um artista registrado
 
-  # O promotor deve selecionar um espaço existente antes de submeter o evento para análise
   Regra: Evento deve ter um espaço definido para ser submetido à análise
 
     Cenário: Promotor tenta submeter evento sem espaço definido
@@ -111,7 +98,6 @@ Funcionalidade: Aprovar/Reprovar evento
       Quando o promotor submeter o evento para análise
       Então o status do evento deve ser "EM_ANALISE"
 
-  # O gestor não pode aprovar um evento se o espaço já estiver ocupado por outro evento aprovado no mesmo período
   Regra: Não é permitido aprovar evento quando o espaço já está ocupado no mesmo período
 
     Cenário: Gestor tenta aprovar evento com conflito de espaço
@@ -124,7 +110,6 @@ Funcionalidade: Aprovar/Reprovar evento
       Quando o gestor aprovar o evento
       Então o status do evento deve ser "APROVADO"
 
-  # Um promotor não pode ter mais de 5 eventos aprovados ao mesmo tempo
   Regra: Promotor não pode ter mais de 5 eventos aprovados simultaneamente
 
     Cenário: Gestor tenta aprovar evento de promotor que atingiu o limite
@@ -137,7 +122,6 @@ Funcionalidade: Aprovar/Reprovar evento
       Quando o gestor aprovar o evento
       Então o status do evento deve ser "APROVADO"
 
-  # Promotores com baixo índice de aprovação nos últimos 12 meses têm eventos sinalizados para revisão adicional
   Regra: Evento de promotor com taxa histórica de aprovação inferior a 30% é marcado para revisão adicional
 
     Cenário: Promotor com baixa taxa de aprovação tem evento marcado para revisão

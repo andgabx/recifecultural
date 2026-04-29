@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY . .
 RUN chmod +x mvnw \
-    && ./mvnw -pl apresentacao-backend -am package -DskipTests
+    && ./mvnw -pl apresentacao-backend -am package
 
 FROM eclipse-temurin:25-jre
 WORKDIR /app

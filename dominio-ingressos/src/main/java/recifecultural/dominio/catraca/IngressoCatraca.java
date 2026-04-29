@@ -1,17 +1,13 @@
 package recifecultural.dominio.catraca;
 
-import lombok.Getter;
 import org.apache.commons.lang3.Validate;
 import java.time.LocalDateTime;
 
-@Getter
 public class IngressoCatraca {
     private final IngressoCatracaId id;
     private final String idEvento;
     private StatusIngressoCatraca status;
     private final LocalDateTime horarioInicioEvento;
-
-
     private final TipoIngresso tipoIngresso;
     private final String portaoAcesso;
     public IngressoCatraca(
@@ -62,4 +58,11 @@ public class IngressoCatraca {
 
         this.status = StatusIngressoCatraca.UTILIZADO;
     }
+
+    public IngressoCatracaId getId() { return id; }
+    public String getIdEvento() { return idEvento; }
+    public StatusIngressoCatraca getStatus() { return status; }
+    public LocalDateTime getHorarioInicioEvento() { return horarioInicioEvento; }
+    public TipoIngresso getTipoIngresso() { return tipoIngresso; }
+    public String getPortaoAcesso() { return portaoAcesso; }
 }

@@ -27,7 +27,6 @@ public class EspacoServico {
         Espaco espaco = espacoRepositorio.obterPorId(espacoId)
                 .orElseThrow(() -> new IllegalArgumentException("Espaço não encontrado."));
 
-        // A regra de negócio está protegida dentro da Entidade
         espaco.reduzirCapacidade(novaCapacidade, ingressosVendidosFuturos);
 
         espacoRepositorio.atualizar(espaco);

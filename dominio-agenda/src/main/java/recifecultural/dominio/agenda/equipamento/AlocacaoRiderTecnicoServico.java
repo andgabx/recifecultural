@@ -3,7 +3,7 @@ package recifecultural.dominio.agenda.equipamento;
 import recifecultural.dominio.agenda.espaco.EspacoId;
 import recifecultural.dominio.agenda.evento.Evento;
 import recifecultural.dominio.agenda.evento.IEventoRepositorio;
-import recifecultural.dominio.agenda.notificacao.NotificacaoServico;
+import recifecultural.dominio.compartilhado.notificacao.NotificacaoServico;
 
 import java.util.List;
 import java.util.UUID;
@@ -12,7 +12,7 @@ public class AlocacaoRiderTecnicoServico {
 
     private final IEquipamentoRepositorio equipamentoRepositorio;
     private final IEventoRepositorio eventoRepositorio;
-    private final NotificacaoServico notificacaoServico; // Injeção do novo serviço
+    private final NotificacaoServico notificacaoServico;
 
     public AlocacaoRiderTecnicoServico(
             IEquipamentoRepositorio equipamentoRepositorio,
@@ -46,7 +46,6 @@ public class AlocacaoRiderTecnicoServico {
             Evento eventoAfetado = eventoRepositorio.obter(eventoAfetadoId)
                     .orElseThrow(() -> new IllegalStateException("Evento vinculado não encontrado."));
 
-            // Lógica de notificação acionada aqui
             String mensagemAlerta = "ALERTA CRÍTICO: O equipamento '" + equipamento.getNome() +
                     "' alocado para o evento '" + eventoAfetado.getTitulo() +
                     "' precisou de ir para manutenção. Por favor, providencie infraestrutura externa.";

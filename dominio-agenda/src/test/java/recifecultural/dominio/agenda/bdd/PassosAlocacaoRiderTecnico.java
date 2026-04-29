@@ -39,7 +39,6 @@ public class PassosAlocacaoRiderTecnico {
 
     @E("um evento foi aprovado necessitando de {int} {string}")
     public void umEventoFoiAprovadoNecessitandoDe(int qtd, String nomeEq) {
-        // Mock preparado no passo anterior
     }
 
     @Quando("o sistema processar a alocacao do rider tecnico")
@@ -76,10 +75,8 @@ public class PassosAlocacaoRiderTecnico {
         contexto.servicoAlocacao.registrarManutencao(contexto.idEquipamentoAtual);
     }
 
-    // NOVA VALIDAÇÃO DE NOTIFICAÇÃO
     @E("o sistema deve enviar uma notificacao de alerta para o promotor do {string}")
     public void oSistemaDeveEnviarUmaNotificacaoDeAlertaParaOPromotorDo(String nomeEvento) {
-        // Verifica se o método enviarNotificacao foi chamado com o ID do promotor do evento e qualquer string de mensagem
         verify(contexto.servicoNotificacao, times(1)).enviarNotificacao(eq(contexto.evento.getPromotorId()), anyString());
     }
 

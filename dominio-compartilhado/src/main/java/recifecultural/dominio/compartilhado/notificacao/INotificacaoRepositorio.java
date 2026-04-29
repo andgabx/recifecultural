@@ -1,4 +1,4 @@
-package recifecultural.dominio.agenda.notificacao;
+package recifecultural.dominio.compartilhado.notificacao;
 
 import java.util.List;
 import java.util.UUID;

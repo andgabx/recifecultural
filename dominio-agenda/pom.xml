@@ -46,5 +46,10 @@
             <version>5.17.0</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>recifecultural-dominio-compartilhado</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>

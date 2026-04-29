@@ -1,4 +1,4 @@
-package recifecultural.dominio.agenda.espaco;
+package recifecultural.dominio.espaco.espaco;
 
 import java.util.UUID;
 

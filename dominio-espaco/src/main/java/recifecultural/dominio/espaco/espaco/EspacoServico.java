@@ -1,11 +1,11 @@
-package recifecultural.dominio.agenda.espaco;
+package recifecultural.dominio.espaco.espaco;
 
 
-import recifecultural.dominio.agenda.espaco.Espaco;
-import recifecultural.dominio.agenda.espaco.IEspacoRepositorio;
+import recifecultural.dominio.espaco.espaco.Espaco;
+import recifecultural.dominio.espaco.espaco.IEspacoRepositorio;
 import java.util.List;
-import recifecultural.dominio.agenda.espaco.EspacoId;
-import recifecultural.dominio.agenda.espaco.Ocupacao;
+import recifecultural.dominio.espaco.espaco.EspacoId;
+import recifecultural.dominio.espaco.espaco.Ocupacao;
 
 
 public class EspacoServico {

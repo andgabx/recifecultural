@@ -1,7 +1,7 @@
 package recifecultural.dominio.agenda.bdd;
 
 import io.cucumber.java.pt.*;
-import recifecultural.dominio.agenda.espaco.EspacoId;
+import recifecultural.dominio.espaco.espaco.EspacoId;
 import recifecultural.dominio.agenda.equipamento.Equipamento;
 import recifecultural.dominio.agenda.equipamento.StatusEquipamento;
 import recifecultural.dominio.agenda.evento.Evento;

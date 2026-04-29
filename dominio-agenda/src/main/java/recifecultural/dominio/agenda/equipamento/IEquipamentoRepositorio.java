@@ -1,6 +1,6 @@
 package recifecultural.dominio.agenda.equipamento;
 
-import recifecultural.dominio.agenda.espaco.EspacoId;
+import recifecultural.dominio.espaco.espaco.EspacoId;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;

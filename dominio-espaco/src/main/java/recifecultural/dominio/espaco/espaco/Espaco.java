@@ -1,9 +1,9 @@
-package recifecultural.dominio.agenda.espaco;
+package recifecultural.dominio.espaco.espaco;
 
 
 import java.util.ArrayList;
 import java.util.List;
-import recifecultural.dominio.agenda.espaco.EspacoId;
+import recifecultural.dominio.espaco.espaco.EspacoId;
 
 public class Espaco {
     private final EspacoId id;

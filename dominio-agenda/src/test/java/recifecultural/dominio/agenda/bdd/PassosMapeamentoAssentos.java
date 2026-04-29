@@ -12,17 +12,18 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.stubbing.Answer;
 
-import recifecultural.dominio.agenda.espaco.Espaco;
-import recifecultural.dominio.agenda.espaco.EspacoId;
-import recifecultural.dominio.agenda.espaco.IEspacoRepositorio;
-import recifecultural.dominio.agenda.espaco.StatusEspaco;
-import recifecultural.dominio.agenda.setor.Setor;
-import recifecultural.dominio.agenda.setor.SetorId;
-import recifecultural.dominio.agenda.setor.TipoSetor;
-import recifecultural.dominio.agenda.setor.ISetorRepositorio;
-import recifecultural.dominio.agenda.setor.SetorServico;
-import recifecultural.dominio.agenda.setor.Assento;
-import recifecultural.dominio.agenda.setor.StatusAssento;
+import recifecultural.dominio.espaco.espaco.Espaco;
+import recifecultural.dominio.espaco.espaco.EspacoId;
+import recifecultural.dominio.espaco.espaco.IEspacoRepositorio;
+import recifecultural.dominio.espaco.espaco.StatusEspaco;
+import recifecultural.dominio.espaco.setor.Setor;
+import recifecultural.dominio.espaco.setor.SetorId;
+import recifecultural.dominio.espaco.setor.TipoSetor;
+import recifecultural.dominio.espaco.setor.ISetorRepositorio;
+import recifecultural.dominio.espaco.setor.GestaoAmbienteInternoServico;
+import recifecultural.dominio.espaco.setor.Assento;
+import recifecultural.dominio.espaco.setor.MotivoIndisponibilidadeAssento;
+import recifecultural.dominio.espaco.setor.StatusAssento;
 import recifecultural.dominio.agenda.prereserva.PreReservaServico;
 import recifecultural.dominio.agenda.prereserva.PreReserva;
 import recifecultural.dominio.agenda.prereserva.PreReservaId;
@@ -44,7 +45,7 @@ public class PassosMapeamentoAssentos {
     @Mock private ISetorRepositorio setorRepositorio;
     @Mock private IPreReservaRepositorio preReservaRepositorio;
 
-    private SetorServico setorServico;
+    private GestaoAmbienteInternoServico setorServico;
     private PreReservaServico preReservaServico;
     
     private Espaco espacoMock;
@@ -58,7 +59,7 @@ public class PassosMapeamentoAssentos {
     
     public PassosMapeamentoAssentos() {
         MockitoAnnotations.openMocks(this);
-        setorServico = new SetorServico(setorRepositorio, espacoRepositorio);
+        setorServico = new GestaoAmbienteInternoServico(setorRepositorio, espacoRepositorio);
         preReservaServico = new PreReservaServico(preReservaRepositorio, setorRepositorio);
     }
 
@@ -72,7 +73,7 @@ public class PassosMapeamentoAssentos {
 
     @Quando("eu configuro um setor com {int} fileiras e {int} assentos por fileira")
     public void euConfiguroUmSetorComFileirasEAssentosPorFileira(int fileiras, int assentos) {
-        setorConfigurado = setorServico.configurarSetor(EspacoId.novo(), "Setor 1", TipoSetor.PLATEIA, fileiras, assentos);
+        setorConfigurado = setorServico.configurarGestaoAmbiente(EspacoId.novo(), "Setor 1", TipoSetor.PLATEIA, fileiras, assentos);
     }
 
     @Então("a grade gerada deve conter os assentos {string}, {string}, {string}, {string}")
@@ -93,8 +94,8 @@ public class PassosMapeamentoAssentos {
 
     @Dado("que o assento {string} está {string}")
     public void queOAssentoEstá(String codigoAssento, String status) {
-        assentoMock = new Assento(assentoIdMock, codigoAssento, "A", 1, StatusAssento.valueOf(status), 0);
-        setorMock = new Setor(SetorId.de(setorIdMock.toString()), EspacoId.novo(), "Setor 1", TipoSetor.PLATEIA, List.of(assentoMock), 0);
+        assentoMock = new Assento(assentoIdMock, codigoAssento, "A", 1, StatusAssento.valueOf(status), MotivoIndisponibilidadeAssento.OUTRO, 0);
+        setorMock = new Setor(SetorId.de(setorIdMock.toString()), EspacoId.novo(), "Setor 1", TipoSetor.PLATEIA, 10, 10, List.of(assentoMock), 0);
         when(setorRepositorio.obterPorId(any(SetorId.class))).thenReturn(Optional.of(setorMock));
         when(preReservaRepositorio.listarAtivasPorAssento(any(UUID.class))).thenReturn(new ArrayList<>());
     }
@@ -136,8 +137,8 @@ public class PassosMapeamentoAssentos {
 
     @Dado("que o assento {string} tem uma pré-reserva expirada no passado")
     public void queOAssentoTemUmaPréReservaExpiradaNoPassado(String assentoCodigo) {
-        assentoMock = new Assento(assentoIdMock, assentoCodigo, "B", 2, StatusAssento.PRE_RESERVADO, 0);
-        setorMock = new Setor(SetorId.de(setorIdMock.toString()), EspacoId.novo(), "Setor 1", TipoSetor.PLATEIA, List.of(assentoMock), 0);
+        assentoMock = new Assento(assentoIdMock, assentoCodigo, "B", 2, StatusAssento.PRE_RESERVADO, MotivoIndisponibilidadeAssento.OUTRO, 0);
+        setorMock = new Setor(SetorId.de(setorIdMock.toString()), EspacoId.novo(), "Setor 1", TipoSetor.PLATEIA, 10, 10, List.of(assentoMock), 0);
         
         PreReserva pr = new PreReserva(PreReservaId.novo(), assentoIdMock, setorIdMock, UUID.randomUUID(), LocalDateTime.now().minusMinutes(20), LocalDateTime.now().minusMinutes(10), StatusPreReserva.ATIVA, 0);
         when(preReservaRepositorio.listarAtivasExpiradas(any(LocalDateTime.class))).thenReturn(List.of(pr));
@@ -158,8 +159,8 @@ public class PassosMapeamentoAssentos {
 
     @Dado("que o assento {string} tem uma pré-reserva {string} para o usuário {string}")
     public void queOAssentoTemUmaPréReservaParaOUsuário(String assentoCodigo, String status, String usuario) {
-        assentoMock = new Assento(assentoIdMock, assentoCodigo, "B", 2, StatusAssento.PRE_RESERVADO, 0);
-        setorMock = new Setor(SetorId.de(setorIdMock.toString()), EspacoId.novo(), "Setor 1", TipoSetor.PLATEIA, List.of(assentoMock), 0);
+        assentoMock = new Assento(assentoIdMock, assentoCodigo, "B", 2, StatusAssento.PRE_RESERVADO, MotivoIndisponibilidadeAssento.OUTRO, 0);
+        setorMock = new Setor(SetorId.de(setorIdMock.toString()), EspacoId.novo(), "Setor 1", TipoSetor.PLATEIA, 10, 10, List.of(assentoMock), 0);
         
         prAtiva = new PreReserva(PreReservaId.novo(), assentoIdMock, setorIdMock, UUID.randomUUID(), LocalDateTime.now().minusMinutes(5), LocalDateTime.now().plusMinutes(5), StatusPreReserva.valueOf(status), 0);
         when(preReservaRepositorio.obterPorId(prAtiva.getId())).thenReturn(Optional.of(prAtiva));
@@ -195,7 +196,7 @@ public class PassosMapeamentoAssentos {
 
     @Quando("o administrador bloquear o assento {string}")
     public void oAdministradorBloquearOAssento(String assentoCodigo) {
-        setorMock.bloquearAssento(assentoIdMock);
+        setorMock.bloquearAssento(assentoIdMock, MotivoIndisponibilidadeAssento.OUTRO);
     }
 
     @Quando("a compra for confirmada e o assento {string} for ocupado")

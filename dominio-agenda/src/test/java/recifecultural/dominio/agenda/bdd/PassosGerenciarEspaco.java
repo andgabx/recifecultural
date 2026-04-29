@@ -5,10 +5,10 @@ import io.cucumber.java.pt.E;
 import io.cucumber.java.pt.Entao;
 import io.cucumber.java.pt.Então;
 import io.cucumber.java.pt.Quando;
-import recifecultural.dominio.agenda.espaco.Espaco;
-import recifecultural.dominio.agenda.espaco.StatusEspaco;
-import recifecultural.dominio.agenda.espaco.EspacoId;
-import recifecultural.dominio.agenda.espaco.Ocupacao;
+import recifecultural.dominio.espaco.espaco.Espaco;
+import recifecultural.dominio.espaco.espaco.StatusEspaco;
+import recifecultural.dominio.espaco.espaco.EspacoId;
+import recifecultural.dominio.espaco.espaco.Ocupacao;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

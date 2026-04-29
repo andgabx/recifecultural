@@ -1,8 +1,8 @@
 package recifecultural.dominio.agenda.prereserva;
 
-import recifecultural.dominio.agenda.setor.ISetorRepositorio;
-import recifecultural.dominio.agenda.setor.Setor;
-import recifecultural.dominio.agenda.setor.SetorId;
+import recifecultural.dominio.espaco.setor.ISetorRepositorio;
+import recifecultural.dominio.espaco.setor.Setor;
+import recifecultural.dominio.espaco.setor.SetorId;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;

@@ -8,7 +8,8 @@ import java.util.Set;
 public class Cupom {
     private final CupomId id;
     private final String codigo;
-    private final double percentualDesconto;
+    private final TipoDesconto tipoDesconto;
+    private final double valorDesconto;
     private final double valorMinimoPedido;
 
     private final int limiteGlobal;
@@ -24,7 +25,8 @@ public class Cupom {
     public Cupom(
             CupomId id,
             String codigo,
-            double percentualDesconto,
+            TipoDesconto tipoDesconto,
+            double valorDesconto,
             double valorMinimoPedido,
             int limiteGlobal,
             int limitePorCpf,
@@ -34,7 +36,13 @@ public class Cupom {
 
         Validate.notNull(id, "Id do cupom é obrigatório.");
         Validate.notBlank(codigo, "O código textual do cupom é obrigatório.");
-        Validate.isTrue(percentualDesconto > 0 && percentualDesconto <= 100, "Desconto deve ser entre 1 e 100%.");
+        Validate.notNull(tipoDesconto, "O tipo de desconto é obrigatório.");
+        if (tipoDesconto == TipoDesconto.PERCENTUAL) {
+            Validate.isTrue(valorDesconto > 0 && valorDesconto <= 100, "Desconto percentual deve ser entre 1 e 100%.");
+        } else {
+            Validate.isTrue(valorDesconto > 0, "O valor de desconto fixo deve ser maior que zero.");
+        }
+
         Validate.notNull(dataInicio, "Data de início é obrigatória.");
         Validate.notNull(dataFim, "Data de fim é obrigatória.");
         Validate.isTrue(dataFim.isAfter(dataInicio), "A data de fim deve ser posterior à de início.");
@@ -42,7 +50,8 @@ public class Cupom {
 
         this.id = id;
         this.codigo = codigo;
-        this.percentualDesconto = percentualDesconto;
+        this.tipoDesconto = tipoDesconto;
+        this.valorDesconto = valorDesconto;
         this.valorMinimoPedido = valorMinimoPedido;
         this.limiteGlobal = limiteGlobal;
         this.limitePorCpf = limitePorCpf;
@@ -51,6 +60,14 @@ public class Cupom {
         this.categoriaPermitida = categoriaPermitida;
         this.usosGlobais = 0;
         this.cpfsQueJaUsaram = new HashSet<>();
+    }
+
+    public double calcularDesconto(double valorOriginal) {
+        if (this.tipoDesconto == TipoDesconto.PERCENTUAL) {
+            return valorOriginal * (this.valorDesconto / 100.0);
+        } else {
+            return Math.min(this.valorDesconto, valorOriginal);
+        }
     }
 
     public void validarElegibilidade(String cpfUsuario, double valorPedido, String categoriaEvento, LocalDateTime dataAtual) {
@@ -75,8 +92,7 @@ public class Cupom {
         this.usosGlobais++;
         this.cpfsQueJaUsaram.add(cpfUsuario);
     }
-
     public double getPercentualDesconto() {
-        return percentualDesconto;
+        return valorDesconto;
     }
 }

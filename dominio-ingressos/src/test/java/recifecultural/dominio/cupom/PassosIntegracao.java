@@ -4,7 +4,8 @@ import io.cucumber.java.pt.*;
 import org.junit.jupiter.api.Assertions;
 import static org.mockito.Mockito.*;
 
-
+import recifecultural.dominio.catraca.CatracaServico;
+import recifecultural.dominio.catraca.ICatracaRepositorio;
 import recifecultural.dominio.ingressos.*;
 
 import java.math.BigDecimal;
@@ -17,7 +18,8 @@ public class PassosIntegracao {
 
     private IngressoRepositorioEmMemoria ingressoRepo = new IngressoRepositorioEmMemoria();
     private IGatewayPagamento gateway = new GatewayPagamentoMock();
-    private IngressoServico ingressoServico = new IngressoServico(ingressoRepo, gateway);
+    private CatracaServico catracaServico=new CatracaServico(mock(ICatracaRepositorio.class));
+    private IngressoServico ingressoServico = new IngressoServico(ingressoRepo, gateway,catracaServico);
 
     private Ingresso ingressoComprado;
     private Exception excecaoCapturada;
@@ -25,10 +27,18 @@ public class PassosIntegracao {
     @Quando("o espectador com CPF {string} compra um ingresso da categoria {string} com valor base de {double} reais usando o cupom {string}")
     public void realizarCompra(String cpf, String categoria, Double valorBase, String codigoCupom) {
         try {
+            TipoDesconto tipo = codigoCupom.equals("FIXO50") ? TipoDesconto.VALOR_FIXO : TipoDesconto.PERCENTUAL;
+            double valorDesc = codigoCupom.equals("FIXO50") ? 50.0 : 20.0;
+
             Cupom cupom = new Cupom(
-                    new CupomId("ID-" + codigoCupom), codigoCupom, 20, 100.0, 5, 1,
+                    new CupomId("ID-" + codigoCupom),
+                    codigoCupom,
+                    tipo,
+                    valorDesc,
+                    100.0, 5, 1,
                     LocalDateTime.now().minusDays(1), LocalDateTime.now().plusDays(10), categoria
             );
+
             when(cupomRepoMock.buscarPorCodigo(codigoCupom)).thenReturn(cupom);
 
             double valorFinalCalculado = cupomServico.aplicarDesconto(codigoCupom, cpf, valorBase, categoria);

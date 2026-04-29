@@ -23,10 +23,9 @@ Funcionalidade: Controle de Acesso Inteligente na Catraca do Teatro
     Quando ele tenta passar a catraca do "Portão B" às "19:30"
     Então o sistema deve bloquear com o erro "Acesso Negado: Este ingresso pertence ao Portão A. Dirija-se ao local correto."
 
-  Cenário: Falha por ingresso cancelado
-    Dado que o ingresso "QR-404" foi devolvido e tem status "CANCELADO_OU_REEMBOLSADO"
-    E o ingresso é do tipo "COMUM" e pertence ao "Portão A"
-    Quando ele tenta passar a catraca do "Portão A" às "19:50"
+  Cenário: Integração - Catraca barra ingresso reembolsado pelo módulo financeiro
+    Dado que o ingresso "QR-ESTORNO" é válido, mas o cliente solicitou reembolso agora
+    Quando o fraudador tenta passar a catraca do "Portão A" às "19:50" com o ingresso "QR-ESTORNO"
     Então o sistema deve bloquear com o erro "Entrada Negada: Este ingresso consta como cancelado ou reembolsado."
 
   Cenário: Falha por atraso excessivo para ingresso COMUM

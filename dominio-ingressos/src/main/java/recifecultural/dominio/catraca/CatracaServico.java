@@ -23,4 +23,12 @@ public class CatracaServico {
 
         return "ACESSO LIBERADO. Catraca destravada com sucesso.";
     }
+    public void inativarIngresso(String idIngresso) {
+        IngressoCatraca ingresso = repositorio.buscarPorId(idIngresso);
+
+        if (ingresso != null) {
+            ingresso.cancelarAcesso();
+            repositorio.salvar(ingresso);
+        }
+    }
 }

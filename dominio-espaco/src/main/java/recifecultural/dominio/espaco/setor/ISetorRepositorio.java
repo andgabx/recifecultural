@@ -1,6 +1,6 @@
-package recifecultural.dominio.agenda.setor;
+package recifecultural.dominio.espaco.setor;
 
-import recifecultural.dominio.agenda.espaco.EspacoId;
+import recifecultural.dominio.espaco.espaco.EspacoId;
 import java.util.List;
 import java.util.Optional;
 

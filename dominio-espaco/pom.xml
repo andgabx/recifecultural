@@ -9,7 +9,7 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>recifecultural-dominio-agenda</artifactId>
+    <artifactId>recifecultural-dominio-espaco</artifactId>
 
     <dependencies>
         <dependency>
@@ -49,11 +49,6 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>recifecultural-dominio-compartilhado</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>recifecultural-dominio-espaco</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

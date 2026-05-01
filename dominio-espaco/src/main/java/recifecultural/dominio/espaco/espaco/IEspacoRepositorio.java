@@ -1,9 +1,9 @@
-package recifecultural.dominio.agenda.espaco;
+package recifecultural.dominio.espaco.espaco;
 
 import java.util.Optional;
 import java.util.List;
 import java.time.LocalDateTime;
-import recifecultural.dominio.agenda.espaco.EspacoId;
+import recifecultural.dominio.espaco.espaco.EspacoId;
 
 public interface IEspacoRepositorio {
     void salvar(Espaco espaco);

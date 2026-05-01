@@ -1,7 +1,7 @@
 package recifecultural.dominio.agenda.equipamento;
 
 
-import recifecultural.dominio.agenda.espaco.EspacoId;
+import recifecultural.dominio.espaco.espaco.EspacoId;
 
 public class EquipamentoServico {
 

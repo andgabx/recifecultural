@@ -6,10 +6,10 @@ import recifecultural.dominio.agenda.bloqueioadministrativo.IBloqueioAdministrat
 import recifecultural.dominio.agenda.evento.IEventoRepositorio;
 import recifecultural.dominio.agenda.evento.EventoServico;
 import recifecultural.dominio.agenda.evento.Evento;
-import recifecultural.dominio.agenda.espaco.Espaco;
-import recifecultural.dominio.agenda.espaco.EspacoServico;
-import recifecultural.dominio.agenda.espaco.IEspacoRepositorio;
-import recifecultural.dominio.agenda.espaco.EspacoId;
+import recifecultural.dominio.espaco.espaco.Espaco;
+import recifecultural.dominio.espaco.espaco.EspacoServico;
+import recifecultural.dominio.espaco.espaco.IEspacoRepositorio;
+import recifecultural.dominio.espaco.espaco.EspacoId;
 import recifecultural.dominio.agenda.equipamento.EquipamentoId;
 import recifecultural.dominio.agenda.equipamento.AlocacaoRiderTecnicoServico;
 import recifecultural.dominio.agenda.equipamento.IEquipamentoRepositorio;

@@ -1,6 +1,6 @@
 package recifecultural.dominio.agenda.equipamento;
 
-import recifecultural.dominio.agenda.espaco.EspacoId;
+import recifecultural.dominio.espaco.espaco.EspacoId;
 import recifecultural.dominio.agenda.evento.Evento;
 import recifecultural.dominio.agenda.evento.IEventoRepositorio;
 import recifecultural.dominio.compartilhado.notificacao.NotificacaoServico;

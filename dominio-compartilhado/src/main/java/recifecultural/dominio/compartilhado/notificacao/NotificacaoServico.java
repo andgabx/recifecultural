@@ -5,12 +5,17 @@ import java.util.UUID;
 
 public class NotificacaoServico {
     private final INotificacaoRepositorio notificacaoRepositorio;
+    private final IUsuarioContextoServico usuarioContextoServico; // Introduzido para a RN 5
 
-    public NotificacaoServico(INotificacaoRepositorio notificacaoRepositorio) {
+    public NotificacaoServico(INotificacaoRepositorio notificacaoRepositorio, IUsuarioContextoServico usuarioContextoServico) {
         if (notificacaoRepositorio == null) {
             throw new IllegalArgumentException("[INotificacaoRepositorio] Repositório não pode ser nulo.");
         }
+        if (usuarioContextoServico == null) {
+            throw new IllegalArgumentException("[IUsuarioContextoServico] Serviço não pode ser nulo.");
+        }
         this.notificacaoRepositorio = notificacaoRepositorio;
+        this.usuarioContextoServico = usuarioContextoServico;
     }
 
     public void enviarNotificacao(UUID usuarioAlvo, String mensagem) {
@@ -26,25 +31,31 @@ public class NotificacaoServico {
     }
 
     public void enviarBroadcast(String mensagem) {
-        enviarBroadcast(mensagem, null, null);
+        enviarBroadcast(mensagem, "TODOS_USUARIOS", null);
     }
 
     public void enviarBroadcast(String mensagem, String contexto, UUID idReferencia) {
         if (mensagem == null || mensagem.isBlank()) throw new IllegalArgumentException("A mensagem é obrigatória para enviar um broadcast.");
 
-        Notificacao notificacao = Notificacao.criarBroadcast(mensagem, contexto, idReferencia);
-        notificacaoRepositorio.salvar(notificacao);
+        List<UUID> destinatarios = usuarioContextoServico.obterUsuariosPorContexto(contexto, idReferencia);
+
+        if (destinatarios != null) {
+            for (UUID usuarioId : destinatarios) {
+                Notificacao notificacao = new Notificacao(usuarioId, mensagem, contexto, idReferencia);
+                notificacaoRepositorio.salvar(notificacao);
+            }
+        }
     }
 
-    public void marcarComoLida(NotificacaoId id, UUID usuarioId) {
+    public void marcarComoLida(NotificacaoId id) {
         Notificacao notificacao = buscarNotificacao(id);
-        notificacao.marcarComoLida(usuarioId);
+        notificacao.marcarComoLida();
         notificacaoRepositorio.atualizar(notificacao);
     }
 
-    public void marcarComoNaoLida(NotificacaoId id, UUID usuarioId) {
+    public void marcarComoNaoLida(NotificacaoId id) {
         Notificacao notificacao = buscarNotificacao(id);
-        notificacao.marcarComoNaoLida(usuarioId);
+        notificacao.marcarComoNaoLida();
         notificacaoRepositorio.atualizar(notificacao);
     }
 

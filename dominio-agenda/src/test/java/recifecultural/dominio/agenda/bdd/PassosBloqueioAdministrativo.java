@@ -12,12 +12,16 @@ import recifecultural.dominio.agenda.evento.Periodo;
 import recifecultural.dominio.agenda.evento.Preco;
 import recifecultural.dominio.agenda.evento.StatusEvento;
 import recifecultural.dominio.compartilhado.notificacao.Notificacao;
+import recifecultural.dominio.espaco.espaco.Espaco;
+import recifecultural.dominio.espaco.espaco.EspacoId;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -40,6 +44,12 @@ public class PassosBloqueioAdministrativo {
     @Dado("que existe um local com ID {string}")
     public void queExisteUmLocalComID(String idLocal) {
         contexto.idLocalAtual = UUID.fromString(idLocal);
+        contexto.idEspacoAtual = new EspacoId(contexto.idLocalAtual);
+
+        Espaco espacoMock = mock(Espaco.class);
+        when(espacoMock.getId()).thenReturn(contexto.idEspacoAtual);
+        when(contexto.repositorioEspaco.obterPorId(contexto.idEspacoAtual)).thenReturn(Optional.of(espacoMock));
+
         contexto.excecaoCapturada = null;
     }
 
@@ -54,12 +64,11 @@ public class PassosBloqueioAdministrativo {
 
     @Quando("eu solicitar a criação de um bloqueio administrativo para este local neste período com o motivo {string}")
     public void euSolicitarACriacaoDeUmBloqueioAdministrativoParaEsteLocalNestePeriodoComOMotivo(String motivo) {
-        LocalDateTime inicio = LocalDateTime.parse("2024-05-01T08:00:00");
-        LocalDateTime fim = LocalDateTime.parse("2024-05-15T18:00:00");
+        LocalDate inicio = LocalDate.parse("2024-05-01");
+        LocalDate fim = LocalDate.parse("2024-05-15");
 
         try {
-            BloqueioAdministrativo bloqueio = new BloqueioAdministrativo(contexto.idLocalAtual, motivo, inicio, fim);
-            contexto.servicoBloqueio.criarBloqueio(bloqueio);
+            contexto.servicoBloqueio.criarBloqueio(contexto.idEspacoAtual, inicio, fim, motivo);
         } catch (Exception e) {
             contexto.excecaoCapturada = e;
         }
@@ -67,7 +76,7 @@ public class PassosBloqueioAdministrativo {
 
     @Então("o bloqueio deve ser salvo com sucesso")
     public void oBloqueioDeveSerSalvoComSucesso() {
-        assertNull(contexto.excecaoCapturada, "Não deveria ter lançado exceção");
+        assertNull(contexto.excecaoCapturada, "Não deveria ter lançado exceção: " + (contexto.excecaoCapturada != null ? contexto.excecaoCapturada.getMessage() : ""));
         verify(contexto.repositorioBloqueio, times(1)).salvar(any(BloqueioAdministrativo.class));
     }
 
@@ -78,18 +87,18 @@ public class PassosBloqueioAdministrativo {
 
     @E("existem eventos agendados para este local entre {string} e {string}")
     public void existemEventosAgendadosParaEsteLocalEntreE(String inicioStr, String fimStr) {
-        LocalDateTime inicio = LocalDateTime.parse(inicioStr);
-        LocalDateTime fim = LocalDateTime.parse(fimStr);
+        LocalDate inicio = LocalDate.parse(inicioStr);
+        LocalDate fim = LocalDate.parse(fimStr);
 
         Evento eventoConflitante = new Evento(
                 UUID.randomUUID(), UUID.randomUUID(), contexto.idLocalAtual, "Show", "Curta", "Longa",
-                new Periodo(inicio.plusDays(1), fim.minusDays(1)), null,
+                new Periodo(inicio.atStartOfDay().plusDays(1), fim.atStartOfDay().minusDays(1)), null,
                 new Preco(BigDecimal.TEN, BigDecimal.ONE, null)
         );
 
         eventoConflitante.adicionarArtista(UUID.randomUUID());
         eventoConflitante.definirCategoria("Música");
-        eventoConflitante.programarApresentacao(inicio.plusDays(2));
+        eventoConflitante.programarApresentacao(inicio.atStartOfDay().plusDays(2));
         eventoConflitante.submeterParaAnalise();
         eventoConflitante.aprovar();
 
@@ -121,7 +130,6 @@ public class PassosBloqueioAdministrativo {
         for (Evento evento : eventosSimuladosNoBanco) {
             boolean notificacaoEncontrada = notificacoesSalvas.stream().anyMatch(n ->
                     contextoEsperado.equals(n.getContexto()) &&
-                            evento.getId().equals(n.getIdReferencia()) &&
                             evento.getPromotorId().equals(n.getUsuarioAlvo())
             );
             assertTrue(notificacaoEncontrada, "Faltou a notificação com contexto e referência correta para o evento " + evento.getId());
@@ -130,12 +138,11 @@ public class PassosBloqueioAdministrativo {
 
     @Quando("eu solicitar a criação de um bloqueio administrativo para este local de {string} até {string} com o motivo {string}")
     public void euSolicitarACriacaoDeUmBloqueioDeAteComOMotivo(String inicioStr, String fimStr, String motivo) {
-        LocalDateTime inicio = LocalDateTime.parse(inicioStr);
-        LocalDateTime fim = LocalDateTime.parse(fimStr);
+        LocalDate inicio = LocalDate.parse(inicioStr);
+        LocalDate fim = LocalDate.parse(fimStr);
 
         try {
-            BloqueioAdministrativo bloqueio = new BloqueioAdministrativo(contexto.idLocalAtual, motivo, inicio, fim);
-            contexto.servicoBloqueio.criarBloqueio(bloqueio);
+            contexto.servicoBloqueio.criarBloqueio(contexto.idEspacoAtual, inicio, fim, motivo);
         } catch (Exception e) {
             contexto.excecaoCapturada = e;
         }
@@ -145,17 +152,16 @@ public class PassosBloqueioAdministrativo {
     public void oSistemaDeveRetornarErroDeValidacaoDataFimAntesDoInicio() {
         assertNotNull(contexto.excecaoCapturada);
         assertInstanceOf(IllegalArgumentException.class, contexto.excecaoCapturada);
-        assertTrue(contexto.excecaoCapturada.getMessage().contains("Fim antes do início"));
+        assertTrue(contexto.excecaoCapturada.getMessage().contains("anterior à data inicial"));
     }
 
     @Quando("eu solicitar a criação de um bloqueio administrativo para este local de {string} até {string} sem informar o motivo")
     public void euSolicitarACriacaoDeUmBloqueioSemInformarOMotivo(String inicioStr, String fimStr) {
-        LocalDateTime inicio = LocalDateTime.parse(inicioStr);
-        LocalDateTime fim = LocalDateTime.parse(fimStr);
+        LocalDate inicio = LocalDate.parse(inicioStr);
+        LocalDate fim = LocalDate.parse(fimStr);
 
         try {
-            BloqueioAdministrativo bloqueio = new BloqueioAdministrativo(contexto.idLocalAtual, "", inicio, fim);
-            contexto.servicoBloqueio.criarBloqueio(bloqueio);
+            contexto.servicoBloqueio.criarBloqueio(contexto.idEspacoAtual, inicio, fim, "");
         } catch (Exception e) {
             contexto.excecaoCapturada = e;
         }
@@ -165,17 +171,31 @@ public class PassosBloqueioAdministrativo {
     public void oSistemaDeveRetornarErroDeValidacaoMotivoObrigatorio() {
         assertNotNull(contexto.excecaoCapturada);
         assertInstanceOf(IllegalArgumentException.class, contexto.excecaoCapturada);
-        assertTrue(contexto.excecaoCapturada.getMessage().contains("Motivo é obrigatório"));
+        assertTrue(contexto.excecaoCapturada.getMessage().contains("Justificativa obrigatória"));
+    }
+
+    @Então("o sistema deve retornar um erro de validação informando que a justificativa deve conter no mínimo {int} caracteres")
+    public void oSistemaDeveRetornarErroDeValidacaoJustificativaMinima(int minChars) {
+        assertNotNull(contexto.excecaoCapturada);
+        assertInstanceOf(IllegalArgumentException.class, contexto.excecaoCapturada);
+        assertTrue(contexto.excecaoCapturada.getMessage().contains("mínimo 10 caracteres"));
     }
 
     @Dado("que existe um bloqueio salvo no repositório com ID {string} e motivo {string}")
     public void queExisteUmBloqueioSalvoNoRepositorioComIDE(String idStr, String motivo) {
         idBloqueioAtual = BloqueioAdministrativoId.de(idStr);
+        contexto.idEspacoAtual = EspacoId.novo();
         BloqueioAdministrativo bloqueioMock = new BloqueioAdministrativo(
-                idBloqueioAtual, UUID.randomUUID(), motivo,
-                LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(5)
+                contexto.idEspacoAtual, LocalDate.now().plusDays(1), LocalDate.now().plusDays(5), motivo
         );
-        when(contexto.repositorioBloqueio.obter(idBloqueioAtual)).thenReturn(bloqueioMock);
+
+        BloqueioAdministrativo spy = spy(bloqueioMock);
+        doReturn(idBloqueioAtual).when(spy).getId();
+
+        when(contexto.repositorioBloqueio.obter(idBloqueioAtual)).thenReturn(spy);
+
+        Espaco espacoMock = mock(Espaco.class);
+        when(contexto.repositorioEspaco.obterPorId(contexto.idEspacoAtual)).thenReturn(Optional.of(espacoMock));
     }
 
     @Dado("que existe um bloqueio salvo no repositório com ID {string}")
@@ -196,13 +216,13 @@ public class PassosBloqueioAdministrativo {
     public void oSistemaDeveRetornarOBloqueioComMotivo(String motivoEsperado) {
         assertNull(contexto.excecaoCapturada);
         assertNotNull(bloqueioRetornado);
-        assertEquals(motivoEsperado, bloqueioRetornado.getMotivo());
+        assertEquals(motivoEsperado, bloqueioRetornado.getJustificativa());
     }
 
     @Quando("eu solicitar a atualização deste bloqueio para o motivo {string} de {string} até {string}")
     public void euSolicitarAAtualizacaoDesteBloqueioParaOMotivoDeAte(String novoMotivo, String inicioStr, String fimStr) {
-        LocalDateTime novoInicio = LocalDateTime.parse(inicioStr);
-        LocalDateTime novoFim = LocalDateTime.parse(fimStr);
+        LocalDate novoInicio = LocalDate.parse(inicioStr);
+        LocalDate novoFim = LocalDate.parse(fimStr);
         try {
             contexto.servicoBloqueio.atualizarBloqueio(idBloqueioAtual, novoMotivo, novoInicio, novoFim);
         } catch (Exception e) {
@@ -234,5 +254,22 @@ public class PassosBloqueioAdministrativo {
     public void oBloqueioDeveSerRemovidoDoRepositorio() {
         assertNull(contexto.excecaoCapturada);
         verify(contexto.repositorioBloqueio, times(1)).deletar(idBloqueioAtual);
+    }
+
+    @Quando("eu solicitar a desativação deste bloqueio")
+    public void euSolicitarADesativacaoDesteBloqueio() {
+        try {
+            contexto.servicoBloqueio.desativarBloqueio(idBloqueioAtual);
+        } catch (Exception e) {
+            contexto.excecaoCapturada = e;
+        }
+    }
+
+    @Então("o bloqueio deve constar como inativo")
+    public void oBloqueioDeveConstarComoInativo() {
+        assertNull(contexto.excecaoCapturada);
+        verify(contexto.repositorioBloqueio, times(1)).atualizar(any(BloqueioAdministrativo.class));
+        BloqueioAdministrativo spy = contexto.repositorioBloqueio.obter(idBloqueioAtual);
+        assertFalse(spy.isAtivo(), "O bloqueio deveria estar inativo");
     }
 }

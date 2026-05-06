@@ -1,62 +1,68 @@
 package recifecultural.dominio.agenda.bloqueioadministrativo;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
+import java.time.LocalDate;
+import recifecultural.dominio.espaco.espaco.EspacoId;
 
 public class BloqueioAdministrativo {
-    private final BloqueioAdministrativoId id;
-    private final UUID idEspaco;
-    private String motivo;
-    private LocalDateTime dataInicio;
-    private LocalDateTime dataFim;
 
-    public BloqueioAdministrativo(
-            UUID idEspaco,
-            String motivo,
-            LocalDateTime dataInicio,
-            LocalDateTime dataFim
-    ) {
+    private BloqueioAdministrativoId id;
+    private EspacoId espacoId;
+    private LocalDate dataInicio;
+    private LocalDate dataFim;
+    private String justificativa;
+    private boolean ativo;
+
+    public BloqueioAdministrativo(EspacoId espacoId, LocalDate dataInicio, LocalDate dataFim, String justificativa) {
         this.id = BloqueioAdministrativoId.gerar();
-        this.idEspaco = idEspaco;
-        setMotivo(motivo);
+        setEspacoId(espacoId);
         setPeriodo(dataInicio, dataFim);
+        setJustificativa(justificativa);
+        this.ativo = true;
     }
 
-    public BloqueioAdministrativo(
-            BloqueioAdministrativoId id,
-            UUID idEspaco,
-            String motivo,
-            LocalDateTime dataInicio,
-            LocalDateTime dataFim
-    ) {
-        if (id == null) {
-            throw new IllegalArgumentException("O ID do bloqueio é obrigatório.");
+    public void atualizarInformacoes(String justificativa, LocalDate dataInicio, LocalDate dataFim) {
+        setPeriodo(dataInicio, dataFim);
+        setJustificativa(justificativa);
+    }
+
+    public void desativar() {
+        this.ativo = false;
+    }
+
+    private void setEspacoId(EspacoId espacoId) {
+        if (espacoId == null) {
+            throw new IllegalArgumentException("O ID do espaço é obrigatório.");
         }
-        this.id = id;
-        this.idEspaco = idEspaco;
-        this.motivo = motivo;
+        this.espacoId = espacoId;
+    }
+
+    private void setPeriodo(LocalDate dataInicio, LocalDate dataFim) {
+        if (dataInicio == null || dataFim == null) {
+            throw new IllegalArgumentException("As datas de início e fim são obrigatórias.");
+        }
+        if (dataFim.isBefore(dataInicio)) {
+            throw new IllegalArgumentException("A data final não pode ser anterior à data inicial.");
+        }
         this.dataInicio = dataInicio;
         this.dataFim = dataFim;
     }
 
-    public void setPeriodo(LocalDateTime inicio, LocalDateTime fim) {
-        if (inicio == null || fim == null) throw new IllegalArgumentException("Datas são obrigatórias.");
-        if (fim.isBefore(inicio)) throw new IllegalArgumentException("Fim antes do início.");
-
-        this.dataInicio = inicio;
-        this.dataFim = fim;
-    }
-
-    public void setMotivo(String motivo) {
-        if (motivo == null || motivo.isBlank()) {
-            throw new IllegalArgumentException("Motivo é obrigatório.");
+    private void setJustificativa(String justificativa) {
+        if (justificativa == null || justificativa.trim().isEmpty()) {
+            throw new IllegalArgumentException("Todo e qualquer bloqueio de um espaço tem de registrar um motivo (Justificativa obrigatória).");
         }
-        this.motivo = motivo;
+
+        if (justificativa.trim().length() < 10) {
+            throw new IllegalArgumentException("A justificativa do bloqueio deve conter no mínimo 10 caracteres.");
+        }
+        this.justificativa = justificativa;
     }
 
+    // Getters
     public BloqueioAdministrativoId getId() { return id; }
-    public UUID getIdEspaco() { return idEspaco; }
-    public String getMotivo() { return motivo; }
-    public LocalDateTime getDataInicio() { return dataInicio; }
-    public LocalDateTime getDataFim() { return dataFim; }
+    public EspacoId getEspacoId() { return espacoId; }
+    public LocalDate getDataInicio() { return dataInicio; }
+    public LocalDate getDataFim() { return dataFim; }
+    public String getJustificativa() { return justificativa; }
+    public boolean isAtivo() { return ativo; }
 }

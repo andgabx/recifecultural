@@ -9,7 +9,9 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import recifecultural.dominio.compartilhado.notificacao.Notificacao;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -17,7 +19,8 @@ public class PassosNotificacao {
 
     private final NotificacaoCenario contexto;
     private ArgumentCaptor<Notificacao> notificacaoCaptor;
-    private UUID idReferenciaAtual; // Utilizado no teste de contexto/referência
+    private UUID idReferenciaAtual;
+    private List<UUID> usuariosBroadcast;
 
     public PassosNotificacao(NotificacaoCenario contexto) {
         this.contexto = contexto;
@@ -39,15 +42,23 @@ public class PassosNotificacao {
         }
     }
 
-    @Então("a notificação direta deve ser salva com sucesso no repositório")
-    public void aNotificacaoDiretaDeveSerSalvaComSucessoNoRepositorio() {
+    @Então("a notificação direta deve ser salva com sucesso no repositório para o usuário")
+    public void aNotificacaoDiretaDeveSerSalvaComSucessoNoRepositorioParaOUsuario() {
         Assertions.assertNull(contexto.excecaoCapturada, "Não deveria ter lançado exceção");
         Mockito.verify(contexto.repositorioNotificacao, Mockito.times(1)).salvar(notificacaoCaptor.capture());
 
         Notificacao salva = notificacaoCaptor.getValue();
         assertNotNull(salva);
-        assertFalse(salva.isBroadcast(), "A notificação deveria ser direta, não broadcast");
         assertEquals(contexto.idUsuarioAtual, salva.getUsuarioAlvo());
+        assertFalse(salva.isFoiLida(), "A notificação deve nascer como não lida");
+    }
+
+    @Dado("que o contexto de broadcast retornará os usuários {string} e {string}")
+    public void queOContextoDeBroadcastRetornaraOsUsuarios(String id1, String id2) {
+        this.usuariosBroadcast = List.of(UUID.fromString(id1), UUID.fromString(id2));
+
+        Mockito.when(contexto.usuarioContextoServico.obterUsuariosPorContexto(Mockito.anyString(), Mockito.nullable(UUID.class)))
+                .thenReturn(usuariosBroadcast);
     }
 
     @Quando("eu solicitar o envio de um broadcast com a mensagem {string}")
@@ -59,19 +70,21 @@ public class PassosNotificacao {
         }
     }
 
-    @Então("a notificação de broadcast deve ser salva com sucesso no repositório")
-    public void aNotificacaoDeBroadcastDeveSerSalvaComSucessoNoRepositorio() {
+    @Então("o sistema deve gerar e salvar notificações individuais para cada usuário retornado")
+    public void oSistemaDeveGerarESalvarNotificacoesIndividuaisParaCadaUsuarioRetornado() {
         Assertions.assertNull(contexto.excecaoCapturada, "Não deveria ter lançado exceção");
-        Mockito.verify(contexto.repositorioNotificacao, Mockito.times(1)).salvar(notificacaoCaptor.capture());
 
-        Notificacao salva = notificacaoCaptor.getValue();
-        assertNotNull(salva);
-        assertTrue(salva.isBroadcast(), "A notificação deveria ser um broadcast");
-        assertNull(salva.getUsuarioAlvo(), "Broadcasts não possuem um usuário alvo único");
+        Mockito.verify(contexto.repositorioNotificacao, Mockito.times(usuariosBroadcast.size())).salvar(notificacaoCaptor.capture());
+
+        List<Notificacao> salvas = notificacaoCaptor.getAllValues();
+        assertEquals(usuariosBroadcast.size(), salvas.size(), "O número de notificações salvas não confere");
+
+        List<UUID> alvosSalvos = salvas.stream().map(Notificacao::getUsuarioAlvo).collect(Collectors.toList());
+        assertTrue(alvosSalvos.containsAll(usuariosBroadcast), "As notificações não foram enviadas para todos os usuários do contexto");
     }
 
-    @Dado("que o usuário {string} possui uma notificação direta pendente com a mensagem {string}")
-    public void queOUsuarioPossuiUmaNotificacaoDiretaPendenteComAMensagem(String idUsuario, String mensagem) {
+    @Dado("que o usuário {string} possui uma notificação pendente com a mensagem {string}")
+    public void queOUsuarioPossuiUmaNotificacaoPendenteComAMensagem(String idUsuario, String mensagem) {
         contexto.idUsuarioAtual = UUID.fromString(idUsuario);
         contexto.notificacaoAtual = new Notificacao(contexto.idUsuarioAtual, mensagem);
 
@@ -81,7 +94,7 @@ public class PassosNotificacao {
     @Quando("o usuário solicitar a marcação desta notificação como lida")
     public void oUsuarioSolicitarAMarcacaoDestaNotificacaoComoLida() {
         try {
-            contexto.servicoNotificacao.marcarComoLida(contexto.notificacaoAtual.getId(), contexto.idUsuarioAtual);
+            contexto.servicoNotificacao.marcarComoLida(contexto.notificacaoAtual.getId());
         } catch (Exception e) {
             contexto.excecaoCapturada = e;
         }
@@ -90,45 +103,15 @@ public class PassosNotificacao {
     @Então("a notificação deve ser atualizada e constar como lida pelo sistema")
     public void aNotificacaoDeveSerAtualizadaEConstarComoLidaPeloSistema() {
         assertNull(contexto.excecaoCapturada);
-        assertTrue(contexto.notificacaoAtual.isFoiLida(), "A notificação direta deveria estar marcada como lida");
+        assertTrue(contexto.notificacaoAtual.isFoiLida(), "A notificação deveria estar marcada como lida");
         Mockito.verify(contexto.repositorioNotificacao, Mockito.times(1)).atualizar(contexto.notificacaoAtual);
     }
 
-    @Dado("que existe um broadcast pendente com a mensagem {string}")
-    public void queExisteUmBroadcastPendenteComAMensagem(String mensagem) {
-        contexto.notificacaoAtual = Notificacao.criarBroadcast(mensagem);
-
-        Mockito.when(contexto.repositorioNotificacao.obter(contexto.notificacaoAtual.getId())).thenReturn(contexto.notificacaoAtual);
-    }
-
-    @E("um usuário leitor com ID {string}")
-    public void umUsuarioLeitorComID(String idUsuario) {
-        contexto.idUsuarioAtual = UUID.fromString(idUsuario);
-    }
-
-    @Quando("este usuário leitor solicitar a marcação do broadcast como lido")
-    public void esteUsuarioLeitorSolicitarAMarcacaoDoBroadcastComoLido() {
-        try {
-            contexto.servicoNotificacao.marcarComoLida(contexto.notificacaoAtual.getId(), contexto.idUsuarioAtual);
-        } catch (Exception e) {
-            contexto.excecaoCapturada = e;
-        }
-    }
-
-    @Então("o broadcast deve registrar a leitura exclusivamente para este usuário")
-    public void oBroadcastDeveRegistrarALeituraExclusivamenteParaEsteUsuario() {
-        assertNull(contexto.excecaoCapturada);
-        assertTrue(contexto.notificacaoAtual.isBroadcast(), "Deveria ser um broadcast");
-        assertTrue(contexto.notificacaoAtual.isLidaPor(contexto.idUsuarioAtual), "Broadcast deveria estar lido pelo usuário especificado");
-        assertTrue(contexto.notificacaoAtual.getLidaPor().contains(contexto.idUsuarioAtual));
-        Mockito.verify(contexto.repositorioNotificacao, Mockito.times(1)).atualizar(contexto.notificacaoAtual);
-    }
-
-    @Dado("que o usuário {string} possui uma notificação direta lida com a mensagem {string}")
-    public void queOUsuarioPossuiUmaNotificacaoDiretaLidaComAMensagem(String idUsuario, String mensagem) {
+    @Dado("que o usuário {string} possui uma notificação lida com a mensagem {string}")
+    public void queOUsuarioPossuiUmaNotificacaoLidaComAMensagem(String idUsuario, String mensagem) {
         contexto.idUsuarioAtual = UUID.fromString(idUsuario);
         contexto.notificacaoAtual = new Notificacao(contexto.idUsuarioAtual, mensagem);
-        contexto.notificacaoAtual.marcarComoLida(contexto.idUsuarioAtual);
+        contexto.notificacaoAtual.marcarComoLida();
 
         Mockito.when(contexto.repositorioNotificacao.obter(contexto.notificacaoAtual.getId())).thenReturn(contexto.notificacaoAtual);
     }
@@ -136,7 +119,7 @@ public class PassosNotificacao {
     @Quando("o usuário solicitar a marcação desta notificação como não lida")
     public void oUsuarioSolicitarAMarcacaoDestaNotificacaoComoNaoLida() {
         try {
-            contexto.servicoNotificacao.marcarComoNaoLida(contexto.notificacaoAtual.getId(), contexto.idUsuarioAtual);
+            contexto.servicoNotificacao.marcarComoNaoLida(contexto.notificacaoAtual.getId());
         } catch (Exception e) {
             contexto.excecaoCapturada = e;
         }

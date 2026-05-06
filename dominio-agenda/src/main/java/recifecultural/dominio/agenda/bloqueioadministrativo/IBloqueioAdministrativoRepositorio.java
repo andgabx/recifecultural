@@ -1,5 +1,7 @@
 package recifecultural.dominio.agenda.bloqueioadministrativo;
 
+import recifecultural.dominio.espaco.espaco.EspacoId;
+
 import java.util.List;
 
 public interface IBloqueioAdministrativoRepositorio {
@@ -8,4 +10,5 @@ public interface IBloqueioAdministrativoRepositorio {
     void atualizar(BloqueioAdministrativo bloqueio);
     void deletar(BloqueioAdministrativoId id);
     List<BloqueioAdministrativo> obterTodos();
+    List<BloqueioAdministrativo> buscarPorEspaco(EspacoId espacoId);
 }

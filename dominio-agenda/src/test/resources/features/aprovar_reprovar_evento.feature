@@ -1,3 +1,5 @@
+# language: pt
+
 Funcionalidade: Aprovar/Reprovar evento
 
   O gestor do teatro avalia os projetos submetidos e decide por aprovar ou reprovar.

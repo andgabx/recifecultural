@@ -1,5 +1,7 @@
 package recifecultural.dominio.ingressos;
 
+import recifecultural.dominio.catraca.CatracaServico;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -11,13 +13,25 @@ public class IngressoServico {
 
     private final IIngressoRepositorio repositorio;
     private final IGatewayPagamento gateway;
+    private final CatracaServico catracaServico;
 
     public IngressoServico(IIngressoRepositorio repositorio, IGatewayPagamento gateway) {
         notNull(repositorio, "O repositório de ingressos não pode ser nulo.");
         notNull(gateway, "O gateway de pagamento não pode ser nulo.");
         this.repositorio = repositorio;
         this.gateway = gateway;
+        this.catracaServico=null;
+
     }
+    public IngressoServico(IIngressoRepositorio repositorio, IGatewayPagamento gateway, CatracaServico catracaServico) {
+        this.catracaServico = catracaServico;
+        notNull(repositorio, "O repositório de ingressos não pode ser nulo.");
+        notNull(gateway, "O gateway de pagamento não pode ser nulo.");
+        notNull(catracaServico, "O serviço de catraca não pode ser nulo.");
+        this.repositorio = repositorio;
+        this.gateway = gateway;
+    }
+
 
     public Ingresso comprar(UUID eventoId,
                             LocalDateTime dataHora,
@@ -77,6 +91,10 @@ public class IngressoServico {
 
         ingresso.reembolsar(resultado.getValorReembolsado());
         repositorio.salvar(ingresso);
+        if (catracaServico!=null){
+            catracaServico.inativarIngresso(ingresso.getCodigoQr());
+        }
+
         return resultado;
     }
 }

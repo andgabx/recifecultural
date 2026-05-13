@@ -58,6 +58,10 @@ public class IngressoCatraca {
 
         this.status = StatusIngressoCatraca.UTILIZADO;
     }
+    public void cancelarAcesso() {
+        this.status = StatusIngressoCatraca.CANCELADO_OU_REEMBOLSADO;
+    }
+
 
     public IngressoCatracaId getId() { return id; }
     public String getIdEvento() { return idEvento; }

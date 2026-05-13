@@ -7,6 +7,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
+import org.mockito.Mockito;
+import recifecultural.dominio.ingressos.*;
+import java.math.BigDecimal;
+import java.util.UUID;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -23,10 +28,8 @@ public class PassosCatraca {
     public void que_o_evento_comeca_as(String nome, String horario) {
         horarioEvento = LocalDateTime.of(LocalDate.now(), LocalTime.parse(horario));
     }
-
     @Dado("que o espectador possui o ingresso {string} com status {string}")
     @Dado("que o ingresso {string} já possui o status {string}")
-    @Dado("que o ingresso {string} foi devolvido e tem status {string}")
     public void setup_ingresso_base(String id, String status) {
         ingressoNoBanco = new IngressoCatraca(
                 new IngressoCatracaId(id), "EVT-1",
@@ -48,18 +51,49 @@ public class PassosCatraca {
         when(repositorioMock.buscarPorId(ingressoNoBanco.getId().getValor())).thenReturn(ingressoNoBanco);
     }
 
+    @Dado("que o ingresso {string} é válido, mas o cliente solicitou reembolso agora")
+    public void integracao_reembolso_catraca(String codigoQr) {
+        horarioEvento = LocalDateTime.of(LocalDate.now(), LocalTime.parse("20:00"));
+        ingressoNoBanco = new IngressoCatraca(
+                new IngressoCatracaId(codigoQr), "EVT-1",
+                StatusIngressoCatraca.VALIDO,
+                horarioEvento, TipoIngresso.COMUM, "Portão A"
+        );
+        when(repositorioMock.buscarPorId(codigoQr)).thenReturn(ingressoNoBanco);
+
+        IIngressoRepositorio repoIngresso = new IngressoRepositorioEmMemoria();
+        IGatewayPagamento gateway = new GatewayPagamentoMock();
+        IngressoServico servicoIngressos = new IngressoServico(repoIngresso, gateway, servico);
+
+        IngressoId idReal = IngressoId.novo();
+        Ingresso ingressoReal = new Ingresso(idReal, UUID.randomUUID(), horarioEvento,
+                recifecultural.dominio.ingressos.TipoIngresso.INTEIRA,
+                new BigDecimal("100"), codigoQr, "TX-123", MetodoPagamento.PIX);
+        repoIngresso.salvar(ingressoReal);
+
+        servicoIngressos.solicitarReembolso(idReal, LocalDateTime.now().minusDays(5));
+        Mockito.clearInvocations(repositorioMock);
+    }
+
     @Quando("ele tenta passar a catraca do {string} às {string}")
-    @Quando("o fraudador tenta passar a catraca com o ingresso {string} às {string}")
-    public void tentar_acesso(String portaoOuId, String horarioOuPortao) {
-        String portaoFisico = horarioOuPortao.contains(":") ? portaoOuId : horarioOuPortao;
-        String horarioStr = horarioOuPortao.contains(":") ? horarioOuPortao : portaoOuId;
-
-        if (horarioStr.length() < 5) horarioStr = portaoOuId;
-
-        LocalDateTime horaAcesso = LocalDateTime.of(LocalDate.now(), LocalTime.parse(horarioStr));
+    public void tentar_acesso(String portao, String horario) {
+        LocalDateTime horaAcesso = LocalDateTime.of(LocalDate.now(), LocalTime.parse(horario));
 
         try {
-            resultadoAcesso = servico.validarAcesso(ingressoNoBanco.getId().getValor(), horaAcesso, portaoFisico);
+            resultadoAcesso = servico.validarAcesso(ingressoNoBanco.getId().getValor(), horaAcesso, portao);
+            excecaoCapturada = null;
+        } catch (Exception e) {
+            excecaoCapturada = e;
+            resultadoAcesso = null;
+        }
+    }
+
+    @Quando("o fraudador tenta passar a catraca do {string} às {string} com o ingresso {string}")
+    public void tentar_acesso_fraudador(String portao, String horario, String codigoQr) {
+        LocalDateTime horaAcesso = LocalDateTime.of(LocalDate.now(), LocalTime.parse(horario));
+
+        try {
+            resultadoAcesso = servico.validarAcesso(codigoQr, horaAcesso, portao);
             excecaoCapturada = null;
         } catch (Exception e) {
             excecaoCapturada = e;

@@ -11,6 +11,7 @@ ContextMap RecifeCulturalMap {
     contains BilheteriaContext
     contains FinanceiroContext
     contains PatrocinioContext
+    contains ArtistaContext
     contains CupomContext
     contains CatracaContext
 
@@ -696,60 +697,6 @@ BoundedContext FinanceiroContext {
     }
 }
 
-BoundedContext Agenda implements RecifeCultural {
-    domainVisionStatement = "Responsável pelo gerenciamento de equipamentos técnicos dos espaços culturais e alocação de rider técnico para apresentações."
-    type = APPLICATION
-
-    Module AgendaEquipamentoModule {
-        Aggregate EquipamentoAggregate {
-            Entity Equipamento {
-                aggregateRoot
-
-                @EquipamentoId id
-                @EspacoId espacoId
-                String nome
-                String descricao
-                StatusEquipamento status
-
-                void ativar();
-                void desativar();
-            }
-
-            ValueObject EquipamentoId {
-                UUID valor
-            }
-
-            ValueObject EspacoId {
-                UUID valor
-            }
-
-            enum StatusEquipamento {
-                DISPONIVEL, EM_USO, MANUTENCAO, INATIVO
-            }
-
-            Repository EquipamentoRepository {
-                void salvar(@Equipamento equipamento);
-                @Equipamento buscarPorId(@EquipamentoId id);
-                List<@Equipamento> listarPorEspaco(@EspacoId espacoId);
-                List<@Equipamento> listarDisponiveis(@EspacoId espacoId);
-                void atualizar(@Equipamento equipamento);
-            }
-
-            Service EquipamentoServico {
-                @Equipamento cadastrar(@EspacoId espacoId, String nome, String descricao);
-                void ativar(@EquipamentoId id);
-                void desativar(@EquipamentoId id);
-                List<@Equipamento> listarDisponiveis(@EspacoId espacoId);
-            }
-
-            Service AlocacaoRiderTecnicoServico {
-                void alocar(@EquipamentoId equipamentoId, UUID apresentacaoId);
-                void liberar(@EquipamentoId equipamentoId);
-            }
-        }
-    }
-}
-
 BoundedContext PatrocinioContext implements RecifeCultural {
     domainVisionStatement = "Responsável por vincular patrocinadores a eventos aprovados, controlando exclusividade por categoria, naming rights para o patrocinador master, cancelamentos com reembolso escalonado e subsídio de ingresso social com piso mínimo."
     type = APPLICATION
@@ -938,15 +885,17 @@ BoundedContext ArtistaContext implements RecifeCultural {
 BoundedContext CupomContext implements RecifeCultural {
     domainVisionStatement = "Gerencia campanhas de desconto, validando regras de elegibilidade (tempo, limites por CPF e categoria)."
     type = FEATURE
-    
+
     Module CupomModule {
         Aggregate CupomAggregate {
             Entity Cupom {
                 aggregateRoot
-                
+
                 @CupomId id
                 String codigo
-                double percentualDesconto
+                @TipoDesconto tipoDesconto
+                double valorDesconto
+
                 double valorMinimoPedido
                 int limiteGlobal
                 int usosGlobais
@@ -954,13 +903,19 @@ BoundedContext CupomContext implements RecifeCultural {
                 Date dataInicio
                 Date dataFim
                 String categoriaPermitida
-                
+
+                double calcularDesconto(double valorOriginal);
+
                 void validarElegibilidade(String cpf, double valor, String categoria, Date dataAtual);
                 void registrarUso(String cpf);
             }
-            
+
             ValueObject CupomId {
                 String valor
+            }
+
+            enum TipoDesconto {
+                PERCENTUAL, VALOR_FIXO
             }
 
             Repository ICupomRepositorio {
@@ -984,25 +939,27 @@ BoundedContext CatracaContext implements RecifeCultural {
         Aggregate CatracaAggregate {
             Entity IngressoCatraca {
                 aggregateRoot
-                
+
                 @IngressoCatracaId id
                 String idEvento
                 @StatusIngressoCatraca status
                 Date horarioInicioEvento
                 @TipoIngressoCatraca tipoIngresso
                 String portaoAcesso
-                
+
                 void registrarEntrada(Date horarioLeitura, String portaoFisico);
+
+                void cancelarAcesso();
             }
-            
+
             ValueObject IngressoCatracaId {
                 String valor
             }
-            
+
             enum StatusIngressoCatraca {
                 VALIDO, UTILIZADO, CANCELADO_OU_REEMBOLSADO
             }
-            
+
             enum TipoIngressoCatraca {
                 COMUM, VIP, MEIA_ENTRADA
             }
@@ -1014,7 +971,8 @@ BoundedContext CatracaContext implements RecifeCultural {
             }
 
             Service CatracaServico {
-                void validarAcesso(String qrCode, String portao, Date horario);
+                String validarAcesso(String qrCode, Date horario, String portao);
+                void inativarIngresso(String idIngresso);
                 void processarCheckin(@IngressoCatracaId id);
             }
         }

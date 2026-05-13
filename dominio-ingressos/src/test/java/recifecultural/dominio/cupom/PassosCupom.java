@@ -12,7 +12,6 @@ import static org.mockito.Mockito.*;
 
 public class PassosCupom {
 
-    // Configuração do Mockito
     private ICupomRepositorio repositorioMock = mock(ICupomRepositorio.class);
     private ContextoCupom contexto = new ContextoCupom();
     private Cupom cupomValido;
@@ -20,7 +19,7 @@ public class PassosCupom {
     @Dado("que o sistema possui o cupom {string} com {int}% de desconto")
     public void setupCupom(String codigo, Integer perc) {
         cupomValido = new Cupom(
-                new CupomId("ID-" + codigo), codigo, perc, 100.0, 5, 1,
+                new CupomId("ID-" + codigo), codigo, TipoDesconto.PERCENTUAL, perc.doubleValue(), 100.0, 5, 1,
                 LocalDateTime.of(2026, 1, 1, 0, 0),
                 LocalDateTime.of(2026, 12, 31, 23, 59),
                 "TEATRO"
@@ -29,23 +28,16 @@ public class PassosCupom {
         when(repositorioMock.buscarPorCodigo(codigo)).thenReturn(cupomValido);
     }
 
-    @Dado("o cupom exige valor mínimo de {double} reais e categoria {string}")
-    public void setupRestricoesSimples(Double min, String cat) {
+    @Dado("que o sistema possui o cupom {string} com {double} reais de desconto fixo")
+    public void setupCupomFixo(String codigo, Double valorFixo) {
+        cupomValido = new Cupom(
+                new CupomId("ID-" + codigo), codigo, TipoDesconto.VALOR_FIXO, valorFixo, 100.0, 5, 1,
+                LocalDateTime.of(2026, 1, 1, 0, 0),
+                LocalDateTime.of(2026, 12, 31, 23, 59),
+                "TEATRO"
+        );
 
-    }
-
-    @Dado("o cupom exige valor mínimo de {double} reais, limite global de {int} e limite por CPF de {int}")
-    public void setupRestricoesCompletas(Double min, Integer limGlobal, Integer limCpf) {
-    }
-
-    @Dado("a data de validade é de {string} até {string}")
-    public void a_data_de_validade(String dtInicio, String dtFim) {
-
-    }
-
-    @Dado("a categoria permitida é {string}")
-    public void a_categoria_permitida(String categoria) {
-
+        when(repositorioMock.buscarPorCodigo(codigo)).thenReturn(cupomValido);
     }
 
     @Dado("que o espectador com CPF {string} já utilizou o cupom {string} {int} vez")
@@ -54,9 +46,9 @@ public class PassosCupom {
             cupomValido.registrarUso(cpf);
         }
     }
+
     @Dado("que o cupom {string} já foi utilizado {int} vezes no total")
     public void cupom_utilizado_total(String codigo, Integer vezes) {
-
         for(int i = 0; i < vezes; i++) {
             cupomValido.registrarUso("CPF-ALEATORIO-PARA-GASTAR-" + i);
         }
@@ -68,19 +60,15 @@ public class PassosCupom {
         LocalDateTime dataCompra = LocalDate.parse(dataString, formatter).atStartOfDay();
 
         try {
-
             cupomValido.validarElegibilidade(cpf, valor, categoria, dataCompra);
-
-
-            double desconto = valor * (cupomValido.getPercentualDesconto() / 100.0);
+            double desconto = cupomValido.calcularDesconto(valor);
             contexto.valorCalculado = valor - desconto;
-            contexto.excecao = null;
 
+            contexto.excecao = null;
 
             repositorioMock.salvar(cupomValido);
 
         } catch (Exception e) {
-
             contexto.excecao = e;
         }
     }
@@ -93,7 +81,6 @@ public class PassosCupom {
     @Então("o sistema aplica o desconto")
     public void verificaSucesso() {
         Assertions.assertNull(contexto.excecao, "Não deveria ter ocorrido nenhum erro de validação.");
-
         verify(repositorioMock, times(1)).salvar(cupomValido);
     }
 

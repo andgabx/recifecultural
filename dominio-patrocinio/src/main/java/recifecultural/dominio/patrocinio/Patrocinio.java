@@ -2,7 +2,6 @@ package recifecultural.dominio.patrocinio;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 
 import static org.apache.commons.lang3.Validate.isTrue;
 import static org.apache.commons.lang3.Validate.notBlank;
@@ -11,9 +10,6 @@ import static org.apache.commons.lang3.Validate.notNull;
 public class Patrocinio {
 
     private static final BigDecimal PISO_PRECO_SOCIAL = new BigDecimal("1.00");
-    private static final BigDecimal PERCENTUAL_MULTA = new BigDecimal("0.20");
-    private static final BigDecimal PERCENTUAL_REEMBOLSO_PARCIAL = new BigDecimal("0.50");
-    private static final BigDecimal PERCENTUAL_REEMBOLSO_PATROCINADOR_MULTA = new BigDecimal("0.80");
 
     private final PatrocinioId id;
     private final EventoId eventoId;
@@ -56,6 +52,41 @@ public class Patrocinio {
         this.status = StatusPatrocinio.PROPOSTA;
     }
 
+    // Reconstruction constructor — JPA round-trip, preserves persisted state without side effects
+    public Patrocinio(PatrocinioId id,
+                      EventoId eventoId,
+                      String patrocinadorNome,
+                      String categoriaPatrocinio,
+                      TipoPatrocinio tipo,
+                      ModalidadeContribuicao modalidade,
+                      BigDecimal valorContribuicao,
+                      LocalDateTime dataEvento,
+                      StatusPatrocinio status,
+                      BigDecimal valorReembolsado,
+                      BigDecimal multaAplicada) {
+        notNull(id, "O id do patrocínio não pode ser nulo.");
+        notNull(eventoId, "O id do evento não pode ser nulo.");
+        notBlank(patrocinadorNome, "O nome do patrocinador não pode ser vazio.");
+        notBlank(categoriaPatrocinio, "A categoria do patrocínio não pode ser vazia.");
+        notNull(tipo, "O tipo do patrocínio não pode ser nulo.");
+        notNull(modalidade, "A modalidade de contribuição não pode ser nula.");
+        notNull(valorContribuicao, "O valor da contribuição não pode ser nulo.");
+        notNull(dataEvento, "A data do evento não pode ser nula.");
+        notNull(status, "O status do patrocínio não pode ser nulo.");
+
+        this.id = id;
+        this.eventoId = eventoId;
+        this.patrocinadorNome = patrocinadorNome;
+        this.categoriaPatrocinio = categoriaPatrocinio;
+        this.tipo = tipo;
+        this.modalidade = modalidade;
+        this.valorContribuicao = valorContribuicao;
+        this.dataEvento = dataEvento;
+        this.status = status;
+        this.valorReembolsado = valorReembolsado;
+        this.multaAplicada = multaAplicada;
+    }
+
     public void ativar() {
         isTrue(status == StatusPatrocinio.PROPOSTA, "Apenas patrocínios com status PROPOSTA podem ser ativados.");
         this.status = StatusPatrocinio.ATIVO;
@@ -66,58 +97,31 @@ public class Patrocinio {
         this.status = StatusPatrocinio.ENCERRADO;
     }
 
-    public ResultadoCancelamento cancelarPorEvento(LocalDateTime agora) {
-        isTrue(status == StatusPatrocinio.ATIVO, "Apenas patrocínios com status ATIVO podem ser cancelados por evento.");
+    // Strategy: delega o cálculo a uma EstrategiaCancelamentoPatrocinio injetada.
+    // O agregado mantém invariantes (status ATIVO, valor reembolsado, status final)
+    // e a estratégia encapsula a política financeira específica.
+    public CanceladoEvento cancelar(EstrategiaCancelamentoPatrocinio estrategia, LocalDateTime agora) {
+        notNull(estrategia, "A estratégia de cancelamento não pode ser nula.");
         notNull(agora, "A data/hora atual não pode ser nula.");
+        isTrue(status == StatusPatrocinio.ATIVO, "Apenas patrocínios com status ATIVO podem ser cancelados.");
 
-        long diasRestantes = ChronoUnit.DAYS.between(agora.toLocalDate(), dataEvento.toLocalDate());
+        ResultadoCalculoCancelamento resultado = estrategia.calcular(valorContribuicao, dataEvento, agora);
 
-        BigDecimal reembolso;
-        String motivo;
+        this.valorReembolsado = resultado.reembolso();
+        this.multaAplicada = resultado.multa();
+        this.status = estrategia.statusFinal();
 
-        if (diasRestantes > 7) {
-            reembolso = valorContribuicao;
-            motivo = "Cancelamento pelo evento com mais de 7 dias de antecedência. Reembolso integral.";
-        } else if (diasRestantes >= 2) {
-            reembolso = valorContribuicao.multiply(PERCENTUAL_REEMBOLSO_PARCIAL);
-            motivo = "Cancelamento pelo evento entre 2 e 7 dias de antecedência. Reembolso de 50%.";
-        } else {
-            reembolso = BigDecimal.ZERO;
-            motivo = "Cancelamento pelo evento com menos de 2 dias de antecedência. Sem reembolso.";
-        }
-
-        this.valorReembolsado = reembolso;
-        this.multaAplicada = BigDecimal.ZERO;
-        this.status = StatusPatrocinio.CANCELADO_EVENTO;
-
-        return new ResultadoCancelamento(reembolso, BigDecimal.ZERO, motivo);
+        return new CanceladoEvento(this, resultado.reembolso(), resultado.multa(), resultado.motivo());
     }
 
-    public ResultadoCancelamento cancelarPorPatrocinador(LocalDateTime agora) {
+    public CanceladoEvento cancelarPorEvento(LocalDateTime agora) {
+        isTrue(status == StatusPatrocinio.ATIVO, "Apenas patrocínios com status ATIVO podem ser cancelados por evento.");
+        return cancelar(new EstrategiaCancelamentoPorEvento(), agora);
+    }
+
+    public CanceladoEvento cancelarPorPatrocinador(LocalDateTime agora) {
         isTrue(status == StatusPatrocinio.ATIVO, "Apenas patrocínios com status ATIVO podem ser cancelados pelo patrocinador.");
-        notNull(agora, "A data/hora atual não pode ser nula.");
-
-        long diasRestantes = ChronoUnit.DAYS.between(agora.toLocalDate(), dataEvento.toLocalDate());
-
-        BigDecimal reembolso;
-        BigDecimal multa;
-        String motivo;
-
-        if (diasRestantes > 15) {
-            reembolso = valorContribuicao;
-            multa = BigDecimal.ZERO;
-            motivo = "Cancelamento pelo patrocinador com mais de 15 dias de antecedência. Sem penalidade.";
-        } else {
-            multa = valorContribuicao.multiply(PERCENTUAL_MULTA);
-            reembolso = valorContribuicao.multiply(PERCENTUAL_REEMBOLSO_PATROCINADOR_MULTA);
-            motivo = "Cancelamento pelo patrocinador com até 15 dias de antecedência. Multa de 20% aplicada.";
-        }
-
-        this.valorReembolsado = reembolso;
-        this.multaAplicada = multa;
-        this.status = StatusPatrocinio.CANCELADO_PATROCINADOR;
-
-        return new ResultadoCancelamento(reembolso, multa, motivo);
+        return cancelar(new EstrategiaCancelamentoPorPatrocinador(), agora);
     }
 
     public ResultadoSubsidio calcularSubsidio(BigDecimal precoSocialAtual) {
@@ -148,4 +152,41 @@ public class Patrocinio {
     public StatusPatrocinio getStatus() { return status; }
     public BigDecimal getValorReembolsado() { return valorReembolsado; }
     public BigDecimal getMultaAplicada() { return multaAplicada; }
+
+    public static class PatrocinioEvento {
+        private final Patrocinio patrocinio;
+
+        private PatrocinioEvento(Patrocinio patrocinio) {
+            this.patrocinio = patrocinio;
+        }
+
+        public Patrocinio getPatrocinio() {
+            return patrocinio;
+        }
+    }
+
+    public static class CanceladoEvento extends PatrocinioEvento {
+        private final BigDecimal reembolso;
+        private final BigDecimal multa;
+        private final String motivo;
+
+        private CanceladoEvento(Patrocinio patrocinio, BigDecimal reembolso, BigDecimal multa, String motivo) {
+            super(patrocinio);
+            this.reembolso = reembolso;
+            this.multa = multa;
+            this.motivo = motivo;
+        }
+
+        public BigDecimal getReembolso() {
+            return reembolso;
+        }
+
+        public BigDecimal getMulta() {
+            return multa;
+        }
+
+        public String getMotivo() {
+            return motivo;
+        }
+    }
 }

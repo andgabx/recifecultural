@@ -10,4 +10,5 @@ public interface ComentarioRepositorio {
     void atualizar(Comentario comentario);
     void deletar(UUID id);
     List<Comentario> listarPorEvento(UUID eventoId);
+    boolean existeNotaPorEspectador(UUID espectadorId, UUID eventoId);
 }

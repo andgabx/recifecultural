@@ -2,7 +2,8 @@ package recifecultural.dominio.agenda.bloqueioadministrativo;
 
 import recifecultural.dominio.agenda.evento.Evento;
 import recifecultural.dominio.agenda.evento.IEventoRepositorio;
-import recifecultural.dominio.compartilhado.notificacao.NotificacaoServico;
+import recifecultural.dominio.compartilhado.evento.EventoBarramento;
+import recifecultural.dominio.compartilhado.evento.EventoCanceladoPorBloqueioEvento;
 import recifecultural.dominio.espaco.espaco.Espaco;
 import recifecultural.dominio.espaco.espaco.EspacoId;
 import recifecultural.dominio.espaco.espaco.IEspacoRepositorio;
@@ -17,23 +18,23 @@ public class BloqueioAdministrativoServico {
     private final IBloqueioAdministrativoRepositorio bloqueioRepositorio;
     private final IEventoRepositorio eventoRepositorio;
     private final IEspacoRepositorio espacoRepositorio;
-    private final NotificacaoServico notificacaoServico;
+    private final EventoBarramento barramento;
 
     public BloqueioAdministrativoServico(
             IBloqueioAdministrativoRepositorio bloqueioRepositorio,
             IEventoRepositorio eventoRepositorio,
             IEspacoRepositorio espacoRepositorio,
-            NotificacaoServico notificacaoServico) {
+            EventoBarramento barramento) {
 
         if (bloqueioRepositorio == null) throw new IllegalArgumentException("[IBloqueioAdministrativoRepositorio] Repositório não pode ser nulo.");
         if (eventoRepositorio == null) throw new IllegalArgumentException("[EventoRepositorio] Repositório não pode ser nulo.");
         if (espacoRepositorio == null) throw new IllegalArgumentException("[EspacoRepositorio] Repositório não pode ser nulo.");
-        if (notificacaoServico == null) throw new IllegalArgumentException("[NotificacaoServico] Serviço não pode ser nulo.");
+        if (barramento == null) throw new IllegalArgumentException("[EventoBarramento] Barramento não pode ser nulo.");
 
         this.bloqueioRepositorio = bloqueioRepositorio;
         this.eventoRepositorio = eventoRepositorio;
         this.espacoRepositorio = espacoRepositorio;
-        this.notificacaoServico = notificacaoServico;
+        this.barramento = barramento;
     }
 
     public BloqueioAdministrativo criarBloqueio(EspacoId espacoId, LocalDate inicio, LocalDate fim, String justificativa) {
@@ -72,6 +73,7 @@ public class BloqueioAdministrativoServico {
         Optional<Espaco> espacoOpt = espacoRepositorio.obterPorId(bloqueio.getEspacoId());
         if (espacoOpt.isPresent()) {
             Espaco espaco = espacoOpt.get();
+            espaco.reativar();
             espacoRepositorio.atualizar(espaco);
         }
     }
@@ -118,23 +120,14 @@ public class BloqueioAdministrativoServico {
             evento.cancelar(motivoCancelamento);
             eventoRepositorio.atualizar(evento);
 
-            String mensagemNotificacao = String.format(
-                    "Atenção: O evento '%s' foi cancelado por motivos técnicos. Justificativa: %s",
-                    evento.getTitulo(), bloqueio.getJustificativa()
-            );
-
-            notificacaoServico.enviarNotificacao(
+            // Padrão Observer (Par 3): publica evento de domínio no barramento.
+            // O contexto de Notificações assina via observador e dispara as mensagens.
+            barramento.postar(new EventoCanceladoPorBloqueioEvento(
+                    evento.getId(),
                     evento.getPromotorId(),
-                    mensagemNotificacao,
-                    "EVENTO_CANCELADO",
-                    null
-            );
-
-            notificacaoServico.enviarBroadcast(
-                    mensagemNotificacao,
-                    "PARTICIPANTES_EVENTO_CANCELADO",
-                    null
-            );
+                    evento.getTitulo(),
+                    bloqueio.getJustificativa()
+            ));
         }
     }
 }

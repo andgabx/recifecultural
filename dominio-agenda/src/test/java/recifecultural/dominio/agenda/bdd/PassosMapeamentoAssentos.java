@@ -68,7 +68,9 @@ public class PassosMapeamentoAssentos {
         espacoMock = mock(Espaco.class);
         when(espacoMock.getNome()).thenReturn(nome);
         when(espacoMock.getStatus()).thenReturn(StatusEspaco.valueOf(status));
+        when(espacoMock.getCapacidadeMaxima()).thenReturn(9999); // não restringe o teste
         when(espacoRepositorio.obterPorId(any(EspacoId.class))).thenReturn(Optional.of(espacoMock));
+        when(setorRepositorio.listarPorEspaco(any(EspacoId.class))).thenReturn(List.of());
     }
 
     @Quando("eu configuro um setor com {int} fileiras e {int} assentos por fileira")

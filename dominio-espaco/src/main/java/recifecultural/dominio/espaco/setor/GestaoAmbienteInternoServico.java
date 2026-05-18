@@ -22,7 +22,7 @@ public class GestaoAmbienteInternoServico {
     public Setor configurarGestaoAmbiente(EspacoId espacoId, String nome, TipoSetor tipoSetor, int fileirasHorizontais, int assentosPorFileiraVertical) {
         Espaco espaco = espacoRepositorio.obterPorId(espacoId)
                 .orElseThrow(() -> new IllegalArgumentException("Espaço não encontrado."));
-        
+
         if (espaco.getStatus() != StatusEspaco.ATIVO) {
             throw new IllegalStateException("Espaço deve estar com status ATIVO para configurar o ambiente interno.");
         }
@@ -34,18 +34,67 @@ public class GestaoAmbienteInternoServico {
             throw new IllegalArgumentException("Número de assentos por fileira vertical deve ser maior que 0.");
         }
 
+        int totalNovo = fileirasHorizontais * assentosPorFileiraVertical;
+        int totalExistente = setorRepositorio.listarPorEspaco(espacoId).stream()
+                .mapToInt(Setor::capacidade).sum();
+        if (totalExistente + totalNovo > espaco.getCapacidadeMaxima()) {
+            throw new IllegalStateException(
+                    "Capacidade do espaço excedida. Já cadastrados " + totalExistente
+                            + " assentos; novo setor adiciona " + totalNovo
+                            + "; capacidade máxima é " + espaco.getCapacidadeMaxima() + "."
+            );
+        }
+
         Setor setor = new Setor(espacoId, nome, tipoSetor, fileirasHorizontais, assentosPorFileiraVertical);
         List<Assento> assentos = new ArrayList<>();
-        
+
         for (int i = 0; i < fileirasHorizontais; i++) {
             String letraFileira = String.valueOf((char) ('A' + i));
             for (int j = 1; j <= assentosPorFileiraVertical; j++) {
                 assentos.add(new Assento(letraFileira, j));
             }
         }
-        
+
         setor.mapearAssentos(assentos);
         setorRepositorio.salvar(setor);
+        return setor;
+    }
+
+    public Setor editarSetor(SetorId setorId, String nome, TipoSetor tipoSetor,
+                             int fileirasHorizontais, int assentosPorFileiraVertical) {
+        Setor setor = setorRepositorio.obterPorId(setorId)
+                .orElseThrow(() -> new IllegalArgumentException("Setor não encontrado."));
+
+        Espaco espaco = espacoRepositorio.obterPorId(setor.getEspacoId())
+                .orElseThrow(() -> new IllegalArgumentException("Espaço do setor não encontrado."));
+
+        // Valida capacidade total considerando o novo tamanho deste setor
+        int totalNovo = fileirasHorizontais * assentosPorFileiraVertical;
+        int totalOutros = setorRepositorio.listarPorEspaco(setor.getEspacoId()).stream()
+                .filter(s -> !s.getId().equals(setorId))
+                .mapToInt(Setor::capacidade).sum();
+        if (totalOutros + totalNovo > espaco.getCapacidadeMaxima()) {
+            throw new IllegalStateException(
+                    "Capacidade do espaço excedida. Outros setores totalizam " + totalOutros
+                            + " assentos; este setor passaria a ter " + totalNovo
+                            + "; capacidade máxima é " + espaco.getCapacidadeMaxima() + "."
+            );
+        }
+
+        boolean dimensoesMudaram = setor.editar(nome, tipoSetor, fileirasHorizontais, assentosPorFileiraVertical);
+
+        if (dimensoesMudaram) {
+            List<Assento> novosAssentos = new ArrayList<>();
+            for (int i = 0; i < fileirasHorizontais; i++) {
+                String letraFileira = String.valueOf((char) ('A' + i));
+                for (int j = 1; j <= assentosPorFileiraVertical; j++) {
+                    novosAssentos.add(new Assento(letraFileira, j));
+                }
+            }
+            setor.mapearAssentos(novosAssentos);
+        }
+
+        setorRepositorio.atualizar(setor);
         return setor;
     }
 
@@ -54,5 +103,9 @@ public class GestaoAmbienteInternoServico {
         return setores.stream()
                 .mapToLong(Setor::contarAssentosDisponiveis)
                 .sum();
+    }
+
+    public List<Setor> listarPorEspaco(EspacoId espacoId) {
+        return setorRepositorio.listarPorEspaco(espacoId);
     }
 }

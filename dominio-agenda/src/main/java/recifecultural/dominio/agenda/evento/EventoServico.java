@@ -105,6 +105,22 @@ public class EventoServico {
         repositorio.deletar(id);
     }
 
+    public void editar(UUID id,
+                       String titulo,
+                       String descricaoCurta,
+                       String descricaoLonga,
+                       Periodo periodo,
+                       Preco preco,
+                       String categoria,
+                       UUID localId,
+                       List<UUID> artistas,
+                       List<LocalDateTime> datasApresentacao) {
+        Evento evento = buscarOuLancar(id);
+        evento.editarInformacoes(titulo, descricaoCurta, descricaoLonga,
+                periodo, preco, categoria, localId, artistas, datasApresentacao);
+        repositorio.atualizar(evento);
+    }
+
     private Evento buscarOuLancar(UUID id) {
         return repositorio.obter(id)
                 .orElseThrow(() -> new IllegalArgumentException("Evento não encontrado: " + id));

@@ -54,6 +54,19 @@ public class PreReservaServico {
         setorRepositorio.atualizar(setor);
     }
 
+    public void confirmar(PreReservaId preReservaId) {
+        PreReserva preReserva = preReservaRepositorio.obterPorId(preReservaId)
+                .orElseThrow(() -> new IllegalArgumentException("Pré-reserva não encontrada."));
+
+        preReserva.confirmar();
+        preReservaRepositorio.atualizar(preReserva);
+
+        Setor setor = setorRepositorio.obterPorId(SetorId.de(preReserva.getSetorId().toString()))
+                .orElseThrow(() -> new IllegalArgumentException("Setor não encontrado."));
+        setor.ocuparAssento(preReserva.getAssentoId());
+        setorRepositorio.atualizar(setor);
+    }
+
     public void expirarVencidas() {
         LocalDateTime agora = LocalDateTime.now();
         List<PreReserva> vencidas = preReservaRepositorio.listarAtivasExpiradas(agora);

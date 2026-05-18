@@ -19,9 +19,43 @@
         </dependency>
         <dependency>
             <groupId>br.com.cesar</groupId>
+            <artifactId>recifecultural-dominio-compartilhado</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>br.com.cesar</groupId>
             <artifactId>recifecultural-dominio-agenda</artifactId>
             <version>0.0.1-SNAPSHOT</version>
-            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>br.com.cesar</groupId>
+            <artifactId>recifecultural-dominio-artista</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>br.com.cesar</groupId>
+            <artifactId>recifecultural-dominio-ingressos</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>br.com.cesar</groupId>
+            <artifactId>recifecultural-dominio-patrocinio</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>br.com.cesar</groupId>
+            <artifactId>recifecultural-dominio-financeiro</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>br.com.cesar</groupId>
+            <artifactId>recifecultural-dominio-espaco</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.17.0</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>

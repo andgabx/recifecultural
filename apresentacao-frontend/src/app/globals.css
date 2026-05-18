@@ -1,0 +1,187 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Recife Cultural — Paleta (Fase 6 §0.2)
+   Identidade: teatro clássico (vinho/dourado) + cultura popular (frevo/capibaribe)
+   ────────────────────────────────────────────────────────────────────────── */
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-playfair);
+  --font-mono: var(--font-jetbrains-mono);
+  --font-heading: var(--font-playfair);
+
+  /* shadcn semantic tokens */
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+
+  /* Brand colors (utilities: bg-vinho, text-ouro, border-frevo, etc.) */
+  --color-vinho: #7b1d42;
+  --color-vinho-light: #9d2455;
+  --color-vinho-dark: #5a1330;
+  --color-vinho-50: #fdf2f6;
+
+  --color-ouro: #c9920e;
+  --color-ouro-light: #e5a912;
+  --color-ouro-dark: #a07208;
+
+  --color-frevo: #f5c518;
+  --color-frevo-dark: #d4a800;
+
+  --color-capibaribe: #d4622a;
+  --color-capibaribe-light: #e87848;
+
+  --color-palco: #1a1018;
+  --color-palco-surface: #2c2030;
+
+  --color-marquee: #faf6f0;
+  --color-marquee-card: #ffffff;
+  --color-marquee-muted: #f0e8dc;
+
+  /* Shadows teatrais (Fase 6 §0.4) */
+  --shadow-card: 0 2px 8px rgba(26, 16, 24, 0.08);
+  --shadow-raised: 0 8px 24px rgba(26, 16, 24, 0.14);
+  --shadow-stage: 0 0 40px rgba(201, 146, 14, 0.18);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+  /* Backgrounds */
+  --background: #faf6f0; /* marquee */
+  --foreground: #1a1018; /* palco */
+  --card: #ffffff;
+  --card-foreground: #1a1018;
+  --popover: #ffffff;
+  --popover-foreground: #1a1018;
+
+  /* Primary = vinho (cortina de veludo) */
+  --primary: #7b1d42;
+  --primary-foreground: #faf6f0;
+
+  /* Secondary = creme pergaminho */
+  --secondary: #f0e8dc;
+  --secondary-foreground: #1a1018;
+
+  /* Muted */
+  --muted: #f0e8dc;
+  --muted-foreground: #7a6b62;
+
+  /* Accent = ouro (dourado de palco) */
+  --accent: #c9920e;
+  --accent-foreground: #faf6f0;
+
+  /* Destructive */
+  --destructive: #b91c1c;
+
+  /* Borders/inputs/ring */
+  --border: #e4d8ce;
+  --input: #e4d8ce;
+  --ring: rgba(123, 29, 66, 0.4);
+
+  /* Charts — paleta gradiente vinho → ouro → frevo */
+  --chart-1: #7b1d42;
+  --chart-2: #c9920e;
+  --chart-3: #f5c518;
+  --chart-4: #d4622a;
+  --chart-5: #9d2455;
+
+  --radius: 0.625rem;
+
+  /* Sidebar = palco escuro */
+  --sidebar: #1a1018;
+  --sidebar-foreground: rgba(250, 246, 240, 0.8);
+  --sidebar-primary: #7b1d42;
+  --sidebar-primary-foreground: #faf6f0;
+  --sidebar-accent: #2c2030;
+  --sidebar-accent-foreground: #faf6f0;
+  --sidebar-border: #2c2030;
+  --sidebar-ring: #c9920e;
+}
+
+.dark {
+  --background: #1a1018;
+  --foreground: #faf6f0;
+  --card: #2c2030;
+  --card-foreground: #faf6f0;
+  --popover: #2c2030;
+  --popover-foreground: #faf6f0;
+  --primary: #9d2455;
+  --primary-foreground: #faf6f0;
+  --secondary: #2c2030;
+  --secondary-foreground: #faf6f0;
+  --muted: #2c2030;
+  --muted-foreground: rgba(250, 246, 240, 0.65);
+  --accent: #e5a912;
+  --accent-foreground: #1a1018;
+  --destructive: #ef4444;
+  --border: rgba(250, 246, 240, 0.1);
+  --input: rgba(250, 246, 240, 0.15);
+  --ring: rgba(201, 146, 14, 0.5);
+  --sidebar: #1a1018;
+  --sidebar-foreground: rgba(250, 246, 240, 0.8);
+  --sidebar-primary: #c9920e;
+  --sidebar-primary-foreground: #1a1018;
+  --sidebar-accent: #2c2030;
+  --sidebar-accent-foreground: #faf6f0;
+  --sidebar-border: rgba(250, 246, 240, 0.1);
+  --sidebar-ring: #c9920e;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans antialiased;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display tracking-tight;
+  }
+}

@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 
@@ -44,6 +45,25 @@ public class Sorteio {
         this.random = random;
     }
 
+    /** Reconstruction constructor — preserva ID, status e inscricoes ao recarregar do banco. */
+    public Sorteio(UUID id, UUID apresentacaoId, UUID eventoId, int vagas,
+                   LocalDateTime prazoInscricao, LocalDateTime dataApresentacao,
+                   StatusSorteio status, List<Inscricao> inscricoes) {
+        if (id == null) throw new IllegalArgumentException("ID é obrigatório.");
+        if (apresentacaoId == null) throw new IllegalArgumentException("Apresentação é obrigatória.");
+        if (eventoId == null) throw new IllegalArgumentException("Evento é obrigatório.");
+
+        this.id = id;
+        this.apresentacaoId = apresentacaoId;
+        this.eventoId = eventoId;
+        this.vagas = vagas;
+        this.prazoInscricao = prazoInscricao;
+        this.dataApresentacao = dataApresentacao;
+        this.status = status != null ? status : StatusSorteio.INSCRICOES_ABERTAS;
+        this.inscricoes = inscricoes != null ? new ArrayList<>(inscricoes) : new ArrayList<>();
+        this.random = new Random();
+    }
+
     public void inscrever(UUID espectadorId) {
         if (status != StatusSorteio.INSCRICOES_ABERTAS)
             throw new IllegalStateException("Sorteio não está com inscrições abertas.");
@@ -52,7 +72,7 @@ public class Sorteio {
         inscricoes.add(new Inscricao(espectadorId, LocalDateTime.now()));
     }
 
-    public void apurar() {
+    public ConcluidoEvento apurar() {
         if (status != StatusSorteio.INSCRICOES_ABERTAS)
             throw new IllegalStateException("Sorteio não pode ser apurado no estado " + status + ".");
 
@@ -65,9 +85,10 @@ public class Sorteio {
         }
 
         status = StatusSorteio.CONCLUIDO;
+        return new ConcluidoEvento(this);
     }
 
-    public void desistir(UUID espectadorId) {
+    public Optional<SuplentePromovidoEvento> desistir(UUID espectadorId) {
         if (status != StatusSorteio.CONCLUIDO)
             throw new IllegalStateException("Só é possível desistir após a apuração.");
 
@@ -81,16 +102,22 @@ public class Sorteio {
 
         alvo.marcarComo(StatusInscricao.DESISTENTE);
 
-        inscricoes.stream()
+        return inscricoes.stream()
                 .filter(i -> i.getStatus() == StatusInscricao.SUPLENTE)
                 .findFirst()
-                .ifPresent(s -> s.marcarComo(StatusInscricao.GANHADOR));
+                .map(suplente -> {
+                    suplente.marcarComo(StatusInscricao.GANHADOR);
+                    return new SuplentePromovidoEvento(this, suplente.getEspectadorId(), espectadorId);
+                });
     }
 
-    public void cancelar() {
-        if (status == StatusSorteio.CANCELADO) return;
+    public CanceladoEvento cancelar() {
+        if (status == StatusSorteio.CANCELADO) {
+            return new CanceladoEvento(this);
+        }
         status = StatusSorteio.CANCELADO;
         inscricoes.forEach(i -> i.marcarComo(StatusInscricao.CANCELADA));
+        return new CanceladoEvento(this);
     }
 
     public long contarPorStatus(StatusInscricao statusInscricao) {
@@ -109,4 +136,47 @@ public class Sorteio {
     public LocalDateTime getDataApresentacao() { return dataApresentacao; }
     public StatusSorteio getStatus() { return status; }
     public List<Inscricao> getInscricoes() { return Collections.unmodifiableList(inscricoes); }
+
+    public static class SorteioEvento {
+        private final Sorteio sorteio;
+
+        private SorteioEvento(Sorteio sorteio) {
+            this.sorteio = sorteio;
+        }
+
+        public Sorteio getSorteio() {
+            return sorteio;
+        }
+    }
+
+    public static class ConcluidoEvento extends SorteioEvento {
+        private ConcluidoEvento(Sorteio sorteio) {
+            super(sorteio);
+        }
+    }
+
+    public static class CanceladoEvento extends SorteioEvento {
+        private CanceladoEvento(Sorteio sorteio) {
+            super(sorteio);
+        }
+    }
+
+    public static class SuplentePromovidoEvento extends SorteioEvento {
+        private final UUID espectadorPromovidoId;
+        private final UUID espectadorDesistenteId;
+
+        private SuplentePromovidoEvento(Sorteio sorteio, UUID promovidoId, UUID desistenteId) {
+            super(sorteio);
+            this.espectadorPromovidoId = promovidoId;
+            this.espectadorDesistenteId = desistenteId;
+        }
+
+        public UUID getEspectadorPromovidoId() {
+            return espectadorPromovidoId;
+        }
+
+        public UUID getEspectadorDesistenteId() {
+            return espectadorDesistenteId;
+        }
+    }
 }

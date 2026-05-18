@@ -22,6 +22,9 @@ public class ComentarioService {
     public void postarComNota(Comentario comentario, BilheteriaDigital bilheteria) {
         if (!bilheteria.verificarPresenca(comentario.getEspectadorId(), comentario.getEventoId()))
             throw new IllegalStateException("Espectador não esteve presente no evento.");
+        if (comentario.getNota() != null
+                && repositorio.existeNotaPorEspectador(comentario.getEspectadorId(), comentario.getEventoId()))
+            throw new IllegalStateException("Espectador já avaliou este evento com uma nota.");
         repositorio.salvar(comentario);
     }
 

@@ -3,18 +3,23 @@ package recifecultural.dominio.agenda.acessibilidade;
 import recifecultural.dominio.agenda.evento.Evento;
 import recifecultural.dominio.agenda.evento.IEventoRepositorio;
 import recifecultural.dominio.agenda.evento.StatusEvento;
+import recifecultural.dominio.compartilhado.notificacao.NotificacaoServico;
 
+import java.util.List;
 import java.util.UUID;
 
 public class RecursoAcessibilidadeServico {
 
     private final IRecursoAcessibilidadeRepositorio repositorio;
     private final IEventoRepositorio eventoRepositorio;
+    private final NotificacaoServico notificacaoServico;
 
     public RecursoAcessibilidadeServico(IRecursoAcessibilidadeRepositorio repositorio,
-                                        IEventoRepositorio eventoRepositorio) {
+                                        IEventoRepositorio eventoRepositorio,
+                                        NotificacaoServico notificacaoServico) {
         this.repositorio = repositorio;
         this.eventoRepositorio = eventoRepositorio;
+        this.notificacaoServico = notificacaoServico;
     }
 
     public RecursoAcessibilidade marcar(UUID apresentacaoId, UUID eventoId, TipoRecursoAcessibilidade tipo) {
@@ -38,5 +43,14 @@ public class RecursoAcessibilidadeServico {
                 .orElseThrow(() -> new IllegalArgumentException("Recurso não encontrado: " + recursoId));
         recurso.remover(justificativa);
         repositorio.atualizar(recurso);
+
+        String mensagem = String.format(
+                "O recurso de acessibilidade %s foi removido do evento %s. Justificativa: %s",
+                recurso.getTipo(), recurso.getEventoId(), justificativa);
+        notificacaoServico.enviarBroadcast(mensagem, "ACESSIBILIDADE_REMOVIDA", recurso.getEventoId());
+    }
+
+    public List<RecursoAcessibilidade> listarAtivosPorEvento(UUID eventoId) {
+        return repositorio.listarAtivosPorEvento(eventoId);
     }
 }

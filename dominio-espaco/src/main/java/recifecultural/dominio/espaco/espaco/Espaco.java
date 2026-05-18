@@ -3,7 +3,6 @@ package recifecultural.dominio.espaco.espaco;
 
 import java.util.ArrayList;
 import java.util.List;
-import recifecultural.dominio.espaco.espaco.EspacoId;
 
 public class Espaco {
     private final EspacoId id;
@@ -22,6 +21,20 @@ public class Espaco {
         this.riderTecnico = riderTecnico != null ? new ArrayList<>(riderTecnico) : new ArrayList<>();
         this.status = StatusEspaco.ATIVO;
 
+    }
+
+    /** Reconstruction constructor — preserva ID e status ao recarregar do banco. */
+    public Espaco(EspacoId id, String nome, int capacidadeMaxima,
+                  List<String> riderTecnico, StatusEspaco status) {
+        if (id == null) throw new IllegalArgumentException("ID é obrigatório.");
+        if (nome == null || nome.isBlank()) throw new IllegalArgumentException("Nome é obrigatório.");
+        if (capacidadeMaxima <= 0) throw new IllegalArgumentException("A capacidade deve ser maior que zero.");
+
+        this.id = id;
+        this.nome = nome;
+        this.capacidadeMaxima = capacidadeMaxima;
+        this.riderTecnico = riderTecnico != null ? new ArrayList<>(riderTecnico) : new ArrayList<>();
+        this.status = status != null ? status : StatusEspaco.ATIVO;
     }
 
     public EspacoId getId() {
@@ -47,6 +60,13 @@ public class Espaco {
             throw new IllegalStateException("O espaço já está interditado.");
         }
         this.status = StatusEspaco.INTERDITADO;
+    }
+
+    public void reativar() {
+        if (this.status == StatusEspaco.ATIVO) {
+            throw new IllegalStateException("O espaço já está ativo.");
+        }
+        this.status = StatusEspaco.ATIVO;
     }
 
     private List<Ocupacao> ocupacoesExistentes = new ArrayList<>();

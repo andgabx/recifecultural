@@ -3,6 +3,7 @@ package recifecultural.dominio.cupom;
 import io.cucumber.java.pt.*;
 import org.junit.jupiter.api.Assertions;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -19,7 +20,8 @@ public class PassosCupom {
     @Dado("que o sistema possui o cupom {string} com {int}% de desconto")
     public void setupCupom(String codigo, Integer perc) {
         cupomValido = new Cupom(
-                new CupomId("ID-" + codigo), codigo, TipoDesconto.PERCENTUAL, perc.doubleValue(), 100.0, 5, 1,
+                new CupomId("ID-" + codigo), codigo, TipoDesconto.PERCENTUAL,
+                BigDecimal.valueOf(perc), BigDecimal.valueOf(100.0), 5, 1,
                 LocalDateTime.of(2026, 1, 1, 0, 0),
                 LocalDateTime.of(2026, 12, 31, 23, 59),
                 "TEATRO"
@@ -31,7 +33,8 @@ public class PassosCupom {
     @Dado("que o sistema possui o cupom {string} com {double} reais de desconto fixo")
     public void setupCupomFixo(String codigo, Double valorFixo) {
         cupomValido = new Cupom(
-                new CupomId("ID-" + codigo), codigo, TipoDesconto.VALOR_FIXO, valorFixo, 100.0, 5, 1,
+                new CupomId("ID-" + codigo), codigo, TipoDesconto.VALOR_FIXO,
+                BigDecimal.valueOf(valorFixo), BigDecimal.valueOf(100.0), 5, 1,
                 LocalDateTime.of(2026, 1, 1, 0, 0),
                 LocalDateTime.of(2026, 12, 31, 23, 59),
                 "TEATRO"
@@ -60,9 +63,10 @@ public class PassosCupom {
         LocalDateTime dataCompra = LocalDate.parse(dataString, formatter).atStartOfDay();
 
         try {
-            cupomValido.validarElegibilidade(cpf, valor, categoria, dataCompra);
-            double desconto = cupomValido.calcularDesconto(valor);
-            contexto.valorCalculado = valor - desconto;
+            BigDecimal valorBd = BigDecimal.valueOf(valor);
+            cupomValido.validarElegibilidade(cpf, valorBd, categoria, dataCompra);
+            BigDecimal desconto = cupomValido.calcularDesconto(valorBd);
+            contexto.valorCalculado = valorBd.subtract(desconto).doubleValue();
 
             contexto.excecao = null;
 

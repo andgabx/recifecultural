@@ -16,6 +16,12 @@ public class Inscricao {
         this.status = StatusInscricao.INSCRITO;
     }
 
+    /** Reconstruction constructor — preserva status ao recarregar do banco. */
+    public Inscricao(UUID espectadorId, LocalDateTime momentoInscricao, StatusInscricao status) {
+        this(espectadorId, momentoInscricao);
+        if (status != null) this.status = status;
+    }
+
     public UUID getEspectadorId() { return espectadorId; }
     public LocalDateTime getMomentoInscricao() { return momentoInscricao; }
     public StatusInscricao getStatus() { return status; }

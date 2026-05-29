@@ -6,6 +6,9 @@ import recifecultural.dominio.agenda.evento.IEventoRepositorio;
 import recifecultural.dominio.agenda.sorteio.ISorteioRepositorio;
 import recifecultural.dominio.agenda.sorteio.Sorteio;
 import recifecultural.dominio.agenda.sorteio.SorteioServico;
+import recifecultural.dominio.compartilhado.notificacao.INotificacaoRepositorio;
+import recifecultural.dominio.compartilhado.notificacao.IUsuarioContextoServico;
+import recifecultural.dominio.compartilhado.notificacao.NotificacaoServico;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,5 +22,7 @@ public class ContextoSorteio {
 
     public IEventoRepositorio eventoRepositorio = Mockito.mock(IEventoRepositorio.class);
     public ISorteioRepositorio sorteioRepositorio = Mockito.mock(ISorteioRepositorio.class);
-    public SorteioServico servico = new SorteioServico(sorteioRepositorio, eventoRepositorio);
+    public NotificacaoServico notificacaoServico = new NotificacaoServico(
+            Mockito.mock(INotificacaoRepositorio.class), Mockito.mock(IUsuarioContextoServico.class));
+    public SorteioServico servico = new SorteioServico(sorteioRepositorio, eventoRepositorio, notificacaoServico);
 }

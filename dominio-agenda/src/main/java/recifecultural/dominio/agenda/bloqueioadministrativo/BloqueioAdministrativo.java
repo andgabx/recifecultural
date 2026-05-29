@@ -1,6 +1,7 @@
 package recifecultural.dominio.agenda.bloqueioadministrativo;
 
 import java.time.LocalDate;
+
 import recifecultural.dominio.espaco.espaco.EspacoId;
 
 public class BloqueioAdministrativo {
@@ -18,6 +19,22 @@ public class BloqueioAdministrativo {
         setPeriodo(dataInicio, dataFim);
         setJustificativa(justificativa);
         this.ativo = true;
+    }
+
+    /** Reconstruction constructor — preserva ID e flag ativo ao recarregar do banco. */
+    public BloqueioAdministrativo(BloqueioAdministrativoId id, EspacoId espacoId,
+                                   LocalDate dataInicio, LocalDate dataFim,
+                                   String justificativa, boolean ativo) {
+        if (id == null) throw new IllegalArgumentException("O ID do bloqueio é obrigatório.");
+        this.id = id;
+        setEspacoId(espacoId);
+        setPeriodo(dataInicio, dataFim);
+        setJustificativa(justificativa);
+        this.ativo = ativo;
+    }
+
+    public CriadoEvento eventoCriacao() {
+        return new CriadoEvento(this);
     }
 
     public void atualizarInformacoes(String justificativa, LocalDate dataInicio, LocalDate dataFim) {
@@ -58,11 +75,28 @@ public class BloqueioAdministrativo {
         this.justificativa = justificativa;
     }
 
-    // Getters
     public BloqueioAdministrativoId getId() { return id; }
     public EspacoId getEspacoId() { return espacoId; }
     public LocalDate getDataInicio() { return dataInicio; }
     public LocalDate getDataFim() { return dataFim; }
     public String getJustificativa() { return justificativa; }
     public boolean isAtivo() { return ativo; }
+
+    public static class BloqueioEvento {
+        private final BloqueioAdministrativo bloqueio;
+
+        private BloqueioEvento(BloqueioAdministrativo bloqueio) {
+            this.bloqueio = bloqueio;
+        }
+
+        public BloqueioAdministrativo getBloqueio() {
+            return bloqueio;
+        }
+    }
+
+    public static class CriadoEvento extends BloqueioEvento {
+        private CriadoEvento(BloqueioAdministrativo bloqueio) {
+            super(bloqueio);
+        }
+    }
 }

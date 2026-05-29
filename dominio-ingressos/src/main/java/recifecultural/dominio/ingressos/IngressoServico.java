@@ -1,35 +1,41 @@
 package recifecultural.dominio.ingressos;
 
-import recifecultural.dominio.catraca.CatracaServico;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import recifecultural.dominio.compartilhado.evento.EventoBarramento;
+import recifecultural.dominio.cupom.AplicarCupomServico;
+
 import static org.apache.commons.lang3.Validate.isTrue;
+import static org.apache.commons.lang3.Validate.notBlank;
 import static org.apache.commons.lang3.Validate.notNull;
 
 public class IngressoServico {
 
     private final IIngressoRepositorio repositorio;
     private final IGatewayPagamento gateway;
-    private final CatracaServico catracaServico;
+    private final EventoBarramento barramento;
+    private final AplicarCupomServico cupomServico;
 
     public IngressoServico(IIngressoRepositorio repositorio, IGatewayPagamento gateway) {
-        notNull(repositorio, "O repositório de ingressos não pode ser nulo.");
-        notNull(gateway, "O gateway de pagamento não pode ser nulo.");
-        this.repositorio = repositorio;
-        this.gateway = gateway;
-        this.catracaServico=null;
-
+        this(repositorio, gateway, null, null);
     }
-    public IngressoServico(IIngressoRepositorio repositorio, IGatewayPagamento gateway, CatracaServico catracaServico) {
-        this.catracaServico = catracaServico;
+
+    public IngressoServico(IIngressoRepositorio repositorio, IGatewayPagamento gateway, EventoBarramento barramento) {
+        this(repositorio, gateway, barramento, null);
+    }
+
+    public IngressoServico(IIngressoRepositorio repositorio,
+                           IGatewayPagamento gateway,
+                           EventoBarramento barramento,
+                           AplicarCupomServico cupomServico) {
         notNull(repositorio, "O repositório de ingressos não pode ser nulo.");
         notNull(gateway, "O gateway de pagamento não pode ser nulo.");
-        notNull(catracaServico, "O serviço de catraca não pode ser nulo.");
         this.repositorio = repositorio;
         this.gateway = gateway;
+        this.barramento = barramento;
+        this.cupomServico = cupomServico;
     }
 
 
@@ -66,6 +72,76 @@ public class IngressoServico {
         );
 
         repositorio.salvar(ingresso);
+        postar(ingresso.eventoCompra());
+        return ingresso;
+    }
+
+    public Ingresso comprarComCupom(UUID eventoId,
+                                    LocalDateTime dataHora,
+                                    TipoIngresso tipo,
+                                    BigDecimal valor,
+                                    MetodoPagamento metodo,
+                                    int capacidadeMaxima,
+                                    String codigoCupom,
+                                    String cpfComprador,
+                                    String categoriaEvento) {
+        notNull(cupomServico, "Serviço de cupom não está configurado neste IngressoServico.");
+        notBlank(codigoCupom, "O código do cupom é obrigatório.");
+        notBlank(cpfComprador, "O CPF do comprador é obrigatório.");
+        notBlank(categoriaEvento, "A categoria do evento é obrigatória.");
+        notNull(valor, "O valor não pode ser nulo.");
+
+        BigDecimal valorComDesconto = cupomServico.aplicarDesconto(codigoCupom, cpfComprador, valor, categoriaEvento);
+
+        return comprar(eventoId, dataHora, tipo, valorComDesconto, metodo, capacidadeMaxima);
+    }
+
+    public Ingresso comprarComPreReserva(UUID eventoId,
+                                         LocalDateTime dataHora,
+                                         UUID preReservaId,
+                                         UUID assentoId,
+                                         TipoIngresso tipo,
+                                         BigDecimal valor,
+                                         MetodoPagamento metodo,
+                                         int capacidadeMaxima,
+                                         IConfirmacaoReserva confirmacaoReserva) {
+        notNull(preReservaId, "O id da pré-reserva não pode ser nulo.");
+        notNull(assentoId, "O id do assento não pode ser nulo.");
+        notNull(confirmacaoReserva, "O serviço de confirmação de reserva é obrigatório.");
+        notNull(eventoId, "O id do evento não pode ser nulo.");
+        notNull(dataHora, "A data e hora da apresentação não podem ser nulas.");
+        notNull(tipo, "O tipo do ingresso não pode ser nulo.");
+        notNull(valor, "O valor não pode ser nulo.");
+        notNull(metodo, "O método de pagamento não pode ser nulo.");
+
+        int ativos = repositorio.contarAtivosPorApresentacao(eventoId, dataHora);
+        isTrue(ativos < capacidadeMaxima, "Capacidade esgotada para esta apresentação.");
+
+        IngressoId ingressoId = IngressoId.novo();
+        ResultadoPagamento resultado = gateway.processar(ingressoId, valor, metodo);
+
+        if (!resultado.isAprovado()) {
+            confirmacaoReserva.cancelar(preReservaId);
+            throw new IllegalStateException("Pagamento recusado pelo gateway.");
+        }
+
+        String codigoQr = UUID.randomUUID().toString();
+
+        Ingresso ingresso = new Ingresso(
+                ingressoId,
+                eventoId,
+                assentoId,
+                dataHora,
+                tipo,
+                valor,
+                codigoQr,
+                resultado.getCodigoTransacao(),
+                metodo
+        );
+
+        confirmacaoReserva.confirmar(preReservaId);
+        repositorio.salvar(ingresso);
+        postar(ingresso.eventoCompra());
         return ingresso;
     }
 
@@ -89,12 +165,16 @@ public class IngressoServico {
                 ingresso.getMetodoPagamento()
         );
 
-        ingresso.reembolsar(resultado.getValorReembolsado());
+        Ingresso.ReembolsadoEvento evento = ingresso.reembolsar(resultado.getValorReembolsado());
         repositorio.salvar(ingresso);
-        if (catracaServico!=null){
-            catracaServico.inativarIngresso(ingresso.getCodigoQr());
-        }
+        postar(evento);
 
         return resultado;
+    }
+
+    private <E> void postar(E evento) {
+        if (barramento != null) {
+            barramento.postar(evento);
+        }
     }
 }

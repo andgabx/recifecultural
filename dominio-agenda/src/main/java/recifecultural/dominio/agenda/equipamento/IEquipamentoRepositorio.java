@@ -11,6 +11,7 @@ public interface IEquipamentoRepositorio {
     void deletar(EquipamentoId id);
 
     Optional<Equipamento> obterPorId(EquipamentoId id);
+    List<Equipamento> listarPorEspaco(EspacoId espacoId);
     List<Equipamento> buscarDisponiveisPorEspacoENome(EspacoId espacoId, String nome, int quantidade);
     List<Equipamento> buscarAlocadosPorEvento(UUID eventoId);
 }

@@ -1,16 +1,22 @@
 package recifecultural.dominio.cupom;
 
 import org.apache.commons.lang3.Validate;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
 public class Cupom {
+
+    private static final BigDecimal CEM = new BigDecimal("100");
+
     private final CupomId id;
     private final String codigo;
     private final TipoDesconto tipoDesconto;
-    private final double valorDesconto;
-    private final double valorMinimoPedido;
+    private final BigDecimal valorDesconto;
+    private final BigDecimal valorMinimoPedido;
 
     private final int limiteGlobal;
     private int usosGlobais;
@@ -26,8 +32,8 @@ public class Cupom {
             CupomId id,
             String codigo,
             TipoDesconto tipoDesconto,
-            double valorDesconto,
-            double valorMinimoPedido,
+            BigDecimal valorDesconto,
+            BigDecimal valorMinimoPedido,
             int limiteGlobal,
             int limitePorCpf,
             LocalDateTime dataInicio,
@@ -37,11 +43,20 @@ public class Cupom {
         Validate.notNull(id, "Id do cupom é obrigatório.");
         Validate.notBlank(codigo, "O código textual do cupom é obrigatório.");
         Validate.notNull(tipoDesconto, "O tipo de desconto é obrigatório.");
+        Validate.notNull(valorDesconto, "O valor de desconto é obrigatório.");
+        Validate.notNull(valorMinimoPedido, "O valor mínimo do pedido é obrigatório.");
+
         if (tipoDesconto == TipoDesconto.PERCENTUAL) {
-            Validate.isTrue(valorDesconto > 0 && valorDesconto <= 100, "Desconto percentual deve ser entre 1 e 100%.");
+            Validate.isTrue(
+                    valorDesconto.compareTo(BigDecimal.ZERO) > 0 && valorDesconto.compareTo(CEM) <= 0,
+                    "Desconto percentual deve ser entre 1 e 100%.");
         } else {
-            Validate.isTrue(valorDesconto > 0, "O valor de desconto fixo deve ser maior que zero.");
+            Validate.isTrue(valorDesconto.compareTo(BigDecimal.ZERO) > 0,
+                    "O valor de desconto fixo deve ser maior que zero.");
         }
+
+        Validate.isTrue(valorMinimoPedido.compareTo(BigDecimal.ZERO) >= 0,
+                "Valor mínimo de pedido não pode ser negativo.");
 
         Validate.notNull(dataInicio, "Data de início é obrigatória.");
         Validate.notNull(dataFim, "Data de fim é obrigatória.");
@@ -62,21 +77,23 @@ public class Cupom {
         this.cpfsQueJaUsaram = new HashSet<>();
     }
 
-    public double calcularDesconto(double valorOriginal) {
+    public BigDecimal calcularDesconto(BigDecimal valorOriginal) {
+        Validate.notNull(valorOriginal, "Valor original é obrigatório.");
         if (this.tipoDesconto == TipoDesconto.PERCENTUAL) {
-            return valorOriginal * (this.valorDesconto / 100.0);
-        } else {
-            return Math.min(this.valorDesconto, valorOriginal);
+            return valorOriginal.multiply(this.valorDesconto)
+                    .divide(CEM, 2, RoundingMode.HALF_UP);
         }
+        return this.valorDesconto.min(valorOriginal);
     }
 
-    public void validarElegibilidade(String cpfUsuario, double valorPedido, String categoriaEvento, LocalDateTime dataAtual) {
+    public void validarElegibilidade(String cpfUsuario, BigDecimal valorPedido, String categoriaEvento, LocalDateTime dataAtual) {
+        Validate.notNull(valorPedido, "Valor do pedido é obrigatório.");
         Validate.isTrue(dataAtual.isAfter(dataInicio) && dataAtual.isBefore(dataFim),
                 "Cupom expirado ou ainda não iniciado.");
 
         Validate.isTrue(usosGlobais < limiteGlobal, "Limite global atingido.");
 
-        Validate.isTrue(valorPedido >= valorMinimoPedido,
+        Validate.isTrue(valorPedido.compareTo(valorMinimoPedido) >= 0,
                 "Pedido abaixo do valor mínimo de R$ " + valorMinimoPedido);
 
         if (categoriaPermitida != null) {
@@ -92,7 +109,16 @@ public class Cupom {
         this.usosGlobais++;
         this.cpfsQueJaUsaram.add(cpfUsuario);
     }
-    public double getPercentualDesconto() {
-        return valorDesconto;
-    }
+
+    public CupomId getId() { return id; }
+    public String getCodigo() { return codigo; }
+    public TipoDesconto getTipoDesconto() { return tipoDesconto; }
+    public BigDecimal getValorDesconto() { return valorDesconto; }
+    public BigDecimal getValorMinimoPedido() { return valorMinimoPedido; }
+    public int getLimiteGlobal() { return limiteGlobal; }
+    public int getUsosGlobais() { return usosGlobais; }
+    public int getLimitePorCpf() { return limitePorCpf; }
+    public LocalDateTime getDataInicio() { return dataInicio; }
+    public LocalDateTime getDataFim() { return dataFim; }
+    public String getCategoriaPermitida() { return categoriaPermitida; }
 }

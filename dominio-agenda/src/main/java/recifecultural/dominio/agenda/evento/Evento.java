@@ -6,10 +6,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+
 public class Evento {
     private final UUID id;
     private final UUID promotorId;
-    private final UUID localId;
+    private UUID localId;
 
     private String titulo;
     private String descricaoCurta;
@@ -137,6 +138,43 @@ public class Evento {
         this.status = StatusEvento.RASCUNHO;
     }
 
+    /** Reconstruction constructor — preserva todo o estado ao recarregar do banco. */
+    public Evento(
+            UUID id,
+            UUID promotorId,
+            UUID localId,
+            String titulo,
+            String descricaoCurta,
+            String descricaoLonga,
+            Periodo periodo,
+            Preco preco,
+            String categoria,
+            StatusEvento status,
+            List<LocalDateTime> datasApresentacao,
+            List<UUID> artistas,
+            LocalDateTime dataAprovacao,
+            LocalDateTime dataReprovacao,
+            boolean requerRevisaoAdicional,
+            String motivoCancelamento
+    ) {
+        this.id = id;
+        this.promotorId = promotorId;
+        this.localId = localId;
+        setTitulo(titulo);
+        this.descricaoCurta = descricaoCurta;
+        this.descricaoLonga = descricaoLonga;
+        this.periodo = periodo;
+        this.preco = preco;
+        this.categoria = categoria;
+        this.status = status != null ? status : StatusEvento.RASCUNHO;
+        this.datasApresentacao = datasApresentacao != null ? new ArrayList<>(datasApresentacao) : new ArrayList<>();
+        this.artistas = artistas != null ? new ArrayList<>(artistas) : new ArrayList<>();
+        this.dataAprovacao = dataAprovacao;
+        this.dataReprovacao = dataReprovacao;
+        this.requerRevisaoAdicional = requerRevisaoAdicional;
+        this.motivoCancelamento = motivoCancelamento;
+    }
+
     public void adicionarArtista(UUID artistaId) {
         if (artistaId == null) throw new IllegalArgumentException("ID do artista é obrigatório.");
         this.artistas.add(artistaId);
@@ -146,6 +184,49 @@ public class Evento {
         if (categoria == null || categoria.isBlank())
             throw new IllegalArgumentException("Categoria é obrigatória.");
         this.categoria = categoria;
+    }
+
+    /**
+     * Edita as informações do evento. Permitido apenas enquanto estiver em RASCUNHO.
+     * Substitui (não acumula) as listas de artistas e datas de apresentação.
+     */
+    public void editarInformacoes(String novoTitulo,
+                                   String novaDescricaoCurta,
+                                   String novaDescricaoLonga,
+                                   Periodo novoPeriodo,
+                                   Preco novoPreco,
+                                   String novaCategoria,
+                                   UUID novoLocalId,
+                                   List<UUID> novosArtistas,
+                                   List<LocalDateTime> novasDatasApresentacao) {
+        if (this.status != StatusEvento.RASCUNHO)
+            throw new IllegalStateException("Apenas eventos em RASCUNHO podem ser editados.");
+        if (novoPeriodo == null)
+            throw new IllegalArgumentException("Período é obrigatório.");
+
+        setTitulo(novoTitulo);
+        this.descricaoCurta = novaDescricaoCurta;
+        this.descricaoLonga = novaDescricaoLonga;
+        this.periodo = novoPeriodo;
+        this.preco = novoPreco;
+        if (novaCategoria != null && !novaCategoria.isBlank()) this.categoria = novaCategoria;
+        if (novoLocalId != null) this.localId = novoLocalId;
+
+        this.artistas.clear();
+        if (novosArtistas != null) {
+            for (UUID a : novosArtistas) {
+                if (a == null) throw new IllegalArgumentException("ID do artista é obrigatório.");
+                this.artistas.add(a);
+            }
+        }
+
+        this.datasApresentacao.clear();
+        if (novasDatasApresentacao != null) {
+            for (LocalDateTime d : novasDatasApresentacao) {
+                if (d == null) throw new IllegalArgumentException("Data de apresentação é obrigatória.");
+                this.datasApresentacao.add(d);
+            }
+        }
     }
 
     public void submeterParaAnalise() {
@@ -160,20 +241,22 @@ public class Evento {
         this.status = StatusEvento.EM_ANALISE;
     }
 
-    public void aprovar() {
+    public AprovadoEvento aprovar() {
         exigirStatusEmAnalise("aprovar");
         this.status = StatusEvento.APROVADO;
         this.dataAprovacao = LocalDateTime.now();
+        return new AprovadoEvento(this);
     }
 
-    public void reprovar(FeedbackReprovacao feedback) {
+    public ReprovadoEvento reprovar(FeedbackReprovacao feedback) {
         exigirStatusEmAnalise("reprovar");
         this.feedbackReprovacao = feedback;
         this.dataReprovacao = LocalDateTime.now();
         this.status = StatusEvento.REPROVADO;
+        return new ReprovadoEvento(this);
     }
 
-    public void cancelar(String motivo) {
+    public CanceladoEvento cancelar(String motivo) {
         if (this.status == StatusEvento.REALIZADO) {
             throw new IllegalStateException("Não é possível cancelar um evento que já foi realizado.");
         }
@@ -182,6 +265,7 @@ public class Evento {
         }
         this.status = StatusEvento.CANCELADO;
         this.motivoCancelamento = motivo;
+        return new CanceladoEvento(this);
     }
 
     private void exigirStatusEmAnalise(String acao) {
@@ -194,5 +278,35 @@ public class Evento {
         if (!periodo.contemData(dataHora))
             throw new IllegalArgumentException("Apresentação fora do período do evento.");
         this.datasApresentacao.add(dataHora);
+    }
+
+    public static class EventoEvento {
+        private final Evento evento;
+
+        private EventoEvento(Evento evento) {
+            this.evento = evento;
+        }
+
+        public Evento getEvento() {
+            return evento;
+        }
+    }
+
+    public static class AprovadoEvento extends EventoEvento {
+        private AprovadoEvento(Evento evento) {
+            super(evento);
+        }
+    }
+
+    public static class ReprovadoEvento extends EventoEvento {
+        private ReprovadoEvento(Evento evento) {
+            super(evento);
+        }
+    }
+
+    public static class CanceladoEvento extends EventoEvento {
+        private CanceladoEvento(Evento evento) {
+            super(evento);
+        }
     }
 }

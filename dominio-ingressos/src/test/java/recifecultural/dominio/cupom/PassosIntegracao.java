@@ -4,8 +4,6 @@ import io.cucumber.java.pt.*;
 import org.junit.jupiter.api.Assertions;
 import static org.mockito.Mockito.*;
 
-import recifecultural.dominio.catraca.CatracaServico;
-import recifecultural.dominio.catraca.ICatracaRepositorio;
 import recifecultural.dominio.ingressos.*;
 
 import java.math.BigDecimal;
@@ -18,8 +16,7 @@ public class PassosIntegracao {
 
     private IngressoRepositorioEmMemoria ingressoRepo = new IngressoRepositorioEmMemoria();
     private IGatewayPagamento gateway = new GatewayPagamentoMock();
-    private CatracaServico catracaServico=new CatracaServico(mock(ICatracaRepositorio.class));
-    private IngressoServico ingressoServico = new IngressoServico(ingressoRepo, gateway,catracaServico);
+    private IngressoServico ingressoServico = new IngressoServico(ingressoRepo, gateway);
 
     private Ingresso ingressoComprado;
     private Exception excecaoCapturada;
@@ -28,22 +25,21 @@ public class PassosIntegracao {
     public void realizarCompra(String cpf, String categoria, Double valorBase, String codigoCupom) {
         try {
             TipoDesconto tipo = codigoCupom.equals("FIXO50") ? TipoDesconto.VALOR_FIXO : TipoDesconto.PERCENTUAL;
-            double valorDesc = codigoCupom.equals("FIXO50") ? 50.0 : 20.0;
+            BigDecimal valorDesc = codigoCupom.equals("FIXO50") ? new BigDecimal("50") : new BigDecimal("20");
 
             Cupom cupom = new Cupom(
                     new CupomId("ID-" + codigoCupom),
                     codigoCupom,
                     tipo,
                     valorDesc,
-                    100.0, 5, 1,
+                    BigDecimal.valueOf(100.0), 5, 1,
                     LocalDateTime.now().minusDays(1), LocalDateTime.now().plusDays(10), categoria
             );
 
             when(cupomRepoMock.buscarPorCodigo(codigoCupom)).thenReturn(cupom);
 
-            double valorFinalCalculado = cupomServico.aplicarDesconto(codigoCupom, cpf, valorBase, categoria);
-
-            BigDecimal valorParaPagar = BigDecimal.valueOf(valorFinalCalculado);
+            BigDecimal valorBaseBd = BigDecimal.valueOf(valorBase);
+            BigDecimal valorParaPagar = cupomServico.aplicarDesconto(codigoCupom, cpf, valorBaseBd, categoria);
 
             ingressoComprado = ingressoServico.comprar(
                     UUID.randomUUID(),

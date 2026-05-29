@@ -3,6 +3,7 @@ package recifecultural.dominio.agenda.sorteio;
 import recifecultural.dominio.agenda.evento.Evento;
 import recifecultural.dominio.agenda.evento.IEventoRepositorio;
 import recifecultural.dominio.agenda.evento.StatusEvento;
+import recifecultural.dominio.compartilhado.notificacao.NotificacaoServico;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -12,10 +13,14 @@ public class SorteioServico {
 
     private final ISorteioRepositorio sorteioRepositorio;
     private final IEventoRepositorio eventoRepositorio;
+    private final NotificacaoServico notificacaoServico;
 
-    public SorteioServico(ISorteioRepositorio sorteioRepositorio, IEventoRepositorio eventoRepositorio) {
+    public SorteioServico(ISorteioRepositorio sorteioRepositorio,
+                           IEventoRepositorio eventoRepositorio,
+                           NotificacaoServico notificacaoServico) {
         this.sorteioRepositorio = sorteioRepositorio;
         this.eventoRepositorio = eventoRepositorio;
+        this.notificacaoServico = notificacaoServico;
     }
 
     public Sorteio criar(UUID apresentacaoId, UUID eventoId, int vagas,
@@ -44,7 +49,11 @@ public class SorteioServico {
 
     public void desistir(UUID sorteioId, UUID espectadorId) {
         Sorteio sorteio = buscarOuLancar(sorteioId);
-        sorteio.desistir(espectadorId);
+        sorteio.desistir(espectadorId).ifPresent(evento ->
+                notificacaoServico.enviarNotificacao(
+                        evento.getEspectadorPromovidoId(),
+                        "Parabéns! Você foi promovido de suplente para ganhador no sorteio " + sorteioId,
+                        "SORTEIO_PROMOCAO", sorteioId));
         sorteioRepositorio.atualizar(sorteio);
     }
 
@@ -52,6 +61,9 @@ public class SorteioServico {
         Sorteio sorteio = buscarOuLancar(sorteioId);
         sorteio.cancelar();
         sorteioRepositorio.atualizar(sorteio);
+        notificacaoServico.enviarBroadcast(
+                "O sorteio " + sorteioId + " foi cancelado.",
+                "SORTEIO_CANCELADO", sorteioId);
     }
 
     public Optional<Sorteio> obter(UUID sorteioId) {

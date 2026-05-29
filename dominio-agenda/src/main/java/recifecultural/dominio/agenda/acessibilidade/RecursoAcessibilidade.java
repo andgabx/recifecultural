@@ -25,7 +25,18 @@ public class RecursoAcessibilidade {
         this.status = StatusRecurso.CONFIRMADO;
     }
 
-    public void remover(String justificativa) {
+    public RecursoAcessibilidade(UUID id, UUID apresentacaoId, UUID eventoId,
+                                  TipoRecursoAcessibilidade tipo, StatusRecurso status,
+                                  String justificativaRemocao) {
+        this.id = id;
+        this.apresentacaoId = apresentacaoId;
+        this.eventoId = eventoId;
+        this.tipo = tipo;
+        this.status = status;
+        this.justificativaRemocao = justificativaRemocao;
+    }
+
+    public RemovidoEvento remover(String justificativa) {
         if (status != StatusRecurso.CONFIRMADO)
             throw new IllegalStateException("Recurso já foi removido.");
         if (justificativa == null || justificativa.isBlank())
@@ -36,6 +47,7 @@ public class RecursoAcessibilidade {
 
         this.justificativaRemocao = justificativa;
         this.status = StatusRecurso.REMOVIDO;
+        return new RemovidoEvento(this);
     }
 
     public UUID getId() { return id; }
@@ -44,4 +56,22 @@ public class RecursoAcessibilidade {
     public TipoRecursoAcessibilidade getTipo() { return tipo; }
     public StatusRecurso getStatus() { return status; }
     public String getJustificativaRemocao() { return justificativaRemocao; }
+
+    public static class RecursoEvento {
+        private final RecursoAcessibilidade recurso;
+
+        private RecursoEvento(RecursoAcessibilidade recurso) {
+            this.recurso = recurso;
+        }
+
+        public RecursoAcessibilidade getRecurso() {
+            return recurso;
+        }
+    }
+
+    public static class RemovidoEvento extends RecursoEvento {
+        private RemovidoEvento(RecursoAcessibilidade recurso) {
+            super(recurso);
+        }
+    }
 }

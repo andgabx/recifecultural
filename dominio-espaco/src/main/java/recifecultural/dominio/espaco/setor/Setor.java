@@ -1,10 +1,11 @@
 package recifecultural.dominio.espaco.setor;
 
-import recifecultural.dominio.espaco.espaco.EspacoId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+
+import recifecultural.dominio.espaco.espaco.EspacoId;
 
 public class Setor {
 
@@ -100,4 +101,43 @@ public class Setor {
     public int getFileirasHorizontais() { return fileirasHorizontais; }
     public int getAssentosPorFileiraVertical() { return assentosPorFileiraVertical; }
     public int getVersao() { return versao; }
+
+    /**
+     * Edita o setor. Nome e tipo são livres. Mudança de dimensões só é permitida
+     * se nenhum assento estiver OCUPADO ou PRE_RESERVADO — caso contrário,
+     * regenerar perderia reservas. Se as dimensões mudarem, retorna true (caller
+     * deve regenerar a planta de assentos).
+     */
+    public boolean editar(String novoNome, TipoSetor novoTipo,
+                          int novasFileiras, int novosAssentosPorFileira) {
+        if (novoNome == null || novoNome.isBlank())
+            throw new IllegalArgumentException("Nome é obrigatório.");
+        if (novoTipo == null) throw new IllegalArgumentException("Tipo de setor é obrigatório.");
+        if (novasFileiras <= 0 || novasFileiras > 26)
+            throw new IllegalArgumentException("Número de fileiras deve ser entre 1 e 26.");
+        if (novosAssentosPorFileira <= 0)
+            throw new IllegalArgumentException("Assentos por fileira deve ser maior que 0.");
+
+        boolean dimensoesMudaram =
+                novasFileiras != this.fileirasHorizontais
+                        || novosAssentosPorFileira != this.assentosPorFileiraVertical;
+
+        if (dimensoesMudaram) {
+            boolean temReserva = assentos.stream().anyMatch(a ->
+                    a.getStatus() == StatusAssento.OCUPADO
+                            || a.getStatus() == StatusAssento.PRE_RESERVADO);
+            if (temReserva) {
+                throw new IllegalStateException(
+                        "Não é possível mudar as dimensões: existem assentos ocupados ou pré-reservados."
+                );
+            }
+        }
+
+        this.nome = novoNome;
+        this.tipoSetor = novoTipo;
+        this.fileirasHorizontais = novasFileiras;
+        this.assentosPorFileiraVertical = novosAssentosPorFileira;
+        this.versao++;
+        return dimensoesMudaram;
+    }
 }

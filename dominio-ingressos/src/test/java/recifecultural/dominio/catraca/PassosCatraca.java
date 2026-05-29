@@ -8,6 +8,8 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import org.mockito.Mockito;
+import recifecultural.dominio.compartilhado.evento.EventoBarramento;
+import recifecultural.dominio.compartilhado.evento.EventoObservador;
 import recifecultural.dominio.ingressos.*;
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -15,7 +17,7 @@ import java.util.UUID;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-public class PassosCatraca {
+public class PassosCatraca implements EventoBarramento {
 
     private ICatracaRepositorio repositorioMock = mock(ICatracaRepositorio.class);
     private CatracaServico servico = new CatracaServico(repositorioMock);
@@ -23,6 +25,18 @@ public class PassosCatraca {
     private LocalDateTime horarioEvento;
     private Exception excecaoCapturada;
     private String resultadoAcesso;
+
+    @Override
+    public <E> void adicionar(EventoObservador<E> observador) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public <E> void postar(E evento) {
+        if (evento instanceof Ingresso.ReembolsadoEvento reembolsado) {
+            servico.inativarIngresso(reembolsado.getIngresso().getCodigoQr());
+        }
+    }
 
     @Dado("que o evento {string} começa às {string}")
     public void que_o_evento_comeca_as(String nome, String horario) {
@@ -63,7 +77,7 @@ public class PassosCatraca {
 
         IIngressoRepositorio repoIngresso = new IngressoRepositorioEmMemoria();
         IGatewayPagamento gateway = new GatewayPagamentoMock();
-        IngressoServico servicoIngressos = new IngressoServico(repoIngresso, gateway, servico);
+        IngressoServico servicoIngressos = new IngressoServico(repoIngresso, gateway, this);
 
         IngressoId idReal = IngressoId.novo();
         Ingresso ingressoReal = new Ingresso(idReal, UUID.randomUUID(), horarioEvento,

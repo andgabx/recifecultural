@@ -41,6 +41,23 @@ public class Comentario {
         setTexto(texto);
     }
 
+    /** Reconstruction constructor — preserva status, criadoEm e curtidas ao recarregar do banco. */
+    public Comentario(UUID id, UUID espectadorId, UUID eventoId, UUID comentarioPaiId,
+                      String texto, Nota nota, StatusComentario status,
+                      LocalDateTime criadoEm, Set<UUID> curtidas) {
+        this.id = id;
+        this.espectadorId = espectadorId;
+        this.eventoId = eventoId;
+        this.comentarioPaiId = comentarioPaiId;
+        this.criadoEm = criadoEm != null ? criadoEm : LocalDateTime.now();
+        this.curtidas = curtidas != null ? new HashSet<>(curtidas) : new HashSet<>();
+        this.status = status != null ? status : StatusComentario.ATIVO;
+        this.nota = nota;
+        if (texto == null || texto.isBlank())
+            throw new IllegalArgumentException("Texto do comentário é obrigatório.");
+        this.texto = texto;
+    }
+
     public void curtir(UUID espectadorId) {
         if (this.espectadorId.equals(espectadorId))
             throw new IllegalArgumentException("Espectador não pode curtir o próprio comentário.");

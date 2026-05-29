@@ -1,7 +1,6 @@
 package recifecultural.dominio.financeiro;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 import static org.apache.commons.lang3.Validate.isTrue;
 import static org.apache.commons.lang3.Validate.notNull;

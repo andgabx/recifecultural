@@ -23,6 +23,10 @@ public class EspacoServico {
         return novoEspaco.getId();
     }
 
+    public List<Espaco> listarTodos() {
+        return espacoRepositorio.listarTodos();
+    }
+
     public void atualizarCapacidade(EspacoId espacoId, int novaCapacidade, int ingressosVendidosFuturos) {
         Espaco espaco = espacoRepositorio.obterPorId(espacoId)
                 .orElseThrow(() -> new IllegalArgumentException("Espaço não encontrado."));

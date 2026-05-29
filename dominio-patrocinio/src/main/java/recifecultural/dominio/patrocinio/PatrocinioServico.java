@@ -78,9 +78,9 @@ public class PatrocinioServico {
         notNull(agora, "A data/hora atual não pode ser nula.");
         Patrocinio patrocinio = repositorio.buscarPorId(id);
         notNull(patrocinio, "Patrocínio não encontrado com id: " + id);
-        ResultadoCancelamento resultado = patrocinio.cancelarPorEvento(agora);
+        Patrocinio.CanceladoEvento evento = patrocinio.cancelarPorEvento(agora);
         repositorio.atualizar(patrocinio);
-        return resultado;
+        return new ResultadoCancelamento(evento.getReembolso(), evento.getMulta(), evento.getMotivo());
     }
 
     public ResultadoCancelamento cancelarPorPatrocinador(PatrocinioId id, LocalDateTime agora) {
@@ -88,9 +88,9 @@ public class PatrocinioServico {
         notNull(agora, "A data/hora atual não pode ser nula.");
         Patrocinio patrocinio = repositorio.buscarPorId(id);
         notNull(patrocinio, "Patrocínio não encontrado com id: " + id);
-        ResultadoCancelamento resultado = patrocinio.cancelarPorPatrocinador(agora);
+        Patrocinio.CanceladoEvento evento = patrocinio.cancelarPorPatrocinador(agora);
         repositorio.atualizar(patrocinio);
-        return resultado;
+        return new ResultadoCancelamento(evento.getReembolso(), evento.getMulta(), evento.getMotivo());
     }
 
     public ResultadoSubsidio calcularSubsidio(PatrocinioId id, BigDecimal precoSocialAtual) {

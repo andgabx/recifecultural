@@ -1,88 +1,197 @@
+/*
+ * Context Mapper — Recife Cultural
+ *
+ * Domínio de gestão de teatros e eventos culturais em Recife.
+ * Decomposição em 15 bounded contexts dentro de um único domínio
+ * (`RecifeCultural`). Atualizado para refletir o código real após as
+ * rodadas de implementação (acessibilidade, equipamentos, cupons,
+ * auditoria persistida, notificações reais).
+ *
+ * Mapa rápido de integrações
+ * --------------------------
+ *   [PL]  Published Language via barramento de eventos
+ *   [OHS] Open Host Service / chamada in-process
+ *
+ *   Bloqueio   --PL-->  Notificação      (EventoCanceladoPorBloqueioEvento)
+ *   Bilheteria --PL-->  Catraca          (Ingresso.ReembolsadoEvento)
+ *
+ *   Agenda     --OHS--> Sorteio          (valida Evento APROVADO)
+ *   Agenda     --OHS--> Acessibilidade   (valida Evento APROVADO)
+ *   Agenda     --OHS--> Equipamento      (AlocacaoRiderTecnico le Evento)
+ *   Agenda     --OHS--> Bloqueio         (cancela eventos conflitantes)
+ *   Espaco     --OHS--> Bloqueio         (interdita/reativa Espaco)
+ *   Espaco     --OHS--> Equipamento      (EspacoId compartilhado)
+ *   Espaco     --OHS--> Agenda           (PreReserva chama Setor)
+ *   Notif.     --OHS--> Sorteio | Acessibilidade | Equipamento | Espaco
+ *   Cupom      --OHS--> Bilheteria       (aplicar desconto na compra)
+ *   Bilheteria --OHS--> Comentario       (port BilheteriaDigital — verifica presenca)
+ *   Bilheteria --OHS--> Financeiro       (DesempenhoTeatro le Ingressos)
+ *   Auditoria  --OHS--> Agenda           (Decorator transparente sobre IEventoRepositorio)
+ *
+ * BCs sem dependencia cross-context: Patrocinio (recebe boolean eventoAprovado),
+ * Artista (apenas intra-BC entre modulos Artista e Produtor).
+ */
 ContextMap RecifeCulturalMap {
     type = SYSTEM_LANDSCAPE
     state = AS_IS
 
-    contains BloqueioAdministrativoContext
+    // ── Core / Application ─────────────────────────────────────────────
+    contains AgendaContext
+    contains EspacoContext
+    contains BilheteriaContext
+    contains PatrocinioContext
+    contains FinanceiroContext
+    contains ArtistaContext
+
+    // ── Features especializadas ────────────────────────────────────────
     contains SorteioContext
     contains AcessibilidadeContext
-    contains NotificacaoContext
-    contains AgendaContext
-    contains Agenda
-    contains BilheteriaContext
-    contains FinanceiroContext
-    contains PatrocinioContext
-    contains ArtistaContext
+    contains BloqueioAdministrativoContext
+    contains ComentarioContext
+    contains EquipamentoContext
     contains CupomContext
     contains CatracaContext
 
-    BloqueioAdministrativoContext [U, OHS, PL] -> [D, ACL] NotificacaoContext {
-        implementationTechnology = "Eventos de Domínio (Mensageria)"
+    // ── Subdomínios genéricos / suporte ────────────────────────────────
+    contains NotificacaoContext
+    contains AuditoriaContext
+
+    // ════════════════════════════════════════════════════════════════════
+    //  Integrações via barramento de eventos (Observer + PUBLISHED_LANGUAGE)
+    // ════════════════════════════════════════════════════════════════════
+
+    // Bloqueio publica EventoCanceladoPorBloqueioEvento no barramento;
+    // BloqueioNotificacaoObservador (na camada de aplicação) reage
+    // disparando notificações ao promotor e participantes do evento.
+    BloqueioAdministrativoContext [U, PL] -> [D, ACL] NotificacaoContext {
+        implementationTechnology = "Eventos de Domínio (ApplicationEventPublisher)"
+        exposedAggregates = BloqueioAdministrativoAggregate
     }
 
-    SorteioContext [U, OHS, PL] -> [D, ACL] NotificacaoContext {
-        implementationTechnology = "Eventos de Domínio (Mensageria)"
+    // Bilheteria publica ReembolsadoEvento; CatracaServicoAplicacao
+    // ouve e inativa o ingresso na catraca para impedir o uso.
+    BilheteriaContext [U, PL] -> [D, ACL] CatracaContext {
+        implementationTechnology = "Eventos de Domínio (ApplicationEventPublisher)"
+        exposedAggregates = IngressoAggregate
     }
 
-    AcessibilidadeContext [U, OHS, PL] -> [D, ACL] NotificacaoContext {
-        implementationTechnology = "Eventos de Domínio (Mensageria)"
+    // ════════════════════════════════════════════════════════════════════
+    //  Chamadas in-process diretas (OHS / ACL)
+    // ════════════════════════════════════════════════════════════════════
+
+    // Agenda → Sorteio: SorteioServico valida que o Evento esteja APROVADO
+    // antes de permitir criar sorteio.
+    AgendaContext [U, OHS] -> [D, ACL] SorteioContext {
+        implementationTechnology = "Chamada de Serviço (Java in-process)"
+        exposedAggregates = EventoAggregate
     }
 
-    AgendaContext [U, OHS, PL] -> [D, ACL] NotificacaoContext {
-        implementationTechnology = "Eventos de Domínio (Mensageria)"
+    // Agenda → Acessibilidade: marcar recurso só em Evento APROVADO.
+    AgendaContext [U, OHS] -> [D, ACL] AcessibilidadeContext {
+        implementationTechnology = "Chamada de Serviço (Java in-process)"
+        exposedAggregates = EventoAggregate
     }
 
-    AgendaContext [U, OHS, PL] -> [D, ACL] SorteioContext {
-        implementationTechnology = "Eventos de Domínio (Mensageria)"
+    // Agenda → Equipamento: AlocacaoRiderTecnicoServico lê eventos para
+    // alocar/desmobilizar equipamentos.
+    AgendaContext [U, OHS] -> [D, ACL] EquipamentoContext {
+        implementationTechnology = "Chamada de Serviço (Java in-process)"
+        exposedAggregates = EventoAggregate
     }
 
-    AgendaContext [U, OHS, PL] -> [D, ACL] AcessibilidadeContext {
-        implementationTechnology = "Eventos de Domínio (Mensageria)"
+    // Agenda → Bloqueio: BloqueioAdministrativoServico cancela eventos
+    // conflitantes ao criar bloqueio.
+    AgendaContext [U, OHS] -> [D, ACL] BloqueioAdministrativoContext {
+        implementationTechnology = "Chamada de Serviço (Java in-process)"
+        exposedAggregates = EventoAggregate
     }
 
-    AgendaContext [U, OHS, PL] -> [D, ACL] BilheteriaContext {
-        implementationTechnology = "Eventos de Domínio (Mensageria)"
+    // Espaco → Bloqueio: ao criar/desativar bloqueio o serviço interdita
+    // e reativa o Espaço via IEspacoRepositorio.
+    EspacoContext [U, OHS] -> [D, ACL] BloqueioAdministrativoContext {
+        implementationTechnology = "Chamada de Serviço (Java in-process)"
+        exposedAggregates = EspacoAggregate
     }
 
-    AgendaContext [U, OHS, PL] -> [D, ACL] PatrocinioContext {
-        implementationTechnology = "Eventos de Domínio (Mensageria)"
+    // Espaco → Equipamento: Equipamento referencia EspacoId como chave de
+    // negócio (shared kernel implícito).
+    EspacoContext [U, OHS] -> [D, ACL] EquipamentoContext {
+        implementationTechnology = "Chamada de Serviço (Java in-process)"
+        exposedAggregates = EspacoAggregate
     }
 
-    BilheteriaContext [U, OHS, PL] -> [D, ACL] NotificacaoContext {
-        implementationTechnology = "Eventos de Domínio (Mensageria)"
+    // Espaco/Setor → Agenda/PreReserva: PreReservaServico orquestra
+    // Setor.preReservar/liberarAssento/ocuparAssento.
+    EspacoContext [U, OHS] -> [D, ACL] AgendaContext {
+        implementationTechnology = "Chamada de Serviço (Java in-process)"
+        exposedAggregates = SetorAggregate
     }
 
-    BilheteriaContext [U, OHS, PL] -> [D, ACL] FinanceiroContext {
-        implementationTechnology = "Eventos de Domínio (Mensageria)"
+    // Notificação é chamada diretamente por vários serviços de domínio
+    // que precisam comunicar usuários (sem passar pelo barramento):
+    NotificacaoContext [U, OHS] -> [D, ACL] SorteioContext {
+        implementationTechnology = "Chamada de Serviço (Java in-process)"
+    }
+    NotificacaoContext [U, OHS] -> [D, ACL] AcessibilidadeContext {
+        implementationTechnology = "Chamada de Serviço (Java in-process)"
+    }
+    NotificacaoContext [U, OHS] -> [D, ACL] EquipamentoContext {
+        implementationTechnology = "Chamada de Serviço (Java in-process)"
+    }
+    NotificacaoContext [U, OHS] -> [D, ACL] EspacoContext {
+        implementationTechnology = "Chamada de Serviço (Java in-process)"
     }
 
-    PatrocinioContext [U, OHS, PL] -> [D, ACL] NotificacaoContext {
-        implementationTechnology = "Eventos de Domínio (Mensageria)"
+    // Cupom → Bilheteria: IngressoServico chama AplicarCupomServico no
+    // fluxo de compra com cupom; o desconto é aplicado antes de cobrar.
+    CupomContext [U, OHS] -> [D, ACL] BilheteriaContext {
+        implementationTechnology = "Chamada de Serviço (Java in-process)"
+        exposedAggregates = CupomAggregate
     }
 
-    PatrocinioContext [U, OHS, PL] -> [D, ACL] BilheteriaContext {
-        implementationTechnology = "Eventos de Domínio (Mensageria)"
+    // Bilheteria → Comentário: ComentarioService usa o port BilheteriaDigital
+    // (interface em dominio-agenda) para confirmar que o autor da nota
+    // de fato comprou ingresso ao evento.
+    BilheteriaContext [U, OHS] -> [D, ACL] ComentarioContext {
+        implementationTechnology = "Port (interface BilheteriaDigital) — adaptador na infraestrutura"
+        exposedAggregates = IngressoAggregate
     }
 
-    CupomContext [U, OHS, PL] -> [D, ACL] BilheteriaContext {
-        implementationTechnology = "Chamada de Serviço"
+    // Bilheteria → Financeiro: DesempenhoTeatroServico lê IIngressoRepositorio
+    // para calcular receitas, ocupação e crescimento.
+    BilheteriaContext [U, OHS] -> [D, ACL] FinanceiroContext {
+        implementationTechnology = "Chamada de Serviço (Java in-process)"
+        exposedAggregates = IngressoAggregate
     }
 
-    BilheteriaContext [U, OHS, PL] -> [D, ACL] CatracaContext {
-        implementationTechnology = "Chamada de Serviço"
-    }
-
-    AgendaContext [U, OHS, PL] -> [D, ACL] CatracaContext {
-        implementationTechnology = "Chamada de Serviço"
+    // Auditoria → Agenda: relação atípica — o Decorator EventoRepositorioComAuditoria
+    // está na camada de infraestrutura e *intercepta* chamadas a IEventoRepositorio,
+    // gravando em IAuditoriaRepositorio. A Agenda não sabe que está sendo
+    // auditada (DIP preservada).
+    AuditoriaContext [U, OHS] -> [D, ACL] AgendaContext {
+        implementationTechnology = "Decorator no Composition Root (envolve IEventoRepositorio)"
+        exposedAggregates = RegistroAuditoriaAggregate
     }
 }
 
-Domain RecifeCultural {}
+Domain RecifeCultural {
+    /*
+     * Domínio único; a decomposição em bounded contexts segue as
+     * fronteiras dos módulos Maven (`dominio-*`) e dos pacotes que
+     * representam features autônomas (sorteio, acessibilidade, etc.).
+     */
+}
 
+// ════════════════════════════════════════════════════════════════════════
+//  AgendaContext — núcleo da plataforma
+//  Pacotes Java: dominio-agenda/agenda/evento, agenda/prereserva,
+//                agenda/espectador
+// ════════════════════════════════════════════════════════════════════════
 BoundedContext AgendaContext implements RecifeCultural {
-    domainVisionStatement = "Responsável pela gestão dos espaços culturais, submissão de eventos e suas aprovações."
+    domainVisionStatement = "Núcleo do ciclo de vida do evento: submissão pelo produtor, aprovação ou reprovação pelo gestor, cancelamento, programação de apresentações. Inclui também a pré-reserva temporária de assentos antes do pagamento e o cadastro mínimo de espectador."
     type = APPLICATION
 
-    Module AgendaModule {
+    Module EventoModule {
         Aggregate EventoAggregate {
             Entity Evento {
                 aggregateRoot
@@ -95,21 +204,26 @@ BoundedContext AgendaContext implements RecifeCultural {
                 String descricaoLonga
                 @Periodo periodo
                 List<LocalDateTime> datasApresentacao
+                List<UUID> artistas
+                String categoria
                 URI enderecoIngresso
                 @Preco preco
                 StatusEvento status
                 @FeedbackReprovacao feedbackReprovacao
+                LocalDateTime dataAprovacao
+                LocalDateTime dataReprovacao
+                boolean requerRevisaoAdicional
                 String motivoCancelamento
 
+                void marcarComoRequerRevisaoAdicional();
+                void adicionarArtista(UUID artistaId);
+                void definirCategoria(String categoria);
+                void editarInformacoes(String titulo, String descricaoCurta, String descricaoLonga, @Periodo periodo, @Preco preco, String categoria, UUID localId, List<UUID> artistas, List<LocalDateTime> datasApresentacao);
                 void submeterParaAnalise();
                 void aprovar();
                 void reprovar(@FeedbackReprovacao feedback);
                 void cancelar(String motivo);
                 void programarApresentacao(LocalDateTime dataHora);
-            }
-
-            enum StatusEvento {
-                RASCUNHO, EM_ANALISE, APROVADO, REPROVADO, REALIZADO, CANCELADO
             }
 
             ValueObject Periodo {
@@ -127,123 +241,35 @@ BoundedContext AgendaContext implements RecifeCultural {
                 String texto
             }
 
+            enum StatusEvento {
+                RASCUNHO, EM_ANALISE, APROVADO, REPROVADO, REALIZADO, CANCELADO
+            }
+
             Repository IEventoRepositorio {
                 void salvar(@Evento evento);
                 void atualizar(@Evento evento);
                 void deletar(UUID id);
-                @Evento obter(UUID id);
+                Optional<@Evento> obter(UUID id);
                 List<@Evento> obterTodos();
                 List<@Evento> obterPorLocalEIntervalo(UUID localId, LocalDateTime inicio, LocalDateTime fim);
+                List<@Evento> obterReprovacoesPorPromotor(UUID promotorId);
+                List<@Evento> obterEventosAprovadosPorPromotor(UUID promotorId);
+                List<@Evento> obterEventosFinalizadosPorPromotor(UUID promotorId);
             }
 
-            Service EventoServico {
+            DomainService EventoServico {
                 void salvar(@Evento evento);
-                @Evento obter(UUID id);
+                Optional<@Evento> obter(UUID id);
                 void submeterParaAnalise(UUID id);
                 void aprovar(UUID id);
                 void reprovar(UUID id, @FeedbackReprovacao feedback);
                 void deletar(UUID id);
-            }
-        }
-
-        Aggregate Espaco {
-            Entity Espaco {
-                aggregateRoot
-
-                @EspacoId id
-                String nome
-                Integer capacidade
-                StatusEspaco status
-
-                void ativar();
-                void desativar();
-            }
-
-            ValueObject EspacoId {
-                UUID valor
-            }
-
-            ValueObject Ocupacao {
-                LocalDateTime inicio
-                LocalDateTime fim
-            }
-
-            enum StatusEspaco {
-                ATIVO, INATIVO
-            }
-
-            Repository EspacoRepository {
-                void salvar(@Espaco espaco);
-                @Espaco buscarPorId(@EspacoId id);
-                List<@Espaco> listarAtivos();
-                void atualizar(@Espaco espaco);
-            }
-
-            Service EspacoServico {
-                @Espaco criar(String nome, Integer capacidade);
-                void ativar(@EspacoId id);
-                void desativar(@EspacoId id);
-                @Espaco buscar(@EspacoId id);
+                void editar(UUID id, String titulo, String descricaoCurta, String descricaoLonga, @Periodo periodo, @Preco preco, String categoria, UUID localId, List<UUID> artistas, List<LocalDateTime> datasApresentacao);
             }
         }
     }
 
-    Module AgendaSetorModule {
-        Aggregate SetorAggregate {
-            Entity Setor {
-                aggregateRoot
-
-                @SetorId id
-                @EspacoId espacoId
-                String nome
-                @TipoSetor tipoSetor
-                List<@Assento> assentos
-
-                void mapearAssentos(List<@Assento> novosAssentos);
-                @Assento preReservar(UUID assentoId);
-                @Assento liberarAssento(UUID assentoId);
-                @Assento ocuparAssento(UUID assentoId);
-                @Assento bloquearAssento(UUID assentoId);
-            }
-
-            Entity Assento {
-                UUID id
-                String codigo
-                String fileira
-                int numero
-                @StatusAssento status
-
-                void marcarPreReservado();
-                void liberar();
-                void ocupar();
-                void bloquear();
-            }
-
-            ValueObject SetorId {
-                UUID valor
-            }
-
-            enum TipoSetor {
-                PLATEIA, FRISA, CAMAROTE, BALCAO, GERAL
-            }
-
-            enum StatusAssento {
-                LIVRE, PRE_RESERVADO, OCUPADO, BLOQUEADO
-            }
-
-            Repository ISetorRepositorio {
-                void salvar(@Setor setor);
-                void atualizar(@Setor setor);
-                @Setor obterPorId(@SetorId id);
-            }
-
-            Service SetorServico {
-                @Setor configurarSetor(@EspacoId espacoId, String nome, @TipoSetor tipoSetor, int fileiras, int assentosPorFileira);
-            }
-        }
-    }
-
-    Module AgendaPreReservaModule {
+    Module PreReservaModule {
         Aggregate PreReservaAggregate {
             Entity PreReserva {
                 aggregateRoot
@@ -254,7 +280,8 @@ BoundedContext AgendaContext implements RecifeCultural {
                 UUID usuarioId
                 LocalDateTime criadaEm
                 LocalDateTime expiraEm
-                @StatusPreReserva status
+                StatusPreReserva status
+                int versao
 
                 boolean estaExpirada(LocalDateTime agora);
                 void expirar(LocalDateTime agora);
@@ -271,45 +298,159 @@ BoundedContext AgendaContext implements RecifeCultural {
             }
 
             enum StatusPreReserva {
-                ATIVA, EXPIRADA, CANCELADA, CONVERTIDA
+                ATIVA, EXPIRADA, CONVERTIDA, CANCELADA
             }
 
             Repository IPreReservaRepositorio {
                 void salvar(@PreReserva preReserva);
                 void atualizar(@PreReserva preReserva);
-                @PreReserva obterPorId(@PreReservaId id);
+                Optional<@PreReserva> obterPorId(@PreReservaId id);
                 List<@PreReserva> listarAtivasPorAssento(UUID assentoId);
                 List<@PreReserva> listarAtivasExpiradas(LocalDateTime agora);
             }
 
-            Service PreReservaServico {
+            DomainService PreReservaServico {
                 @PreReservaId reservar(UUID setorId, UUID assentoId, UUID usuarioId, @DuracaoPreReserva duracao);
                 void cancelar(@PreReservaId preReservaId);
+                void confirmar(@PreReservaId preReservaId);
                 void expirarVencidas();
+            }
+        }
+    }
+
+    Module EspectadorModule {
+        Aggregate EspectadorAggregate {
+            Entity Espectador {
+                aggregateRoot
+
+                UUID id
+                String nome
+                String email
+            }
+
+            Repository EspectadorRepositorio {
+                void salvar(@Espectador espectador);
+                Optional<@Espectador> obter(UUID id);
+                void atualizar(@Espectador espectador);
+                void deletar(UUID id);
+            }
+
+            DomainService EspectadorService {
+                void salvar(@Espectador espectador);
+                Optional<@Espectador> obter(UUID id);
+                void deletar(UUID id);
+            }
+        }
+    }
+
+    /*
+     * Port BilheteriaDigital
+     * ----------------------
+     * Interface declarada em `dominio-agenda/agenda/BilheteriaDigital.java`,
+     * consumida exclusivamente pelo ComentarioContext (`ComentarioService.postarComNota`)
+     * para confirmar que o autor da avaliação realmente comprou ingresso. A
+     * implementação concreta vive na camada de aplicação e adapta o
+     * IIngressoRepositorio do BilheteriaContext — ou seja, é um adaptador
+     * de fronteira (Anti-Corruption Layer entre Comentário e Bilheteria).
+     *
+     * Assinatura:
+     *   boolean verificarPresenca(UUID espectadorId, UUID eventoId)
+     */
+}
+
+// ════════════════════════════════════════════════════════════════════════
+//  SorteioContext
+//  Pacote Java: dominio-agenda/agenda/sorteio
+// ════════════════════════════════════════════════════════════════════════
+BoundedContext SorteioContext implements RecifeCultural {
+    domainVisionStatement = "Distribui vagas para apresentações via sorteio aleatório, com inscrição, apuração com embaralhamento, promoção automática de suplentes em desistência e cancelamento com broadcast aos inscritos."
+    type = APPLICATION
+
+    Module SorteioModule {
+        Aggregate SorteioAggregate {
+            Entity Sorteio {
+                aggregateRoot
+
+                UUID id
+                UUID apresentacaoId
+                UUID eventoId
+                int vagas
+                LocalDateTime prazoInscricao
+                LocalDateTime dataApresentacao
+                StatusSorteio status
+                List<@Inscricao> inscricoes
+
+                void inscrever(UUID espectadorId);
+                void apurar();
+                void desistir(UUID espectadorId);
+                void cancelar();
+                long contarPorStatus(StatusInscricao status);
+            }
+
+            Entity Inscricao {
+                UUID espectadorId
+                LocalDateTime momentoInscricao
+                StatusInscricao status
+            }
+
+            /*
+             * Padrão Iterator (vivo no domínio):
+             * itera as inscrições em ordem de prioridade (GANHADOR →
+             * SUPLENTE → INSCRITO → DESISTENTE → CANCELADA).
+             */
+            ValueObject InscricoesOrdenadas {
+                List<@Inscricao> inscricoes
+            }
+
+            enum StatusInscricao {
+                INSCRITO, GANHADOR, SUPLENTE, DESISTENTE, CANCELADA
+            }
+
+            enum StatusSorteio {
+                INSCRICOES_ABERTAS, EM_APURACAO, CONCLUIDO, CANCELADO
+            }
+
+            Repository ISorteioRepositorio {
+                void salvar(@Sorteio sorteio);
+                Optional<@Sorteio> obter(UUID id);
+                void atualizar(@Sorteio sorteio);
+                void deletar(UUID id);
+            }
+
+            DomainService SorteioServico {
+                @Sorteio criar(UUID apresentacaoId, UUID eventoId, int vagas, LocalDateTime prazoInscricao, LocalDateTime dataApresentacao);
+                void inscrever(UUID sorteioId, UUID espectadorId);
+                void apurar(UUID sorteioId);
+                void desistir(UUID sorteioId, UUID espectadorId);
+                void cancelar(UUID sorteioId);
+                Optional<@Sorteio> obter(UUID id);
             }
         }
     }
 }
 
-BoundedContext BloqueioAdministrativoContext {
-    domainVisionStatement = "Responsável por gerenciar bloqueios administrativos de espaços culturais, garantindo integridade de agenda e comunicação com usuários impactados."
+// ════════════════════════════════════════════════════════════════════════
+//  BloqueioAdministrativoContext
+//  Pacote Java: dominio-agenda/agenda/bloqueioadministrativo
+// ════════════════════════════════════════════════════════════════════════
+BoundedContext BloqueioAdministrativoContext implements RecifeCultural {
+    domainVisionStatement = "Interdita um espaço por período (manutenção emergencial, reforma, vistoria). Ao ser criado: interdita o Espaço, cancela eventos APROVADOS que se sobrepõem ao intervalo e publica EventoCanceladoPorBloqueioEvento no barramento para que o observador de notificações avise promotor e participantes."
     type = CORE_DOMAIN
 
     Module BloqueioAdministrativoModule {
-
         Aggregate BloqueioAdministrativoAggregate {
-
             Entity BloqueioAdministrativo {
                 aggregateRoot
 
                 @BloqueioAdministrativoId id
-                UUID idEspaco
-                String motivo
-                LocalDateTime dataInicio
-                LocalDateTime dataFim
+                @EspacoId espacoId
+                LocalDate dataInicio
+                LocalDate dataFim
+                String justificativa
+                boolean ativo
 
-                void setPeriodo(LocalDateTime inicio, LocalDateTime fim);
-                void setMotivo(String motivo);
+                void atualizarInformacoes(String novaJustificativa, LocalDate novoInicio, LocalDate novoFim);
+                void desativar();
             }
 
             ValueObject BloqueioAdministrativoId {
@@ -322,100 +463,92 @@ BoundedContext BloqueioAdministrativoContext {
                 void atualizar(@BloqueioAdministrativo bloqueio);
                 void deletar(@BloqueioAdministrativoId id);
                 List<@BloqueioAdministrativo> obterTodos();
+                List<@BloqueioAdministrativo> buscarPorEspaco(@EspacoId espacoId);
             }
-        }
 
-        DomainService BloqueioAdministrativoServico {
-
-            void criarBloqueio(@BloqueioAdministrativo bloqueio);
-
-            @BloqueioAdministrativo obterPorId(@BloqueioAdministrativoId id);
-
-            void atualizarBloqueio(
-                @BloqueioAdministrativoId id,
-                String novoMotivo,
-                LocalDateTime novoInicio,
-                LocalDateTime novoFim
-            );
-
-            void deletarBloqueio(@BloqueioAdministrativoId id);
-
-            List<@BloqueioAdministrativo> obterTodosBloqueios();
-
-            void cancelarEventosConflitantes(@BloqueioAdministrativo bloqueio);
+            DomainService BloqueioAdministrativoServico {
+                @BloqueioAdministrativo criarBloqueio(@EspacoId espacoId, LocalDate inicio, LocalDate fim, String justificativa);
+                void desativarBloqueio(@BloqueioAdministrativoId id);
+                @BloqueioAdministrativo obterPorId(@BloqueioAdministrativoId id);
+                void atualizarBloqueio(@BloqueioAdministrativoId id, String novaJustificativa, LocalDate novoInicio, LocalDate novoFim);
+                void deletarBloqueio(@BloqueioAdministrativoId id);
+                List<@BloqueioAdministrativo> obterTodosBloqueios();
+            }
         }
     }
 }
 
-BoundedContext SorteioContext {
-    domainVisionStatement = "Distribui vagas para apresentações via sorteio aleatório, com inscrição, apuração e promoção automática de suplentes."
-    type = APPLICATION
+// ════════════════════════════════════════════════════════════════════════
+//  ComentarioContext
+//  Pacote Java: dominio-agenda/agenda/comentario
+// ════════════════════════════════════════════════════════════════════════
+BoundedContext ComentarioContext implements RecifeCultural {
+    domainVisionStatement = "Permite que espectadores discutam e avaliem eventos: comentários com curtidas, respostas em árvore (comentarioPaiId), notas (1-5) restritas a quem comprou ingresso. Moderação automática via Decorator que substitui palavras vetadas antes de persistir."
+    type = FEATURE
 
-    Module SorteioModule {
-        Aggregate SorteioAggregate {
-            Entity Sorteio {
+    Module ComentarioModule {
+        Aggregate ComentarioAggregate {
+            Entity Comentario {
                 aggregateRoot
 
-                @SorteioId id
-                @ApresentacaoId apresentacaoId
-                @EventoId eventoId
-                Integer vagas
-                LocalDateTime prazoInscricao
-                LocalDateTime dataApresentacao
-                StatusSorteio status
-                List<@Inscricao> inscricoes
+                UUID id
+                UUID espectadorId
+                UUID eventoId
+                UUID comentarioPaiId
+                LocalDateTime criadoEm
+                String texto
+                @Nota nota
+                StatusComentario status
+                Set<UUID> curtidas
 
-                void inscrever(@EspectadorId espectadorId);
-                void apurar();
-                void desistir(@EspectadorId espectadorId);
-                void cancelar();
+                void curtir(UUID espectadorId);
+                void editar(String novoTexto);
+                void deletar();
             }
 
-            ValueObject Inscricao {
-                @EspectadorId espectadorId
-                LocalDateTime momentoInscricao
-                StatusInscricao status
+            ValueObject Nota {
+                int valor
             }
 
-            ValueObject SorteioId      { UUID valor }
-            ValueObject ApresentacaoId { UUID valor }
-            ValueObject EventoId       { UUID valor }
-            ValueObject EspectadorId   { UUID valor }
-
-            enum StatusSorteio {
-                INSCRICOES_ABERTAS, EM_APURACAO, CONCLUIDO, CANCELADO
+            enum StatusComentario {
+                ATIVO, DELETADO
             }
 
-            enum StatusInscricao {
-                INSCRITO, GANHADOR, SUPLENTE, DESISTENTE, CANCELADA
+            Repository ComentarioRepositorio {
+                void salvar(@Comentario comentario);
+                void atualizar(@Comentario comentario);
+                Optional<@Comentario> obter(UUID id);
+                void deletar(UUID id);
+                List<@Comentario> listarPorEvento(UUID eventoId);
+                boolean existeNotaPorEspectador(UUID espectadorId, UUID eventoId);
             }
 
-            Repository SorteioRepository {
-                void salvar(@Sorteio sorteio);
-                @Sorteio obter(@SorteioId id);
-                void atualizar(@Sorteio sorteio);
-                void deletar(@SorteioId id);
-            }
-
-            Service SorteioServico {
-                @Sorteio criar(
-                    @ApresentacaoId apresentacaoId,
-                    @EventoId eventoId,
-                    Integer vagas,
-                    LocalDateTime prazoInscricao,
-                    LocalDateTime dataApresentacao
-                );
-                void inscrever(@SorteioId sorteioId, @EspectadorId espectadorId);
-                void apurar(@SorteioId sorteioId);
-                void desistir(@SorteioId sorteioId, @EspectadorId espectadorId);
-                void cancelar(@SorteioId sorteioId);
+            DomainService ComentarioService {
+                void postar(@Comentario comentario);
+                /*
+                 * Recebe `BilheteriaDigital` (port declarado em
+                 * AgendaContext / dominio-agenda) como dependência —
+                 * verifica que o espectador esteve presente antes de
+                 * aceitar a nota.
+                 */
+                void postarComNota(@Comentario comentario, BilheteriaDigital bilheteria);
+                void curtir(UUID comentarioId, UUID espectadorId);
+                void responder(UUID comentarioPaiId, @Comentario resposta);
+                void editar(UUID id, String novoTexto);
+                void deletar(UUID id);
+                List<@Comentario> listarAtivos(UUID eventoId);
+                Optional<@Comentario> obter(UUID id);
             }
         }
     }
 }
 
-BoundedContext AcessibilidadeContext {
-    domainVisionStatement = "Marca recursos de acessibilidade disponíveis em uma apresentação (LIBRAS, audiodescrição, etc.). Garante unicidade por tipo e exige justificativa para remoção."
+// ════════════════════════════════════════════════════════════════════════
+//  AcessibilidadeContext
+//  Pacote Java: dominio-agenda/agenda/acessibilidade
+// ════════════════════════════════════════════════════════════════════════
+BoundedContext AcessibilidadeContext implements RecifeCultural {
+    domainVisionStatement = "Marca recursos de acessibilidade confirmados por apresentação (LIBRAS, audiodescrição, legenda descritiva, espaço PCD, programa em braile). Exige Evento APROVADO para marcação e justificativa de no mínimo 30 caracteres para remoção, que dispara broadcast público (Template Method)."
     type = APPLICATION
 
     Module AcessibilidadeModule {
@@ -423,19 +556,15 @@ BoundedContext AcessibilidadeContext {
             Entity RecursoAcessibilidade {
                 aggregateRoot
 
-                @RecursoAcessibilidadeId id
-                @ApresentacaoId apresentacaoId
-                @EventoId eventoId
+                UUID id
+                UUID apresentacaoId
+                UUID eventoId
                 TipoRecursoAcessibilidade tipo
                 StatusRecurso status
                 String justificativaRemocao
 
                 void remover(String justificativa);
             }
-
-            ValueObject RecursoAcessibilidadeId { UUID valor }
-            ValueObject ApresentacaoId          { UUID valor }
-            ValueObject EventoId                { UUID valor }
 
             enum TipoRecursoAcessibilidade {
                 LIBRAS, AUDIODESCRICAO, LEGENDA_DESCRITIVA, ESPACO_PCD, PROGRAMA_BRAILE
@@ -445,97 +574,256 @@ BoundedContext AcessibilidadeContext {
                 CONFIRMADO, REMOVIDO
             }
 
-            Repository RecursoAcessibilidadeRepository {
+            Repository IRecursoAcessibilidadeRepositorio {
                 void salvar(@RecursoAcessibilidade recurso);
-                @RecursoAcessibilidade obter(@RecursoAcessibilidadeId id);
-                List<@RecursoAcessibilidade> listarPorApresentacao(@ApresentacaoId apresentacaoId);
+                Optional<@RecursoAcessibilidade> obter(UUID id);
+                List<@RecursoAcessibilidade> listarPorApresentacao(UUID apresentacaoId);
+                List<@RecursoAcessibilidade> listarAtivosPorEvento(UUID eventoId);
+                List<@RecursoAcessibilidade> listarPorEvento(UUID eventoId);
+                List<@RecursoAcessibilidade> listarTodos();
                 void atualizar(@RecursoAcessibilidade recurso);
             }
 
-            Service RecursoAcessibilidadeServico {
-                @RecursoAcessibilidade marcar(
-                    @ApresentacaoId apresentacaoId,
-                    @EventoId eventoId,
-                    @TipoRecursoAcessibilidade tipo
-                );
-                void remover(@RecursoAcessibilidadeId recursoId, String justificativa);
+            DomainService RecursoAcessibilidadeServico {
+                @RecursoAcessibilidade marcar(UUID apresentacaoId, UUID eventoId, TipoRecursoAcessibilidade tipo);
+                void remover(UUID recursoId, String justificativa);
+                List<@RecursoAcessibilidade> listarAtivosPorEvento(UUID eventoId);
             }
         }
     }
 }
 
-BoundedContext NotificacaoContext {
-    domainVisionStatement = "Responsável por gerenciar o envio e controle de notificações para usuários, incluindo notificações diretas e broadcasts."
-    type = GENERIC_SUBDOMAIN
+// ════════════════════════════════════════════════════════════════════════
+//  EquipamentoContext
+//  Pacote Java: dominio-agenda/agenda/equipamento
+// ════════════════════════════════════════════════════════════════════════
+BoundedContext EquipamentoContext implements RecifeCultural {
+    domainVisionStatement = "Inventário técnico de cada espaço: aquisição, alocação para rider de eventos, manutenção (com notificação ao evento alocado), liberação e desmobilização. Inclui serviço que aloca múltiplos equipamentos por nome."
+    type = APPLICATION
 
-    Module NotificacaoModule {
-
-        Aggregate NotificacaoAggregate {
-
-            Entity Notificacao {
+    Module EquipamentoModule {
+        Aggregate EquipamentoAggregate {
+            Entity Equipamento {
                 aggregateRoot
 
-                @NotificacaoId id
-                UUID usuarioAlvo
-                String mensagem
-                String contexto
-                UUID idReferencia
-                boolean foiLida
-                boolean broadcast
-                Set<UUID> lidaPor
-                LocalDateTime dataCriacao
+                @EquipamentoId id
+                @EspacoId espacoId
+                String nome
+                StatusEquipamento status
+                UUID eventoAlocadoId
 
-                void marcarComoLida(UUID usuarioId);
-                void marcarComoNaoLida(UUID usuarioId);
-                boolean isLidaPor(UUID usuarioId);
+                void alocarParaEvento(UUID eventoId);
+                void enviarParaManutencao();
+                void liberar();
             }
 
-            ValueObject NotificacaoId {
+            ValueObject EquipamentoId {
                 UUID valor
             }
 
-            Repository INotificacaoRepositorio {
-                boolean salvar(@Notificacao notificacao);
-                boolean atualizar(@Notificacao notificacao);
-                @Notificacao obter(@NotificacaoId id);
-                List<@Notificacao> obterPorUsuario(UUID usuarioAlvo);
-                List<@Notificacao> obterNaoLidasPorUsuario(UUID usuarioAlvo);
-                List<@Notificacao> obterPorContexto(UUID usuarioAlvo, String contexto);
+            enum StatusEquipamento {
+                DISPONIVEL, ALOCADO, EM_MANUTENCAO
             }
-        }
 
-        DomainService NotificacaoServico {
+            Repository IEquipamentoRepositorio {
+                void salvar(@Equipamento equipamento);
+                void atualizar(@Equipamento equipamento);
+                void deletar(@EquipamentoId id);
+                Optional<@Equipamento> obterPorId(@EquipamentoId id);
+                List<@Equipamento> listarPorEspaco(@EspacoId espacoId);
+                List<@Equipamento> buscarDisponiveisPorEspacoENome(@EspacoId espacoId, String nome, int quantidade);
+                List<@Equipamento> buscarAlocadosPorEvento(UUID eventoId);
+            }
 
-            void enviarNotificacao(UUID usuarioAlvo, String mensagem);
+            DomainService EquipamentoServico {
+                @EquipamentoId adquirirEquipamento(@EspacoId espacoId, String nome);
+                void reportarManutencao(@EquipamentoId id);
+                void removerEquipamento(@EquipamentoId id);
+                void liberar(@EquipamentoId id);
+            }
 
-            void enviarNotificacao(
-                UUID usuarioAlvo,
-                String mensagem,
-                String contexto,
-                UUID idReferencia
-            );
-
-            void enviarBroadcast(String mensagem);
-
-            void enviarBroadcast(
-                String mensagem,
-                String contexto,
-                UUID idReferencia
-            );
-
-            void marcarComoLida(@NotificacaoId id, UUID usuarioId);
-
-            void marcarComoNaoLida(@NotificacaoId id, UUID usuarioId);
-
-            List<@Notificacao> obterNotificacoesDoUsuario(UUID usuarioAlvo);
-
-            List<@Notificacao> obterNotificacoesNaoLidas(UUID usuarioAlvo);
+            DomainService AlocacaoRiderTecnicoServico {
+                void alocarEquipamentos(UUID eventoId, @EspacoId espacoId, String nomeEquipamento, int quantidadeNecessaria);
+                void registrarManutencao(@EquipamentoId id);
+                void desmobilizarEquipamentosDoEvento(UUID eventoId);
+            }
         }
     }
 }
 
-BoundedContext BilheteriaContext {
-    domainVisionStatement = "Responsável pela venda de ingressos, geração de QR code e reembolso escalonado por proximidade da data do espetáculo."
+// ════════════════════════════════════════════════════════════════════════
+//  EspacoContext
+//  Pacotes Java: dominio-espaco/espaco/espaco, espaco/setor, espaco/suporte
+// ════════════════════════════════════════════════════════════════════════
+BoundedContext EspacoContext implements RecifeCultural {
+    domainVisionStatement = "Cadastro e operação dos espaços culturais físicos: capacidade máxima, rider técnico, status (ATIVO/INTERDITADO), ocupações com buffers de montagem/desmontagem, gestão da planta interna (setores e assentos) e atendimento a chamados de suporte técnico."
+    type = APPLICATION
+
+    Module EspacoModule {
+        Aggregate EspacoAggregate {
+            Entity Espaco {
+                aggregateRoot
+
+                @EspacoId id
+                String nome
+                int capacidadeMaxima
+                List<String> riderTecnico
+                StatusEspaco status
+                List<@Ocupacao> ocupacoesExistentes
+
+                void reduzirCapacidade(int novaCapacidade, int maiorCargaIngressosVendidosFuturo);
+                void interditar();
+                void reativar();
+                void validarDisponibilidade(@Ocupacao novaOcupacao, List<@Ocupacao> ocupacoesNoPeriodo);
+            }
+
+            ValueObject EspacoId {
+                UUID valor
+            }
+
+            ValueObject Ocupacao {
+                LocalDateTime inicio
+                LocalDateTime fim
+                int minutosMontagem
+                int minutosDesmontagem
+                int bufferExtra
+            }
+
+            enum StatusEspaco {
+                ATIVO, INTERDITADO
+            }
+
+            Repository IEspacoRepositorio {
+                void salvar(@Espaco espaco);
+                void atualizar(@Espaco espaco);
+                Optional<@Espaco> obterPorId(@EspacoId id);
+                List<@Espaco> listarTodos();
+                List<@Ocupacao> buscarOcupacoesPorPeriodo(@EspacoId id, LocalDateTime inicio, LocalDateTime fim);
+                void salvarOcupacao(@EspacoId id, @Ocupacao ocupacao);
+            }
+
+            DomainService EspacoServico {
+                @EspacoId cadastrarEspaco(String nome, int capacidadeMaxima, List<String> riderTecnico);
+                List<@Espaco> listarTodos();
+                void atualizarCapacidade(@EspacoId id, int novaCapacidade, int ingressosVendidosFuturos);
+                void interditarEspaco(@EspacoId id);
+                void agendarEvento(@EspacoId id, @Ocupacao novaOcupacao);
+            }
+        }
+    }
+
+    Module SetorModule {
+        Aggregate SetorAggregate {
+            Entity Setor {
+                aggregateRoot
+
+                @SetorId id
+                @EspacoId espacoId
+                String nome
+                TipoSetor tipoSetor
+                int fileirasHorizontais
+                int assentosPorFileiraVertical
+                List<@Assento> assentos
+                int versao
+
+                void mapearAssentos(List<@Assento> novosAssentos);
+                @Assento preReservar(UUID assentoId);
+                @Assento liberarAssento(UUID assentoId);
+                @Assento ocuparAssento(UUID assentoId);
+                @Assento bloquearAssento(UUID assentoId, MotivoIndisponibilidadeAssento motivo);
+                int capacidade();
+                long contarAssentosDisponiveis();
+                boolean editar(String novoNome, TipoSetor novoTipo, int novasFileiras, int novosAssentosPorFileira);
+            }
+
+            Entity Assento {
+                UUID id
+                String codigo
+                String fileira
+                int numero
+                StatusAssento status
+                MotivoIndisponibilidadeAssento motivoIndisponibilidade
+                int versao
+
+                void marcarPreReservado();
+                void liberar();
+                void ocupar();
+                void bloquear(MotivoIndisponibilidadeAssento motivo);
+            }
+
+            ValueObject SetorId {
+                UUID valor
+            }
+
+            enum TipoSetor {
+                PLATEIA, CAMAROTE, BALCAO, PISTA
+            }
+
+            enum StatusAssento {
+                LIVRE, PRE_RESERVADO, OCUPADO, BLOQUEADO
+            }
+
+            enum MotivoIndisponibilidadeAssento {
+                QUEBRADO, MANUTENCAO, RESERVADO_VIP, PONTO_CEGO, OUTRO
+            }
+
+            Repository ISetorRepositorio {
+                void salvar(@Setor setor);
+                void atualizar(@Setor setor);
+                Optional<@Setor> obterPorId(@SetorId id);
+                List<@Setor> listarPorEspaco(@EspacoId espacoId);
+            }
+
+            DomainService GestaoAmbienteInternoServico {
+                @Setor configurarGestaoAmbiente(@EspacoId espacoId, String nome, TipoSetor tipoSetor, int fileirasHorizontais, int assentosPorFileiraVertical);
+                @Setor editarSetor(@SetorId id, String nome, TipoSetor tipoSetor, int fileirasHorizontais, int assentosPorFileiraVertical);
+                long contarAssentosDisponiveisPorEspaco(@EspacoId espacoId);
+                List<@Setor> listarPorEspaco(@EspacoId espacoId);
+            }
+        }
+    }
+
+    Module SuporteTecnicoModule {
+        Aggregate ChamadoSuporteAggregate {
+            Entity ChamadoSuporte {
+                aggregateRoot
+
+                UUID id
+                UUID assentoId
+                String descricao
+                MotivoIndisponibilidadeAssento motivo
+                StatusChamado status
+                LocalDateTime dataAbertura
+
+                void resolver();
+                void escalar();
+            }
+
+            enum StatusChamado {
+                ABERTO, EM_ANDAMENTO, ESCALADO, RESOLVIDO
+            }
+
+            Repository IChamadoSuporteRepositorio {
+                void salvar(@ChamadoSuporte chamado);
+                void atualizar(@ChamadoSuporte chamado);
+                Optional<@ChamadoSuporte> obterPorId(UUID id);
+                List<@ChamadoSuporte> listarAbertosAntesDe(LocalDateTime limite);
+            }
+
+            DomainService SuporteTecnicoServico {
+                @ChamadoSuporte abrirChamado(@SetorId setorId, UUID assentoId, MotivoIndisponibilidadeAssento motivo, String descricao);
+                void escalarVencidos(LocalDateTime agora, long slaHoras);
+            }
+        }
+    }
+}
+
+// ════════════════════════════════════════════════════════════════════════
+//  BilheteriaContext (Ingressos)
+//  Pacote Java: dominio-ingressos/ingressos
+// ════════════════════════════════════════════════════════════════════════
+BoundedContext BilheteriaContext implements RecifeCultural {
+    domainVisionStatement = "Venda de ingressos, geração de QR code, integração com gateway de pagamento e reembolso escalonado por proximidade da data. Suporta compra com pré-reserva, compra com cupom e reembolso assíncrono (que publica ReembolsadoEvento para invalidar o ingresso na Catraca)."
     type = APPLICATION
 
     Module IngressoModule {
@@ -545,13 +833,14 @@ BoundedContext BilheteriaContext {
 
                 @IngressoId id
                 UUID eventoId
+                UUID assentoId
                 LocalDateTime dataHoraApresentacao
-                @TipoIngresso tipo
-                @StatusIngresso status
+                TipoIngresso tipo
+                StatusIngresso status
                 BigDecimal valorPago
                 String codigoQr
                 String codigoTransacao
-                @MetodoPagamento metodoPagamento
+                MetodoPagamento metodoPagamento
                 LocalDateTime dataCompra
                 BigDecimal valorReembolsado
 
@@ -595,16 +884,235 @@ BoundedContext BilheteriaContext {
                 List<@Ingresso> buscarPorPeriodo(LocalDateTime inicio, LocalDateTime fim);
             }
 
-            Service IngressoServico {
-                @Ingresso comprar(UUID eventoId, LocalDateTime dataHora, @TipoIngresso tipo, BigDecimal valor, @MetodoPagamento metodo, int capacidadeMaxima);
+            DomainService IngressoServico {
+                @Ingresso comprar(UUID eventoId, LocalDateTime dataHora, TipoIngresso tipo, BigDecimal valor, MetodoPagamento metodo, int capacidadeMaxima);
+                @Ingresso comprarComCupom(UUID eventoId, LocalDateTime dataHora, TipoIngresso tipo, BigDecimal valor, MetodoPagamento metodo, int capacidadeMaxima, String codigoCupom, String cpfComprador, String categoriaEvento);
+                @Ingresso comprarComPreReserva(UUID eventoId, LocalDateTime dataHora, UUID preReservaId, UUID assentoId, TipoIngresso tipo, BigDecimal valor, MetodoPagamento metodo, int capacidadeMaxima, IConfirmacaoReserva confirmacaoReserva);
                 @ResultadoReembolso solicitarReembolso(@IngressoId id, LocalDateTime agora);
+            }
+        }
+
+        /*
+         * Ports (interfaces no domínio, implementações na infraestrutura):
+         *   IGatewayPagamento    — processa cobrança e reembolso
+         *   IConfirmacaoReserva  — confirma/cancela pré-reserva no fluxo de compra
+         */
+    }
+}
+
+// ════════════════════════════════════════════════════════════════════════
+//  CupomContext
+//  Pacote Java: dominio-ingressos/cupom
+// ════════════════════════════════════════════════════════════════════════
+BoundedContext CupomContext implements RecifeCultural {
+    domainVisionStatement = "Gerencia cupons promocionais. Template Method em Cupom.validarElegibilidade: vigência → categoria → valor mínimo → limite global → limite por CPF. Suporta desconto percentual ou valor fixo, com limites globais e por CPF."
+    type = FEATURE
+
+    Module CupomModule {
+        Aggregate CupomAggregate {
+            Entity Cupom {
+                aggregateRoot
+
+                @CupomId id
+                String codigo
+                TipoDesconto tipoDesconto
+                BigDecimal valorDesconto
+                BigDecimal valorMinimoPedido
+                int limiteGlobal
+                int usosGlobais
+                int limitePorCpf
+                LocalDateTime dataInicio
+                LocalDateTime dataFim
+                String categoriaPermitida
+                Set<String> cpfsQueJaUsaram
+
+                BigDecimal calcularDesconto(BigDecimal valorOriginal);
+                void validarElegibilidade(String cpfUsuario, BigDecimal valorPedido, String categoriaEvento, LocalDateTime dataAtual);
+                void registrarUso(String cpfUsuario);
+            }
+
+            ValueObject CupomId {
+                String valor
+            }
+
+            enum TipoDesconto {
+                PERCENTUAL, VALOR_FIXO
+            }
+
+            Repository ICupomRepositorio {
+                @Cupom buscarPorCodigo(String codigo);
+                @Cupom buscarPorId(@CupomId id);
+                List<@Cupom> listarTodos();
+                void salvar(@Cupom cupom);
+                void deletar(@CupomId id);
+            }
+
+            DomainService AplicarCupomServico {
+                BigDecimal aplicarDesconto(String codigo, String cpf, BigDecimal valor, String categoria);
             }
         }
     }
 }
 
-BoundedContext FinanceiroContext {
-    domainVisionStatement = "Responsável pelo controle de orçamento por período, registro de despesas operacionais e cálculo de indicadores de desempenho do teatro."
+// ════════════════════════════════════════════════════════════════════════
+//  CatracaContext
+//  Pacote Java: dominio-ingressos/catraca
+// ════════════════════════════════════════════════════════════════════════
+BoundedContext CatracaContext implements RecifeCultural {
+    domainVisionStatement = "Controle físico de acesso na portaria. Template Method anti-fraude em validarAcesso: QR válido → status ativo → portão correto → janela de horário. Recebe ReembolsadoEvento da Bilheteria para inativar ingressos reembolsados antes que entrem."
+    type = FEATURE
+
+    Module CatracaModule {
+        Aggregate CatracaAggregate {
+            Entity IngressoCatraca {
+                aggregateRoot
+
+                @IngressoCatracaId id
+                String idEvento
+                StatusIngressoCatraca status
+                LocalDateTime horarioInicioEvento
+                TipoIngresso tipoIngresso
+                String portaoAcesso
+
+                void registrarEntrada(LocalDateTime horarioLeituraCatraca, String portaoDaCatracaFisica);
+                void cancelarAcesso();
+            }
+
+            ValueObject IngressoCatracaId {
+                String valor
+            }
+
+            enum StatusIngressoCatraca {
+                VALIDO, UTILIZADO, CANCELADO_OU_REEMBOLSADO
+            }
+
+            enum TipoIngresso {
+                COMUM, VIP, MEIA_ENTRADA
+            }
+
+            Repository ICatracaRepositorio {
+                @IngressoCatraca buscarPorId(String idIngresso);
+                void salvar(@IngressoCatraca ingressoCatraca);
+            }
+
+            DomainService CatracaServico {
+                String validarAcesso(String idIngresso, LocalDateTime horarioAtual, String identificacaoPortao);
+                void inativarIngresso(String idIngresso);
+            }
+        }
+    }
+}
+
+// ════════════════════════════════════════════════════════════════════════
+//  PatrocinioContext
+//  Pacote Java: dominio-patrocinio/patrocinio
+// ════════════════════════════════════════════════════════════════════════
+BoundedContext PatrocinioContext implements RecifeCultural {
+    domainVisionStatement = "Vincula patrocinadores a eventos aprovados controlando: exclusividade por categoria, naming rights para o tipo MASTER, cancelamentos com reembolso escalonado (Strategy: por evento vs por patrocinador) e subsídio de ingresso social com piso mínimo. BC isolado — não importa o Evento; recebe apenas o boolean eventoAprovado do caller."
+    type = APPLICATION
+
+    Module PatrocinioModule {
+        Aggregate PatrocinioAggregate {
+            Entity Patrocinio {
+                aggregateRoot
+
+                @PatrocinioId id
+                @EventoId eventoId
+                String patrocinadorNome
+                String categoriaPatrocinio
+                TipoPatrocinio tipo
+                ModalidadeContribuicao modalidade
+                BigDecimal valorContribuicao
+                LocalDateTime dataEvento
+                StatusPatrocinio status
+                BigDecimal valorReembolsado
+                BigDecimal multaAplicada
+
+                void ativar();
+                void encerrar();
+                /*
+                 * Os métodos `cancelar*` emitem um Patrocinio.CanceladoEvento
+                 * (inner Domain Event com reembolso, multa e motivo). O service
+                 * converte isso para um @ResultadoCancelamento exposto à camada
+                 * de aplicação.
+                 */
+                void cancelar(EstrategiaCancelamentoPatrocinio estrategia, LocalDateTime agora);
+                void cancelarPorEvento(LocalDateTime agora);
+                void cancelarPorPatrocinador(LocalDateTime agora);
+                @ResultadoSubsidio calcularSubsidio(BigDecimal precoSocialAtual);
+            }
+
+            ValueObject PatrocinioId { UUID valor }
+
+            /*
+             * VO local ao BC — não compartilha tipo com agenda/evento; o
+             * Patrocínio recebe o id do evento como dado de fronteira.
+             */
+            ValueObject EventoId { UUID valor }
+
+            ValueObject ResultadoCalculoCancelamento {
+                BigDecimal reembolso
+                BigDecimal multa
+                String motivo
+            }
+
+            ValueObject ResultadoCancelamento {
+                BigDecimal valorReembolsado
+                BigDecimal multaAplicada
+                String motivo
+            }
+
+            ValueObject ResultadoSubsidio {
+                BigDecimal novoPrecoSocial
+                boolean pisoAplicado
+            }
+
+            enum TipoPatrocinio {
+                MASTER, ASSOCIADO
+            }
+
+            enum StatusPatrocinio {
+                PROPOSTA, ATIVO, ENCERRADO, CANCELADO_EVENTO, CANCELADO_PATROCINADOR
+            }
+
+            enum ModalidadeContribuicao {
+                FINANCEIRO, SUBSIDIO_INGRESSO_SOCIAL
+            }
+
+            /*
+             * Padrão Strategy (vivo no domínio):
+             *   EstrategiaCancelamentoPatrocinio — abstração
+             *   EstrategiaCancelamentoPorEvento  — >7d: 100% · 2-7d: 50% · <2d: 0%
+             *   EstrategiaCancelamentoPorPatrocinador — >15d: 100% · ≤15d: 80% + 20% multa
+             */
+
+            Repository IPatrocinioRepositorio {
+                void salvar(@Patrocinio patrocinio);
+                @Patrocinio buscarPorId(@PatrocinioId id);
+                List<@Patrocinio> buscarPorEvento(@EventoId eventoId);
+                Optional<@Patrocinio> buscarMasterPorEvento(@EventoId eventoId);
+                Optional<@Patrocinio> buscarPorEventoECategoria(@EventoId eventoId, String categoria);
+                void atualizar(@Patrocinio patrocinio);
+            }
+
+            DomainService PatrocinioServico {
+                @Patrocinio criar(@EventoId eventoId, String patrocinadorNome, String categoriaPatrocinio, TipoPatrocinio tipo, ModalidadeContribuicao modalidade, BigDecimal valorContribuicao, LocalDateTime dataEvento, boolean eventoAprovado);
+                void ativar(@PatrocinioId id);
+                void encerrar(@PatrocinioId id);
+                @ResultadoCancelamento cancelarPorEvento(@PatrocinioId id, LocalDateTime agora);
+                @ResultadoCancelamento cancelarPorPatrocinador(@PatrocinioId id, LocalDateTime agora);
+                @ResultadoSubsidio calcularSubsidio(@PatrocinioId id, BigDecimal precoSocialAtual);
+            }
+        }
+    }
+}
+
+// ════════════════════════════════════════════════════════════════════════
+//  FinanceiroContext
+//  Pacote Java: dominio-financeiro/financeiro
+// ════════════════════════════════════════════════════════════════════════
+BoundedContext FinanceiroContext implements RecifeCultural {
+    domainVisionStatement = "Controle orçamentário por período, registro de despesas operacionais com alerta de 80% do orçamento e cálculo de indicadores de desempenho (receita bruta/líquida, ocupação, crescimento de público) — esses indicadores leem ingressos para apurar a receita."
     type = APPLICATION
 
     Module FinanceiroModule {
@@ -615,7 +1123,7 @@ BoundedContext FinanceiroContext {
                 @OrcamentoId id
                 @Periodo periodo
                 BigDecimal valorTotal
-                @StatusOrcamento status
+                StatusOrcamento status
 
                 void reduzir(BigDecimal novoValor, BigDecimal totalDespesasRegistradas);
                 void encerrar();
@@ -642,6 +1150,12 @@ BoundedContext FinanceiroContext {
                 @OrcamentoPeriodo buscarPorId(@OrcamentoId id);
                 @OrcamentoPeriodo buscarPorPeriodo(@Periodo periodo);
             }
+
+            DomainService OrcamentoServico {
+                @OrcamentoPeriodo criar(@Periodo periodo, BigDecimal valorTotal);
+                void reduzir(@OrcamentoId id, BigDecimal novoValor);
+                void encerrar(@OrcamentoId id);
+            }
         }
 
         Aggregate DespesaAggregate {
@@ -652,7 +1166,7 @@ BoundedContext FinanceiroContext {
                 @OrcamentoId orcamentoId
                 String descricao
                 BigDecimal valor
-                @CategoriaDespesa categoria
+                CategoriaDespesa categoria
                 LocalDateTime dataRegistro
             }
 
@@ -688,8 +1202,8 @@ BoundedContext FinanceiroContext {
                 BigDecimal somarPorOrcamento(@OrcamentoId id);
             }
 
-            Service DesempenhoTeatroServico {
-                @ResultadoRegistroDespesa registrarDespesa(@OrcamentoId id, String descricao, BigDecimal valor, @CategoriaDespesa categoria);
+            DomainService DesempenhoTeatroServico {
+                @ResultadoRegistroDespesa registrarDespesa(@OrcamentoId id, String descricao, BigDecimal valor, CategoriaDespesa categoria);
                 @IndicadoresDesempenho calcularIndicadores(@Periodo periodo, int capacidadeTotal);
                 @ComparativoPeriodos compararPeriodos(@Periodo anterior, @Periodo atual, int capacidadeTotal);
             }
@@ -697,97 +1211,15 @@ BoundedContext FinanceiroContext {
     }
 }
 
-BoundedContext PatrocinioContext implements RecifeCultural {
-    domainVisionStatement = "Responsável por vincular patrocinadores a eventos aprovados, controlando exclusividade por categoria, naming rights para o patrocinador master, cancelamentos com reembolso escalonado e subsídio de ingresso social com piso mínimo."
-    type = APPLICATION
-
-    Module PatrocinioModule {
-
-        Aggregate PatrocinioAggregate {
-
-            Entity Patrocinio {
-                aggregateRoot
-
-                @PatrocinioId id
-                @EventoId eventoId
-                String patrocinadorNome
-                String categoriaPatrocinio
-                TipoPatrocinio tipo
-                ModalidadeContribuicao modalidade
-                BigDecimal valorContribuicao
-                LocalDateTime dataEvento
-                StatusPatrocinio status
-                BigDecimal valorReembolsado
-                BigDecimal multaAplicada
-
-                void ativar();
-                void encerrar();
-                @ResultadoCancelamento cancelarPorEvento(LocalDateTime agora);
-                @ResultadoCancelamento cancelarPorPatrocinador(LocalDateTime agora);
-                @ResultadoSubsidio calcularSubsidio(BigDecimal precoSocialAtual);
-            }
-
-            ValueObject PatrocinioId { UUID valor }
-            ValueObject EventoId     { UUID valor }
-
-            ValueObject ResultadoCancelamento {
-                BigDecimal valorReembolsado
-                BigDecimal multaAplicada
-                String motivo
-            }
-
-            ValueObject ResultadoSubsidio {
-                BigDecimal novoPrecoSocial
-                boolean pisoAplicado
-            }
-
-            enum TipoPatrocinio {
-                MASTER, ASSOCIADO
-            }
-
-            enum StatusPatrocinio {
-                PROPOSTA, ATIVO, ENCERRADO, CANCELADO_EVENTO, CANCELADO_PATROCINADOR
-            }
-
-            enum ModalidadeContribuicao {
-                FINANCEIRO, SUBSIDIO_INGRESSO_SOCIAL
-            }
-
-            Repository IPatrocinioRepositorio {
-                void salvar(@Patrocinio patrocinio);
-                @Patrocinio buscarPorId(@PatrocinioId id);
-                List<@Patrocinio> buscarPorEvento(@EventoId eventoId);
-                @Patrocinio buscarMasterPorEvento(@EventoId eventoId);
-                @Patrocinio buscarPorEventoECategoria(@EventoId eventoId, String categoria);
-                void atualizar(@Patrocinio patrocinio);
-            }
-
-            DomainService PatrocinioServico {
-                @Patrocinio criar(
-                    @EventoId eventoId,
-                    String patrocinadorNome,
-                    String categoriaPatrocinio,
-                    TipoPatrocinio tipo,
-                    ModalidadeContribuicao modalidade,
-                    BigDecimal valorContribuicao,
-                    LocalDateTime dataEvento,
-                    boolean eventoAprovado
-                );
-                void ativar(@PatrocinioId id);
-                void encerrar(@PatrocinioId id);
-                @ResultadoCancelamento cancelarPorEvento(@PatrocinioId id, LocalDateTime agora);
-                @ResultadoCancelamento cancelarPorPatrocinador(@PatrocinioId id, LocalDateTime agora);
-                @ResultadoSubsidio calcularSubsidio(@PatrocinioId id, BigDecimal precoSocialAtual);
-            }
-        }
-    }
-}
-
+// ════════════════════════════════════════════════════════════════════════
+//  ArtistaContext (Artista + Produtor)
+//  Pacotes Java: dominio-artista/artista, dominio-artista/produtor
+// ════════════════════════════════════════════════════════════════════════
 BoundedContext ArtistaContext implements RecifeCultural {
-    domainVisionStatement = "Responsável pelo cadastro de artistas e produtores culturais, incluindo a gestão de rider técnico."
+    domainVisionStatement = "Cadastro e ciclo de vida de produtores culturais (PJ com CNPJ) e artistas vinculados a eles. Produtor tem trilha de mudanças de status (histórico) e regras de inativação que verificam artistas ativos. Artista carrega rider técnico (lista de itens necessários para o palco)."
     type = APPLICATION
 
-    Module ArtistaModule {
+    Module ProdutorModule {
         Aggregate ProdutorAggregate {
             Entity Produtor {
                 aggregateRoot
@@ -797,7 +1229,7 @@ BoundedContext ArtistaContext implements RecifeCultural {
                 @Cnpj cnpj
                 String email
                 String telefone
-                @StatusProdutor status
+                StatusProdutor status
 
                 void atualizarContato(String novoEmail, String novoTelefone);
                 void suspender();
@@ -806,12 +1238,26 @@ BoundedContext ArtistaContext implements RecifeCultural {
                 void anonimizarDadosPessoais();
             }
 
+            Entity HistoricoStatusProdutor {
+                aggregateRoot
+
+                UUID id
+                @ProdutorId produtorId
+                StatusProdutor statusAnterior
+                StatusProdutor statusNovo
+                String responsavel
+                String motivo
+                LocalDateTime dataAlteracao
+            }
+
             ValueObject ProdutorId {
                 UUID valor
             }
 
             ValueObject Cnpj {
                 String valor
+
+                String formatado();
             }
 
             enum StatusProdutor {
@@ -821,19 +1267,26 @@ BoundedContext ArtistaContext implements RecifeCultural {
             Repository IProdutorRepositorio {
                 void salvar(@Produtor produtor);
                 void atualizar(@Produtor produtor);
-                @Produtor obterPorId(@ProdutorId id);
+                Optional<@Produtor> obterPorId(@ProdutorId id);
                 boolean existePorCnpj(@Cnpj cnpj);
             }
 
-            Service ProdutorServico {
+            Repository IHistoricoStatusProdutorRepositorio {
+                void salvar(@HistoricoStatusProdutor historico);
+                List<@HistoricoStatusProdutor> listarPorProdutor(@ProdutorId produtorId);
+            }
+
+            DomainService ProdutorServico {
                 @ProdutorId cadastrar(String nomeFantasia, @Cnpj cnpj, String email, String telefone);
                 void atualizarContato(@ProdutorId produtorId, String novoEmail, String novoTelefone);
-                void suspender(@ProdutorId produtorId);
-                void reativar(@ProdutorId produtorId);
-                void inativar(@ProdutorId produtorId);
+                void suspender(@ProdutorId produtorId, String responsavel, String motivo);
+                void reativar(@ProdutorId produtorId, String responsavel, String motivo);
+                void inativar(@ProdutorId produtorId, String responsavel, String motivo);
             }
         }
+    }
 
+    Module ArtistaModule {
         Aggregate ArtistaAggregate {
             Entity Artista {
                 aggregateRoot
@@ -842,7 +1295,7 @@ BoundedContext ArtistaContext implements RecifeCultural {
                 @ProdutorId produtorId
                 String nome
                 @RiderTecnico riderTecnico
-                @StatusArtista status
+                StatusArtista status
 
                 void atualizarRider(@RiderTecnico novoRider);
                 void inativar();
@@ -853,7 +1306,7 @@ BoundedContext ArtistaContext implements RecifeCultural {
             }
 
             ValueObject RiderTecnico {
-                Set<@ItemRider> itens
+                Set<ItemRider> itens
             }
 
             enum StatusArtista {
@@ -868,12 +1321,12 @@ BoundedContext ArtistaContext implements RecifeCultural {
             Repository IArtistaRepositorio {
                 void salvar(@Artista artista);
                 void atualizar(@Artista artista);
-                @Artista obterPorId(@ArtistaId id);
+                Optional<@Artista> obterPorId(@ArtistaId id);
                 List<@Artista> listarPorProdutor(@ProdutorId produtorId);
                 boolean existePorNomeEProdutor(String nome, @ProdutorId produtorId);
             }
 
-            Service ArtistaServico {
+            DomainService ArtistaServico {
                 @ArtistaId cadastrar(@ProdutorId produtorId, String nome, @RiderTecnico riderTecnico);
                 void atualizarRider(@ArtistaId artistaId, @RiderTecnico novoRider);
                 void inativar(@ArtistaId artistaId);
@@ -882,98 +1335,98 @@ BoundedContext ArtistaContext implements RecifeCultural {
     }
 }
 
-BoundedContext CupomContext implements RecifeCultural {
-    domainVisionStatement = "Gerencia campanhas de desconto, validando regras de elegibilidade (tempo, limites por CPF e categoria)."
-    type = FEATURE
+// ════════════════════════════════════════════════════════════════════════
+//  NotificacaoContext
+//  Pacote Java: dominio-compartilhado/compartilhado/notificacao
+// ════════════════════════════════════════════════════════════════════════
+BoundedContext NotificacaoContext implements RecifeCultural {
+    domainVisionStatement = "Subdomínio genérico de notificações: envio direto a usuário, broadcast por contexto (PARTICIPANTES_EVENTO_CANCELADO, ACESSIBILIDADE_REMOVIDA, EQUIPAMENTO_MANUTENCAO, PROMOTORES, TODOS_USUARIOS…), marcação como lida e listagem por usuário. Resolução de destinatários para broadcast é feita pelo port IUsuarioContextoServico."
+    type = GENERIC_SUBDOMAIN
 
-    Module CupomModule {
-        Aggregate CupomAggregate {
-            Entity Cupom {
+    Module NotificacaoModule {
+        Aggregate NotificacaoAggregate {
+            Entity Notificacao {
                 aggregateRoot
 
-                @CupomId id
-                String codigo
-                @TipoDesconto tipoDesconto
-                double valorDesconto
+                @NotificacaoId id
+                UUID usuarioAlvo
+                String mensagem
+                String contexto
+                UUID idReferencia
+                boolean foiLida
+                LocalDateTime dataCriacao
 
-                double valorMinimoPedido
-                int limiteGlobal
-                int usosGlobais
-                int limitePorCpf
-                Date dataInicio
-                Date dataFim
-                String categoriaPermitida
-
-                double calcularDesconto(double valorOriginal);
-
-                void validarElegibilidade(String cpf, double valor, String categoria, Date dataAtual);
-                void registrarUso(String cpf);
+                void marcarComoLida();
+                void marcarComoNaoLida();
             }
 
-            ValueObject CupomId {
-                String valor
+            ValueObject NotificacaoId {
+                UUID valor
             }
 
-            enum TipoDesconto {
-                PERCENTUAL, VALOR_FIXO
+            Repository INotificacaoRepositorio {
+                boolean salvar(@Notificacao notificacao);
+                boolean atualizar(@Notificacao notificacao);
+                @Notificacao obter(@NotificacaoId id);
+                List<@Notificacao> obterPorUsuario(UUID usuarioAlvo);
+                List<@Notificacao> obterNaoLidasPorUsuario(UUID usuarioAlvo);
+                List<@Notificacao> obterPorContexto(UUID usuarioAlvo, String contexto);
             }
 
-            Repository ICupomRepositorio {
-                void salvar(@Cupom cupom);
-                @Cupom buscarPorCodigo(String codigo);
-                void atualizar(@Cupom cupom);
+            DomainService NotificacaoServico {
+                void enviarNotificacao(UUID usuarioAlvo, String mensagem);
+                void enviarNotificacao(UUID usuarioAlvo, String mensagem, String contexto, UUID idReferencia);
+                void enviarBroadcast(String mensagem);
+                void enviarBroadcast(String mensagem, String contexto, UUID idReferencia);
+                void marcarComoLida(@NotificacaoId id);
+                void marcarComoNaoLida(@NotificacaoId id);
+                List<@Notificacao> obterNotificacoesDoUsuario(UUID usuarioAlvo);
+                List<@Notificacao> obterNotificacoesNaoLidas(UUID usuarioAlvo);
             }
 
-            Service AplicarCupomServico {
-                double aplicarDesconto(String codigo, String cpf, double valor, String categoria);
-            }
+            /*
+             * Port resolvido na infraestrutura (UsuarioContextoServicoImpl):
+             *   IUsuarioContextoServico {
+             *     List<UUID> obterUsuariosPorContexto(String contexto, UUID idReferencia);
+             *   }
+             *
+             * Implementação atual (pre-auth) usa IDs determinísticos por papel.
+             */
         }
     }
 }
 
-BoundedContext CatracaContext implements RecifeCultural {
-    domainVisionStatement = "Orquestra o controle de acesso físico, prevenindo fraudes (double-entry), validando portões e aplicando travas temporais."
-    type = FEATURE
+// ════════════════════════════════════════════════════════════════════════
+//  AuditoriaContext
+//  Pacote Java: dominio-compartilhado/compartilhado/auditoria
+// ════════════════════════════════════════════════════════════════════════
+BoundedContext AuditoriaContext implements RecifeCultural {
+    domainVisionStatement = "Subdomínio genérico de trilha de auditoria. Registros imutáveis (write-once) gravados pelo Decorator EventoRepositorioComAuditoria a cada criação, transição de status ou remoção de evento. A Agenda não conhece a Auditoria — a decoração é montada no Composition Root."
+    type = GENERIC_SUBDOMAIN
 
-    Module CatracaModule {
-        Aggregate CatracaAggregate {
-            Entity IngressoCatraca {
+    Module AuditoriaModule {
+        Aggregate RegistroAuditoriaAggregate {
+            Entity RegistroAuditoria {
                 aggregateRoot
 
-                @IngressoCatracaId id
-                String idEvento
-                @StatusIngressoCatraca status
-                Date horarioInicioEvento
-                @TipoIngressoCatraca tipoIngresso
-                String portaoAcesso
-
-                void registrarEntrada(Date horarioLeitura, String portaoFisico);
-
-                void cancelarAcesso();
+                UUID id
+                String entidade
+                UUID entidadeId
+                AcaoAuditoria acao
+                String statusAnterior
+                String statusNovo
+                String descricao
+                LocalDateTime momento
             }
 
-            ValueObject IngressoCatracaId {
-                String valor
+            enum AcaoAuditoria {
+                CRIADO, TRANSICAO_STATUS, REMOVIDO
             }
 
-            enum StatusIngressoCatraca {
-                VALIDO, UTILIZADO, CANCELADO_OU_REEMBOLSADO
-            }
-
-            enum TipoIngressoCatraca {
-                COMUM, VIP, MEIA_ENTRADA
-            }
-
-            Repository ICatracaRepositorio {
-                void salvar(@IngressoCatraca ingressoCatraca);
-                @IngressoCatraca buscarPorId(@IngressoCatracaId id);
-                void atualizar(@IngressoCatraca ingressoCatraca);
-            }
-
-            Service CatracaServico {
-                String validarAcesso(String qrCode, Date horario, String portao);
-                void inativarIngresso(String idIngresso);
-                void processarCheckin(@IngressoCatracaId id);
+            Repository IAuditoriaRepositorio {
+                void registrar(@RegistroAuditoria registro);
+                List<@RegistroAuditoria> listarRecentes(int limite);
+                List<@RegistroAuditoria> listarPorEntidade(String entidade, int limite);
             }
         }
     }

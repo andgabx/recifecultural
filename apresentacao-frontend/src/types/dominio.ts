@@ -6,7 +6,7 @@
 export type UUID = string;
 
 export type MetodoPagamento = "PIX" | "CARTAO_CREDITO" | "CARTAO_DEBITO";
-export type TipoIngresso = "INTEIRA" | "MEIA" | "SOCIAL";
+export type TipoIngresso = "INTEIRA" | "MEIA_ENTRADA" | "SOCIAL";
 export type StatusIngresso = "ATIVO" | "UTILIZADO" | "REEMBOLSADO";
 
 export type StatusEvento =

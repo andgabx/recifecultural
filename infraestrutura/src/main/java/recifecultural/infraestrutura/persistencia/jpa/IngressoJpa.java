@@ -93,19 +93,40 @@ class IngressoRepositorioImpl implements IIngressoRepositorio, IngressoRepositor
     @Override
     public List<IngressoResumo> pesquisarPorEvento(UUID eventoId) {
         return jpa.findByEventoId(eventoId).stream()
-                .<IngressoResumo>map(i -> new IngressoResumoJpa(
-                        i.id.toString(), i.eventoId.toString(),
-                        i.tipo, i.status != null ? i.status.name() : null,
-                        i.dataHoraApresentacao != null ? i.dataHoraApresentacao.toString() : null))
+                .<IngressoResumo>map(this::toResumo)
                 .toList();
     }
 
-    record IngressoResumoJpa(String id, String eventoId, String tipo, String status, String dataHoraApresentacao)
+    @Override
+    public List<IngressoResumo> listarTodos() {
+        return jpa.findAll().stream()
+                .<IngressoResumo>map(this::toResumo)
+                .toList();
+    }
+
+    private IngressoResumo toResumo(IngressoJpa i) {
+        return new IngressoResumoJpa(
+                i.id.toString(), i.eventoId.toString(),
+                i.tipo, i.status != null ? i.status.name() : null,
+                i.dataHoraApresentacao != null ? i.dataHoraApresentacao.toString() : null,
+                i.dataCompra != null ? i.dataCompra.toString() : null,
+                i.metodoPagamento,
+                i.valorPago != null ? i.valorPago.toPlainString() : null,
+                i.codigoQr);
+    }
+
+    record IngressoResumoJpa(String id, String eventoId, String tipo, String status,
+                             String dataHoraApresentacao, String dataCompra,
+                             String metodoPagamento, String valorPago, String codigoQr)
             implements IngressoResumo {
         public String getId() { return id; }
         public String getEventoId() { return eventoId; }
         public String getTipo() { return tipo; }
         public String getStatus() { return status; }
         public String getDataHoraApresentacao() { return dataHoraApresentacao; }
+        public String getDataCompra() { return dataCompra; }
+        public String getMetodoPagamento() { return metodoPagamento; }
+        public String getValorPago() { return valorPago; }
+        public String getCodigoQr() { return codigoQr; }
     }
 }

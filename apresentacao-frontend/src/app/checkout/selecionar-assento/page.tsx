@@ -44,10 +44,11 @@ type AssentoNoCarrinho = {
 
 const TEMPO_SEG = 10 * 60;
 
-// Tipos disponíveis no mapa (Social é distribuído na bilheteria, não aqui)
-const TIPOS: Array<{ value: TipoIngresso; label: string }> = [
+// Tipos disponíveis no mapa — Social é incluído dinamicamente se o evento tiver precoSocial
+const TIPOS_BASE: Array<{ value: TipoIngresso; label: string }> = [
   { value: "INTEIRA",       label: "Inteira" },
   { value: "MEIA_ENTRADA",  label: "Meia entrada" },
+  { value: "SOCIAL",        label: "Social (subsidiado)" },
 ];
 
 const METODOS: Array<{ value: MetodoPagamento; label: string }> = [
@@ -74,7 +75,12 @@ const precoParaTipo = (
   tipo: TipoIngresso,
   precoInteira: number,
   precoMeia: number,
-) => tipo === "MEIA_ENTRADA" ? precoMeia : precoInteira;
+  precoSocial: number | null,
+) => {
+  if (tipo === "MEIA_ENTRADA") return precoMeia;
+  if (tipo === "SOCIAL") return precoSocial ?? 0;
+  return precoInteira;
+};
 
 const formatarMoeda = (v: number) =>
   new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(v);
@@ -103,7 +109,13 @@ export default function SelecionarAssentoPage() {
 
   const precoInteira = evento?.precoInteira ? Number(evento.precoInteira) : 100;
   const precoMeia    = evento?.precoMeia    ? Number(evento.precoMeia)    : 50;
-  const capacidade   = 500; // fallback; idealmente lido do espaço
+  const precoSocial  = evento?.precoSocial  ? Number(evento.precoSocial)  : null;
+  const capacidade   = 500;
+
+  // Social só aparece se o evento tiver preço social definido (via subsídio)
+  const tiposDisponiveis = TIPOS_BASE.filter(
+    (t) => t.value !== "SOCIAL" || precoSocial !== null,
+  );
 
   const [carrinho, setCarrinho] = useState<AssentoNoCarrinho[]>([]);
   const [timer, setTimer] = useState(TEMPO_SEG);
@@ -262,7 +274,7 @@ export default function SelecionarAssentoPage() {
           preReservaId: a.preReservaId,
           assentoId:    a.assentoId,
           tipo:         a.tipo,
-          valor:        precoParaTipo(a.tipo, precoInteira, precoMeia),
+          valor:        precoParaTipo(a.tipo, precoInteira, precoMeia, precoSocial),
         })),
         ...(cupomAplicado
           ? {
@@ -283,7 +295,7 @@ export default function SelecionarAssentoPage() {
   }
 
   const totalSemDesconto = carrinho.reduce(
-    (acc, a) => acc + precoParaTipo(a.tipo, precoInteira, precoMeia),
+    (acc, a) => acc + precoParaTipo(a.tipo, precoInteira, precoMeia, precoSocial),
     0,
   );
   const desconto = cupomAplicado?.desconto ?? 0;
@@ -575,17 +587,16 @@ export default function SelecionarAssentoPage() {
                           mudarTipo(item.assentoId, e.target.value as TipoIngresso)
                         }
                       >
-                        {TIPOS.map((t) => {
+                        {tiposDisponiveis.map((t) => {
                           if (t.value === "MEIA_ENTRADA" && !precoMeia)
                             return null;
+                          const preco =
+                            t.value === "INTEIRA"      ? precoInteira :
+                            t.value === "MEIA_ENTRADA" ? precoMeia :
+                            t.value === "SOCIAL"       ? precoSocial  : 0;
                           return (
                             <option key={t.value} value={t.value}>
-                              {t.label} —{" "}
-                              {t.value === "INTEIRA"
-                                ? formatarMoeda(precoInteira)
-                                : t.value === "MEIA_ENTRADA"
-                                  ? formatarMoeda(precoMeia)
-                                  : "Gratuito"}
+                              {t.label} — {preco != null ? formatarMoeda(preco) : "Gratuito"}
                             </option>
                           );
                         })}

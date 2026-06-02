@@ -57,6 +57,13 @@ public class PatrocinioServico {
         return patrocinio;
     }
 
+    public Patrocinio obterPorId(PatrocinioId id) {
+        notNull(id, "O id do patrocínio não pode ser nulo.");
+        Patrocinio patrocinio = repositorio.buscarPorId(id);
+        notNull(patrocinio, "Patrocínio não encontrado com id: " + id);
+        return patrocinio;
+    }
+
     public void ativar(PatrocinioId id) {
         notNull(id, "O id do patrocínio não pode ser nulo.");
         Patrocinio patrocinio = repositorio.buscarPorId(id);

@@ -37,6 +37,7 @@ class EventoJpa {
     StatusEvento status;
     BigDecimal precoInteira;
     BigDecimal precoMeia;
+    BigDecimal precoSocial;
     LocalDateTime dataAprovacao;
     LocalDateTime dataReprovacao;
     boolean requerRevisaoAdicional;
@@ -172,6 +173,7 @@ class EventoRepositorioImpl implements IEventoRepositorio, EventoRepositorioApli
                             e.periodoFim != null ? e.periodoFim.toString() : null,
                             e.precoInteira != null ? e.precoInteira.toPlainString() : null,
                             e.precoMeia != null ? e.precoMeia.toPlainString() : null,
+                            e.precoSocial != null ? e.precoSocial.toPlainString() : null,
                             apresentacoes);
                 })
                 .orElse(null);
@@ -190,7 +192,7 @@ class EventoRepositorioImpl implements IEventoRepositorio, EventoRepositorioApli
             String descricaoCurta, String descricaoLonga,
             String promotorId, String localId,
             String periodoInicio, String periodoFim,
-            String precoInteira, String precoMeia,
+            String precoInteira, String precoMeia, String precoSocial,
             List<ApresentacaoResumo> apresentacoes)
             implements EventoResumoExpandido {
         public String getId() { return id; }
@@ -205,6 +207,7 @@ class EventoRepositorioImpl implements IEventoRepositorio, EventoRepositorioApli
         public String getPeriodoFim() { return periodoFim; }
         public String getPrecoInteira() { return precoInteira; }
         public String getPrecoMeia() { return precoMeia; }
+        public String getPrecoSocial() { return precoSocial; }
         public List<ApresentacaoResumo> getApresentacoes() { return apresentacoes; }
     }
 

@@ -11,5 +11,6 @@ public interface EventoResumoExpandido extends EventoResumo {
     String getPeriodoFim();
     String getPrecoInteira();
     String getPrecoMeia();
+    String getPrecoSocial();
     List<ApresentacaoResumo> getApresentacoes();
 }

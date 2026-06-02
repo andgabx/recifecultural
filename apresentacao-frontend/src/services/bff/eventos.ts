@@ -29,6 +29,7 @@ export type EventoResumoExpandido = EventoResumo & {
   /** Backend serializa BigDecimal como string. */
   precoInteira?: string;
   precoMeia?: string;
+  precoSocial?: string;
   apresentacoes?: ApresentacaoResumo[];
 };
 

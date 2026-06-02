@@ -1,7 +1,6 @@
 import { api } from "@/lib/api";
 import type {
   BffCriado,
-  BffSemConteudo,
   ModalidadeContribuicao,
   StatusPatrocinio,
   TipoPatrocinio,
@@ -12,14 +11,15 @@ export type PatrocinioResumo = {
   id: UUID;
   eventoId: UUID;
   patrocinadorNome: string;
-  categoriaPatrocinio: string;
+  categoriaPatrocinio: string | null;
   tipo: TipoPatrocinio;
-  modalidade: ModalidadeContribuicao;
-  valorContribuicao: number;
-  dataEvento: string;
+  modalidade: ModalidadeContribuicao | null;
+  /** Backend retorna como string (BigDecimal.toPlainString) */
+  valorContribuicao: string | null;
+  dataEvento: string | null;
   status: StatusPatrocinio;
-  valorReembolsado?: number;
-  multaAplicada?: number;
+  valorReembolsado: string | null;
+  multaAplicada: string | null;
 };
 
 export type CriarPatrocinioRequisicao = {
@@ -36,11 +36,11 @@ export type CriarPatrocinioRequisicao = {
 export type SimulacaoCancelamentoPatrocinio = {
   valorReembolsado: number;
   multaAplicada: number;
-  motivo: string;
+  motivo: string | null;
 };
 
 export type ResultadoSubsidio = {
-  novoPreco: number;
+  novoPrecoSocial: number;
   pisoAplicado: boolean;
 };
 
@@ -54,26 +54,22 @@ export const patrociniosService = {
     api.post<BffCriado>("/patrocinios", payload).then((r) => r.data),
 
   ativar: (id: UUID) =>
-    api.post<BffSemConteudo>(`/patrocinios/${id}/ativar`).then((r) => r.data),
+    api.post<ResultadoSubsidio | null>(`/patrocinios/${id}/ativar`).then((r) => r.data),
 
   cancelarPorEvento: (id: UUID) =>
     api
-      .post<SimulacaoCancelamentoPatrocinio>(
-        `/patrocinios/${id}/cancelar-por-evento`,
-      )
+      .post<SimulacaoCancelamentoPatrocinio>(`/patrocinios/${id}/cancelar-por-evento`)
       .then((r) => r.data),
 
   cancelarPorPatrocinador: (id: UUID) =>
     api
-      .post<SimulacaoCancelamentoPatrocinio>(
-        `/patrocinios/${id}/cancelar-por-patrocinador`,
-      )
+      .post<SimulacaoCancelamentoPatrocinio>(`/patrocinios/${id}/cancelar-por-patrocinador`)
       .then((r) => r.data),
 
-  calcularSubsidio: (id: UUID, precoSocialAtual: number) =>
+  calcularSubsidio: (id: UUID, precoSocial: number) =>
     api
       .get<ResultadoSubsidio>(`/patrocinios/${id}/subsidio`, {
-        params: { precoSocialAtual },
+        params: { precoSocial },
       })
       .then((r) => r.data),
 };

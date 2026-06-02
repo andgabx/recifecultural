@@ -307,8 +307,9 @@ public class InfraestruturaConfig {
 
     @Bean
     PatrocinioServicoAplicacao patrocinioServicoAplicacao(PatrocinioServico patrocinioServico,
-                                                           PatrocinioRepositorioAplicacao repositorio) {
-        return new PatrocinioServicoAplicacao(patrocinioServico, repositorio);
+                                                           PatrocinioRepositorioAplicacao repositorio,
+                                                           IEventoRepositorio eventoRepositorio) {
+        return new PatrocinioServicoAplicacao(patrocinioServico, repositorio, eventoRepositorio);
     }
 
     @Bean

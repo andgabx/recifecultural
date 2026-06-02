@@ -14,6 +14,9 @@ record CriarPatrocinioRequisicao(
         LocalDateTime dataEvento,
         boolean eventoAprovado) {}
 
-record SimulacaoCancelamentoPatrocinio(BigDecimal valorReembolsado, BigDecimal multaAplicada) {}
+record SimulacaoCancelamentoPatrocinio(
+        BigDecimal valorReembolsado,
+        BigDecimal multaAplicada,
+        String motivo) {}
 
 record SimulacaoSubsidio(BigDecimal novoPrecoSocial, boolean pisoAplicado) {}

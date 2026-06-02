@@ -94,17 +94,31 @@ class PatrocinioRepositorioImpl implements IPatrocinioRepositorio, PatrocinioRep
         return jpa.findByEventoId(eventoId).stream()
                 .<PatrocinioResumo>map(p -> new PatrocinioResumoJpa(
                         p.id.toString(), p.eventoId.toString(),
-                        p.patrocinadorNome, p.tipo,
-                        p.status != null ? p.status.name() : null))
+                        p.patrocinadorNome, p.categoriaPatrocinio,
+                        p.tipo, p.modalidade,
+                        p.valorContribuicao != null ? p.valorContribuicao.toPlainString() : null,
+                        p.dataEvento != null ? p.dataEvento.toString() : null,
+                        p.status != null ? p.status.name() : null,
+                        p.valorReembolsado != null ? p.valorReembolsado.toPlainString() : null,
+                        p.multaAplicada != null ? p.multaAplicada.toPlainString() : null))
                 .toList();
     }
 
-    record PatrocinioResumoJpa(String id, String eventoId, String patrocinadorNome, String tipo, String status)
+    record PatrocinioResumoJpa(String id, String eventoId, String patrocinadorNome,
+                                String categoriaPatrocinio, String tipo, String modalidade,
+                                String valorContribuicao, String dataEvento, String status,
+                                String valorReembolsado, String multaAplicada)
             implements PatrocinioResumo {
         public String getId() { return id; }
         public String getEventoId() { return eventoId; }
         public String getPatrocinadorNome() { return patrocinadorNome; }
+        public String getCategoriaPatrocinio() { return categoriaPatrocinio; }
         public String getTipo() { return tipo; }
+        public String getModalidade() { return modalidade; }
+        public String getValorContribuicao() { return valorContribuicao; }
+        public String getDataEvento() { return dataEvento; }
         public String getStatus() { return status; }
+        public String getValorReembolsado() { return valorReembolsado; }
+        public String getMultaAplicada() { return multaAplicada; }
     }
 }

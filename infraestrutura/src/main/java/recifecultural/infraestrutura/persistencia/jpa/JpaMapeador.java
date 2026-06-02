@@ -78,7 +78,8 @@ public class JpaMapeador extends ModelMapper {
                         s.id, s.promotorId, s.localId,
                         s.titulo, s.descricaoCurta, s.descricaoLonga,
                         new Periodo(s.periodoInicio, s.periodoFim),
-                        s.precoInteira != null ? new Preco(s.precoInteira, s.precoMeia, null) : null,
+                        (s.precoInteira != null || s.precoSocial != null)
+                                ? new Preco(s.precoInteira, s.precoMeia, s.precoSocial) : null,
                         s.categoria,
                         s.status,
                         s.datasApresentacao,
@@ -110,6 +111,7 @@ public class JpaMapeador extends ModelMapper {
                 if (s.getPreco() != null) {
                     jpa.precoInteira = s.getPreco().getInteira();
                     jpa.precoMeia = s.getPreco().getMeia();
+                    jpa.precoSocial = s.getPreco().getSocial();
                 }
                 jpa.dataAprovacao = s.getDataAprovacao();
                 jpa.dataReprovacao = s.getDataReprovacao();

@@ -37,11 +37,10 @@ export type StatusPatrocinio =
   | "CANCELADO_EVENTO"
   | "CANCELADO_PATROCINADOR";
 
-export type TipoPatrocinio = "MASTER" | "OFICIAL" | "APOIADOR";
+export type TipoPatrocinio = "MASTER" | "ASSOCIADO";
 export type ModalidadeContribuicao =
-  | "VALOR_MONETARIO"
-  | "SUBSIDIO_INGRESSO_SOCIAL"
-  | "PERMUTA";
+  | "FINANCEIRO"
+  | "SUBSIDIO_INGRESSO_SOCIAL";
 
 export type StatusProdutor = "ATIVO" | "SUSPENSO" | "INATIVO";
 export type StatusArtista = "ATIVO" | "INATIVO";

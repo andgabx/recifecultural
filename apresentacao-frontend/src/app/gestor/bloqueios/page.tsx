@@ -62,7 +62,12 @@ export default function BloqueiosPage() {
 
   async function onSubmit(values: CadastroForm) {
     try {
-      await cadastrar.mutateAsync(values);
+      await cadastrar.mutateAsync({
+        espacoId: values.espacoId,
+        inicio: values.dataInicio,
+        fim: values.dataFim,
+        justificativa: values.justificativa,
+      });
       toast.success("Bloqueio criado. Eventos conflitantes foram cancelados.");
       form.reset();
       setCadastroAberto(false);

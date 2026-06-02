@@ -50,3 +50,14 @@ export function useInterditarEspaco() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.todos }),
   });
 }
+
+export function useReativarEspaco() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: UUID) => espacosService.reativar(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.todos });
+      queryClient.invalidateQueries({ queryKey: ["bloqueios", "ativos"] });
+    },
+  });
+}

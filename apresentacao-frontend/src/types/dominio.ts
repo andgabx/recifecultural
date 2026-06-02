@@ -45,7 +45,7 @@ export type ModalidadeContribuicao =
 
 export type StatusProdutor = "ATIVO" | "SUSPENSO" | "INATIVO";
 export type StatusArtista = "ATIVO" | "INATIVO";
-export type StatusEspaco = "ATIVO" | "INTERDITADO" | "INATIVO";
+export type StatusEspaco = "ATIVO" | "INTERDITADO";
 export type StatusAssento =
   | "LIVRE"
   | "PRE_RESERVADO"

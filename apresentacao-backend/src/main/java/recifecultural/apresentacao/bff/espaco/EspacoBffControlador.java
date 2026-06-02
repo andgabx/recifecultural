@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import recifecultural.aplicacao.agenda.bloqueioadministrativo.BloqueioAdministrativoServicoAplicacao;
 import recifecultural.dominio.espaco.espaco.EspacoId;
 import recifecultural.dominio.espaco.espaco.EspacoServico;
 import recifecultural.apresentacao.bff.AbstractBffControlador;
@@ -18,9 +19,12 @@ import java.util.UUID;
 public class EspacoBffControlador extends AbstractBffControlador {
 
     private final EspacoServico servico;
+    private final BloqueioAdministrativoServicoAplicacao bloqueioServico;
 
-    public EspacoBffControlador(EspacoServico servico) {
+    public EspacoBffControlador(EspacoServico servico,
+                                 BloqueioAdministrativoServicoAplicacao bloqueioServico) {
         this.servico = servico;
+        this.bloqueioServico = bloqueioServico;
     }
 
     @Operation(summary = "Lista todos os espaços (resumo)")
@@ -56,6 +60,15 @@ public class EspacoBffControlador extends AbstractBffControlador {
     @PostMapping("/{id}/interditar")
     public ResponseEntity<Map<String, String>> interditar(@PathVariable UUID id) {
         servico.interditarEspaco(new EspacoId(id));
+        return responderSemConteudo();
+    }
+
+    @Operation(summary = "Reativa espaço interditado e encerra bloqueios ativos")
+    @PostMapping("/{id}/reativar")
+    public ResponseEntity<Map<String, String>> reativar(@PathVariable UUID id) {
+        EspacoId espacoId = new EspacoId(id);
+        servico.reativarEspaco(espacoId);
+        bloqueioServico.desativarBloqueiosAtivosDoEspaco(espacoId);
         return responderSemConteudo();
     }
 

@@ -78,6 +78,15 @@ public class BloqueioAdministrativoServico {
         }
     }
 
+    public void desativarBloqueiosAtivosDoEspaco(EspacoId espacoId) {
+        bloqueioRepositorio.buscarPorEspaco(espacoId).stream()
+                .filter(BloqueioAdministrativo::isAtivo)
+                .forEach(b -> {
+                    b.desativar();
+                    bloqueioRepositorio.atualizar(b);
+                });
+    }
+
     public BloqueioAdministrativo obterPorId(BloqueioAdministrativoId id) {
         if (id == null) throw new IllegalArgumentException("ID do bloqueio é obrigatório.");
 

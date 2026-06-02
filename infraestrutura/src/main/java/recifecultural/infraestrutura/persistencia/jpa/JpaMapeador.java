@@ -354,6 +354,7 @@ public class JpaMapeador extends ModelMapper {
                 jpa.nome = s.getNome();
                 jpa.capacidadeMaxima = s.getCapacidadeMaxima();
                 jpa.status = s.getStatus();
+                jpa.riderTecnico = new ArrayList<>(s.getRiderTecnico());
                 return jpa;
             }
         });

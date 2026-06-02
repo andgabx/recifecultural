@@ -33,4 +33,8 @@ public class BloqueioAdministrativoServicoAplicacao {
     public void desativar(BloqueioAdministrativoId id) {
         servico.desativarBloqueio(id);
     }
+
+    public void desativarBloqueiosAtivosDoEspaco(EspacoId espacoId) {
+        servico.desativarBloqueiosAtivosDoEspaco(espacoId);
+    }
 }

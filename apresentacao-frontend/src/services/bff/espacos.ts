@@ -32,6 +32,9 @@ export const espacosService = {
 
   interditar: (id: UUID) =>
     api.post<BffSemConteudo>(`/espacos/${id}/interditar`).then((r) => r.data),
+
+  reativar: (id: UUID) =>
+    api.post<BffSemConteudo>(`/espacos/${id}/reativar`).then((r) => r.data),
 };
 
 export type EspacosService = typeof espacosService;

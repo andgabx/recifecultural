@@ -12,8 +12,8 @@ export type BloqueioResumo = {
 
 export type CriarBloqueioRequisicao = {
   espacoId: UUID;
-  dataInicio: string;
-  dataFim: string;
+  inicio: string;
+  fim: string;
   justificativa: string;
 };
 

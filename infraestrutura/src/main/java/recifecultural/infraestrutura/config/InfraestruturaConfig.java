@@ -1,7 +1,9 @@
 package recifecultural.infraestrutura.config;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 import recifecultural.aplicacao.agenda.acessibilidade.RecursoAcessibilidadeServicoAplicacao;
@@ -117,9 +119,16 @@ public class InfraestruturaConfig {
     }
 
     @Bean
-    EspacoServico espacoServico(IEspacoRepositorio espacoRepositorio) {
+    @Primary
+    EspacoRepositorioProxyCache espacoRepositorioProxy(
+            @Qualifier("espacoRepositorioImpl") IEspacoRepositorio espacoRepositorio) {
+        return new EspacoRepositorioProxyCache(espacoRepositorio);
+    }
+
+    @Bean
+    EspacoServico espacoServico(EspacoRepositorioProxyCache proxy) {
         // Proxy (Par 2): cache em memória sobre o repositório real de espaços
-        return new EspacoServico(new EspacoRepositorioProxyCache(espacoRepositorio));
+        return new EspacoServico(proxy);
     }
 
     @Bean
@@ -168,12 +177,12 @@ public class InfraestruturaConfig {
     BloqueioAdministrativoServico bloqueioAdministrativoServico(
             IBloqueioAdministrativoRepositorio bloqueioRepositorio,
             IEventoRepositorio eventoRepositorio,
-            IEspacoRepositorio espacoRepositorio,
+            EspacoRepositorioProxyCache proxy,
             EventoBarramento barramento) {
         // Observer (Par 3): publica eventos no barramento em vez de chamar NotificacaoServico direto
         return new BloqueioAdministrativoServico(
                 bloqueioRepositorio, eventoRepositorio,
-                espacoRepositorio, barramento);
+                proxy, barramento);
     }
 
     @Bean

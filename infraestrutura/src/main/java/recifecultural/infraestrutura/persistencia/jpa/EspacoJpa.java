@@ -2,7 +2,6 @@ package recifecultural.infraestrutura.persistencia.jpa;
 
 import jakarta.persistence.*;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import recifecultural.dominio.espaco.espaco.Espaco;
@@ -47,8 +46,6 @@ class OcupacaoJpa {
 }
 
 interface EspacoJpaRepository extends JpaRepository<EspacoJpa, UUID> {
-    @Query("SELECT e FROM EspacoJpa e JOIN e.ocupacoes o WHERE e.id = :espacoId AND o.inicio < :fim AND o.fim > :inicio")
-    List<EspacoJpa> findByIdWithOcupacoes(UUID espacoId, LocalDateTime inicio, LocalDateTime fim);
 }
 
 @Repository
@@ -88,9 +85,9 @@ class EspacoRepositorioImpl implements IEspacoRepositorio {
     public List<Ocupacao> buscarOcupacoesPorPeriodo(EspacoId id, LocalDateTime inicio, LocalDateTime fim) {
         return jpa.findById(id.valor())
                 .map(e -> e.ocupacoes.stream()
-                        .filter(o -> o.inicio != null && o.fim != null
-                                && o.inicio.isBefore(fim) && o.fim.isAfter(inicio))
+                        .filter(o -> o.inicio != null && o.fim != null)
                         .map(o -> new Ocupacao(o.inicio, o.fim, o.minutosMontagem, o.minutosDesmontagem, o.bufferExtra))
+                        .filter(o -> o.inicioEfetivo().isBefore(fim) && o.fimEfetivo().isAfter(inicio))
                         .toList())
                 .orElse(List.of());
     }

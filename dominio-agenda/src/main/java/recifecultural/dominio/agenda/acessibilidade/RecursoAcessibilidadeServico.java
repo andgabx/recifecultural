@@ -3,7 +3,7 @@ package recifecultural.dominio.agenda.acessibilidade;
 import recifecultural.dominio.agenda.evento.Evento;
 import recifecultural.dominio.agenda.evento.IEventoRepositorio;
 import recifecultural.dominio.agenda.evento.StatusEvento;
-import recifecultural.dominio.compartilhado.notificacao.NotificacaoServico;
+import recifecultural.dominio.compartilhado.notificacao.INotificacaoServico;
 
 import java.util.List;
 import java.util.UUID;
@@ -12,11 +12,11 @@ public class RecursoAcessibilidadeServico {
 
     private final IRecursoAcessibilidadeRepositorio repositorio;
     private final IEventoRepositorio eventoRepositorio;
-    private final NotificacaoServico notificacaoServico;
+    private final INotificacaoServico notificacaoServico;
 
     public RecursoAcessibilidadeServico(IRecursoAcessibilidadeRepositorio repositorio,
                                         IEventoRepositorio eventoRepositorio,
-                                        NotificacaoServico notificacaoServico) {
+                                        INotificacaoServico notificacaoServico) {
         this.repositorio = repositorio;
         this.eventoRepositorio = eventoRepositorio;
         this.notificacaoServico = notificacaoServico;

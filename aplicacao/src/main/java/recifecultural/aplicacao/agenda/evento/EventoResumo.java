@@ -5,4 +5,6 @@ public interface EventoResumo {
     String getTitulo();
     String getCategoria();
     String getStatus();
+    String getPeriodoInicio();
+    String getPeriodoFim();
 }

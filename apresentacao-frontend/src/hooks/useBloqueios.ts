@@ -19,6 +19,13 @@ export function useBloqueios() {
   });
 }
 
+export function usePreviewBloqueio() {
+  return useMutation({
+    mutationFn: (params: { espacoId: UUID; inicio: string; fim: string }) =>
+      bloqueiosService.preview(params),
+  });
+}
+
 export function useCadastrarBloqueio() {
   const queryClient = useQueryClient();
   return useMutation({

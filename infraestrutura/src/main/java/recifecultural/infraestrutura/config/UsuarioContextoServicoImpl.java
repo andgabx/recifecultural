@@ -35,6 +35,12 @@ class UsuarioContextoServicoImpl implements IUsuarioContextoServico {
                  "ACESSIBILIDADE_REMOVIDA",
                  "EQUIPAMENTO_MANUTENCAO",
                  "SORTEIO_APURADO" -> List.of(ESPECTADOR_DEMO);
+            // Compradores de ingresso para um evento cancelado (idReferencia = eventoId).
+            case "TITULARES_INGRESSOS_EVENTO" -> List.of(ESPECTADOR_DEMO);
+            // Artistas de um evento específico (idReferencia = eventoId).
+            case "ARTISTAS_EVENTO" -> List.of(PRODUTOR_DEMO);
+            // Todos os artistas cadastrados.
+            case "TODOS_ARTISTAS" -> List.of(PRODUTOR_DEMO);
             // Comunicados administrativos: envolvem produtor e gestor.
             case "PROMOTORES",
                  "GESTORES_PROMOTORES" -> List.of(PRODUTOR_DEMO, GESTOR_DEMO);

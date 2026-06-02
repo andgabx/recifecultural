@@ -103,6 +103,15 @@ public class BloqueioAdministrativoServico {
         return bloqueioRepositorio.obterTodos();
     }
 
+    public List<Evento> previewConflitantes(EspacoId espacoId, LocalDate inicio, LocalDate fim) {
+        List<Evento> conflitantes = eventoRepositorio.obterPorLocalEIntervalo(
+                espacoId.valor(),
+                inicio.atTime(LocalTime.MAX),
+                fim.atTime(LocalTime.MAX)
+        );
+        return conflitantes == null ? List.of() : conflitantes;
+    }
+
     private void cancelarEventosConflitantes(BloqueioAdministrativo bloqueio) {
         List<Evento> eventosConflitantes = eventoRepositorio.obterPorLocalEIntervalo(
                 bloqueio.getEspacoId().valor(),
@@ -126,7 +135,8 @@ public class BloqueioAdministrativoServico {
                     evento.getId(),
                     evento.getPromotorId(),
                     evento.getTitulo(),
-                    bloqueio.getJustificativa()
+                    bloqueio.getJustificativa(),
+                    evento.getArtistas()
             ));
         }
     }

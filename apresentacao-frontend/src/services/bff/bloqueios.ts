@@ -4,7 +4,7 @@ import type { BffCriado, BffSemConteudo, UUID } from "@/types/dominio";
 export type BloqueioResumo = {
   id: UUID;
   espacoId: UUID;
-  dataInicio: string; // ISO date
+  dataInicio: string;
   dataFim: string;
   justificativa: string;
   ativo: boolean;
@@ -17,9 +17,21 @@ export type CriarBloqueioRequisicao = {
   justificativa: string;
 };
 
+export type EventoConflitante = {
+  id: string;
+  titulo: string;
+  periodoInicio: string | null;
+  periodoFim: string | null;
+};
+
 export const bloqueiosService = {
   listarAtivos: () =>
     api.get<BloqueioResumo[]>("/bloqueios").then((r) => r.data),
+
+  preview: (params: { espacoId: UUID; inicio: string; fim: string }) =>
+    api
+      .get<EventoConflitante[]>("/bloqueios/preview", { params })
+      .then((r) => r.data),
 
   criar: (payload: CriarBloqueioRequisicao) =>
     api.post<BffCriado>("/bloqueios", payload).then((r) => r.data),

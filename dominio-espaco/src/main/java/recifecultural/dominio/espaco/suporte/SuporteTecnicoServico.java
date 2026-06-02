@@ -1,6 +1,6 @@
 package recifecultural.dominio.espaco.suporte;
 
-import recifecultural.dominio.compartilhado.notificacao.NotificacaoServico;
+import recifecultural.dominio.compartilhado.notificacao.INotificacaoServico;
 import recifecultural.dominio.espaco.setor.ISetorRepositorio;
 import recifecultural.dominio.espaco.setor.MotivoIndisponibilidadeAssento;
 import recifecultural.dominio.espaco.setor.Setor;
@@ -16,11 +16,11 @@ public class SuporteTecnicoServico {
 
     private final IChamadoSuporteRepositorio chamadoRepositorio;
     private final ISetorRepositorio setorRepositorio;
-    private final NotificacaoServico notificacaoServico;
+    private final INotificacaoServico notificacaoServico;
 
     public SuporteTecnicoServico(IChamadoSuporteRepositorio chamadoRepositorio,
                                   ISetorRepositorio setorRepositorio,
-                                  NotificacaoServico notificacaoServico) {
+                                  INotificacaoServico notificacaoServico) {
         this.chamadoRepositorio = chamadoRepositorio;
         this.setorRepositorio = setorRepositorio;
         this.notificacaoServico = notificacaoServico;

@@ -1,14 +1,14 @@
 package recifecultural.dominio.agenda.equipamento;
 
-import recifecultural.dominio.compartilhado.notificacao.NotificacaoServico;
+import recifecultural.dominio.compartilhado.notificacao.INotificacaoServico;
 import recifecultural.dominio.espaco.espaco.EspacoId;
 
 public class EquipamentoServico {
 
     private final IEquipamentoRepositorio repositorio;
-    private final NotificacaoServico notificacaoServico;
+    private final INotificacaoServico notificacaoServico;
 
-    public EquipamentoServico(IEquipamentoRepositorio repositorio, NotificacaoServico notificacaoServico) {
+    public EquipamentoServico(IEquipamentoRepositorio repositorio, INotificacaoServico notificacaoServico) {
         this.repositorio = repositorio;
         this.notificacaoServico = notificacaoServico;
     }

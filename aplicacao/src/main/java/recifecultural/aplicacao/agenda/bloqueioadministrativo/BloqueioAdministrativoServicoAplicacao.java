@@ -33,4 +33,14 @@ public class BloqueioAdministrativoServicoAplicacao {
     public void desativar(BloqueioAdministrativoId id) {
         servico.desativarBloqueio(id);
     }
+
+    public List<EventoConflitanteResumo> previewConflitos(EspacoId espacoId, LocalDate inicio, LocalDate fim) {
+        return servico.previewConflitantes(espacoId, inicio, fim).stream()
+                .map(e -> new EventoConflitanteResumo(
+                        e.getId().toString(),
+                        e.getTitulo(),
+                        e.getPeriodo() != null ? e.getPeriodo().getInicio().toString() : null,
+                        e.getPeriodo() != null ? e.getPeriodo().getFim().toString() : null))
+                .toList();
+    }
 }

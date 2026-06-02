@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import recifecultural.apresentacao.bff.AbstractBffControlador;
 import recifecultural.dominio.compartilhado.notificacao.Notificacao;
 import recifecultural.dominio.compartilhado.notificacao.NotificacaoId;
-import recifecultural.dominio.compartilhado.notificacao.NotificacaoServico;
+import recifecultural.dominio.compartilhado.notificacao.INotificacaoServico;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,9 +19,9 @@ import java.util.UUID;
 @RequestMapping("/api/bff/notificacoes")
 public class NotificacaoBffControlador extends AbstractBffControlador {
 
-    private final NotificacaoServico servico;
+    private final INotificacaoServico servico;
 
-    public NotificacaoBffControlador(NotificacaoServico servico) {
+    public NotificacaoBffControlador(INotificacaoServico servico) {
         this.servico = servico;
     }
 

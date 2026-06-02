@@ -135,7 +135,9 @@ class EventoRepositorioImpl implements IEventoRepositorio, EventoRepositorioApli
         return jpa.findAll().stream()
                 .<EventoResumo>map(e -> new EventoResumoJpa(
                         e.id.toString(), e.titulo, e.categoria,
-                        e.status != null ? e.status.name() : null))
+                        e.status != null ? e.status.name() : null,
+                        e.periodoInicio != null ? e.periodoInicio.toString() : null,
+                        e.periodoFim != null ? e.periodoFim.toString() : null))
                 .toList();
     }
 
@@ -144,7 +146,9 @@ class EventoRepositorioImpl implements IEventoRepositorio, EventoRepositorioApli
         return jpa.findByPromotorId(promotorId).stream()
                 .<EventoResumo>map(e -> new EventoResumoJpa(
                         e.id.toString(), e.titulo, e.categoria,
-                        e.status != null ? e.status.name() : null))
+                        e.status != null ? e.status.name() : null,
+                        e.periodoInicio != null ? e.periodoInicio.toString() : null,
+                        e.periodoFim != null ? e.periodoFim.toString() : null))
                 .toList();
     }
 
@@ -177,12 +181,15 @@ class EventoRepositorioImpl implements IEventoRepositorio, EventoRepositorioApli
                 .orElse(null);
     }
 
-    record EventoResumoJpa(String id, String titulo, String categoria, String status)
+    record EventoResumoJpa(String id, String titulo, String categoria, String status,
+                           String periodoInicio, String periodoFim)
             implements EventoResumo {
         public String getId() { return id; }
         public String getTitulo() { return titulo; }
         public String getCategoria() { return categoria; }
         public String getStatus() { return status; }
+        public String getPeriodoInicio() { return periodoInicio; }
+        public String getPeriodoFim() { return periodoFim; }
     }
 
     record EventoResumoExpandidoJpa(

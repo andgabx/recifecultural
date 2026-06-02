@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { CalendarOff, Plus, Unlock } from "lucide-react";
+import { AlertTriangle, CalendarOff, CheckCircle, Plus, Unlock } from "lucide-react";
 import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
@@ -22,9 +22,10 @@ import {
   useBloqueios,
   useCadastrarBloqueio,
   useDesativarBloqueio,
+  usePreviewBloqueio,
 } from "@/hooks/useBloqueios";
 import type { ApiError } from "@/lib/api";
-import type { BloqueioResumo } from "@/services/bff/bloqueios";
+import type { BloqueioResumo, EventoConflitante } from "@/services/bff/bloqueios";
 
 const cadastroSchema = z.object({
   espacoId: z.string().uuid("Id de espaço inválido"),
@@ -46,7 +47,11 @@ const formatarData = (iso: string) =>
 export default function BloqueiosPage() {
   const { data, isLoading, isError } = useBloqueios();
   const [cadastroAberto, setCadastroAberto] = useState(false);
+  const [etapa, setEtapa] = useState<"form" | "preview">("form");
+  const [conflitos, setConflitos] = useState<EventoConflitante[]>([]);
+  const [pendingValues, setPendingValues] = useState<CadastroForm | null>(null);
 
+  const preview = usePreviewBloqueio();
   const cadastrar = useCadastrarBloqueio();
   const desativar = useDesativarBloqueio();
 
@@ -60,12 +65,35 @@ export default function BloqueiosPage() {
     },
   });
 
-  async function onSubmit(values: CadastroForm) {
+  function fecharModal() {
+    form.reset();
+    setCadastroAberto(false);
+    setEtapa("form");
+    setConflitos([]);
+    setPendingValues(null);
+  }
+
+  async function onVerificarImpacto(values: CadastroForm) {
     try {
-      await cadastrar.mutateAsync(values);
+      const resultado = await preview.mutateAsync({
+        espacoId: values.espacoId,
+        inicio: values.dataInicio,
+        fim: values.dataFim,
+      });
+      setPendingValues(values);
+      setConflitos(resultado);
+      setEtapa("preview");
+    } catch (error) {
+      toast.error((error as ApiError).message);
+    }
+  }
+
+  async function onConfirmar() {
+    if (!pendingValues) return;
+    try {
+      await cadastrar.mutateAsync(pendingValues);
       toast.success("Bloqueio criado. Eventos conflitantes foram cancelados.");
-      form.reset();
-      setCadastroAberto(false);
+      fecharModal();
     } catch (error) {
       toast.error((error as ApiError).message);
     }
@@ -177,37 +205,27 @@ export default function BloqueiosPage() {
         />
       )}
 
+      {/* Etapa 1: formulário */}
       <Modal
-        open={cadastroAberto}
-        onClose={() => {
-          form.reset();
-          setCadastroAberto(false);
-        }}
+        open={cadastroAberto && etapa === "form"}
+        onClose={fecharModal}
         title="Novo bloqueio"
-        description="Eventos no período serão cancelados automaticamente e os promotores notificados (Observer F3.1 → F3.2)."
+        description="Informe o espaço, período e justificativa. Antes de confirmar você verá quais eventos serão afetados."
         footer={
           <>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => {
-                form.reset();
-                setCadastroAberto(false);
-              }}
-              disabled={cadastrar.isPending}
-            >
+            <Button type="button" variant="outline" onClick={fecharModal}>
               Cancelar
             </Button>
             <Button
               type="button"
-              onClick={form.handleSubmit(onSubmit)}
-              disabled={cadastrar.isPending}
+              onClick={form.handleSubmit(onVerificarImpacto)}
+              disabled={preview.isPending}
               className="bg-vinho hover:bg-vinho-light text-marquee"
             >
-              {cadastrar.isPending && (
+              {preview.isPending && (
                 <LoadingSpinner className="mr-2 text-marquee" />
               )}
-              Bloquear
+              Verificar impacto
             </Button>
           </>
         }
@@ -251,7 +269,7 @@ export default function BloqueiosPage() {
             label="Justificativa"
             htmlFor="justificativa"
             error={form.formState.errors.justificativa?.message}
-            hint="Mín. 10 caracteres. Será exibida nas notificações aos produtores afetados."
+            hint="Mín. 10 caracteres. Será exibida nas notificações aos afetados."
             required
           >
             <textarea
@@ -263,6 +281,70 @@ export default function BloqueiosPage() {
             />
           </FormField>
         </form>
+      </Modal>
+
+      {/* Etapa 2: preview de impacto */}
+      <Modal
+        open={cadastroAberto && etapa === "preview"}
+        onClose={fecharModal}
+        title="Impacto do bloqueio"
+        description={
+          conflitos.length === 0
+            ? "Nenhum evento aprovado será afetado por este bloqueio."
+            : `${conflitos.length} evento${conflitos.length > 1 ? "s" : ""} será${conflitos.length > 1 ? "ão" : ""} cancelado${conflitos.length > 1 ? "s" : ""}. Promotores, artistas e titulares de ingresso serão notificados.`
+        }
+        footer={
+          <>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setEtapa("form")}
+              disabled={cadastrar.isPending}
+            >
+              Voltar
+            </Button>
+            <Button
+              type="button"
+              onClick={onConfirmar}
+              disabled={cadastrar.isPending}
+              className="bg-vinho hover:bg-vinho-light text-marquee"
+            >
+              {cadastrar.isPending && (
+                <LoadingSpinner className="mr-2 text-marquee" />
+              )}
+              Confirmar bloqueio
+            </Button>
+          </>
+        }
+      >
+        {conflitos.length === 0 ? (
+          <div className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-700">
+            <CheckCircle className="h-4 w-4 shrink-0" />
+            Nenhum evento agendado neste período.
+          </div>
+        ) : (
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-700">
+              <AlertTriangle className="h-4 w-4 shrink-0" />
+              Os eventos abaixo serão cancelados imediatamente.
+            </div>
+            <ul className="divide-y rounded-lg border text-sm">
+              {conflitos.map((e) => (
+                <li key={e.id} className="flex items-start justify-between gap-4 px-3 py-2">
+                  <span className="font-medium">{e.titulo}</span>
+                  {e.periodoInicio && (
+                    <span className="shrink-0 text-xs text-muted-foreground">
+                      {formatarData(e.periodoInicio)}
+                      {e.periodoFim && e.periodoFim !== e.periodoInicio
+                        ? ` → ${formatarData(e.periodoFim)}`
+                        : ""}
+                    </span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </Modal>
     </PageLayout>
   );

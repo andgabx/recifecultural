@@ -3,7 +3,7 @@ package recifecultural.dominio.agenda.equipamento;
 import recifecultural.dominio.espaco.espaco.EspacoId;
 import recifecultural.dominio.agenda.evento.Evento;
 import recifecultural.dominio.agenda.evento.IEventoRepositorio;
-import recifecultural.dominio.compartilhado.notificacao.NotificacaoServico;
+import recifecultural.dominio.compartilhado.notificacao.INotificacaoServico;
 
 import java.util.List;
 import java.util.UUID;
@@ -12,12 +12,12 @@ public class AlocacaoRiderTecnicoServico {
 
     private final IEquipamentoRepositorio equipamentoRepositorio;
     private final IEventoRepositorio eventoRepositorio;
-    private final NotificacaoServico notificacaoServico;
+    private final INotificacaoServico notificacaoServico;
 
     public AlocacaoRiderTecnicoServico(
             IEquipamentoRepositorio equipamentoRepositorio,
             IEventoRepositorio eventoRepositorio,
-            NotificacaoServico notificacaoServico) {
+            INotificacaoServico notificacaoServico) {
         this.equipamentoRepositorio = equipamentoRepositorio;
         this.eventoRepositorio = eventoRepositorio;
         this.notificacaoServico = notificacaoServico;

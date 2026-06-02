@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import recifecultural.aplicacao.agenda.bloqueioadministrativo.BloqueioAdministrativoResumo;
 import recifecultural.aplicacao.agenda.bloqueioadministrativo.BloqueioAdministrativoServicoAplicacao;
+import recifecultural.aplicacao.agenda.bloqueioadministrativo.EventoConflitanteResumo;
 import recifecultural.apresentacao.bff.AbstractBffControlador;
 import recifecultural.dominio.agenda.bloqueioadministrativo.BloqueioAdministrativoId;
 import recifecultural.dominio.espaco.espaco.EspacoId;
@@ -30,6 +31,15 @@ public class BloqueioControlador extends AbstractBffControlador {
     @GetMapping
     public ResponseEntity<List<BloqueioAdministrativoResumo>> listarAtivos() {
         return responder(servico.pesquisarAtivos());
+    }
+
+    @Operation(summary = "Pré-visualiza eventos que seriam cancelados pelo bloqueio")
+    @GetMapping("/preview")
+    public ResponseEntity<List<EventoConflitanteResumo>> preview(
+            @RequestParam UUID espacoId,
+            @RequestParam LocalDate inicio,
+            @RequestParam LocalDate fim) {
+        return responder(servico.previewConflitos(new EspacoId(espacoId), inicio, fim));
     }
 
     @Operation(summary = "Cria bloqueio administrativo")

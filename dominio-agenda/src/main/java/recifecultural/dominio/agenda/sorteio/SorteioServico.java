@@ -3,7 +3,8 @@ package recifecultural.dominio.agenda.sorteio;
 import recifecultural.dominio.agenda.evento.Evento;
 import recifecultural.dominio.agenda.evento.IEventoRepositorio;
 import recifecultural.dominio.agenda.evento.StatusEvento;
-import recifecultural.dominio.compartilhado.notificacao.NotificacaoServico;
+import recifecultural.dominio.compartilhado.notificacao.INotificacaoServico;
+import recifecultural.dominio.agenda.sorteio.StatusInscricao;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -13,11 +14,11 @@ public class SorteioServico {
 
     private final ISorteioRepositorio sorteioRepositorio;
     private final IEventoRepositorio eventoRepositorio;
-    private final NotificacaoServico notificacaoServico;
+    private final INotificacaoServico notificacaoServico;
 
     public SorteioServico(ISorteioRepositorio sorteioRepositorio,
                            IEventoRepositorio eventoRepositorio,
-                           NotificacaoServico notificacaoServico) {
+                           INotificacaoServico notificacaoServico) {
         this.sorteioRepositorio = sorteioRepositorio;
         this.eventoRepositorio = eventoRepositorio;
         this.notificacaoServico = notificacaoServico;
@@ -45,6 +46,12 @@ public class SorteioServico {
         Sorteio sorteio = buscarOuLancar(sorteioId);
         sorteio.apurar();
         sorteioRepositorio.atualizar(sorteio);
+        sorteio.getInscricoes().stream()
+                .filter(i -> i.getStatus() == StatusInscricao.GANHADOR)
+                .forEach(i -> notificacaoServico.enviarNotificacao(
+                        i.getEspectadorId(),
+                        "Parabéns! Você foi sorteado para o evento " + sorteio.getEventoId(),
+                        "SORTEIO_GANHADOR", sorteioId));
     }
 
     public void desistir(UUID sorteioId, UUID espectadorId) {

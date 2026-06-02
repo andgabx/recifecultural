@@ -2,26 +2,28 @@ package recifecultural.aplicacao.agenda.bloqueioadministrativo;
 
 import recifecultural.dominio.compartilhado.evento.EventoBarramento;
 import recifecultural.dominio.compartilhado.evento.EventoCanceladoPorBloqueioEvento;
-import recifecultural.dominio.compartilhado.notificacao.NotificacaoServico;
+import recifecultural.dominio.compartilhado.evento.EventoObservador;
+import recifecultural.dominio.compartilhado.notificacao.INotificacaoServico;
 
 /*
  * Padrão Observer (Par 3): assinante do EventoBarramento. Quando um bloqueio
  * administrativo (F3.1) cancela um evento, este observador reage publicando
- * notificações (F3.2) para o promotor e para os participantes, sem acoplar
+ * notificações (F3.2) para o promotor, os artistas e os participantes, sem acoplar
  * o serviço de bloqueios ao contexto de notificações.
  */
-public class BloqueioNotificacaoObservador {
+public class BloqueioNotificacaoObservador implements EventoObservador<EventoCanceladoPorBloqueioEvento> {
 
-    private final NotificacaoServico notificacaoServico;
+    private final INotificacaoServico notificacaoServico;
 
-    public BloqueioNotificacaoObservador(EventoBarramento barramento, NotificacaoServico notificacaoServico) {
+    public BloqueioNotificacaoObservador(EventoBarramento barramento, INotificacaoServico notificacaoServico) {
         if (barramento == null) throw new IllegalArgumentException("EventoBarramento não pode ser nulo.");
-        if (notificacaoServico == null) throw new IllegalArgumentException("NotificacaoServico não pode ser nulo.");
+        if (notificacaoServico == null) throw new IllegalArgumentException("INotificacaoServico não pode ser nulo.");
         this.notificacaoServico = notificacaoServico;
-        barramento.adicionar(this::reagirCancelamentoPorBloqueio);
+        barramento.adicionar(this);
     }
 
-    void reagirCancelamentoPorBloqueio(EventoCanceladoPorBloqueioEvento evento) {
+    @Override
+    public void observarEvento(EventoCanceladoPorBloqueioEvento evento) {
         String mensagem = String.format(
                 "Atenção: O evento '%s' foi cancelado por motivos técnicos. Justificativa: %s",
                 evento.tituloEvento(), evento.justificativaBloqueio());
@@ -30,11 +32,24 @@ public class BloqueioNotificacaoObservador {
                 evento.promotorId(),
                 mensagem,
                 "EVENTO_CANCELADO",
-                null);
+                evento.eventoId());
+
+        if (evento.artistaIds() != null) {
+            String mensagemArtista = String.format(
+                    "Sua apresentação no evento '%s' foi cancelada por motivos técnicos. Justificativa: %s",
+                    evento.tituloEvento(), evento.justificativaBloqueio());
+            for (java.util.UUID artistaId : evento.artistaIds()) {
+                notificacaoServico.enviarNotificacao(
+                        artistaId,
+                        mensagemArtista,
+                        "APRESENTACAO_CANCELADA_ARTISTA",
+                        evento.eventoId());
+            }
+        }
 
         notificacaoServico.enviarBroadcast(
                 mensagem,
                 "PARTICIPANTES_EVENTO_CANCELADO",
-                null);
+                evento.eventoId());
     }
 }

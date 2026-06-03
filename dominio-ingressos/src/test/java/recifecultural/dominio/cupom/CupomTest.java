@@ -5,18 +5,23 @@ import recifecultural.dominio.cupom.validacoes.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class CupomTest {
-    private final List<ValidacaoCupomStrategy> estrategiasDeValidacao = List.of(
-            new ValidarVigenciaStrategy(),
-            new ValidarMinimoStrategy(),
-            new ValidarCategoriaStrategy(),
-            new ValidarEscassezGlobalStrategy(),
-            new ValidarLimiteCpfStrategy()
-    );
+
+    private final ValidadorCupom validadorPipeline =
+            new ValidarVigenciaDecorator(
+                    new ValidarMinimoDecorator(
+                            new ValidarCategoriaDecorator(
+                                    new ValidarEscassezGlobalDecorator(
+                                            new ValidarLimiteCpfDecorator(
+                                                    new ValidadorCupomBase()
+                                            )
+                                    )
+                            )
+                    )
+            );
 
     private Cupom cupomPercentual(int percentual) {
         return new Cupom(
@@ -53,22 +58,23 @@ class CupomTest {
     @Test
     void valor_minimo_bloqueia_pedido_baixo() {
         Cupom cupom = cupomPercentual(20);
+        // Usando o validadorPipeline!
         assertThrows(IllegalArgumentException.class, () ->
-                cupom.validarElegibilidade("CPF", new BigDecimal("80"), "TEATRO", LocalDateTime.now(), estrategiasDeValidacao));
+                cupom.validarElegibilidade("CPF", new BigDecimal("80"), "TEATRO", LocalDateTime.now(), validadorPipeline));
     }
 
     @Test
     void categoria_diferente_bloqueia() {
         Cupom cupom = cupomPercentual(20);
         assertThrows(IllegalArgumentException.class, () ->
-                cupom.validarElegibilidade("CPF", new BigDecimal("150"), "SHOW", LocalDateTime.now(), estrategiasDeValidacao));
+                cupom.validarElegibilidade("CPF", new BigDecimal("150"), "SHOW", LocalDateTime.now(), validadorPipeline));
     }
 
     @Test
     void cupom_fora_da_vigencia_bloqueia() {
         Cupom cupom = cupomPercentual(20);
         assertThrows(IllegalArgumentException.class, () ->
-                cupom.validarElegibilidade("CPF", new BigDecimal("150"), "TEATRO", LocalDateTime.now().plusDays(20), estrategiasDeValidacao));
+                cupom.validarElegibilidade("CPF", new BigDecimal("150"), "TEATRO", LocalDateTime.now().plusDays(20), validadorPipeline));
     }
 
     @Test
@@ -76,7 +82,7 @@ class CupomTest {
         Cupom cupom = cupomPercentual(20);
         for (int i = 0; i < 10; i++) cupom.registrarUso("CPF-" + i);
         assertThrows(IllegalArgumentException.class, () ->
-                cupom.validarElegibilidade("CPF-NOVO", new BigDecimal("150"), "TEATRO", LocalDateTime.now(), estrategiasDeValidacao));
+                cupom.validarElegibilidade("CPF-NOVO", new BigDecimal("150"), "TEATRO", LocalDateTime.now(), validadorPipeline));
     }
 
     @Test
@@ -84,7 +90,7 @@ class CupomTest {
         Cupom cupom = cupomPercentual(20);
         cupom.registrarUso("CPF-A");
         assertThrows(IllegalArgumentException.class, () ->
-                cupom.validarElegibilidade("CPF-A", new BigDecimal("150"), "TEATRO", LocalDateTime.now(), estrategiasDeValidacao));
+                cupom.validarElegibilidade("CPF-A", new BigDecimal("150"), "TEATRO", LocalDateTime.now(), validadorPipeline));
     }
 
     @Test

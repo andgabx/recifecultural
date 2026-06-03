@@ -1,14 +1,13 @@
 package recifecultural.dominio.cupom;
 
 import org.apache.commons.lang3.Validate;
-import recifecultural.dominio.cupom.validacoes.ValidacaoCupomStrategy;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
+import recifecultural.dominio.cupom.validacoes.ValidadorCupom;
 
 public class Cupom {
 
@@ -88,13 +87,13 @@ public class Cupom {
         return this.valorDesconto.min(valorOriginal);
     }
 
+    // =======================================================
+    // PADRÃO DECORATOR EM AÇÃO: Passa o cupom pelo pipeline
+    // =======================================================
     public void validarElegibilidade(String cpfUsuario, BigDecimal valorPedido, String categoriaEvento,
-                                     LocalDateTime dataAtual, List<ValidacaoCupomStrategy> validacoes) {
+                                     LocalDateTime dataAtual, ValidadorCupom validador) {
         Validate.notNull(valorPedido, "Valor do pedido é obrigatório.");
-
-        for (ValidacaoCupomStrategy validacao : validacoes) {
-            validacao.validar(this, cpfUsuario, valorPedido, categoriaEvento, dataAtual);
-        }
+        validador.validar(this, cpfUsuario, valorPedido, categoriaEvento, dataAtual);
     }
 
     public void registrarUso(String cpfUsuario) {

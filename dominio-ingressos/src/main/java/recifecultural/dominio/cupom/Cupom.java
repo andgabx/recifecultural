@@ -1,11 +1,13 @@
 package recifecultural.dominio.cupom;
 
 import org.apache.commons.lang3.Validate;
+import recifecultural.dominio.cupom.validacoes.ValidacaoCupomStrategy;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class Cupom {
@@ -86,30 +88,19 @@ public class Cupom {
         return this.valorDesconto.min(valorOriginal);
     }
 
-    public void validarElegibilidade(String cpfUsuario, BigDecimal valorPedido, String categoriaEvento, LocalDateTime dataAtual) {
+    public void validarElegibilidade(String cpfUsuario, BigDecimal valorPedido, String categoriaEvento,
+                                     LocalDateTime dataAtual, List<ValidacaoCupomStrategy> validacoes) {
         Validate.notNull(valorPedido, "Valor do pedido é obrigatório.");
-        Validate.isTrue(dataAtual.isAfter(dataInicio) && dataAtual.isBefore(dataFim),
-                "Cupom expirado ou ainda não iniciado.");
 
-        Validate.isTrue(usosGlobais < limiteGlobal, "Limite global atingido.");
-
-        Validate.isTrue(valorPedido.compareTo(valorMinimoPedido) >= 0,
-                "Pedido abaixo do valor mínimo de R$ " + valorMinimoPedido);
-
-        if (categoriaPermitida != null) {
-            Validate.isTrue(categoriaPermitida.equalsIgnoreCase(categoriaEvento),
-                    "Cupom inválido para a categoria " + categoriaEvento);
+        for (ValidacaoCupomStrategy validacao : validacoes) {
+            validacao.validar(this, cpfUsuario, valorPedido, categoriaEvento, dataAtual);
         }
-
-        long usosAtuaisCpf = cpfsQueJaUsaram.stream().filter(c -> c.equals(cpfUsuario)).count();
-        Validate.isTrue(usosAtuaisCpf < limitePorCpf, "Limite por CPF atingido.");
     }
 
     public void registrarUso(String cpfUsuario) {
         this.usosGlobais++;
         this.cpfsQueJaUsaram.add(cpfUsuario);
     }
-
     public CupomId getId() { return id; }
     public String getCodigo() { return codigo; }
     public TipoDesconto getTipoDesconto() { return tipoDesconto; }
@@ -121,4 +112,5 @@ public class Cupom {
     public LocalDateTime getDataInicio() { return dataInicio; }
     public LocalDateTime getDataFim() { return dataFim; }
     public String getCategoriaPermitida() { return categoriaPermitida; }
+    public Set<String> getCpfsQueJaUsaram() { return cpfsQueJaUsaram; }
 }

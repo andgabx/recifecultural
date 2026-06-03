@@ -2,16 +2,26 @@ package recifecultural.dominio.cupom;
 
 import io.cucumber.java.pt.*;
 import org.junit.jupiter.api.Assertions;
+import recifecultural.dominio.cupom.validacoes.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 public class PassosCupom {
+
+    private final List<ValidacaoCupomStrategy> estrategiasDeValidacao = List.of(
+            new ValidarVigenciaStrategy(),
+            new ValidarMinimoStrategy(),
+            new ValidarCategoriaStrategy(),
+            new ValidarEscassezGlobalStrategy(),
+            new ValidarLimiteCpfStrategy()
+    );
 
     private ICupomRepositorio repositorioMock = mock(ICupomRepositorio.class);
     private ContextoCupom contexto = new ContextoCupom();
@@ -64,7 +74,9 @@ public class PassosCupom {
 
         try {
             BigDecimal valorBd = BigDecimal.valueOf(valor);
-            cupomValido.validarElegibilidade(cpf, valorBd, categoria, dataCompra);
+
+            cupomValido.validarElegibilidade(cpf, valorBd, categoria, dataCompra, estrategiasDeValidacao);
+
             BigDecimal desconto = cupomValido.calcularDesconto(valorBd);
             contexto.valorCalculado = valorBd.subtract(desconto).doubleValue();
 

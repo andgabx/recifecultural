@@ -17,9 +17,9 @@ import { PublicLayout } from "@/components/layout/PublicLayout";
 import {
   useCancelarPreReserva,
   useComprarMultiplos,
-  usePreviewCupom,
   useReservarAssento,
 } from "@/hooks/useCheckout";
+import { usePreviewCupom } from "@/hooks/useCupons";
 import { useEvento } from "@/hooks/useEventos";
 import { useSetoresPorEspaco } from "@/hooks/useSetores";
 import type { ApiError } from "@/lib/api";

@@ -20,6 +20,7 @@ import { PageLayout } from "@/components/layout/PageLayout";
 import { useEventosPorProdutor } from "@/hooks/useEventosProdutor";
 import { useIndicadoresFinanceiros } from "@/hooks/useFinanceiro";
 import { IDENTIDADES_MOCK } from "@/lib/identidadeMock";
+import { formatarDataCurta } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import type { EventoResumo } from "@/services/bff/eventos";
 
@@ -28,13 +29,6 @@ const formatarMoeda = (valor: number) =>
     style: "currency",
     currency: "BRL",
   }).format(valor);
-
-const formatarData = (iso: string) =>
-  new Intl.DateTimeFormat("pt-BR", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  }).format(new Date(iso));
 
 function rangeDoMesAtual() {
   const agora = new Date();
@@ -249,7 +243,7 @@ function LinhaEvento({ evento }: { evento: EventoResumo }) {
         </Link>
         <p className="text-muted-foreground text-xs">
           {evento.periodoInicio
-            ? formatarData(evento.periodoInicio)
+            ? formatarDataCurta(evento.periodoInicio)
             : "Sem data"}
         </p>
       </div>

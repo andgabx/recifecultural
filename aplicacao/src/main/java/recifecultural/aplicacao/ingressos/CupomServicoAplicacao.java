@@ -33,7 +33,7 @@ public class CupomServicoAplicacao {
                 cmd.codigo(),
                 cmd.tipoDesconto(),
                 cmd.valorDesconto(),
-                cmd.valorMinimoPedido(),
+                cmd.valorMinimoPedido() != null ? cmd.valorMinimoPedido() : BigDecimal.ZERO,
                 cmd.limiteGlobal(),
                 cmd.limitePorCpf(),
                 cmd.dataInicio(),

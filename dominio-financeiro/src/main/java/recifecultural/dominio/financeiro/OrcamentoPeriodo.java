@@ -24,6 +24,18 @@ public class OrcamentoPeriodo {
         this.status = StatusOrcamento.ABERTO;
     }
 
+    public OrcamentoPeriodo(OrcamentoId id, Periodo periodo, BigDecimal valorTotal, StatusOrcamento status) {
+        notNull(id, "O id do orçamento não pode ser nulo.");
+        notNull(periodo, "O período não pode ser nulo.");
+        notNull(valorTotal, "O valor total não pode ser nulo.");
+        notNull(status, "O status do orçamento não pode ser nulo.");
+
+        this.id = id;
+        this.periodo = periodo;
+        this.valorTotal = valorTotal;
+        this.status = status;
+    }
+
     public void reduzir(BigDecimal novoValor, BigDecimal totalDespesasRegistradas) {
         notNull(novoValor, "O novo valor não pode ser nulo.");
         notNull(totalDespesasRegistradas, "O total de despesas não pode ser nulo.");

@@ -1,7 +1,7 @@
 import { api } from "@/lib/api";
 import type { BffCriado, BffSemConteudo, UUID } from "@/types/dominio";
 
-export type TipoDesconto = "PERCENTUAL" | "VALOR_FIXO";
+export type { TipoDesconto } from "@/types/dominio";
 
 export type AplicarCupomRequisicao = {
   codigoCupom: string;

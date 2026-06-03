@@ -1,6 +1,7 @@
 package recifecultural.aplicacao.agenda.bloqueioadministrativo;
 
 import recifecultural.aplicacao.ingressos.IngressoRepositorioAplicacao;
+import recifecultural.aplicacao.ingressos.IngressoResumo;
 import recifecultural.dominio.agenda.bloqueioadministrativo.BloqueioAdministrativoId;
 import recifecultural.dominio.agenda.bloqueioadministrativo.BloqueioAdministrativoServico;
 import recifecultural.dominio.espaco.espaco.EspacoId;
@@ -52,18 +53,21 @@ public class BloqueioAdministrativoServicoAplicacao {
                             .stream()
                             .filter(i -> "ATIVO".equals(i.getStatus()))
                             .toList();
-                    BigDecimal totalReembolso = ativos.stream()
-                            .map(i -> new BigDecimal(i.getValorPago()))
-                            .reduce(BigDecimal.ZERO, BigDecimal::add);
                     return new EventoConflitanteResumo(
                             e.getId().toString(),
                             e.getTitulo(),
                             e.getPeriodo() != null ? e.getPeriodo().getInicio().toString() : null,
                             e.getPeriodo() != null ? e.getPeriodo().getFim().toString() : null,
                             ativos.size(),
-                            totalReembolso);
+                            calcularTotalReembolso(ativos));
                 })
                 .toList();
+    }
+
+    private static BigDecimal calcularTotalReembolso(List<IngressoResumo> ingressos) {
+        return ingressos.stream()
+                .map(i -> new BigDecimal(i.getValorPago()))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     public void desativarBloqueiosAtivosDoEspaco(EspacoId espacoId) {

@@ -3,8 +3,8 @@ package recifecultural.aplicacao.patrocinio;
 import recifecultural.dominio.agenda.evento.Evento;
 import recifecultural.dominio.agenda.evento.IEventoRepositorio;
 import recifecultural.dominio.patrocinio.EventoId;
+import recifecultural.dominio.patrocinio.IEventoParaSubsidio;
 import recifecultural.dominio.patrocinio.ModalidadeContribuicao;
-import recifecultural.dominio.patrocinio.Patrocinio;
 import recifecultural.dominio.patrocinio.PatrocinioId;
 import recifecultural.dominio.patrocinio.PatrocinioServico;
 import recifecultural.dominio.patrocinio.ResultadoCancelamento;
@@ -51,24 +51,27 @@ public class PatrocinioServicoAplicacao {
      * aplica o desconto no preço social do evento automaticamente.
      */
     public ResultadoSubsidio ativar(PatrocinioId id) {
-        servico.ativar(id);
-
-        Patrocinio patrocinio = servico.obterPorId(id);
-        if (patrocinio.getModalidade() != ModalidadeContribuicao.SUBSIDIO_INGRESSO_SOCIAL) {
-            return null; // sem efeito no preço
-        }
-
-        UUID eventoUuid = patrocinio.getEventoId().getValor();
+        UUID eventoUuid = servico.obterPorId(id).getEventoId().getValor();
         Evento evento = eventoRepositorio.obter(eventoUuid)
                 .orElseThrow(() -> new IllegalStateException("Evento do patrocínio não encontrado: " + eventoUuid));
 
-        BigDecimal precoAtual = evento.getPreco() != null && evento.getPreco().getInteira() != null
-                ? evento.getPreco().getInteira()
-                : BigDecimal.ZERO;
+        IEventoParaSubsidio eventoAdaptado = new IEventoParaSubsidio() {
+            @Override
+            public BigDecimal getPrecoInteiro() {
+                return evento.getPreco() != null ? evento.getPreco().getInteira() : null;
+            }
 
-        ResultadoSubsidio subsidio = servico.calcularSubsidio(id, precoAtual);
-        evento.aplicarSubsidioNoPreco(subsidio.getNovoPrecoSocial());
-        eventoRepositorio.atualizar(evento);
+            @Override
+            public void aplicarSubsidioNoPreco(BigDecimal novoPrecoSocial) {
+                evento.aplicarSubsidioNoPreco(novoPrecoSocial);
+            }
+        };
+
+        ResultadoSubsidio subsidio = servico.ativarComSubsidio(id, eventoAdaptado);
+
+        if (subsidio != null) {
+            eventoRepositorio.atualizar(evento);
+        }
 
         return subsidio;
     }

@@ -2,7 +2,6 @@ package recifecultural.dominio.agenda.acessibilidade;
 
 import recifecultural.dominio.agenda.evento.Evento;
 import recifecultural.dominio.agenda.evento.IEventoRepositorio;
-import recifecultural.dominio.agenda.evento.StatusEvento;
 import recifecultural.dominio.compartilhado.notificacao.INotificacaoServico;
 
 import java.util.List;
@@ -25,8 +24,7 @@ public class RecursoAcessibilidadeServico {
     public RecursoAcessibilidade marcar(UUID apresentacaoId, UUID eventoId, TipoRecursoAcessibilidade tipo) {
         Evento evento = eventoRepositorio.obter(eventoId)
                 .orElseThrow(() -> new IllegalArgumentException("Evento não encontrado: " + eventoId));
-        if (evento.getStatus() != StatusEvento.APROVADO)
-            throw new IllegalStateException("Recursos de acessibilidade só podem ser marcados em eventos aprovados.");
+        evento.verificarAprovado();
 
         boolean jaExiste = repositorio.listarPorApresentacao(apresentacaoId).stream()
                 .anyMatch(r -> r.getTipo() == tipo && r.getStatus() == StatusRecurso.CONFIRMADO);

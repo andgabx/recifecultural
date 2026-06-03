@@ -30,10 +30,12 @@ import {
   useSorteiosDoEspectador,
 } from "@/hooks/useSorteios";
 import type { ApiError } from "@/lib/api";
+import { formatarDataHora } from "@/lib/format";
 import { IDENTIDADES_MOCK } from "@/lib/identidadeMock";
 import { useRole } from "@/lib/role";
 import { cn } from "@/lib/utils";
 import type { SorteioInscritoResumo, SorteioResumo } from "@/services/bff/sorteios";
+import { statusSorteioLabel } from "@/lib/statusMaps";
 import type { StatusInscricao, StatusSorteio } from "@/types/dominio";
 
 const statusInscricaoConfig: Record<
@@ -71,23 +73,6 @@ const statusInscricaoConfig: Record<
     bg: "bg-destructive/10 border-destructive/30",
   },
 };
-
-const statusSorteioLabel: Record<StatusSorteio, string> = {
-  INSCRICOES_ABERTAS: "Inscrições abertas",
-  EM_APURACAO: "Em apuração",
-  CONCLUIDO: "Concluído",
-  CANCELADO: "Cancelado",
-};
-
-function formatarData(iso: string) {
-  return new Intl.DateTimeFormat("pt-BR", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(new Date(iso));
-}
 
 function progressoPrazo(prazoIso: string) {
   const agora = Date.now();
@@ -205,11 +190,11 @@ export default function MeusSorteiosPage() {
                     <div className="text-muted-foreground space-y-1 text-xs">
                       <p className="flex items-center gap-1.5">
                         <CalendarClock className="text-ouro h-3 w-3" />
-                        Apresentação: {formatarData(s.dataApresentacao)}
+                        Apresentação: {formatarDataHora(s.dataApresentacao)}
                       </p>
                       <p className="flex items-center gap-1.5">
                         <CalendarClock className="text-ouro h-3 w-3" />
-                        Prazo: {formatarData(s.prazoInscricao)}
+                        Prazo: {formatarDataHora(s.prazoInscricao)}
                       </p>
                     </div>
 
@@ -352,11 +337,11 @@ export default function MeusSorteiosPage() {
                         <div className="text-muted-foreground space-y-1 text-xs">
                           <p className="flex items-center gap-1.5">
                             <CalendarClock className="text-ouro h-3 w-3" />
-                            Apresentação: {formatarData(s.dataApresentacao)}
+                            Apresentação: {formatarDataHora(s.dataApresentacao)}
                           </p>
                           <p className="flex items-center gap-1.5">
                             <CalendarClock className="text-ouro h-3 w-3" />
-                            Prazo de inscrição: {formatarData(s.prazoInscricao)}
+                            Prazo de inscrição: {formatarDataHora(s.prazoInscricao)}
                           </p>
                         </div>
 

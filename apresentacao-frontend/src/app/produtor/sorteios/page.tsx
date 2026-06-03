@@ -34,6 +34,8 @@ import {
   useSorteiosPorEvento,
 } from "@/hooks/useSorteios";
 import type { ApiError } from "@/lib/api";
+import { formatarDataHora } from "@/lib/format";
+import { statusSorteioLabel, statusSorteioVariant } from "@/lib/statusMaps";
 import type { SorteioResumo } from "@/services/bff/sorteios";
 import type { StatusInscricao, StatusSorteio } from "@/types/dominio";
 
@@ -57,23 +59,6 @@ const novoSchema = z
 type NovoFormInput = z.input<typeof novoSchema>;
 type NovoFormOutput = z.output<typeof novoSchema>;
 
-const statusVariant: Record<
-  StatusSorteio,
-  "frevo" | "default" | "success" | "destructive"
-> = {
-  INSCRICOES_ABERTAS: "frevo",
-  EM_APURACAO: "default",
-  CONCLUIDO: "success",
-  CANCELADO: "destructive",
-};
-
-const statusLabel: Record<StatusSorteio, string> = {
-  INSCRICOES_ABERTAS: "Inscrições abertas",
-  EM_APURACAO: "Em apuração",
-  CONCLUIDO: "Concluído",
-  CANCELADO: "Cancelado",
-};
-
 const statusInscricaoVariant: Record<
   StatusInscricao,
   "success" | "frevo" | "secondary" | "destructive"
@@ -84,16 +69,6 @@ const statusInscricaoVariant: Record<
   DESISTENTE: "destructive",
   CANCELADA: "destructive",
 };
-
-function formatarData(iso: string) {
-  return new Intl.DateTimeFormat("pt-BR", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(new Date(iso));
-}
 
 function progressoPrazo(prazoIso: string) {
   const agora = Date.now();
@@ -248,7 +223,7 @@ export default function SorteiosProdutorPage() {
                     <p className="text-muted-foreground text-xs uppercase tracking-widest">
                       Apresentação{" "}
                       {s.dataApresentacao
-                        ? formatarData(s.dataApresentacao)
+                        ? formatarDataHora(s.dataApresentacao)
                         : s.apresentacaoId
                           ? `${s.apresentacaoId.slice(0, 8)}…`
                           : "—"}
@@ -257,18 +232,18 @@ export default function SorteiosProdutorPage() {
                       {s.vagas} {s.vagas === 1 ? "vaga" : "vagas"}
                     </p>
                   </div>
-                  <Badge variant={statusVariant[s.status]}>
-                    {statusLabel[s.status]}
+                  <Badge variant={statusSorteioVariant[s.status]}>
+                    {statusSorteioLabel[s.status]}
                   </Badge>
                 </div>
                 <div className="text-muted-foreground space-y-1 text-xs">
                   <p className="flex items-center gap-1.5">
                     <CalendarClock className="text-ouro h-3 w-3" />
-                    Prazo: {formatarData(s.prazoInscricao)}
+                    Prazo: {formatarDataHora(s.prazoInscricao)}
                   </p>
                   <p className="flex items-center gap-1.5">
                     <CalendarClock className="text-ouro h-3 w-3" />
-                    Apresentação: {formatarData(s.dataApresentacao)}
+                    Apresentação: {formatarDataHora(s.dataApresentacao)}
                   </p>
                 </div>
                 {s.status === "INSCRICOES_ABERTAS" && (

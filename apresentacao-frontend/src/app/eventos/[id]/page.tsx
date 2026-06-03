@@ -21,21 +21,11 @@ import { useEvento } from "@/hooks/useEventos";
 import { useInscreverNoSorteio, useSorteiosPorEvento } from "@/hooks/useSorteios";
 import { detalheAcessibilidade } from "@/lib/acessibilidade";
 import type { ApiError } from "@/lib/api";
+import { formatarDataHora } from "@/lib/format";
 import { IDENTIDADES_MOCK } from "@/lib/identidadeMock";
 import { pageVariants } from "@/lib/motion";
 import { useRole } from "@/lib/role";
 import { cn } from "@/lib/utils";
-
-function formatarData(iso?: string) {
-  if (!iso) return "—";
-  return new Intl.DateTimeFormat("pt-BR", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(new Date(iso));
-}
 
 const formatarMoeda = (valor: string | number) =>
   new Intl.NumberFormat("pt-BR", {
@@ -169,12 +159,12 @@ export default function EventoDetalhePage() {
                   <Info
                     icon={CalendarDays}
                     label="Início"
-                    valor={formatarData(evento.periodoInicio)}
+                    valor={formatarDataHora(evento.periodoInicio)}
                   />
                   <Info
                     icon={CalendarDays}
                     label="Fim"
-                    valor={formatarData(evento.periodoFim)}
+                    valor={formatarDataHora(evento.periodoFim)}
                   />
                   {evento.localId && (
                     <Info
@@ -312,17 +302,11 @@ export default function EventoDetalhePage() {
                       </p>
                       <p className="text-muted-foreground text-xs">
                         Apresentação: {s.dataApresentacao
-                          ? new Intl.DateTimeFormat("pt-BR", {
-                              day: "2-digit", month: "long", year: "numeric",
-                              hour: "2-digit", minute: "2-digit",
-                            }).format(new Date(s.dataApresentacao))
+                          ? formatarDataHora(s.dataApresentacao)
                           : "—"}
                       </p>
                       <p className="text-muted-foreground text-xs">
-                        Prazo: {new Intl.DateTimeFormat("pt-BR", {
-                          day: "2-digit", month: "short", year: "numeric",
-                          hour: "2-digit", minute: "2-digit",
-                        }).format(new Date(s.prazoInscricao))}
+                        Prazo: {formatarDataHora(s.prazoInscricao)}
                       </p>
                     </div>
                     <Button

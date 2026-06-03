@@ -16,6 +16,12 @@ const queryKeys = {
   inscricoes: (sorteioId: UUID) => ["sorteios", sorteioId, "inscricoes"] as const,
 };
 
+function invalidarSorteiosPorEvento(queryClient: ReturnType<typeof useQueryClient>, eventoId: UUID | undefined) {
+  if (eventoId) {
+    queryClient.invalidateQueries({ queryKey: queryKeys.porEvento(eventoId) });
+  }
+}
+
 export function useSorteiosAbertos() {
   return useQuery({
     queryKey: queryKeys.abertos,
@@ -87,9 +93,7 @@ export function useCriarSorteio(eventoId?: UUID) {
     mutationFn: (payload: CriarSorteioRequisicao) =>
       sorteiosService.criar(payload),
     onSuccess: () => {
-      if (eventoId) {
-        queryClient.invalidateQueries({ queryKey: queryKeys.porEvento(eventoId) });
-      }
+      invalidarSorteiosPorEvento(queryClient, eventoId);
     },
   });
 }
@@ -112,9 +116,7 @@ export function useCancelarSorteio(eventoId?: UUID) {
   return useMutation({
     mutationFn: (sorteioId: UUID) => sorteiosService.cancelar(sorteioId),
     onSuccess: () => {
-      if (eventoId) {
-        queryClient.invalidateQueries({ queryKey: queryKeys.porEvento(eventoId) });
-      }
+      invalidarSorteiosPorEvento(queryClient, eventoId);
     },
   });
 }

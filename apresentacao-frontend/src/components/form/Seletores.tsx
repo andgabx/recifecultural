@@ -1,6 +1,7 @@
 "use client";
 
 import { ComboboxAsync } from "@/components/form/ComboboxAsync";
+import { formatarDataHora } from "@/lib/format";
 import { artistasService } from "@/services/bff/artistas";
 import { espacosService } from "@/services/bff/espacos";
 import { eventosService } from "@/services/bff/eventos";
@@ -104,15 +105,6 @@ export function SeletorEvento(
   );
 }
 
-const formatarDataApresentacao = (iso: string) =>
-  new Intl.DateTimeFormat("pt-BR", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(new Date(iso));
-
 /**
  * Seleciona uma das datas de apresentação de um evento.
  * O `value` exposto é o `apresentacaoId` determinístico (gerado pelo BFF a partir
@@ -135,7 +127,7 @@ export function SeletorApresentacao(
       }}
       toOption={(a) => ({
         value: a.id,
-        label: formatarDataApresentacao(a.dataHora),
+        label: formatarDataHora(a.dataHora),
         hint: a.id.slice(0, 8) + "…",
       })}
       placeholder={

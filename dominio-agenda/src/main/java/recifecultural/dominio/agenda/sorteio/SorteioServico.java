@@ -2,7 +2,6 @@ package recifecultural.dominio.agenda.sorteio;
 
 import recifecultural.dominio.agenda.evento.Evento;
 import recifecultural.dominio.agenda.evento.IEventoRepositorio;
-import recifecultural.dominio.agenda.evento.StatusEvento;
 import recifecultural.dominio.compartilhado.notificacao.INotificacaoServico;
 import recifecultural.dominio.agenda.sorteio.StatusInscricao;
 
@@ -28,8 +27,7 @@ public class SorteioServico {
                          LocalDateTime prazoInscricao, LocalDateTime dataApresentacao) {
         Evento evento = eventoRepositorio.obter(eventoId)
                 .orElseThrow(() -> new IllegalArgumentException("Evento não encontrado: " + eventoId));
-        if (evento.getStatus() != StatusEvento.APROVADO)
-            throw new IllegalStateException("Sorteio só pode ser criado para eventos aprovados.");
+        evento.verificarAprovado();
 
         Sorteio sorteio = new Sorteio(apresentacaoId, eventoId, vagas, prazoInscricao, dataApresentacao);
         sorteioRepositorio.salvar(sorteio);

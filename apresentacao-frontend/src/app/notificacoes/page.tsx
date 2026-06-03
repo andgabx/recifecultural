@@ -26,6 +26,7 @@ import {
   useNotificacoes,
 } from "@/hooks/useNotificacoes";
 import type { ApiError } from "@/lib/api";
+import { formatarDataHora } from "@/lib/format";
 import { IDENTIDADES_MOCK } from "@/lib/identidadeMock";
 import { useRole } from "@/lib/role";
 import { cn } from "@/lib/utils";
@@ -47,15 +48,6 @@ const iconePorContexto: Record<string, IconContexto> = {
 
 function iconePara(contexto: string): IconContexto {
   return iconePorContexto[contexto] ?? { icone: Bell, cor: "text-vinho" };
-}
-
-function formatarData(iso: string) {
-  return new Intl.DateTimeFormat("pt-BR", {
-    day: "2-digit",
-    month: "long",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(new Date(iso));
 }
 
 function chaveDoDia(iso: string) {
@@ -186,7 +178,7 @@ export default function NotificacoesPage() {
                                 {n.contexto}
                               </span>
                               <span>·</span>
-                              <span>{formatarData(n.dataCriacao)}</span>
+                              <span>{formatarDataHora(n.dataCriacao)}</span>
                             </p>
                           </div>
                           {!n.foiLida && (

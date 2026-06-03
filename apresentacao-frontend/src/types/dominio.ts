@@ -65,3 +65,13 @@ export type BffCriado = { id: string; mensagem?: string };
 
 /** Resposta padrao de POST/DELETE sem conteudo (204) — vem como objeto vazio. */
 export type BffSemConteudo = Record<string, never>;
+
+// ─── Service enums moved here for co-location ─────────────────────────────────
+
+export type StatusEquipamento = "DISPONIVEL" | "ALOCADO" | "EM_MANUTENCAO";
+
+export type TipoDesconto = "PERCENTUAL" | "VALOR_FIXO";
+
+export type AcaoAuditoria = "CRIADO" | "TRANSICAO_STATUS" | "REMOVIDO";
+
+export type StatusComentario = "ATIVO" | "DELETADO";

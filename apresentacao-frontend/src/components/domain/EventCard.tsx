@@ -8,29 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { detalheAcessibilidade } from "@/lib/acessibilidade";
 import { springConfig } from "@/lib/motion";
+import { statusEventoLabel, statusEventoVariant } from "@/lib/statusMaps";
 import type { EventoResumo } from "@/services/bff/eventos";
-import type { StatusEvento } from "@/types/dominio";
-
-const statusVariant: Record<
-  StatusEvento,
-  "default" | "secondary" | "accent" | "frevo" | "success" | "destructive" | "outline"
-> = {
-  RASCUNHO: "secondary",
-  EM_ANALISE: "frevo",
-  APROVADO: "success",
-  REPROVADO: "destructive",
-  CANCELADO: "destructive",
-  FINALIZADO: "outline",
-};
-
-const statusLabel: Record<StatusEvento, string> = {
-  RASCUNHO: "Rascunho",
-  EM_ANALISE: "Em análise",
-  APROVADO: "Aprovado",
-  REPROVADO: "Reprovado",
-  CANCELADO: "Cancelado",
-  FINALIZADO: "Finalizado",
-};
 
 function formatarPeriodo(inicio?: string, fim?: string) {
   if (!inicio) return "Datas a confirmar";
@@ -62,10 +41,10 @@ export function EventCard({
           <div className="absolute inset-0 opacity-20 [background-image:repeating-linear-gradient(45deg,#fff_0,#fff_1px,transparent_1px,transparent_8px)]" />
           <div className="from-palco/70 via-palco/20 absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t to-transparent" />
           <Badge
-            variant={statusVariant[evento.status]}
+            variant={statusEventoVariant[evento.status]}
             className="absolute left-3 top-3"
           >
-            {statusLabel[evento.status]}
+            {statusEventoLabel[evento.status]}
           </Badge>
           {tiposAcessibilidade && tiposAcessibilidade.length > 0 && (
             <span

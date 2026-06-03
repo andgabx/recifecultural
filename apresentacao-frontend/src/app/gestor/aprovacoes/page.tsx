@@ -29,6 +29,8 @@ import { useAprovarEvento, useReprovarEvento } from "@/hooks/useAprovacao";
 import { useEvento, useEventos } from "@/hooks/useEventos";
 import { containerVariants, itemVariants } from "@/lib/motion";
 import type { ApiError } from "@/lib/api";
+import { formatarDataCurta, formatarDataHora } from "@/lib/format";
+import { statusEventoLabel, statusEventoVariant } from "@/lib/statusMaps";
 import type { EventoResumo } from "@/services/bff/eventos";
 import type { StatusEvento, UUID } from "@/types/dominio";
 
@@ -40,36 +42,6 @@ const reprovacaoSchema = z.object({
 });
 
 type ReprovacaoForm = z.infer<typeof reprovacaoSchema>;
-
-const statusVariant: Record<
-  StatusEvento,
-  "default" | "success" | "frevo" | "secondary" | "destructive" | "outline"
-> = {
-  RASCUNHO: "secondary",
-  EM_ANALISE: "frevo",
-  APROVADO: "success",
-  REPROVADO: "destructive",
-  CANCELADO: "destructive",
-  FINALIZADO: "outline",
-};
-
-const statusLabel: Record<StatusEvento, string> = {
-  RASCUNHO: "Rascunho",
-  EM_ANALISE: "Em análise",
-  APROVADO: "Aprovado",
-  REPROVADO: "Reprovado",
-  CANCELADO: "Cancelado",
-  FINALIZADO: "Finalizado",
-};
-
-function formatarData(iso?: string) {
-  if (!iso) return "Sem data";
-  return new Intl.DateTimeFormat("pt-BR", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  }).format(new Date(iso));
-}
 
 function formatarPreco(valor?: string) {
   if (!valor) return null;
@@ -265,8 +237,8 @@ function ColunaStatus({
                       {evento.titulo}
                     </h3>
                   </div>
-                  <Badge variant={statusVariant[evento.status]}>
-                    {statusLabel[evento.status]}
+                  <Badge variant={statusEventoVariant[evento.status]}>
+                    {statusEventoLabel[evento.status]}
                   </Badge>
                 </div>
                 {evento.descricaoCurta && (
@@ -277,8 +249,8 @@ function ColunaStatus({
                 <div className="text-muted-foreground space-y-1 text-xs">
                   <p className="flex items-center gap-1.5">
                     <CalendarDays className="text-ouro h-3 w-3" />
-                    {formatarData(evento.periodoInicio)}
-                    {evento.periodoFim && ` → ${formatarData(evento.periodoFim)}`}
+                    {formatarDataCurta(evento.periodoInicio)}
+                    {evento.periodoFim && ` → ${formatarDataCurta(evento.periodoFim)}`}
                   </p>
                   {evento.localId && (
                     <p className="flex items-center gap-1.5">
@@ -357,8 +329,8 @@ function DetalheModal({
         <div className="space-y-5 text-sm">
           {/* Status e categoria */}
           <div className="flex flex-wrap gap-2">
-            <Badge variant={statusVariant[evento.status as StatusEvento]}>
-              {statusLabel[evento.status as StatusEvento]}
+            <Badge variant={statusEventoVariant[evento.status as StatusEvento]}>
+              {statusEventoLabel[evento.status as StatusEvento]}
             </Badge>
             {evento.categoria && (
               <Badge variant="outline">{evento.categoria}</Badge>
@@ -369,8 +341,8 @@ function DetalheModal({
           <Section label="Período">
             <p className="flex items-center gap-1.5 text-muted-foreground">
               <CalendarDays className="h-3.5 w-3.5 text-ouro" />
-              {formatarData(evento.periodoInicio)}
-              {evento.periodoFim && ` → ${formatarData(evento.periodoFim)}`}
+              {formatarDataCurta(evento.periodoInicio)}
+              {evento.periodoFim && ` → ${formatarDataCurta(evento.periodoFim)}`}
             </p>
           </Section>
 
@@ -437,13 +409,7 @@ function DetalheModal({
                 {evento.apresentacoes.map((a) => (
                   <li key={a.id} className="flex items-center gap-1.5">
                     <CalendarDays className="h-3.5 w-3.5 text-ouro" />
-                    {new Intl.DateTimeFormat("pt-BR", {
-                      day: "2-digit",
-                      month: "short",
-                      year: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    }).format(new Date(a.dataHora))}
+                    {formatarDataHora(a.dataHora)}
                   </li>
                 ))}
               </ul>

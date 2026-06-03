@@ -1,6 +1,6 @@
 import { api } from "@/lib/api";
 
-export type AcaoAuditoria = "CRIADO" | "TRANSICAO_STATUS" | "REMOVIDO";
+export type { AcaoAuditoria } from "@/types/dominio";
 
 export type RegistroAuditoria = {
   id: string;

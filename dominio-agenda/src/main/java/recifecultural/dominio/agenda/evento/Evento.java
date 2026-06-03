@@ -281,6 +281,12 @@ public class Evento {
             throw new IllegalStateException("Não é possível " + acao + " um evento com status " + this.status + ".");
     }
 
+    public void verificarAprovado() {
+        if (this.status != StatusEvento.APROVADO) {
+            throw new IllegalStateException("O evento deve estar APROVADO para esta operação.");
+        }
+    }
+
     public void programarApresentacao(LocalDateTime dataHora) {
         if (dataHora == null) throw new IllegalArgumentException("Data nula.");
         if (!periodo.contemData(dataHora))

@@ -72,6 +72,37 @@ public class PatrocinioServico {
         repositorio.atualizar(patrocinio);
     }
 
+    /**
+     * Ativa o patrocínio e, se a modalidade for SUBSIDIO_INGRESSO_SOCIAL,
+     * calcula o subsídio e aplica o novo preço social no evento.
+     *
+     * @return o resultado do subsídio quando aplicável, ou {@code null} quando
+     *         a modalidade não gera subsídio de ingresso social.
+     */
+    public ResultadoSubsidio ativarComSubsidio(PatrocinioId id, IEventoParaSubsidio evento) {
+        notNull(id, "O id do patrocínio não pode ser nulo.");
+        notNull(evento, "O evento para subsídio não pode ser nulo.");
+
+        Patrocinio patrocinio = repositorio.buscarPorId(id);
+        notNull(patrocinio, "Patrocínio não encontrado com id: " + id);
+
+        patrocinio.ativar();
+        repositorio.atualizar(patrocinio);
+
+        if (patrocinio.getModalidade() != ModalidadeContribuicao.SUBSIDIO_INGRESSO_SOCIAL) {
+            return null;
+        }
+
+        BigDecimal precoAtual = evento.getPrecoInteiro() != null
+                ? evento.getPrecoInteiro()
+                : BigDecimal.ZERO;
+
+        ResultadoSubsidio subsidio = patrocinio.calcularSubsidio(precoAtual);
+        evento.aplicarSubsidioNoPreco(subsidio.getNovoPrecoSocial());
+
+        return subsidio;
+    }
+
     public void encerrar(PatrocinioId id) {
         notNull(id, "O id do patrocínio não pode ser nulo.");
         Patrocinio patrocinio = repositorio.buscarPorId(id);

@@ -1,7 +1,7 @@
 import { api } from "@/lib/api";
 import type { BffCriado, BffSemConteudo, UUID } from "@/types/dominio";
 
-export type StatusEquipamento = "DISPONIVEL" | "ALOCADO" | "EM_MANUTENCAO";
+export type { StatusEquipamento } from "@/types/dominio";
 
 export type EquipamentoResumo = {
   id: UUID;

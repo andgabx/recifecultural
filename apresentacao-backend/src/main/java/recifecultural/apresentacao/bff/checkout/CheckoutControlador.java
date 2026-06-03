@@ -5,18 +5,15 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import recifecultural.aplicacao.ingressos.IngressoServicoAplicacao;
+import recifecultural.aplicacao.ingressos.IngressoServicoAplicacao.ItemCompraMultipla;
 import recifecultural.apresentacao.bff.AbstractBffControlador;
 import recifecultural.dominio.agenda.prereserva.PreReservaId;
 import recifecultural.dominio.agenda.prereserva.PreReservaServico;
-import recifecultural.dominio.cupom.AplicarCupomServico;
 import recifecultural.dominio.ingressos.IConfirmacaoReserva;
 import recifecultural.dominio.ingressos.IngressoId;
 import recifecultural.dominio.ingressos.MetodoPagamento;
 import recifecultural.dominio.ingressos.TipoIngresso;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -28,14 +25,11 @@ public class CheckoutControlador extends AbstractBffControlador {
 
     private final IngressoServicoAplicacao servico;
     private final PreReservaServico preReservaServico;
-    private final AplicarCupomServico cupomServico;
 
     public CheckoutControlador(IngressoServicoAplicacao servico,
-                                PreReservaServico preReservaServico,
-                                AplicarCupomServico cupomServico) {
+                                PreReservaServico preReservaServico) {
         this.servico = servico;
         this.preReservaServico = preReservaServico;
-        this.cupomServico = cupomServico;
     }
 
     @Operation(summary = "Compra ingresso simples")
@@ -80,49 +74,22 @@ public class CheckoutControlador extends AbstractBffControlador {
     public ResponseEntity<Map<String, Object>> comprarMultiplos(
             @RequestBody CompraMultiplaRequisicao req) {
 
-        List<CompraMultiplaRequisicao.ItemCompra> itens = req.itens();
-        boolean temCupom = req.codigoCupom() != null && !req.codigoCupom().isBlank()
-                && req.cpfComprador() != null && !req.cpfComprador().isBlank()
-                && req.categoriaEvento() != null && !req.categoriaEvento().isBlank();
+        List<ItemCompraMultipla> itens = req.itens().stream()
+                .map(i -> new ItemCompraMultipla(
+                        i.preReservaId(), i.assentoId(),
+                        TipoIngresso.valueOf(i.tipo()), i.valor()))
+                .toList();
 
-        // Calcula o total bruto e o desconto sobre ele, depois distribui por item
-        List<BigDecimal> valoresFinal = new ArrayList<>();
-        if (temCupom) {
-            BigDecimal totalBruto = itens.stream()
-                    .map(CompraMultiplaRequisicao.ItemCompra::valor)
-                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+        List<IngressoId> ids = servico.comprarMultiplosComCupom(
+                req.eventoId(), req.dataHoraApresentacao(),
+                itens,
+                MetodoPagamento.valueOf(req.metodoPagamento()),
+                req.capacidadeMaxima(),
+                req.codigoCupom(), req.cpfComprador(), req.categoriaEvento(),
+                adaptador());
 
-            // preview não consome o cupom; o consumo ocorre abaixo via aplicarDesconto
-            var preview = cupomServico.previewDesconto(
-                    req.codigoCupom(), req.cpfComprador(), totalBruto, req.categoriaEvento());
-            BigDecimal totalComDesconto = preview.valorFinal();
-            BigDecimal fator = totalBruto.compareTo(BigDecimal.ZERO) == 0
-                    ? BigDecimal.ONE
-                    : totalComDesconto.divide(totalBruto, 10, RoundingMode.HALF_UP);
-
-            for (CompraMultiplaRequisicao.ItemCompra item : itens) {
-                valoresFinal.add(item.valor().multiply(fator).setScale(2, RoundingMode.HALF_UP));
-            }
-            // Registra o uso do cupom uma única vez
-            cupomServico.aplicarDesconto(req.codigoCupom(), req.cpfComprador(), totalBruto, req.categoriaEvento());
-        } else {
-            itens.forEach(item -> valoresFinal.add(item.valor()));
-        }
-
-        List<String> ids = new ArrayList<>();
-        for (int i = 0; i < itens.size(); i++) {
-            CompraMultiplaRequisicao.ItemCompra item = itens.get(i);
-            IngressoId id = servico.comprarComPreReserva(
-                    req.eventoId(), req.dataHoraApresentacao(),
-                    item.preReservaId(), item.assentoId(),
-                    TipoIngresso.valueOf(item.tipo()),
-                    valoresFinal.get(i),
-                    MetodoPagamento.valueOf(req.metodoPagamento()),
-                    req.capacidadeMaxima(),
-                    adaptador());
-            ids.add(id.valor().toString());
-        }
-        return responder(Map.of("ids", ids, "total", ids.size()));
+        List<String> idsStr = ids.stream().map(id -> id.valor().toString()).toList();
+        return responder(Map.of("ids", idsStr, "total", idsStr.size()));
     }
 
     private IConfirmacaoReserva adaptador() {

@@ -9,7 +9,6 @@ import {
   type CompraMultiplaRequisicao,
   type CompraRequisicao,
 } from "@/services/bff/checkout";
-import { cuponsService, type AplicarCupomRequisicao, type PreviewCupomRequisicao } from "@/services/bff/cupons";
 import {
   ingressosService,
   type IngressoResumo,
@@ -24,6 +23,13 @@ export const ingressosQueryKeys = {
     ["ingressos", "estrategia", metodo] as const,
 };
 
+function invalidarIngressos(queryClient: ReturnType<typeof useQueryClient>, eventoId: UUID) {
+  queryClient.invalidateQueries({ queryKey: ingressosQueryKeys.todos });
+  queryClient.invalidateQueries({
+    queryKey: ingressosQueryKeys.porEvento(eventoId),
+  });
+}
+
 export function useTodosIngressos() {
   return useQuery({
     queryKey: ingressosQueryKeys.todos,
@@ -36,10 +42,7 @@ export function useComprar() {
   return useMutation({
     mutationFn: (payload: CompraRequisicao) => checkoutService.comprar(payload),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ingressosQueryKeys.todos });
-      queryClient.invalidateQueries({
-        queryKey: ingressosQueryKeys.porEvento(variables.eventoId),
-      });
+      invalidarIngressos(queryClient, variables.eventoId);
     },
   });
 }
@@ -50,10 +53,7 @@ export function useComprarComCupom() {
     mutationFn: (payload: CompraComCupomRequisicao) =>
       checkoutService.comprarComCupom(payload),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ingressosQueryKeys.todos });
-      queryClient.invalidateQueries({
-        queryKey: ingressosQueryKeys.porEvento(variables.eventoId),
-      });
+      invalidarIngressos(queryClient, variables.eventoId);
     },
   });
 }
@@ -99,10 +99,7 @@ export function useComprarComPreReserva() {
     mutationFn: (payload: CompraComPreReservaRequisicao) =>
       checkoutService.comprarComPreReserva(payload),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ingressosQueryKeys.todos });
-      queryClient.invalidateQueries({
-        queryKey: ingressosQueryKeys.porEvento(variables.eventoId),
-      });
+      invalidarIngressos(queryClient, variables.eventoId);
     },
   });
 }
@@ -133,18 +130,6 @@ export function useReservarAssento() {
 export function useCancelarPreReserva() {
   return useMutation({
     mutationFn: (preReservaId: UUID) => preReservasService.cancelar(preReservaId),
-  });
-}
-
-export function useAplicarCupom() {
-  return useMutation({
-    mutationFn: (payload: AplicarCupomRequisicao) => cuponsService.aplicar(payload),
-  });
-}
-
-export function usePreviewCupom() {
-  return useMutation({
-    mutationFn: (payload: PreviewCupomRequisicao) => cuponsService.preview(payload),
   });
 }
 

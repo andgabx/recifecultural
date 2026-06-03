@@ -28,6 +28,7 @@ import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { useEnviarBroadcast, useNotificacoes } from "@/hooks/useNotificacoes";
 import type { ApiError } from "@/lib/api";
+import { formatarDataHora } from "@/lib/format";
 import { IDENTIDADES_MOCK } from "@/lib/identidadeMock";
 import type { UUID } from "@/types/dominio";
 
@@ -90,15 +91,6 @@ const iconePorContexto: Record<string, React.ElementType> = {
   ACESSIBILIDADE_REMOVIDA: ShieldAlert,
   INGRESSO_CONFIRMADO: Ticket,
 };
-
-function formatarData(iso: string) {
-  return new Intl.DateTimeFormat("pt-BR", {
-    day: "2-digit",
-    month: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(new Date(iso));
-}
 
 export default function GestorNotificacoesPage() {
   const gestor = IDENTIDADES_MOCK.admin;
@@ -263,7 +255,7 @@ export default function GestorNotificacoesPage() {
                           {n.contexto}
                         </span>
                         <span>·</span>
-                        <span>{formatarData(n.dataCriacao)}</span>
+                        <span>{formatarDataHora(n.dataCriacao)}</span>
                       </p>
                     </div>
                     {!n.foiLida && (

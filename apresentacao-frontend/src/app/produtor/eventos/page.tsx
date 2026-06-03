@@ -26,42 +26,14 @@ import { useEventosPorProdutor } from "@/hooks/useEventosProdutor";
 import { detalheAcessibilidade } from "@/lib/acessibilidade";
 import { IDENTIDADES_MOCK } from "@/lib/identidadeMock";
 import type { ApiError } from "@/lib/api";
+import { formatarDataCurta } from "@/lib/format";
+import { statusEventoLabel, statusEventoVariant } from "@/lib/statusMaps";
 import { cn } from "@/lib/utils";
 import { containerVariants, itemVariants } from "@/lib/motion";
 import type { EventoResumo } from "@/services/bff/eventos";
 import type { StatusEvento } from "@/types/dominio";
 
 const promotor = IDENTIDADES_MOCK.produtor;
-
-const statusVariant: Record<
-  StatusEvento,
-  "default" | "success" | "frevo" | "secondary" | "destructive" | "outline"
-> = {
-  RASCUNHO: "secondary",
-  EM_ANALISE: "frevo",
-  APROVADO: "success",
-  REPROVADO: "destructive",
-  CANCELADO: "destructive",
-  FINALIZADO: "outline",
-};
-
-const statusLabel: Record<StatusEvento, string> = {
-  RASCUNHO: "Rascunho",
-  EM_ANALISE: "Em análise",
-  APROVADO: "Aprovado",
-  REPROVADO: "Reprovado",
-  CANCELADO: "Cancelado",
-  FINALIZADO: "Finalizado",
-};
-
-function formatarData(iso?: string) {
-  if (!iso) return "—";
-  return new Intl.DateTimeFormat("pt-BR", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  }).format(new Date(iso));
-}
 
 export default function MeusEventosPage() {
   const { data: eventos, isLoading, isError, refetch } = useEventosPorProdutor(
@@ -108,14 +80,14 @@ export default function MeusEventosPage() {
       header: "Período",
       cell: (e) => (
         <span className="text-xs">
-          {formatarData(e.periodoInicio)}
-          {e.periodoFim && ` → ${formatarData(e.periodoFim)}`}
+          {formatarDataCurta(e.periodoInicio)}
+          {e.periodoFim && ` → ${formatarDataCurta(e.periodoFim)}`}
         </span>
       ),
     },
     {
       header: "Status",
-      cell: (e) => <Badge variant={statusVariant[e.status]}>{statusLabel[e.status]}</Badge>,
+      cell: (e) => <Badge variant={statusEventoVariant[e.status]}>{statusEventoLabel[e.status]}</Badge>,
     },
     {
       header: "Acessibilidade",

@@ -270,8 +270,9 @@ public class InfraestruturaConfig {
 
     @Bean
     IngressoServicoAplicacao ingressoServicoAplicacao(IngressoServico ingressoServico,
-                                                       IngressoRepositorioAplicacao repositorio) {
-        return new IngressoServicoAplicacao(ingressoServico, repositorio);
+                                                       IngressoRepositorioAplicacao repositorio,
+                                                       AplicarCupomServico aplicarCupomServico) {
+        return new IngressoServicoAplicacao(ingressoServico, repositorio, aplicarCupomServico);
     }
 
     @Bean

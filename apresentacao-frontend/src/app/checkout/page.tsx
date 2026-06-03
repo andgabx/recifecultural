@@ -18,14 +18,15 @@ import { FormField } from "@/components/form/FormField";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { PublicLayout } from "@/components/layout/PublicLayout";
 import {
-  useAplicarCupom,
   useComprar,
   useComprarComCupom,
   useComprarComPreReserva,
 } from "@/hooks/useCheckout";
+import { useAplicarCupom } from "@/hooks/useCupons";
 import { useEspacos } from "@/hooks/useEspacos";
 import { useEvento } from "@/hooks/useEventos";
 import type { ApiError } from "@/lib/api";
+import { formatarDataHora } from "@/lib/format";
 import type { MetodoPagamento } from "@/types/dominio";
 
 // Enum backend: INTEIRA | MEIA_ENTRADA | SOCIAL
@@ -51,13 +52,6 @@ const schema = z.object({
 type CheckoutForm = z.infer<typeof schema>;
 
 const formatarMoeda = (v: number) =>
-  new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(v);
-
-const formatarData = (iso: string) =>
-  new Intl.DateTimeFormat("pt-BR", {
-    day: "2-digit", month: "long", year: "numeric",
-    hour: "2-digit", minute: "2-digit",
-  }).format(new Date(iso));
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -221,7 +215,7 @@ export default function CheckoutPage() {
               <div className="text-muted-foreground grid gap-1 text-sm">
                 <p>
                   <span className="text-palco font-medium">Data: </span>
-                  {dataHoraIso ? formatarData(dataHoraIso) : "—"}
+                  {dataHoraIso ? formatarDataHora(dataHoraIso) : "—"}
                 </p>
                 <p>
                   <span className="text-palco font-medium">Evento: </span>

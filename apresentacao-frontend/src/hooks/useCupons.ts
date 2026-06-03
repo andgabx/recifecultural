@@ -2,7 +2,12 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { cuponsService, type CriarCupomRequisicao } from "@/services/bff/cupons";
+import {
+  cuponsService,
+  type AplicarCupomRequisicao,
+  type CriarCupomRequisicao,
+  type PreviewCupomRequisicao,
+} from "@/services/bff/cupons";
 import type { UUID } from "@/types/dominio";
 
 const queryKeys = {
@@ -33,5 +38,19 @@ export function useDeletarCupom() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.listar });
     },
+  });
+}
+
+export function useAplicarCupom() {
+  return useMutation({
+    mutationFn: (payload: AplicarCupomRequisicao) =>
+      cuponsService.aplicar(payload),
+  });
+}
+
+export function usePreviewCupom() {
+  return useMutation({
+    mutationFn: (payload: PreviewCupomRequisicao) =>
+      cuponsService.preview(payload),
   });
 }

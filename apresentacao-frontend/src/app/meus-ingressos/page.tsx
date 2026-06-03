@@ -24,6 +24,7 @@ import {
 } from "@/hooks/useCheckout";
 import { useEventos } from "@/hooks/useEventos";
 import type { ApiError } from "@/lib/api";
+import { formatarDataHora } from "@/lib/format";
 import type { StatusIngresso, UUID } from "@/types/dominio";
 
 const statusVariant: Record<StatusIngresso, "success" | "secondary" | "destructive"> = {
@@ -45,19 +46,6 @@ const tipoLabel: Record<string, string> = {
 };
 
 const formatarMoeda = (v: number | string | undefined) => {
-  if (v == null) return "—";
-  return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(Number(v));
-};
-
-const formatarData = (iso: string | null | undefined) => {
-  if (!iso) return "—";
-  const d = new Date(iso);
-  if (isNaN(d.getTime())) return "—";
-  return new Intl.DateTimeFormat("pt-BR", {
-    day: "2-digit", month: "short", year: "numeric",
-    hour: "2-digit", minute: "2-digit",
-  }).format(d);
-};
 
 export default function MeusIngressosPage() {
   const params = useSearchParams();
@@ -211,9 +199,9 @@ export default function MeusIngressosPage() {
                 <div className="text-muted-foreground space-y-1 text-xs">
                   <p className="flex items-center gap-1">
                     <CalendarDays className="text-ouro h-3 w-3" />
-                    {formatarData(ingresso.dataHoraApresentacao)}
+                    {formatarDataHora(ingresso.dataHoraApresentacao)}
                   </p>
-                  <p>Comprado em: {formatarData(ingresso.dataCompra)}</p>
+                  <p>Comprado em: {formatarDataHora(ingresso.dataCompra)}</p>
                 </div>
 
                 <div className="flex gap-2 pt-2">
@@ -256,7 +244,7 @@ export default function MeusIngressosPage() {
         {qrAberto && (
           <QRCodeDisplay
             codigo={qrAberto.codigoQr}
-            eventoNome={`Apresentação ${formatarData(qrAberto.dataHoraApresentacao)}`}
+            eventoNome={`Apresentação ${formatarDataHora(qrAberto.dataHoraApresentacao)}`}
           />
         )}
       </Modal>

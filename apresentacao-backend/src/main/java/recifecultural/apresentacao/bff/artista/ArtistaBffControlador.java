@@ -7,17 +7,12 @@ import org.springframework.web.bind.annotation.*;
 import recifecultural.aplicacao.artista.artista.ArtistaResumo;
 import recifecultural.aplicacao.artista.artista.ArtistaServicoAplicacao;
 import recifecultural.dominio.artista.artista.ArtistaId;
-import recifecultural.dominio.artista.artista.ItemRider;
-import recifecultural.dominio.artista.artista.RiderTecnico;
 import recifecultural.dominio.artista.produtor.ProdutorId;
 import recifecultural.apresentacao.bff.AbstractBffControlador;
 
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Tag(name = "BFF — Artistas")
 @RestController
@@ -39,11 +34,8 @@ public class ArtistaBffControlador extends AbstractBffControlador {
     @Operation(summary = "Cadastra artista")
     @PostMapping
     public ResponseEntity<Map<String, String>> cadastrar(@RequestBody ArtistaTelas.CadastrarArtistaRequisicao req) {
-        Set<ItemRider> itens = req.riderItens() == null || req.riderItens().isEmpty()
-                ? Set.of()
-                : req.riderItens().stream().map(ItemRider::valueOf).collect(Collectors.toSet());
-        RiderTecnico rider = new RiderTecnico(itens);
-        ArtistaId id = servico.cadastrar(new ProdutorId(req.produtorId()), req.nome(), rider);
+        ArtistaId id = servico.cadastrar(new ProdutorId(req.produtorId()), req.nome(),
+                ArtistaServicoAplicacao.construirRider(req.riderItens()));
         return responderCriado(id.valor().toString());
     }
 

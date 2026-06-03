@@ -61,7 +61,7 @@ public class CupomBffControlador extends AbstractBffControlador {
                 req.codigo(),
                 TipoDesconto.valueOf(req.tipoDesconto()),
                 req.valorDesconto(),
-                req.valorMinimoPedido() == null ? BigDecimal.ZERO : req.valorMinimoPedido(),
+                req.valorMinimoPedido(),
                 req.limiteGlobal(),
                 req.limitePorCpf(),
                 req.dataInicio(),

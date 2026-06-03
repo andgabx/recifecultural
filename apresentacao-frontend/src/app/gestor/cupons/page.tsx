@@ -25,6 +25,7 @@ import {
   useDeletarCupom,
 } from "@/hooks/useCupons";
 import type { ApiError } from "@/lib/api";
+import { formatarDataCurta } from "@/lib/format";
 import type { CupomResumo } from "@/services/bff/cupons";
 
 const cadastroSchema = z
@@ -53,13 +54,6 @@ const cadastroSchema = z
   );
 
 type CadastroForm = z.infer<typeof cadastroSchema>;
-
-const formatarData = (iso: string) =>
-  new Intl.DateTimeFormat("pt-BR", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  }).format(new Date(iso));
 
 const formatarMoeda = (valor: number) =>
   new Intl.NumberFormat("pt-BR", {
@@ -161,7 +155,7 @@ export default function CuponsPage() {
       header: "Vigência",
       cell: (c) => (
         <span className="text-sm">
-          {formatarData(c.dataInicio)} → {formatarData(c.dataFim)}
+          {formatarDataCurta(c.dataInicio)} → {formatarDataCurta(c.dataFim)}
         </span>
       ),
     },

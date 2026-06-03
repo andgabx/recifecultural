@@ -44,17 +44,7 @@ public class EventoServicoAplicacao {
         notNull(cmd.promotorId(), "promotorId obrigatório.");
         notBlank(cmd.titulo(), "Título obrigatório.");
 
-        LocalDateTime inicio = cmd.periodoInicio();
-        LocalDateTime fim = cmd.periodoFim();
-        if (inicio == null && fim == null) {
-            if (cmd.datasApresentacao() == null || cmd.datasApresentacao().isEmpty())
-                throw new IllegalArgumentException("Informe o período ou ao menos uma data de apresentação.");
-            inicio = cmd.datasApresentacao().get(0);
-            fim = cmd.datasApresentacao().get(0);
-        } else {
-            notNull(inicio, "Período de início obrigatório.");
-            notNull(fim, "Período de fim obrigatório.");
-        }
+        Periodo periodo = derivarPeriodo(cmd.periodoInicio(), cmd.periodoFim(), cmd.datasApresentacao());
 
         Preco preco = null;
         if (cmd.precoInteira() != null) {
@@ -68,7 +58,7 @@ public class EventoServicoAplicacao {
                 cmd.titulo(),
                 cmd.descricaoCurta(),
                 cmd.descricaoLonga(),
-                new Periodo(inicio, fim),
+                periodo,
                 null,
                 preco
         );
@@ -92,17 +82,7 @@ public class EventoServicoAplicacao {
         notNull(cmd, "Comando obrigatório.");
         notBlank(cmd.titulo(), "Título obrigatório.");
 
-        LocalDateTime inicio = cmd.periodoInicio();
-        LocalDateTime fim = cmd.periodoFim();
-        if (inicio == null && fim == null) {
-            if (cmd.datasApresentacao() == null || cmd.datasApresentacao().isEmpty())
-                throw new IllegalArgumentException("Informe o período ou ao menos uma data de apresentação.");
-            inicio = cmd.datasApresentacao().get(0);
-            fim = cmd.datasApresentacao().get(0);
-        } else {
-            notNull(inicio, "Período de início obrigatório.");
-            notNull(fim, "Período de fim obrigatório.");
-        }
+        Periodo periodo = derivarPeriodo(cmd.periodoInicio(), cmd.periodoFim(), cmd.datasApresentacao());
 
         Preco preco = null;
         if (cmd.precoInteira() != null) {
@@ -113,13 +93,29 @@ public class EventoServicoAplicacao {
                 cmd.titulo(),
                 cmd.descricaoCurta(),
                 cmd.descricaoLonga(),
-                new Periodo(inicio, fim),
+                periodo,
                 preco,
                 cmd.categoria(),
                 cmd.localId(),
                 cmd.artistas(),
                 cmd.datasApresentacao()
         );
+    }
+
+    private Periodo derivarPeriodo(LocalDateTime periodoInicio, LocalDateTime periodoFim,
+                                    List<LocalDateTime> datasApresentacao) {
+        LocalDateTime inicio = periodoInicio;
+        LocalDateTime fim = periodoFim;
+        if (inicio == null && fim == null) {
+            if (datasApresentacao == null || datasApresentacao.isEmpty())
+                throw new IllegalArgumentException("Informe o período ou ao menos uma data de apresentação.");
+            inicio = datasApresentacao.get(0);
+            fim = datasApresentacao.get(0);
+        } else {
+            notNull(inicio, "Período de início obrigatório.");
+            notNull(fim, "Período de fim obrigatório.");
+        }
+        return new Periodo(inicio, fim);
     }
 
     public void submeterParaAnalise(UUID id) {

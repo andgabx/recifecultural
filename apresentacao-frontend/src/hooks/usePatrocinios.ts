@@ -14,6 +14,12 @@ const queryKeys = {
     ["patrocinios", "subsidio", id, preco] as const,
 };
 
+function invalidarPorEvento(queryClient: ReturnType<typeof useQueryClient>, eventoId: UUID | undefined) {
+  if (eventoId) {
+    queryClient.invalidateQueries({ queryKey: queryKeys.porEvento(eventoId) });
+  }
+}
+
 export function usePatrociniosPorEvento(eventoId: UUID | undefined) {
   return useQuery({
     queryKey: eventoId
@@ -30,9 +36,7 @@ export function useCriarPatrocinio(eventoId?: UUID) {
     mutationFn: (payload: CriarPatrocinioRequisicao) =>
       patrociniosService.criar(payload),
     onSuccess: () => {
-      if (eventoId) {
-        queryClient.invalidateQueries({ queryKey: queryKeys.porEvento(eventoId) });
-      }
+      invalidarPorEvento(queryClient, eventoId);
     },
   });
 }
@@ -42,9 +46,7 @@ export function useAtivarPatrocinio(eventoId?: UUID) {
   return useMutation({
     mutationFn: (id: UUID) => patrociniosService.ativar(id),
     onSuccess: () => {
-      if (eventoId) {
-        queryClient.invalidateQueries({ queryKey: queryKeys.porEvento(eventoId) });
-      }
+      invalidarPorEvento(queryClient, eventoId);
     },
   });
 }
@@ -54,9 +56,7 @@ export function useCancelarPatrocinioPorEvento(eventoId?: UUID) {
   return useMutation({
     mutationFn: (id: UUID) => patrociniosService.cancelarPorEvento(id),
     onSuccess: () => {
-      if (eventoId) {
-        queryClient.invalidateQueries({ queryKey: queryKeys.porEvento(eventoId) });
-      }
+      invalidarPorEvento(queryClient, eventoId);
     },
   });
 }
@@ -66,9 +66,7 @@ export function useCancelarPatrocinioPorPatrocinador(eventoId?: UUID) {
   return useMutation({
     mutationFn: (id: UUID) => patrociniosService.cancelarPorPatrocinador(id),
     onSuccess: () => {
-      if (eventoId) {
-        queryClient.invalidateQueries({ queryKey: queryKeys.porEvento(eventoId) });
-      }
+      invalidarPorEvento(queryClient, eventoId);
     },
   });
 }

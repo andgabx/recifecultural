@@ -2,10 +2,13 @@ package recifecultural.aplicacao.artista.artista;
 
 import recifecultural.dominio.artista.artista.ArtistaId;
 import recifecultural.dominio.artista.artista.ArtistaServico;
+import recifecultural.dominio.artista.artista.ItemRider;
 import recifecultural.dominio.artista.artista.RiderTecnico;
 import recifecultural.dominio.artista.produtor.ProdutorId;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.Validate.notNull;
 
@@ -31,5 +34,11 @@ public class ArtistaServicoAplicacao {
 
     public void inativar(ArtistaId artistaId) {
         servico.inativar(artistaId);
+    }
+
+    public static RiderTecnico construirRider(List<String> itens) {
+        if (itens == null || itens.isEmpty()) return null;
+        Set<ItemRider> set = itens.stream().map(ItemRider::valueOf).collect(Collectors.toSet());
+        return new RiderTecnico(set);
     }
 }

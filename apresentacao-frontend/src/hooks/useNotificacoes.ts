@@ -43,3 +43,17 @@ export function useMarcarNotificacaoLida(usuarioId: UUID | undefined) {
     },
   });
 }
+
+export function useMarcarNaoLida(usuarioId: UUID | undefined) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: UUID) => notificacoesService.marcarNaoLida(id),
+    onSuccess: () => {
+      if (usuarioId) {
+        queryClient.invalidateQueries({
+          queryKey: ["notificacoes", usuarioId],
+        });
+      }
+    },
+  });
+}

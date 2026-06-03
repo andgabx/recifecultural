@@ -14,7 +14,6 @@ import recifecultural.dominio.espaco.espaco.EspacoServico;
 import recifecultural.dominio.espaco.espaco.IEspacoRepositorio;
 import recifecultural.dominio.espaco.espaco.EspacoId;
 import recifecultural.dominio.agenda.equipamento.EquipamentoId;
-import recifecultural.dominio.agenda.equipamento.AlocacaoRiderTecnicoServico;
 import recifecultural.dominio.agenda.equipamento.IEquipamentoRepositorio;
 import recifecultural.dominio.agenda.equipamento.EquipamentoServico;
 
@@ -53,7 +52,6 @@ public class ContextoCenario {
 
     // Equipamentos
     public IEquipamentoRepositorio repositorioEquipamento = Mockito.mock(IEquipamentoRepositorio.class);
-    public AlocacaoRiderTecnicoServico servicoAlocacao = new AlocacaoRiderTecnicoServico(repositorioEquipamento, repositorioEvento, servicoNotificacao);
     public EquipamentoId idEquipamentoAtual;
     public EquipamentoServico servicoEquipamento = new EquipamentoServico(repositorioEquipamento, servicoNotificacao);
 

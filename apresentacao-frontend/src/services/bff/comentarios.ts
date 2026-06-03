@@ -1,5 +1,6 @@
 import { api } from "@/lib/api";
 import type { BffCriado, BffSemConteudo, UUID } from "@/types/dominio";
+import type { StatusComentario } from "@/types/dominio";
 
 export type ComentarioResumo = {
   id: UUID;
@@ -8,7 +9,7 @@ export type ComentarioResumo = {
   comentarioPaiId?: UUID;
   texto: string;
   nota?: number;
-  status: "ATIVO" | "DELETADO";
+  status: StatusComentario;
   totalCurtidas: number;
   criadoEm: string; // ISO LocalDateTime
 };

@@ -25,6 +25,7 @@ import {
   usePreviewBloqueio,
 } from "@/hooks/useBloqueios";
 import type { ApiError } from "@/lib/api";
+import { formatarDataCurta } from "@/lib/format";
 import type { BloqueioResumo, EventoConflitante } from "@/services/bff/bloqueios";
 
 const cadastroSchema = z.object({
@@ -36,13 +37,6 @@ const cadastroSchema = z.object({
     .min(10, "Justificativa muito curta (mín. 10 caracteres)"),
 });
 type CadastroForm = z.infer<typeof cadastroSchema>;
-
-const formatarData = (iso: string) =>
-  new Intl.DateTimeFormat("pt-BR", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  }).format(new Date(iso));
 
 export default function BloqueiosPage() {
   const { data, isLoading, isError } = useBloqueios();
@@ -134,7 +128,7 @@ export default function BloqueiosPage() {
       header: "Período",
       cell: (b) => (
         <span>
-          {formatarData(b.dataInicio)} → {formatarData(b.dataFim)}
+          {formatarDataCurta(b.dataInicio)} → {formatarDataCurta(b.dataFim)}
         </span>
       ),
     },
@@ -303,8 +297,8 @@ export default function BloqueiosPage() {
             </p>
             <p>
               <strong>Período:</strong>{" "}
-              {formatarData(bloqueioParaDesativar.dataInicio)} →{" "}
-              {formatarData(bloqueioParaDesativar.dataFim)}
+              {formatarDataCurta(bloqueioParaDesativar.dataInicio)} →{" "}
+              {formatarDataCurta(bloqueioParaDesativar.dataFim)}
             </p>
             <p>
               <strong>Justificativa:</strong> {bloqueioParaDesativar.justificativa}
@@ -443,9 +437,9 @@ export default function BloqueiosPage() {
                     <span className="font-medium">{e.titulo}</span>
                     {e.periodoInicio && (
                       <span className="shrink-0 text-xs text-muted-foreground">
-                        {formatarData(e.periodoInicio)}
+                        {formatarDataCurta(e.periodoInicio)}
                         {e.periodoFim && e.periodoFim !== e.periodoInicio
-                          ? ` → ${formatarData(e.periodoFim)}`
+                          ? ` → ${formatarDataCurta(e.periodoFim)}`
                           : ""}
                       </span>
                     )}

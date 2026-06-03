@@ -29,6 +29,7 @@ import {
   usePostarComentario,
 } from "@/hooks/useComentarios";
 import type { ApiError } from "@/lib/api";
+import { formatarDataHora } from "@/lib/format";
 import { IDENTIDADES_MOCK } from "@/lib/identidadeMock";
 import { useRole } from "@/lib/role";
 import { cn } from "@/lib/utils";
@@ -46,16 +47,6 @@ const novoSchema = z.object({
     .max(TEXTO_MAX, `Máximo ${TEXTO_MAX} caracteres`),
 });
 type NovoForm = z.infer<typeof novoSchema>;
-
-function formatarData(iso: string) {
-  return new Intl.DateTimeFormat("pt-BR", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(new Date(iso));
-}
 
 export function ComentariosSection({ eventoId }: { eventoId: UUID }) {
   const { papel } = useRole();
@@ -358,7 +349,7 @@ function ComentarioCard({
               {comentario.espectadorId.slice(0, 8)}…
             </p>
             <p className="text-muted-foreground text-[10px]">
-              {formatarData(comentario.criadoEm)}
+              {formatarDataHora(comentario.criadoEm)}
             </p>
           </div>
         </div>

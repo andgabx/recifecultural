@@ -10,6 +10,7 @@ import recifecultural.aplicacao.agenda.acessibilidade.RecursoAcessibilidadeServi
 import recifecultural.aplicacao.agenda.bloqueioadministrativo.BloqueioAdministrativoRepositorioAplicacao;
 import recifecultural.aplicacao.agenda.bloqueioadministrativo.BloqueioAdministrativoServicoAplicacao;
 import recifecultural.aplicacao.agenda.bloqueioadministrativo.BloqueioNotificacaoObservador;
+import recifecultural.aplicacao.agenda.bloqueioadministrativo.IngressoNotificacaoObservador;
 import recifecultural.aplicacao.agenda.comentario.ComentarioServicoAplicacao;
 import recifecultural.aplicacao.agenda.equipamento.EquipamentoServicoAplicacao;
 import recifecultural.aplicacao.auditoria.AuditoriaServicoAplicacao;
@@ -53,6 +54,7 @@ import recifecultural.dominio.compartilhado.auditoria.IAuditoriaRepositorio;
 import recifecultural.dominio.compartilhado.evento.EventoBarramento;
 import recifecultural.dominio.compartilhado.notificacao.INotificacaoRepositorio;
 import recifecultural.dominio.compartilhado.notificacao.IUsuarioContextoServico;
+import recifecultural.dominio.compartilhado.notificacao.INotificacaoServico;
 import recifecultural.dominio.compartilhado.notificacao.NotificacaoServico;
 import recifecultural.dominio.cupom.AplicarCupomServico;
 import recifecultural.dominio.cupom.ICupomRepositorio;
@@ -114,7 +116,7 @@ public class InfraestruturaConfig {
     @Bean
     SorteioServico sorteioServico(ISorteioRepositorio sorteioRepositorio,
                                    IEventoRepositorio eventoRepositorio,
-                                   NotificacaoServico notificacaoServico) {
+                                   INotificacaoServico notificacaoServico) {
         return new SorteioServico(sorteioRepositorio, eventoRepositorio, notificacaoServico);
     }
 
@@ -146,13 +148,13 @@ public class InfraestruturaConfig {
     @Bean
     SuporteTecnicoServico suporteTecnicoServico(IChamadoSuporteRepositorio chamadoRepositorio,
                                                  ISetorRepositorio setorRepositorio,
-                                                 NotificacaoServico notificacaoServico) {
+                                                 INotificacaoServico notificacaoServico) {
         return new SuporteTecnicoServico(chamadoRepositorio, setorRepositorio, notificacaoServico);
     }
 
     @Bean
     EquipamentoServico equipamentoServico(IEquipamentoRepositorio equipamentoRepositorio,
-                                           NotificacaoServico notificacaoServico) {
+                                           INotificacaoServico notificacaoServico) {
         // Proxy (Par 2): cache em memória sobre o repositório real de equipamentos
         return new EquipamentoServico(
                 new EquipamentoRepositorioProxyCache(equipamentoRepositorio),
@@ -163,7 +165,7 @@ public class InfraestruturaConfig {
     RecursoAcessibilidadeServico recursoAcessibilidadeServico(
             IRecursoAcessibilidadeRepositorio repositorio,
             IEventoRepositorio eventoRepositorio,
-            NotificacaoServico notificacaoServico) {
+            INotificacaoServico notificacaoServico) {
         return new RecursoAcessibilidadeServico(repositorio, eventoRepositorio, notificacaoServico);
     }
 
@@ -187,9 +189,16 @@ public class InfraestruturaConfig {
 
     @Bean
     BloqueioNotificacaoObservador bloqueioNotificacaoObservador(EventoBarramento barramento,
-                                                                 NotificacaoServico notificacaoServico) {
+                                                                 INotificacaoServico notificacaoServico) {
         // Observer (Par 3): assinante que reage a EventoCanceladoPorBloqueioEvento
         return new BloqueioNotificacaoObservador(barramento, notificacaoServico);
+    }
+
+    @Bean
+    IngressoNotificacaoObservador ingressoNotificacaoObservador(EventoBarramento barramento,
+                                                                 INotificacaoServico notificacaoServico) {
+        // Observer (Par 3): notifica titulares de ingressos do evento cancelado
+        return new IngressoNotificacaoObservador(barramento, notificacaoServico);
     }
 
     @Bean
@@ -254,8 +263,9 @@ public class InfraestruturaConfig {
     @Bean
     BloqueioAdministrativoServicoAplicacao bloqueioAdministrativoServicoAplicacao(
             BloqueioAdministrativoServico servico,
-            BloqueioAdministrativoRepositorioAplicacao repositorio) {
-        return new BloqueioAdministrativoServicoAplicacao(servico, repositorio);
+            BloqueioAdministrativoRepositorioAplicacao repositorio,
+            IngressoRepositorioAplicacao ingressoRepositorio) {
+        return new BloqueioAdministrativoServicoAplicacao(servico, repositorio, ingressoRepositorio);
     }
 
     @Bean

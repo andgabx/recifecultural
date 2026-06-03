@@ -131,7 +131,7 @@ export default function AcessibilidadeGestaoPage() {
   return (
     <PageLayout
       titulo="Acessibilidade"
-      subtitulo="Recursos anunciados por apresentação. A remoção dispara notificação pública com a justificativa (Template Method F6.2)."
+      subtitulo="Recursos anunciados por apresentação. A remoção é notificada publicamente com a justificativa."
       acoes={
         <Button
           onClick={() => setCadastroAberto(true)}

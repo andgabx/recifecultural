@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import recifecultural.aplicacao.agenda.bloqueioadministrativo.BloqueioAdministrativoResumo;
 import recifecultural.aplicacao.agenda.bloqueioadministrativo.BloqueioAdministrativoServicoAplicacao;
+import recifecultural.aplicacao.agenda.bloqueioadministrativo.EventoConflitanteResumo;
 import recifecultural.apresentacao.bff.AbstractBffControlador;
 import recifecultural.dominio.agenda.bloqueioadministrativo.BloqueioAdministrativoId;
 import recifecultural.dominio.espaco.espaco.EspacoId;
@@ -26,10 +27,19 @@ public class BloqueioBffControlador extends AbstractBffControlador {
         this.servico = servico;
     }
 
-    @Operation(summary = "Lista bloqueios ativos")
+    @Operation(summary = "Lista todos os bloqueios (ativos e histórico)")
     @GetMapping
-    public ResponseEntity<List<BloqueioAdministrativoResumo>> listarAtivos() {
-        return responder(servico.pesquisarAtivos());
+    public ResponseEntity<List<BloqueioAdministrativoResumo>> listar() {
+        return responder(servico.pesquisarTodos());
+    }
+
+    @Operation(summary = "Pré-visualiza eventos conflitantes com o período informado")
+    @GetMapping("/preview")
+    public ResponseEntity<List<EventoConflitanteResumo>> preview(
+            @RequestParam UUID espacoId,
+            @RequestParam LocalDate inicio,
+            @RequestParam LocalDate fim) {
+        return responder(servico.previewConflitos(new EspacoId(espacoId), inicio, fim));
     }
 
     @Operation(summary = "Cria bloqueio administrativo")
@@ -39,10 +49,14 @@ public class BloqueioBffControlador extends AbstractBffControlador {
         return ResponseEntity.status(201).body(Map.of("status", "criado"));
     }
 
-    @Operation(summary = "Desativa bloqueio")
+    @Operation(summary = "Desativa bloqueio, com opção de reativar eventos cancelados")
     @PostMapping("/{id}/desativar")
-    public ResponseEntity<Map<String, String>> desativar(@PathVariable UUID id) {
-        servico.desativar(BloqueioAdministrativoId.de(id.toString()));
+    public ResponseEntity<Map<String, String>> desativar(
+            @PathVariable UUID id,
+            @RequestBody DesativarBloqueioRequisicao req) {
+        servico.desativar(BloqueioAdministrativoId.de(id.toString()), req.reativarEventos());
         return responderSemConteudo();
     }
+
+    record DesativarBloqueioRequisicao(boolean reativarEventos) {}
 }

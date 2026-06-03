@@ -482,7 +482,7 @@ function InscricoesModal({
       open={!!sorteio}
       onClose={onClose}
       title="Inscrições por prioridade"
-      description="Ordem definida pelo padrão Iterator (Ganhador → Suplente → Inscrito → outros)."
+      description="Inscrições ordenadas por prioridade (Ganhador → Suplente → Inscrito)."
       className="max-w-xl"
     >
       {isLoading && (

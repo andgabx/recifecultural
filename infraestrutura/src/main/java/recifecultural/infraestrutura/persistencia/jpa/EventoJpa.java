@@ -136,7 +136,9 @@ class EventoRepositorioImpl implements IEventoRepositorio, EventoRepositorioApli
         return jpa.findAll().stream()
                 .<EventoResumo>map(e -> new EventoResumoJpa(
                         e.id.toString(), e.titulo, e.categoria,
-                        e.status != null ? e.status.name() : null))
+                        e.status != null ? e.status.name() : null,
+                        e.periodoInicio != null ? e.periodoInicio.toString() : null,
+                        e.periodoFim != null ? e.periodoFim.toString() : null))
                 .toList();
     }
 
@@ -145,7 +147,9 @@ class EventoRepositorioImpl implements IEventoRepositorio, EventoRepositorioApli
         return jpa.findByPromotorId(promotorId).stream()
                 .<EventoResumo>map(e -> new EventoResumoJpa(
                         e.id.toString(), e.titulo, e.categoria,
-                        e.status != null ? e.status.name() : null))
+                        e.status != null ? e.status.name() : null,
+                        e.periodoInicio != null ? e.periodoInicio.toString() : null,
+                        e.periodoFim != null ? e.periodoFim.toString() : null))
                 .toList();
     }
 
@@ -174,17 +178,21 @@ class EventoRepositorioImpl implements IEventoRepositorio, EventoRepositorioApli
                             e.precoInteira != null ? e.precoInteira.toPlainString() : null,
                             e.precoMeia != null ? e.precoMeia.toPlainString() : null,
                             e.precoSocial != null ? e.precoSocial.toPlainString() : null,
+                            e.artistas != null ? e.artistas.stream().map(UUID::toString).toList() : List.of(),
                             apresentacoes);
                 })
                 .orElse(null);
     }
 
-    record EventoResumoJpa(String id, String titulo, String categoria, String status)
+    record EventoResumoJpa(String id, String titulo, String categoria, String status,
+                           String periodoInicio, String periodoFim)
             implements EventoResumo {
         public String getId() { return id; }
         public String getTitulo() { return titulo; }
         public String getCategoria() { return categoria; }
         public String getStatus() { return status; }
+        public String getPeriodoInicio() { return periodoInicio; }
+        public String getPeriodoFim() { return periodoFim; }
     }
 
     record EventoResumoExpandidoJpa(
@@ -193,6 +201,7 @@ class EventoRepositorioImpl implements IEventoRepositorio, EventoRepositorioApli
             String promotorId, String localId,
             String periodoInicio, String periodoFim,
             String precoInteira, String precoMeia, String precoSocial,
+            List<String> artistas,
             List<ApresentacaoResumo> apresentacoes)
             implements EventoResumoExpandido {
         public String getId() { return id; }
@@ -208,6 +217,7 @@ class EventoRepositorioImpl implements IEventoRepositorio, EventoRepositorioApli
         public String getPrecoInteira() { return precoInteira; }
         public String getPrecoMeia() { return precoMeia; }
         public String getPrecoSocial() { return precoSocial; }
+        public List<String> getArtistas() { return artistas; }
         public List<ApresentacaoResumo> getApresentacoes() { return apresentacoes; }
     }
 

@@ -3,9 +3,9 @@ package recifecultural.dominio.compartilhado.notificacao;
 import java.util.List;
 import java.util.UUID;
 
-public class NotificacaoServico {
+public class NotificacaoServico implements INotificacaoServico {
     private final INotificacaoRepositorio notificacaoRepositorio;
-    private final IUsuarioContextoServico usuarioContextoServico; // Introduzido para a RN 5
+    private final IUsuarioContextoServico usuarioContextoServico;
 
     public NotificacaoServico(INotificacaoRepositorio notificacaoRepositorio, IUsuarioContextoServico usuarioContextoServico) {
         if (notificacaoRepositorio == null) {

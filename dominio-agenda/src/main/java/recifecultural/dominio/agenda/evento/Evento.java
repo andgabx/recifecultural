@@ -269,6 +269,13 @@ public class Evento {
         return new CanceladoEvento(this);
     }
 
+    public void restaurar() {
+        if (this.status != StatusEvento.CANCELADO)
+            throw new IllegalStateException("Só é possível restaurar eventos cancelados.");
+        this.status = StatusEvento.APROVADO;
+        this.motivoCancelamento = null;
+    }
+
     private void exigirStatusEmAnalise(String acao) {
         if (this.status != StatusEvento.EM_ANALISE)
             throw new IllegalStateException("Não é possível " + acao + " um evento com status " + this.status + ".");

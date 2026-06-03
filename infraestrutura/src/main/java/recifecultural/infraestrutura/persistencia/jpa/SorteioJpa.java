@@ -48,6 +48,7 @@ class InscricaoJpa {
 
 interface SorteioJpaRepository extends JpaRepository<SorteioJpa, UUID> {
     List<SorteioJpa> findByEventoId(UUID eventoId);
+    List<SorteioJpa> findByStatus(StatusSorteio status);
 
     @org.springframework.data.jpa.repository.Query(
             "SELECT DISTINCT s FROM SorteioJpa s JOIN s.inscricoes i WHERE i.espectadorId = :espectadorId")
@@ -84,6 +85,19 @@ class SorteioRepositorioImpl implements ISorteioRepositorio, SorteioRepositorioA
     @Override
     public void deletar(UUID id) {
         jpa.deleteById(id);
+    }
+
+    @Override
+    public List<SorteioResumo> pesquisarAbertos() {
+        return jpa.findByStatus(StatusSorteio.INSCRICOES_ABERTAS).stream()
+                .<SorteioResumo>map(s -> new SorteioResumoJpa(
+                        s.id.toString(), s.eventoId.toString(),
+                        s.apresentacaoId != null ? s.apresentacaoId.toString() : null,
+                        s.vagas,
+                        s.status != null ? s.status.name() : null,
+                        s.prazoInscricao != null ? s.prazoInscricao.toString() : null,
+                        s.dataApresentacao != null ? s.dataApresentacao.toString() : null))
+                .toList();
     }
 
     @Override

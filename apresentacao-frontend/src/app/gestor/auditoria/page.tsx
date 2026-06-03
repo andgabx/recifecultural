@@ -56,7 +56,7 @@ export default function AuditoriaPage() {
   return (
     <PageLayout
       titulo="Auditoria"
-      subtitulo="Trilha de criações, transições e remoções de eventos. Gravada pelo Decorator EventoRepositorioComAuditoria (Par 4)."
+      subtitulo="Trilha de criações, transições e remoções de eventos."
     >
       <div className="flex flex-wrap items-end gap-3">
         <div>

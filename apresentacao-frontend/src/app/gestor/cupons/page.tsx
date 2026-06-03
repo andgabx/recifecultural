@@ -196,7 +196,7 @@ export default function CuponsPage() {
   return (
     <PageLayout
       titulo="Cupons"
-      subtitulo="Códigos promocionais aplicáveis no checkout (Template Method F7.1)."
+      subtitulo="Códigos promocionais aplicáveis no checkout."
       acoes={
         <Button
           onClick={() => setCadastroAberto(true)}

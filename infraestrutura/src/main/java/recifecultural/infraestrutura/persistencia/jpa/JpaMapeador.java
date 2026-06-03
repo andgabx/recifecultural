@@ -4,6 +4,10 @@ import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
+
 import recifecultural.dominio.agenda.acessibilidade.RecursoAcessibilidade;
 import recifecultural.dominio.agenda.acessibilidade.TipoRecursoAcessibilidade;
 import recifecultural.dominio.agenda.acessibilidade.StatusRecurso;
@@ -284,12 +288,18 @@ public class JpaMapeador extends ModelMapper {
         addConverter(new AbstractConverter<BloqueioAdministrativoJpa, BloqueioAdministrativo>() {
             @Override
             protected BloqueioAdministrativo convert(BloqueioAdministrativoJpa s) {
+                List<UUID> eventos = (s.eventosCancelados == null || s.eventosCancelados.isBlank())
+                        ? new java.util.ArrayList<>()
+                        : Arrays.stream(s.eventosCancelados.split(","))
+                                .map(UUID::fromString)
+                                .collect(java.util.stream.Collectors.toCollection(java.util.ArrayList::new));
                 return new BloqueioAdministrativo(
                         new recifecultural.dominio.agenda.bloqueioadministrativo.BloqueioAdministrativoId(s.id),
                         new EspacoId(s.espacoId),
                         s.dataInicio, s.dataFim,
                         s.justificativa,
-                        s.ativo
+                        s.ativo,
+                        eventos
                 );
             }
         });
@@ -453,6 +463,9 @@ public class JpaMapeador extends ModelMapper {
                 jpa.dataFim = s.getDataFim();
                 jpa.justificativa = s.getJustificativa();
                 jpa.ativo = s.isAtivo();
+                List<UUID> cancelados = s.getEventosCancelados();
+                jpa.eventosCancelados = cancelados.isEmpty() ? null
+                        : cancelados.stream().map(UUID::toString).collect(java.util.stream.Collectors.joining(","));
                 return jpa;
             }
         });

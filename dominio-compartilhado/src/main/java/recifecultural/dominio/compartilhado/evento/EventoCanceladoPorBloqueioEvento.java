@@ -1,5 +1,6 @@
 package recifecultural.dominio.compartilhado.evento;
 
+import java.util.List;
 import java.util.UUID;
 
 /*
@@ -11,5 +12,6 @@ public record EventoCanceladoPorBloqueioEvento(
         UUID eventoId,
         UUID promotorId,
         String tituloEvento,
-        String justificativaBloqueio) {
+        String justificativaBloqueio,
+        List<UUID> artistaIds) {
 }

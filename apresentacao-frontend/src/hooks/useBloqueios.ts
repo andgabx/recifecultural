@@ -19,6 +19,13 @@ export function useBloqueios() {
   });
 }
 
+export function usePreviewBloqueio() {
+  return useMutation({
+    mutationFn: (params: { espacoId: UUID; inicio: string; fim: string }) =>
+      bloqueiosService.preview(params),
+  });
+}
+
 export function useCadastrarBloqueio() {
   const queryClient = useQueryClient();
   return useMutation({
@@ -34,7 +41,8 @@ export function useCadastrarBloqueio() {
 export function useDesativarBloqueio() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (id: UUID) => bloqueiosService.desativar(id),
+    mutationFn: ({ id, reativarEventos }: { id: UUID; reativarEventos: boolean }) =>
+      bloqueiosService.desativar(id, reativarEventos),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.ativos });
       queryClient.invalidateQueries({ queryKey: ["espacos"] });

@@ -13,8 +13,11 @@ import recifecultural.dominio.agenda.bloqueioadministrativo.IBloqueioAdministrat
 import recifecultural.dominio.espaco.espaco.EspacoId;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "bloqueio_administrativo")
@@ -26,6 +29,9 @@ class BloqueioAdministrativoJpa {
     LocalDate dataFim;
     String justificativa;
     boolean ativo;
+
+    @Column(name = "eventos_cancelados", columnDefinition = "text")
+    String eventosCancelados; // comma-separated UUIDs, nullable
 }
 
 interface BloqueioAdministrativoJpaRepository extends JpaRepository<BloqueioAdministrativoJpa, UUID> {
@@ -78,6 +84,11 @@ class BloqueioAdministrativoRepositorioImpl
                 .stream().map(b -> mapeador.map(b, BloqueioAdministrativo.class)).toList();
     }
 
+    private static List<String> parseEventos(String raw) {
+        if (raw == null || raw.isBlank()) return List.of();
+        return Arrays.asList(raw.split(","));
+    }
+
     @Override
     public List<BloqueioAdministrativoResumo> pesquisarAtivos() {
         return jpa.findAtivos().stream()
@@ -87,13 +98,28 @@ class BloqueioAdministrativoRepositorioImpl
                         b.dataInicio != null ? b.dataInicio.toString() : null,
                         b.dataFim != null ? b.dataFim.toString() : null,
                         b.justificativa,
-                        b.ativo))
+                        b.ativo,
+                        parseEventos(b.eventosCancelados)))
+                .toList();
+    }
+
+    @Override
+    public List<BloqueioAdministrativoResumo> pesquisarTodos() {
+        return jpa.findAll().stream()
+                .<BloqueioAdministrativoResumo>map(b -> new BloqueioAdministrativoResumoJpa(
+                        b.id.toString(),
+                        b.espacoId != null ? b.espacoId.toString() : null,
+                        b.dataInicio != null ? b.dataInicio.toString() : null,
+                        b.dataFim != null ? b.dataFim.toString() : null,
+                        b.justificativa,
+                        b.ativo,
+                        parseEventos(b.eventosCancelados)))
                 .toList();
     }
 
     record BloqueioAdministrativoResumoJpa(
             String id, String espacoId, String dataInicio, String dataFim,
-            String justificativa, boolean ativo)
+            String justificativa, boolean ativo, List<String> eventosCancelados)
             implements BloqueioAdministrativoResumo {
         public String getId() { return id; }
         public String getEspacoId() { return espacoId; }
@@ -101,5 +127,6 @@ class BloqueioAdministrativoRepositorioImpl
         public String getDataFim() { return dataFim; }
         public String getJustificativa() { return justificativa; }
         public boolean isAtivo() { return ativo; }
+        public List<String> getEventosCancelados() { return eventosCancelados; }
     }
 }

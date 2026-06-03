@@ -31,6 +31,10 @@ public class SorteioServicoAplicacao {
         return repositorio.pesquisarPorEspectador(espectadorId);
     }
 
+    public List<SorteioResumo> pesquisarAbertos() {
+        return repositorio.pesquisarAbertos();
+    }
+
     public void criar(UUID apresentacaoId, UUID eventoId, int vagas,
                       LocalDateTime prazoInscricao, LocalDateTime dataApresentacao) {
         servico.criar(apresentacaoId, eventoId, vagas, prazoInscricao, dataApresentacao);

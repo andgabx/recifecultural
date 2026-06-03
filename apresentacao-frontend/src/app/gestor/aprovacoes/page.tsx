@@ -5,7 +5,15 @@ import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { CalendarDays, CheckCircle2, FileSearch, MapPin, XCircle } from "lucide-react";
+import {
+  CalendarDays,
+  CheckCircle2,
+  FileSearch,
+  MapPin,
+  Ticket,
+  Users,
+  XCircle,
+} from "lucide-react";
 import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
@@ -18,11 +26,11 @@ import { Modal } from "@/components/shared/Modal";
 import { FormField } from "@/components/form/FormField";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { useAprovarEvento, useReprovarEvento } from "@/hooks/useAprovacao";
-import { useEventos } from "@/hooks/useEventos";
+import { useEvento, useEventos } from "@/hooks/useEventos";
 import { containerVariants, itemVariants } from "@/lib/motion";
 import type { ApiError } from "@/lib/api";
 import type { EventoResumo } from "@/services/bff/eventos";
-import type { StatusEvento } from "@/types/dominio";
+import type { StatusEvento, UUID } from "@/types/dominio";
 
 const reprovacaoSchema = z.object({
   feedback: z
@@ -63,9 +71,18 @@ function formatarData(iso?: string) {
   }).format(new Date(iso));
 }
 
+function formatarPreco(valor?: string) {
+  if (!valor) return null;
+  return new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  }).format(Number(valor));
+}
+
 export default function AprovacoesPage() {
   const { data: eventos, isLoading, isError, refetch } = useEventos();
   const [reprovacao, setReprovacao] = useState<EventoResumo | null>(null);
+  const [detalheId, setDetalheId] = useState<UUID | null>(null);
 
   const aprovar = useAprovarEvento();
   const reprovar = useReprovarEvento();
@@ -132,6 +149,7 @@ export default function AprovacoesPage() {
             onAprovar={onAprovar}
             aprovando={aprovar.isPending}
             onReprovar={(e) => setReprovacao(e)}
+            onVerDetalhe={(id) => setDetalheId(id)}
           />
           {grupos.RASCUNHO.length > 0 && (
             <ColunaStatus
@@ -139,6 +157,7 @@ export default function AprovacoesPage() {
               badge="secondary"
               eventos={grupos.RASCUNHO}
               somenteLeitura
+              onVerDetalhe={(id) => setDetalheId(id)}
             />
           )}
           {grupos.OUTROS.length > 0 && (
@@ -147,10 +166,16 @@ export default function AprovacoesPage() {
               badge="outline"
               eventos={grupos.OUTROS}
               somenteLeitura
+              onVerDetalhe={(id) => setDetalheId(id)}
             />
           )}
         </div>
       )}
+
+      <DetalheModal
+        eventoId={detalheId}
+        onClose={() => setDetalheId(null)}
+      />
 
       <ReprovacaoModal
         evento={reprovacao}
@@ -177,6 +202,7 @@ function ColunaStatus({
   eventos,
   onAprovar,
   onReprovar,
+  onVerDetalhe,
   aprovando,
   somenteLeitura,
 }: {
@@ -185,6 +211,7 @@ function ColunaStatus({
   eventos: EventoResumo[];
   onAprovar?: (e: EventoResumo) => void;
   onReprovar?: (e: EventoResumo) => void;
+  onVerDetalhe: (id: UUID) => void;
   aprovando?: boolean;
   somenteLeitura?: boolean;
 }) {
@@ -225,7 +252,10 @@ function ColunaStatus({
               exit={{ x: 160, opacity: 0, transition: { duration: 0.25 } }}
               layout
             >
-              <Card className="flex h-full flex-col gap-3 p-5">
+              <Card
+                className="flex h-full cursor-pointer flex-col gap-3 p-5 transition-shadow hover:shadow-md"
+                onClick={() => onVerDetalhe(evento.id)}
+              >
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0 flex-1">
                     <p className="font-mono text-[10px] text-muted-foreground uppercase tracking-widest">
@@ -263,7 +293,7 @@ function ColunaStatus({
                   <div className="mt-auto flex gap-2 pt-3">
                     <Button
                       size="sm"
-                      onClick={() => onAprovar(evento)}
+                      onClick={(e) => { e.stopPropagation(); onAprovar(evento); }}
                       disabled={aprovando}
                       className="flex-1 bg-emerald-600 text-white hover:bg-emerald-700"
                     >
@@ -277,7 +307,7 @@ function ColunaStatus({
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => onReprovar(evento)}
+                      onClick={(e) => { e.stopPropagation(); onReprovar(evento); }}
                       className="flex-1 border-destructive/40 text-destructive hover:bg-destructive/10"
                     >
                       <XCircle className="mr-1 h-3.5 w-3.5" />
@@ -291,6 +321,154 @@ function ColunaStatus({
         </AnimatePresence>
       </motion.div>
     </section>
+  );
+}
+
+function DetalheModal({
+  eventoId,
+  onClose,
+}: {
+  eventoId: UUID | null;
+  onClose: () => void;
+}) {
+  const { data: evento, isLoading } = useEvento(eventoId ?? undefined);
+
+  return (
+    <Modal
+      open={!!eventoId}
+      onClose={onClose}
+      title={evento?.titulo ?? "Carregando…"}
+      description={evento?.descricaoCurta}
+      footer={
+        <Button variant="outline" onClick={onClose}>
+          Fechar
+        </Button>
+      }
+    >
+      {isLoading && (
+        <div className="space-y-3">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Skeleton key={i} className="h-4 w-full" />
+          ))}
+        </div>
+      )}
+
+      {evento && (
+        <div className="space-y-5 text-sm">
+          {/* Status e categoria */}
+          <div className="flex flex-wrap gap-2">
+            <Badge variant={statusVariant[evento.status as StatusEvento]}>
+              {statusLabel[evento.status as StatusEvento]}
+            </Badge>
+            {evento.categoria && (
+              <Badge variant="outline">{evento.categoria}</Badge>
+            )}
+          </div>
+
+          {/* Período */}
+          <Section label="Período">
+            <p className="flex items-center gap-1.5 text-muted-foreground">
+              <CalendarDays className="h-3.5 w-3.5 text-ouro" />
+              {formatarData(evento.periodoInicio)}
+              {evento.periodoFim && ` → ${formatarData(evento.periodoFim)}`}
+            </p>
+          </Section>
+
+          {/* Produtor */}
+          <Section label="Produtor">
+            <p className="font-mono text-xs text-muted-foreground">
+              {evento.promotorId ?? "—"}
+            </p>
+          </Section>
+
+          {/* Artistas */}
+          {evento.artistas && evento.artistas.length > 0 && (
+            <Section label="Artistas">
+              <ul className="space-y-1">
+                {evento.artistas.map((id) => (
+                  <li key={id} className="flex items-center gap-1.5 text-muted-foreground">
+                    <Users className="h-3.5 w-3.5 shrink-0 text-ouro" />
+                    <span className="font-mono text-xs">{id}</span>
+                  </li>
+                ))}
+              </ul>
+            </Section>
+          )}
+
+          {/* Preços */}
+          {(evento.precoInteira || evento.precoMeia || evento.precoSocial) && (
+            <Section label="Preços">
+              <ul className="space-y-1 text-muted-foreground">
+                {evento.precoInteira && (
+                  <li className="flex items-center gap-1.5">
+                    <Ticket className="h-3.5 w-3.5 text-ouro" />
+                    Inteira: <strong>{formatarPreco(evento.precoInteira)}</strong>
+                  </li>
+                )}
+                {evento.precoMeia && (
+                  <li className="flex items-center gap-1.5">
+                    <Ticket className="h-3.5 w-3.5 text-ouro" />
+                    Meia: <strong>{formatarPreco(evento.precoMeia)}</strong>
+                  </li>
+                )}
+                {evento.precoSocial && (
+                  <li className="flex items-center gap-1.5">
+                    <Ticket className="h-3.5 w-3.5 text-ouro" />
+                    Social: <strong>{formatarPreco(evento.precoSocial)}</strong>
+                  </li>
+                )}
+              </ul>
+            </Section>
+          )}
+
+          {/* Descrição longa */}
+          {evento.descricaoLonga && (
+            <Section label="Descrição">
+              <p className="whitespace-pre-wrap text-muted-foreground leading-relaxed">
+                {evento.descricaoLonga}
+              </p>
+            </Section>
+          )}
+
+          {/* Apresentações */}
+          {evento.apresentacoes && evento.apresentacoes.length > 0 && (
+            <Section label="Apresentações">
+              <ul className="space-y-1 text-muted-foreground">
+                {evento.apresentacoes.map((a) => (
+                  <li key={a.id} className="flex items-center gap-1.5">
+                    <CalendarDays className="h-3.5 w-3.5 text-ouro" />
+                    {new Intl.DateTimeFormat("pt-BR", {
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    }).format(new Date(a.dataHora))}
+                  </li>
+                ))}
+              </ul>
+            </Section>
+          )}
+        </div>
+      )}
+    </Modal>
+  );
+}
+
+function Section({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="space-y-1">
+      <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+        {label}
+      </p>
+      {children}
+    </div>
   );
 }
 

@@ -6,4 +6,5 @@ import java.util.UUID;
 public interface SorteioRepositorioAplicacao {
     List<SorteioResumo> pesquisarPorEvento(UUID eventoId);
     List<SorteioInscritoResumo> pesquisarPorEspectador(UUID espectadorId);
+    List<SorteioResumo> pesquisarAbertos();
 }

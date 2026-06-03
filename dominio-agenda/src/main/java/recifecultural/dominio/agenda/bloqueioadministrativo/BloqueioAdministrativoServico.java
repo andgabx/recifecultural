@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public class BloqueioAdministrativoServico {
 
@@ -65,7 +66,7 @@ public class BloqueioAdministrativoServico {
         return novoBloqueio;
     }
 
-    public void desativarBloqueio(BloqueioAdministrativoId id) {
+    public void desativarBloqueio(BloqueioAdministrativoId id, boolean reativarEventos) {
         BloqueioAdministrativo bloqueio = obterPorId(id);
         bloqueio.desativar();
         bloqueioRepositorio.atualizar(bloqueio);
@@ -75,6 +76,19 @@ public class BloqueioAdministrativoServico {
             Espaco espaco = espacoOpt.get();
             espaco.reativar();
             espacoRepositorio.atualizar(espaco);
+        }
+
+        if (reativarEventos) {
+            for (UUID eventoId : bloqueio.getEventosCancelados()) {
+                eventoRepositorio.obter(eventoId).ifPresent(evento -> {
+                    try {
+                        evento.restaurar();
+                        eventoRepositorio.atualizar(evento);
+                    } catch (IllegalStateException ignored) {
+                        // evento já não está mais cancelado — ignora
+                    }
+                });
+            }
         }
     }
 
@@ -112,6 +126,15 @@ public class BloqueioAdministrativoServico {
         return bloqueioRepositorio.obterTodos();
     }
 
+    public List<Evento> previewConflitantes(EspacoId espacoId, LocalDate inicio, LocalDate fim) {
+        List<Evento> conflitantes = eventoRepositorio.obterPorLocalEIntervalo(
+                espacoId.valor(),
+                inicio.atTime(LocalTime.MAX),
+                fim.atTime(LocalTime.MAX)
+        );
+        return conflitantes == null ? List.of() : conflitantes;
+    }
+
     private void cancelarEventosConflitantes(BloqueioAdministrativo bloqueio) {
         List<Evento> eventosConflitantes = eventoRepositorio.obterPorLocalEIntervalo(
                 bloqueio.getEspacoId().valor(),
@@ -127,6 +150,7 @@ public class BloqueioAdministrativoServico {
 
         for (Evento evento : eventosConflitantes) {
             evento.cancelar(motivoCancelamento);
+            bloqueio.registrarEventoCancelado(evento.getId());
             eventoRepositorio.atualizar(evento);
 
             // Padrão Observer (Par 3): publica evento de domínio no barramento.
@@ -135,7 +159,8 @@ public class BloqueioAdministrativoServico {
                     evento.getId(),
                     evento.getPromotorId(),
                     evento.getTitulo(),
-                    bloqueio.getJustificativa()
+                    bloqueio.getJustificativa(),
+                    evento.getArtistas()
             ));
         }
     }

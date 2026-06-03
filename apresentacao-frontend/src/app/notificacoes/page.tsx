@@ -39,6 +39,7 @@ const iconePorContexto: Record<string, IconContexto> = {
   EVENTO_APROVADO: { icone: CheckCircle2, cor: "text-emerald-600" },
   EVENTO_REPROVADO: { icone: ShieldAlert, cor: "text-destructive" },
   SORTEIO_CANCELADO: { icone: Gift, cor: "text-frevo" },
+  SORTEIO_GANHADOR: { icone: Gift, cor: "text-ouro-dark" },
   SORTEIO_PROMOCAO: { icone: Gift, cor: "text-ouro-dark" },
   ACESSIBILIDADE_REMOVIDA: { icone: ShieldAlert, cor: "text-capibaribe" },
   INGRESSO_CONFIRMADO: { icone: Ticket, cor: "text-emerald-600" },

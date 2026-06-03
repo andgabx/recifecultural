@@ -8,12 +8,13 @@ export type BloqueioResumo = {
   dataFim: string;
   justificativa: string;
   ativo: boolean;
+  eventosCancelados: string[];
 };
 
 export type CriarBloqueioRequisicao = {
   espacoId: UUID;
-  dataInicio: string;
-  dataFim: string;
+  inicio: string;
+  fim: string;
   justificativa: string;
 };
 
@@ -22,6 +23,8 @@ export type EventoConflitante = {
   titulo: string;
   periodoInicio: string | null;
   periodoFim: string | null;
+  totalEspectadores: number;
+  totalReembolso: number;
 };
 
 export const bloqueiosService = {
@@ -36,9 +39,9 @@ export const bloqueiosService = {
   criar: (payload: CriarBloqueioRequisicao) =>
     api.post<BffCriado>("/bloqueios", payload).then((r) => r.data),
 
-  desativar: (id: UUID) =>
+  desativar: (id: UUID, reativarEventos: boolean) =>
     api
-      .post<BffSemConteudo>(`/bloqueios/${id}/desativar`)
+      .post<BffSemConteudo>(`/bloqueios/${id}/desativar`, { reativarEventos })
       .then((r) => r.data),
 };
 

@@ -70,18 +70,24 @@ public class EventoServico {
     public void aprovar(UUID id) {
         Evento evento = buscarOuLancar(id);
 
-        List<Evento> noEspaco = repositorio.obterPorLocalEIntervalo(
-                evento.getLocalId(),
-                evento.getPeriodo().getInicio(),
-                evento.getPeriodo().getFim()
-        );
-        boolean temConflito = noEspaco.stream()
-                .filter(e -> !e.getId().equals(evento.getId()))
-                .anyMatch(e -> e.getStatus() == StatusEvento.APROVADO);
-        if (temConflito) {
-            throw new IllegalStateException(
-                    "Não é possível aprovar: o espaço já possui evento aprovado no mesmo período."
+        // Só verifica conflito de espaço se o evento tem local e período definidos
+        if (evento.getLocalId() != null
+                && evento.getPeriodo() != null
+                && evento.getPeriodo().getInicio() != null
+                && evento.getPeriodo().getFim() != null) {
+            List<Evento> noEspaco = repositorio.obterPorLocalEIntervalo(
+                    evento.getLocalId(),
+                    evento.getPeriodo().getInicio(),
+                    evento.getPeriodo().getFim()
             );
+            boolean temConflito = noEspaco.stream()
+                    .filter(e -> !e.getId().equals(evento.getId()))
+                    .anyMatch(e -> e.getStatus() == StatusEvento.APROVADO);
+            if (temConflito) {
+                throw new IllegalStateException(
+                        "Não é possível aprovar: o espaço já possui evento aprovado no mesmo período."
+                );
+            }
         }
 
         List<Evento> aprovadosDoPromotor = repositorio.obterEventosAprovadosPorPromotor(evento.getPromotorId());

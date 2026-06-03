@@ -41,12 +41,8 @@ const novoSchema = z.object({
   eventoId: z.string().uuid("eventoId inválido"),
   patrocinadorNome: z.string().min(2),
   categoriaPatrocinio: z.string().min(2),
-  tipo: z.enum(["MASTER", "OFICIAL", "APOIADOR"]),
-  modalidade: z.enum([
-    "VALOR_MONETARIO",
-    "SUBSIDIO_INGRESSO_SOCIAL",
-    "PERMUTA",
-  ]),
+  tipo: z.enum(["MASTER", "ASSOCIADO"]),
+  modalidade: z.enum(["FINANCEIRO", "SUBSIDIO_INGRESSO_SOCIAL"]),
   valorContribuicao: z.coerce.number().positive("Valor obrigatório"),
   dataEvento: z.string().min(1, "Data do evento obrigatória"),
 });
@@ -99,8 +95,8 @@ export default function PatrociniosPage() {
       eventoId: "",
       patrocinadorNome: "",
       categoriaPatrocinio: "",
-      tipo: "OFICIAL",
-      modalidade: "VALOR_MONETARIO",
+      tipo: "MASTER",
+      modalidade: "FINANCEIRO",
       valorContribuicao: 0,
       dataEvento: "",
     },
@@ -129,8 +125,15 @@ export default function PatrociniosPage() {
 
   async function onAtivar(p: PatrocinioResumo) {
     try {
-      await ativar.mutateAsync(p.id);
-      toast.success(`"${p.patrocinadorNome}" ativado`);
+      const resultado = await ativar.mutateAsync(p.id);
+      if (resultado && resultado.novoPrecoSocial != null) {
+        const precoFormatado = formatarMoeda(resultado.novoPrecoSocial);
+        toast.success(
+          `"${p.patrocinadorNome}" ativado. Subsídio aplicado: novo preço social = ${precoFormatado}${resultado.pisoAplicado ? " (piso mínimo aplicado)" : ""}.`,
+        );
+      } else {
+        toast.success(`"${p.patrocinadorNome}" ativado`);
+      }
     } catch (error) {
       toast.error((error as ApiError).message);
     }
@@ -143,7 +146,7 @@ export default function PatrociniosPage() {
     try {
       const resultado = await fn.mutateAsync(cancelar.patrocinio.id);
       toast.success(
-        `Cancelado. Reembolso ${formatarMoeda(resultado.valorReembolsado)}${resultado.multaAplicada > 0 ? `, multa ${formatarMoeda(resultado.multaAplicada)}` : ""}.`,
+        `Cancelado. Reembolso ${formatarMoeda(resultado.valorReembolsado)}${resultado.multaAplicada > 0 ? `, multa ${formatarMoeda(resultado.multaAplicada)}` : ""}${resultado.motivo ? ` — ${resultado.motivo}` : ""}.`,
       );
       setCancelar(null);
     } catch (error) {
@@ -231,13 +234,13 @@ export default function PatrociniosPage() {
                 </Badge>
               </div>
               <div className="text-vinho font-mono text-lg font-bold">
-                {formatarMoeda(p.valorContribuicao)}
+                {p.valorContribuicao != null ? formatarMoeda(Number(p.valorContribuicao)) : "—"}
               </div>
-              {p.valorReembolsado != null && p.valorReembolsado > 0 && (
+              {p.valorReembolsado != null && Number(p.valorReembolsado) > 0 && (
                 <p className="text-muted-foreground text-xs">
-                  Reembolsado: {formatarMoeda(p.valorReembolsado)}
-                  {p.multaAplicada != null && p.multaAplicada > 0 &&
-                    ` · multa ${formatarMoeda(p.multaAplicada)}`}
+                  Reembolsado: {formatarMoeda(Number(p.valorReembolsado))}
+                  {p.multaAplicada != null && Number(p.multaAplicada) > 0 &&
+                    ` · multa ${formatarMoeda(Number(p.multaAplicada))}`}
                 </p>
               )}
               <div className="flex flex-wrap gap-2 pt-2">
@@ -356,18 +359,16 @@ export default function PatrociniosPage() {
           <div className="grid gap-4 sm:grid-cols-2">
             <FormField label="Tipo" htmlFor="tipo" required>
               <Select id="tipo" {...form.register("tipo")}>
-                <option value="MASTER">Master</option>
-                <option value="OFICIAL">Oficial</option>
-                <option value="APOIADOR">Apoiador</option>
+                <option value="MASTER">Master (naming rights, exclusivo)</option>
+                <option value="ASSOCIADO">Associado</option>
               </Select>
             </FormField>
             <FormField label="Modalidade" htmlFor="modalidade" required>
               <Select id="modalidade" {...form.register("modalidade")}>
-                <option value="VALOR_MONETARIO">Valor monetário</option>
+                <option value="FINANCEIRO">Financeiro</option>
                 <option value="SUBSIDIO_INGRESSO_SOCIAL">
                   Subsídio ingresso social
                 </option>
-                <option value="PERMUTA">Permuta</option>
               </Select>
             </FormField>
           </div>
@@ -422,7 +423,8 @@ export default function PatrociniosPage() {
             <div className="space-y-2 text-sm">
               <p>
                 Patrocínio: <strong>{cancelar.patrocinio.patrocinadorNome}</strong>
-                {" "}({formatarMoeda(cancelar.patrocinio.valorContribuicao)})
+                {cancelar.patrocinio.valorContribuicao != null &&
+                  ` (${formatarMoeda(Number(cancelar.patrocinio.valorContribuicao))})`}
               </p>
               <p className="text-muted-foreground text-xs">
                 {cancelar.tipo === "evento"

@@ -29,6 +29,18 @@ public class CupomBffControlador extends AbstractBffControlador {
         this.gestaoServico = gestaoServico;
     }
 
+    @Operation(summary = "Valida cupom e calcula desconto SEM consumir (use antes de finalizar)")
+    @PostMapping("/preview")
+    public ResponseEntity<Map<String, Object>> preview(@RequestBody AplicarCupomRequisicao req) {
+        var preview = aplicarServico.previewDesconto(req.codigo(), req.cpf(), req.valor(), req.categoria());
+        return responder(Map.of(
+                "tipoDesconto",          preview.tipoDesconto(),
+                "configuracaoDesconto",  preview.configuracaoDesconto(),
+                "descontoCalculado",     preview.descontoCalculado(),
+                "valorFinal",            preview.valorFinal()
+        ));
+    }
+
     @Operation(summary = "Aplica cupom e retorna valor final")
     @PostMapping("/aplicar")
     public ResponseEntity<Map<String, Object>> aplicar(@RequestBody AplicarCupomRequisicao req) {

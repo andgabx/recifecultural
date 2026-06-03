@@ -145,6 +145,19 @@ public class IngressoServico {
         return ingresso;
     }
 
+    public Ingresso comprarComPreReservaComCupom(UUID eventoId, LocalDateTime dataHora,
+                                                   UUID preReservaId, UUID assentoId,
+                                                   TipoIngresso tipo, BigDecimal valor,
+                                                   MetodoPagamento metodo, int capacidadeMaxima,
+                                                   String codigoCupom, String cpfComprador,
+                                                   String categoriaEvento,
+                                                   IConfirmacaoReserva confirmacaoReserva) {
+        notNull(cupomServico, "Serviço de cupom não configurado.");
+        BigDecimal valorComDesconto = cupomServico.aplicarDesconto(codigoCupom, cpfComprador, valor, categoriaEvento);
+        return comprarComPreReserva(eventoId, dataHora, preReservaId, assentoId,
+                tipo, valorComDesconto, metodo, capacidadeMaxima, confirmacaoReserva);
+    }
+
     public ResultadoReembolso solicitarReembolso(IngressoId id, LocalDateTime agora) {
         notNull(id, "O id do ingresso não pode ser nulo.");
         notNull(agora, "A data/hora atual não pode ser nula.");

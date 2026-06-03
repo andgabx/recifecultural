@@ -31,16 +31,21 @@ export function useCadastrarBloqueio() {
   return useMutation({
     mutationFn: (payload: CriarBloqueioRequisicao) =>
       bloqueiosService.criar(payload),
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: queryKeys.ativos }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.ativos });
+      queryClient.invalidateQueries({ queryKey: ["espacos"] });
+    },
   });
 }
 
 export function useDesativarBloqueio() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (id: UUID) => bloqueiosService.desativar(id),
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: queryKeys.ativos }),
+    mutationFn: ({ id, reativarEventos }: { id: UUID; reativarEventos: boolean }) =>
+      bloqueiosService.desativar(id, reativarEventos),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.ativos });
+      queryClient.invalidateQueries({ queryKey: ["espacos"] });
+    },
   });
 }

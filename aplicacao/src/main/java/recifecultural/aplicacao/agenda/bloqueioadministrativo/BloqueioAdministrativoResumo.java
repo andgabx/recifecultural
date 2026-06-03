@@ -1,5 +1,7 @@
 package recifecultural.aplicacao.agenda.bloqueioadministrativo;
 
+import java.util.List;
+
 public interface BloqueioAdministrativoResumo {
     String getId();
     String getEspacoId();
@@ -7,4 +9,5 @@ public interface BloqueioAdministrativoResumo {
     String getDataFim();
     String getJustificativa();
     boolean isAtivo();
+    List<String> getEventosCancelados();
 }

@@ -50,6 +50,7 @@ export default function BloqueiosPage() {
   const [etapa, setEtapa] = useState<"form" | "preview">("form");
   const [conflitos, setConflitos] = useState<EventoConflitante[]>([]);
   const [pendingValues, setPendingValues] = useState<CadastroForm | null>(null);
+  const [bloqueioParaDesativar, setBloqueioParaDesativar] = useState<BloqueioResumo | null>(null);
 
   const preview = usePreviewBloqueio();
   const cadastrar = useCadastrarBloqueio();
@@ -91,7 +92,12 @@ export default function BloqueiosPage() {
   async function onConfirmar() {
     if (!pendingValues) return;
     try {
-      await cadastrar.mutateAsync(pendingValues);
+      await cadastrar.mutateAsync({
+        espacoId: pendingValues.espacoId,
+        inicio: pendingValues.dataInicio,
+        fim: pendingValues.dataFim,
+        justificativa: pendingValues.justificativa,
+      });
       toast.success("Bloqueio criado. Eventos conflitantes foram cancelados.");
       fecharModal();
     } catch (error) {
@@ -99,14 +105,23 @@ export default function BloqueiosPage() {
     }
   }
 
-  async function handleDesativar(bloqueio: BloqueioResumo) {
+  async function confirmarDesativacao(reativarEventos: boolean) {
+    if (!bloqueioParaDesativar) return;
     try {
-      await desativar.mutateAsync(bloqueio.id);
-      toast.success("Bloqueio desativado");
+      await desativar.mutateAsync({ id: bloqueioParaDesativar.id, reativarEventos });
+      toast.success(
+        reativarEventos
+          ? "Bloqueio desativado e eventos reativados."
+          : "Bloqueio desativado.",
+      );
+      setBloqueioParaDesativar(null);
     } catch (error) {
       toast.error((error as ApiError).message);
     }
   }
+
+  const ativos = data?.filter((b) => b.ativo) ?? [];
+  const historico = data?.filter((b) => !b.ativo) ?? [];
 
   const colunas: Coluna<BloqueioResumo>[] = [
     {
@@ -145,7 +160,7 @@ export default function BloqueiosPage() {
           <Button
             size="icon-sm"
             variant="ghost"
-            onClick={() => handleDesativar(b)}
+            onClick={() => setBloqueioParaDesativar(b)}
             aria-label="Desativar bloqueio"
             className="text-emerald-700 hover:bg-emerald-100"
           >
@@ -186,24 +201,117 @@ export default function BloqueiosPage() {
       )}
 
       {data && (
-        <DataTable
-          data={data}
-          rowKey={(b) => b.id}
-          columns={colunas}
-          empty={
-            <EmptyState
-              icon={CalendarOff}
-              title="Nenhum bloqueio ativo"
-              description="Crie um bloqueio quando precisar inviabilizar reservas em um espaço."
-              action={
-                <Button onClick={() => setCadastroAberto(true)} variant="outline">
-                  Novo bloqueio
-                </Button>
+        <div className="space-y-8">
+          <section className="space-y-2">
+            <h2 className="text-muted-foreground border-b border-border pb-1 text-xs font-semibold uppercase tracking-widest">
+              Ativos
+            </h2>
+            <DataTable
+              data={ativos}
+              rowKey={(b) => b.id}
+              columns={colunas}
+              empty={
+                <EmptyState
+                  icon={CalendarOff}
+                  title="Nenhum bloqueio ativo"
+                  description="Crie um bloqueio quando precisar inviabilizar reservas em um espaço."
+                  action={
+                    <Button onClick={() => setCadastroAberto(true)} variant="outline">
+                      Novo bloqueio
+                    </Button>
+                  }
+                />
               }
             />
-          }
-        />
+          </section>
+
+          {historico.length > 0 && (
+            <section className="space-y-2">
+              <h2 className="text-muted-foreground border-b border-border pb-1 text-xs font-semibold uppercase tracking-widest">
+                Histórico
+              </h2>
+              <DataTable
+                data={historico}
+                rowKey={(b) => b.id}
+                columns={colunas}
+                empty={null}
+              />
+            </section>
+          )}
+        </div>
       )}
+
+      {/* Modal: confirmação de desativação */}
+      <Modal
+        open={!!bloqueioParaDesativar}
+        onClose={() => setBloqueioParaDesativar(null)}
+        title="Desativar bloqueio"
+        description={
+          bloqueioParaDesativar?.eventosCancelados.length
+            ? `Este bloqueio cancelou ${bloqueioParaDesativar.eventosCancelados.length} evento${bloqueioParaDesativar.eventosCancelados.length !== 1 ? "s" : ""}. Deseja reativá-los?`
+            : "Nenhum evento foi cancelado por este bloqueio."
+        }
+        footer={
+          <>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setBloqueioParaDesativar(null)}
+              disabled={desativar.isPending}
+            >
+              Cancelar
+            </Button>
+            {bloqueioParaDesativar?.eventosCancelados.length ? (
+              <>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => confirmarDesativacao(false)}
+                  disabled={desativar.isPending}
+                >
+                  Só desativar
+                </Button>
+                <Button
+                  type="button"
+                  onClick={() => confirmarDesativacao(true)}
+                  disabled={desativar.isPending}
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                >
+                  {desativar.isPending && <LoadingSpinner className="mr-2 text-white" />}
+                  Desativar e reativar eventos
+                </Button>
+              </>
+            ) : (
+              <Button
+                type="button"
+                onClick={() => confirmarDesativacao(false)}
+                disabled={desativar.isPending}
+                className="bg-vinho hover:bg-vinho-light text-marquee"
+              >
+                {desativar.isPending && <LoadingSpinner className="mr-2 text-marquee" />}
+                Desativar
+              </Button>
+            )}
+          </>
+        }
+      >
+        {bloqueioParaDesativar && (
+          <div className="text-sm text-muted-foreground space-y-1">
+            <p>
+              <strong>Espaço:</strong>{" "}
+              <span className="font-mono">{bloqueioParaDesativar.espacoId.slice(0, 8)}…</span>
+            </p>
+            <p>
+              <strong>Período:</strong>{" "}
+              {formatarData(bloqueioParaDesativar.dataInicio)} →{" "}
+              {formatarData(bloqueioParaDesativar.dataFim)}
+            </p>
+            <p>
+              <strong>Justificativa:</strong> {bloqueioParaDesativar.justificativa}
+            </p>
+          </div>
+        )}
+      </Modal>
 
       {/* Etapa 1: formulário */}
       <Modal
@@ -330,19 +438,38 @@ export default function BloqueiosPage() {
             </div>
             <ul className="divide-y rounded-lg border text-sm">
               {conflitos.map((e) => (
-                <li key={e.id} className="flex items-start justify-between gap-4 px-3 py-2">
-                  <span className="font-medium">{e.titulo}</span>
-                  {e.periodoInicio && (
-                    <span className="shrink-0 text-xs text-muted-foreground">
-                      {formatarData(e.periodoInicio)}
-                      {e.periodoFim && e.periodoFim !== e.periodoInicio
-                        ? ` → ${formatarData(e.periodoFim)}`
-                        : ""}
+                <li key={e.id} className="space-y-1 px-3 py-2">
+                  <div className="flex items-start justify-between gap-4">
+                    <span className="font-medium">{e.titulo}</span>
+                    {e.periodoInicio && (
+                      <span className="shrink-0 text-xs text-muted-foreground">
+                        {formatarData(e.periodoInicio)}
+                        {e.periodoFim && e.periodoFim !== e.periodoInicio
+                          ? ` → ${formatarData(e.periodoFim)}`
+                          : ""}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex gap-3 text-xs text-muted-foreground">
+                    <span>{e.totalEspectadores} espectador{e.totalEspectadores !== 1 ? "es" : ""}</span>
+                    <span>·</span>
+                    <span>
+                      {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(e.totalReembolso)} em reembolsos
                     </span>
-                  )}
+                  </div>
                 </li>
               ))}
             </ul>
+            {conflitos.some((e) => e.totalEspectadores > 0) && (
+              <p className="text-xs text-muted-foreground text-right">
+                Total em reembolsos:{" "}
+                <strong>
+                  {new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(
+                    conflitos.reduce((sum, e) => sum + e.totalReembolso, 0),
+                  )}
+                </strong>
+              </p>
+            )}
           </div>
         )}
       </Modal>

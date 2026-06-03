@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public class BloqueioAdministrativoServico {
 
@@ -65,7 +66,7 @@ public class BloqueioAdministrativoServico {
         return novoBloqueio;
     }
 
-    public void desativarBloqueio(BloqueioAdministrativoId id) {
+    public void desativarBloqueio(BloqueioAdministrativoId id, boolean reativarEventos) {
         BloqueioAdministrativo bloqueio = obterPorId(id);
         bloqueio.desativar();
         bloqueioRepositorio.atualizar(bloqueio);
@@ -76,6 +77,28 @@ public class BloqueioAdministrativoServico {
             espaco.reativar();
             espacoRepositorio.atualizar(espaco);
         }
+
+        if (reativarEventos) {
+            for (UUID eventoId : bloqueio.getEventosCancelados()) {
+                eventoRepositorio.obter(eventoId).ifPresent(evento -> {
+                    try {
+                        evento.restaurar();
+                        eventoRepositorio.atualizar(evento);
+                    } catch (IllegalStateException ignored) {
+                        // evento já não está mais cancelado — ignora
+                    }
+                });
+            }
+        }
+    }
+
+    public void desativarBloqueiosAtivosDoEspaco(EspacoId espacoId) {
+        bloqueioRepositorio.buscarPorEspaco(espacoId).stream()
+                .filter(BloqueioAdministrativo::isAtivo)
+                .forEach(b -> {
+                    b.desativar();
+                    bloqueioRepositorio.atualizar(b);
+                });
     }
 
     public BloqueioAdministrativo obterPorId(BloqueioAdministrativoId id) {
@@ -127,6 +150,7 @@ public class BloqueioAdministrativoServico {
 
         for (Evento evento : eventosConflitantes) {
             evento.cancelar(motivoCancelamento);
+            bloqueio.registrarEventoCancelado(evento.getId());
             eventoRepositorio.atualizar(evento);
 
             // Padrão Observer (Par 3): publica evento de domínio no barramento.

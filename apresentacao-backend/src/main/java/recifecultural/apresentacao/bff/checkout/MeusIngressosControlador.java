@@ -30,6 +30,12 @@ public class MeusIngressosControlador extends AbstractBffControlador {
         this.servico = servico;
     }
 
+    @Operation(summary = "Lista todos os ingressos (agrupa por evento no front)")
+    @GetMapping
+    public ResponseEntity<List<IngressoResumo>> listarTodos() {
+        return responder(servico.listarTodos());
+    }
+
     @Operation(summary = "Lista ingressos do evento")
     @GetMapping("/evento/{eventoId}")
     public ResponseEntity<List<IngressoResumo>> listarPorEvento(@PathVariable UUID eventoId) {

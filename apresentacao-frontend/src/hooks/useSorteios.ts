@@ -9,11 +9,19 @@ import {
 import type { UUID } from "@/types/dominio";
 
 const queryKeys = {
+  abertos: ["sorteios", "abertos"] as const,
   porEvento: (eventoId: UUID) => ["sorteios", "evento", eventoId] as const,
   porEspectador: (espectadorId: UUID) =>
     ["sorteios", "espectador", espectadorId] as const,
   inscricoes: (sorteioId: UUID) => ["sorteios", sorteioId, "inscricoes"] as const,
 };
+
+export function useSorteiosAbertos() {
+  return useQuery({
+    queryKey: queryKeys.abertos,
+    queryFn: () => sorteiosService.listarAbertos(),
+  });
+}
 
 export function useSorteiosPorEvento(eventoId: UUID | undefined) {
   return useQuery({
@@ -50,6 +58,7 @@ export function useInscreverNoSorteio(espectadorId?: UUID) {
         });
       }
       queryClient.invalidateQueries({ queryKey: ["sorteios", "evento"] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.abertos });
     },
   });
 }

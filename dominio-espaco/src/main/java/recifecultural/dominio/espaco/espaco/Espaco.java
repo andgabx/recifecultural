@@ -69,8 +69,6 @@ public class Espaco {
         this.status = StatusEspaco.ATIVO;
     }
 
-    private List<Ocupacao> ocupacoesExistentes = new ArrayList<>();
-
     public void validarDisponibilidade(Ocupacao novaOcupacao, List<Ocupacao> ocupacoesNoPeriodo) {
         if (this.status == StatusEspaco.INTERDITADO) {
             throw new IllegalStateException("Espaço interditado não aceita novas pautas.");
@@ -89,4 +87,5 @@ public class Espaco {
     public String getNome() { return nome; }
     public int getCapacidadeMaxima() { return capacidadeMaxima; }
     public StatusEspaco getStatus() { return status; }
+    public List<String> getRiderTecnico() { return List.copyOf(riderTecnico); }
 }

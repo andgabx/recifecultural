@@ -46,6 +46,13 @@ public class EspacoControlador extends AbstractBffControlador {
         return responderSemConteudo();
     }
 
+    @Operation(summary = "Reativa espaço interditado")
+    @PostMapping("/{id}/reativar")
+    public ResponseEntity<Map<String, String>> reativar(@PathVariable UUID id) {
+        servico.reativarEspaco(new EspacoId(id));
+        return responderSemConteudo();
+    }
+
     record CadastrarEspacoRequisicao(String nome, int capacidadeMaxima, List<String> riderTecnico) {}
     record AtualizarCapacidadeRequisicao(int novaCapacidade, int ingressosVendidosFuturos) {}
 }

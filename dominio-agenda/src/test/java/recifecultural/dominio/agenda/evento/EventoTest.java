@@ -20,7 +20,7 @@ class EventoTest {
                 "longa",
                 new Periodo(LocalDateTime.now().plusDays(5), LocalDateTime.now().plusDays(10)),
                 URI.create("https://evento.com/x"),
-                new Preco(java.math.BigDecimal.TEN, java.math.BigDecimal.ONE, "GRATIS"));
+                new Preco(java.math.BigDecimal.TEN, java.math.BigDecimal.ONE, null));
     }
 
     private Evento eventoEmAnalisePronto() {
@@ -107,6 +107,6 @@ class EventoTest {
                 "", "x", "y",
                 new Periodo(LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(2)),
                 URI.create("https://x.com"),
-                new Preco(java.math.BigDecimal.ONE, java.math.BigDecimal.ONE, "S")));
+                new Preco(java.math.BigDecimal.ONE, java.math.BigDecimal.ONE, null)));
     }
 }

@@ -35,8 +35,8 @@ const schema = z
       message: "Selecione uma categoria",
     }),
     localId: z.string().uuid("Selecione um espaço válido (UUID)").optional().or(z.literal("")),
-    periodoInicio: z.string().min(1, "Informe quando o evento começa"),
-    periodoFim: z.string().min(1, "Informe quando termina"),
+    periodoInicio: z.string().optional().or(z.literal("")),
+    periodoFim: z.string().optional().or(z.literal("")),
     precoInteira: z.coerce
       .number()
       .nonnegative("Preço não pode ser negativo")
@@ -55,8 +55,18 @@ const schema = z
       .or(z.literal("")),
   })
   .refine(
-    (v) =>
-      new Date(v.periodoFim).getTime() >= new Date(v.periodoInicio).getTime(),
+    (v) => {
+      if (!v.periodoInicio && !v.periodoFim) return !!v.primeiraApresentacao;
+      return true;
+    },
+    { message: "Informe o período ou ao menos uma data de apresentação", path: ["primeiraApresentacao"] },
+  )
+  .refine(
+    (v) => {
+      if (v.periodoInicio && v.periodoFim)
+        return new Date(v.periodoFim).getTime() >= new Date(v.periodoInicio).getTime();
+      return true;
+    },
     { message: "Fim deve ser igual ou posterior ao início", path: ["periodoFim"] },
   );
 
@@ -94,10 +104,15 @@ export default function NovoEventoPage() {
 
   async function onSubmit(values: CriarFormOutput) {
     try {
-      const isoInicio = new Date(values.periodoInicio).toISOString();
-      const isoFim = new Date(values.periodoFim).toISOString();
       const isoApresentacao = values.primeiraApresentacao
         ? new Date(values.primeiraApresentacao).toISOString()
+        : undefined;
+
+      const isoInicio = values.periodoInicio
+        ? new Date(values.periodoInicio).toISOString()
+        : undefined;
+      const isoFim = values.periodoFim
+        ? new Date(values.periodoFim).toISOString()
         : undefined;
 
       const resposta = await criar.mutateAsync({
@@ -216,7 +231,7 @@ export default function NovoEventoPage() {
                 label="Início do período"
                 htmlFor="periodoInicio"
                 error={form.formState.errors.periodoInicio?.message}
-                required
+                hint="Deixe em branco para evento de apresentação única."
               >
                 <Input
                   id="periodoInicio"
@@ -228,7 +243,6 @@ export default function NovoEventoPage() {
                 label="Fim do período"
                 htmlFor="periodoFim"
                 error={form.formState.errors.periodoFim?.message}
-                required
               >
                 <Input
                   id="periodoFim"
@@ -240,7 +254,8 @@ export default function NovoEventoPage() {
             <FormField
               label="Primeira apresentação"
               htmlFor="primeiraApresentacao"
-              hint="Obrigatório para submeter (mínimo 1 data)."
+              error={form.formState.errors.primeiraApresentacao?.message}
+              hint="Obrigatório quando o período não for informado."
             >
               <Input
                 id="primeiraApresentacao"

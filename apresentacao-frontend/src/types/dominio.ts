@@ -6,7 +6,7 @@
 export type UUID = string;
 
 export type MetodoPagamento = "PIX" | "CARTAO_CREDITO" | "CARTAO_DEBITO";
-export type TipoIngresso = "INTEIRA" | "MEIA" | "SOCIAL";
+export type TipoIngresso = "INTEIRA" | "MEIA_ENTRADA" | "SOCIAL";
 export type StatusIngresso = "ATIVO" | "UTILIZADO" | "REEMBOLSADO";
 
 export type StatusEvento =
@@ -37,15 +37,14 @@ export type StatusPatrocinio =
   | "CANCELADO_EVENTO"
   | "CANCELADO_PATROCINADOR";
 
-export type TipoPatrocinio = "MASTER" | "OFICIAL" | "APOIADOR";
+export type TipoPatrocinio = "MASTER" | "ASSOCIADO";
 export type ModalidadeContribuicao =
-  | "VALOR_MONETARIO"
-  | "SUBSIDIO_INGRESSO_SOCIAL"
-  | "PERMUTA";
+  | "FINANCEIRO"
+  | "SUBSIDIO_INGRESSO_SOCIAL";
 
 export type StatusProdutor = "ATIVO" | "SUSPENSO" | "INATIVO";
 export type StatusArtista = "ATIVO" | "INATIVO";
-export type StatusEspaco = "ATIVO" | "INTERDITADO" | "INATIVO";
+export type StatusEspaco = "ATIVO" | "INTERDITADO";
 export type StatusAssento =
   | "LIVRE"
   | "PRE_RESERVADO"

@@ -44,6 +44,14 @@ public class EspacoServico {
         espacoRepositorio.atualizar(espaco);
     }
 
+    public void reativarEspaco(EspacoId espacoId) {
+        Espaco espaco = espacoRepositorio.obterPorId(espacoId)
+                .orElseThrow(() -> new IllegalArgumentException("Espaço não encontrado."));
+
+        espaco.reativar();
+        espacoRepositorio.atualizar(espaco);
+    }
+
     public void agendarEvento(EspacoId id, Ocupacao novaOcupacao) {
         Espaco espaco = espacoRepositorio.obterPorId(id)
                 .orElseThrow(() -> new IllegalArgumentException("Espaço não encontrado."));

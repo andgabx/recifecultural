@@ -4,6 +4,10 @@ import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
+
 import recifecultural.dominio.agenda.acessibilidade.RecursoAcessibilidade;
 import recifecultural.dominio.agenda.acessibilidade.TipoRecursoAcessibilidade;
 import recifecultural.dominio.agenda.acessibilidade.StatusRecurso;
@@ -78,7 +82,8 @@ public class JpaMapeador extends ModelMapper {
                         s.id, s.promotorId, s.localId,
                         s.titulo, s.descricaoCurta, s.descricaoLonga,
                         new Periodo(s.periodoInicio, s.periodoFim),
-                        s.precoInteira != null ? new Preco(s.precoInteira, s.precoMeia, null) : null,
+                        (s.precoInteira != null || s.precoSocial != null)
+                                ? new Preco(s.precoInteira, s.precoMeia, s.precoSocial) : null,
                         s.categoria,
                         s.status,
                         s.datasApresentacao,
@@ -110,6 +115,7 @@ public class JpaMapeador extends ModelMapper {
                 if (s.getPreco() != null) {
                     jpa.precoInteira = s.getPreco().getInteira();
                     jpa.precoMeia = s.getPreco().getMeia();
+                    jpa.precoSocial = s.getPreco().getSocial();
                 }
                 jpa.dataAprovacao = s.getDataAprovacao();
                 jpa.dataReprovacao = s.getDataReprovacao();
@@ -282,12 +288,18 @@ public class JpaMapeador extends ModelMapper {
         addConverter(new AbstractConverter<BloqueioAdministrativoJpa, BloqueioAdministrativo>() {
             @Override
             protected BloqueioAdministrativo convert(BloqueioAdministrativoJpa s) {
+                List<UUID> eventos = (s.eventosCancelados == null || s.eventosCancelados.isBlank())
+                        ? new java.util.ArrayList<>()
+                        : Arrays.stream(s.eventosCancelados.split(","))
+                                .map(UUID::fromString)
+                                .collect(java.util.stream.Collectors.toCollection(java.util.ArrayList::new));
                 return new BloqueioAdministrativo(
                         new recifecultural.dominio.agenda.bloqueioadministrativo.BloqueioAdministrativoId(s.id),
                         new EspacoId(s.espacoId),
                         s.dataInicio, s.dataFim,
                         s.justificativa,
-                        s.ativo
+                        s.ativo,
+                        eventos
                 );
             }
         });
@@ -354,6 +366,7 @@ public class JpaMapeador extends ModelMapper {
                 jpa.nome = s.getNome();
                 jpa.capacidadeMaxima = s.getCapacidadeMaxima();
                 jpa.status = s.getStatus();
+                jpa.riderTecnico = new ArrayList<>(s.getRiderTecnico());
                 return jpa;
             }
         });
@@ -450,6 +463,9 @@ public class JpaMapeador extends ModelMapper {
                 jpa.dataFim = s.getDataFim();
                 jpa.justificativa = s.getJustificativa();
                 jpa.ativo = s.isAtivo();
+                List<UUID> cancelados = s.getEventosCancelados();
+                jpa.eventosCancelados = cancelados.isEmpty() ? null
+                        : cancelados.stream().map(UUID::toString).collect(java.util.stream.Collectors.joining(","));
                 return jpa;
             }
         });

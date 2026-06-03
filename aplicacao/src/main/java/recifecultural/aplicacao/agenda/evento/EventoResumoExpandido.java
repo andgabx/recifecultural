@@ -9,5 +9,7 @@ public interface EventoResumoExpandido extends EventoResumo {
     String getLocalId();
     String getPrecoInteira();
     String getPrecoMeia();
+    String getPrecoSocial();
+    List<String> getArtistas();
     List<ApresentacaoResumo> getApresentacoes();
 }

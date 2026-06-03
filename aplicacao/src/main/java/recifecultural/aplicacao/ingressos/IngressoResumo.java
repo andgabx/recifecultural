@@ -6,4 +6,8 @@ public interface IngressoResumo {
     String getTipo();
     String getStatus();
     String getDataHoraApresentacao();
+    String getDataCompra();
+    String getMetodoPagamento();
+    String getValorPago();
+    String getCodigoQr();
 }

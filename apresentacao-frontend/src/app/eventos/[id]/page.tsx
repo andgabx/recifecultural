@@ -252,12 +252,13 @@ export default function EventoDetalhePage() {
 
                 <Link
                   href={{
-                    pathname: "/checkout",
+                    pathname: "/checkout/selecionar-assento",
                     query: {
                       eventoId: evento.id,
                       dataHoraApresentacao:
-                        evento.periodoInicio ?? new Date().toISOString(),
-                      precoInteira: evento.precoInteira ?? "50",
+                        evento.apresentacoes?.[0]?.dataHora ??
+                        evento.periodoInicio ??
+                        new Date().toISOString(),
                     },
                   }}
                   className={cn(
@@ -268,7 +269,7 @@ export default function EventoDetalhePage() {
                   aria-disabled={evento.status !== "APROVADO"}
                 >
                   <ShoppingBag className="mr-2 h-4 w-4" />
-                  Comprar ingresso
+                  Escolher assento
                 </Link>
                 {evento.status !== "APROVADO" && (
                   <p className="text-muted-foreground text-center text-xs">

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Building2, Lock, Plus, Settings2 } from "lucide-react";
+import { Building2, Lock, Plus, Settings2, Unlock } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -18,7 +18,9 @@ import { PageLayout } from "@/components/layout/PageLayout";
 import {
   useAtualizarCapacidade,
   useCadastrarEspaco,
+  useEspacos,
   useInterditarEspaco,
+  useReativarEspaco,
 } from "@/hooks/useEspacos";
 import type { ApiError } from "@/lib/api";
 
@@ -46,14 +48,21 @@ const interditarSchema = z.object({
 });
 type InterditarForm = z.infer<typeof interditarSchema>;
 
+const reativarSchema = z.object({
+  espacoId: z.string().uuid("Id inválido"),
+});
+type ReativarForm = z.infer<typeof reativarSchema>;
+
 export default function EspacosPage() {
-  const [acao, setAcao] = useState<null | "cadastrar" | "capacidade" | "interditar">(
+  const [acao, setAcao] = useState<null | "cadastrar" | "capacidade" | "interditar" | "reativar">(
     null,
   );
 
+  const { data: espacos } = useEspacos();
   const cadastrar = useCadastrarEspaco();
   const atualizar = useAtualizarCapacidade();
   const interditar = useInterditarEspaco();
+  const reativar = useReativarEspaco();
 
   const cadastroForm = useForm<CadastroFormInput, unknown, CadastroFormOutput>({
     resolver: zodResolver(cadastroSchema),
@@ -67,6 +76,11 @@ export default function EspacosPage() {
 
   const interditarForm = useForm<InterditarForm>({
     resolver: zodResolver(interditarSchema),
+    defaultValues: { espacoId: "" },
+  });
+
+  const reativarForm = useForm<ReativarForm>({
+    resolver: zodResolver(reativarSchema),
     defaultValues: { espacoId: "" },
   });
 
@@ -115,12 +129,23 @@ export default function EspacosPage() {
     }
   }
 
+  async function onReativar(values: ReativarForm) {
+    try {
+      await reativar.mutateAsync(values.espacoId);
+      toast.success("Espaço reativado");
+      reativarForm.reset();
+      setAcao(null);
+    } catch (error) {
+      toast.error((error as ApiError).message);
+    }
+  }
+
   return (
     <PageLayout
       titulo="Espaços culturais"
       subtitulo="Cadastro, capacidade e interdição administrativa de espaços."
     >
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <CardAcao
           icon={Plus}
           titulo="Novo espaço"
@@ -142,19 +167,55 @@ export default function EspacosPage() {
           cor="destructive"
           onClick={() => setAcao("interditar")}
         />
+        <CardAcao
+          icon={Unlock}
+          titulo="Reativar espaço"
+          descricao="Reabilita espaço interditado para receber novas pautas."
+          cor="verde"
+          onClick={() => setAcao("reativar")}
+        />
       </div>
 
-      <Card className="border-dashed border-ouro/30 bg-ouro/5 p-5">
-        <h2 className="font-display text-palco text-sm font-semibold">
-          Listagem
+      {/* Listagem de espaços */}
+      <div className="mt-2">
+        <h2 className="font-display text-palco mb-3 text-sm font-semibold">
+          Espaços cadastrados
         </h2>
-        <p className="text-muted-foreground mt-1 text-xs">
-          O BFF não expõe <code className="font-mono">GET /api/bff/espacos</code> nesta
-          versão — a listagem completa fica disponível em{" "}
-          <code className="font-mono">/api/espacos</code> (CRUD direto). Aqui ficam apenas
-          as operações de domínio (cadastrar, atualizar capacidade, interditar).
-        </p>
-      </Card>
+        {espacos && espacos.length > 0 ? (
+          <div className="rounded-md border">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b bg-muted/50">
+                  <th className="px-4 py-2 text-left font-medium">Nome</th>
+                  <th className="px-4 py-2 text-right font-medium">Capacidade</th>
+                  <th className="px-4 py-2 text-center font-medium">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {espacos.map((e) => (
+                  <tr key={e.id} className="border-b last:border-0">
+                    <td className="px-4 py-2">{e.nome}</td>
+                    <td className="px-4 py-2 text-right">{e.capacidadeMaxima}</td>
+                    <td className="px-4 py-2 text-center">
+                      <span
+                        className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
+                          e.status === "ATIVO"
+                            ? "bg-green-100 text-green-700"
+                            : "bg-red-100 text-red-700"
+                        }`}
+                      >
+                        {e.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <p className="text-muted-foreground text-sm">Nenhum espaço cadastrado.</p>
+        )}
+      </div>
 
       {/* Modal cadastrar */}
       <Modal
@@ -350,6 +411,56 @@ export default function EspacosPage() {
           </FormField>
         </form>
       </Modal>
+
+      {/* Modal reativar */}
+      <Modal
+        open={acao === "reativar"}
+        onClose={() => {
+          reativarForm.reset();
+          setAcao(null);
+        }}
+        title="Reativar espaço"
+        description="Reabilita um espaço interditado para receber novas pautas e reservas."
+        footer={
+          <>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                reativarForm.reset();
+                setAcao(null);
+              }}
+              disabled={reativar.isPending}
+            >
+              Cancelar
+            </Button>
+            <Button
+              type="button"
+              onClick={reativarForm.handleSubmit(onReativar)}
+              disabled={reativar.isPending}
+              className="bg-green-600 text-white hover:bg-green-700"
+            >
+              {reativar.isPending && <LoadingSpinner className="mr-2 text-white" />}
+              Reativar
+            </Button>
+          </>
+        }
+      >
+        <form className="space-y-4">
+          <FormField
+            label="Espaço"
+            htmlFor="espacoIdReativar"
+            error={reativarForm.formState.errors.espacoId?.message}
+            required
+          >
+            <SeletorEspaco
+              id="espacoIdReativar"
+              value={reativarForm.watch("espacoId") ?? ""}
+              onChange={(v) => reativarForm.setValue("espacoId", v)}
+            />
+          </FormField>
+        </form>
+      </Modal>
     </PageLayout>
   );
 }
@@ -364,13 +475,14 @@ function CardAcao({
   icon: typeof Plus;
   titulo: string;
   descricao: string;
-  cor: "vinho" | "ouro" | "destructive";
+  cor: "vinho" | "ouro" | "destructive" | "verde";
   onClick: () => void;
 }) {
   const corClasses = {
     vinho: "bg-vinho/10 text-vinho",
     ouro: "bg-ouro/15 text-ouro-dark",
     destructive: "bg-destructive/10 text-destructive",
+    verde: "bg-green-100 text-green-700",
   };
   return (
     <Card

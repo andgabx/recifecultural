@@ -259,7 +259,7 @@ public class PassosBloqueioAdministrativo {
     @Quando("eu solicitar a desativação deste bloqueio")
     public void euSolicitarADesativacaoDesteBloqueio() {
         try {
-            contexto.servicoBloqueio.desativarBloqueio(idBloqueioAtual);
+            contexto.servicoBloqueio.desativarBloqueio(idBloqueioAtual, false);
         } catch (Exception e) {
             contexto.excecaoCapturada = e;
         }

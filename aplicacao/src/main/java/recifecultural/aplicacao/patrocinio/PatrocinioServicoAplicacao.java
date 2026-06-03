@@ -1,7 +1,10 @@
 package recifecultural.aplicacao.patrocinio;
 
+import recifecultural.dominio.agenda.evento.Evento;
+import recifecultural.dominio.agenda.evento.IEventoRepositorio;
 import recifecultural.dominio.patrocinio.EventoId;
 import recifecultural.dominio.patrocinio.ModalidadeContribuicao;
+import recifecultural.dominio.patrocinio.Patrocinio;
 import recifecultural.dominio.patrocinio.PatrocinioId;
 import recifecultural.dominio.patrocinio.PatrocinioServico;
 import recifecultural.dominio.patrocinio.ResultadoCancelamento;
@@ -19,12 +22,17 @@ public class PatrocinioServicoAplicacao {
 
     private final PatrocinioServico servico;
     private final PatrocinioRepositorioAplicacao repositorio;
+    private final IEventoRepositorio eventoRepositorio;
 
-    public PatrocinioServicoAplicacao(PatrocinioServico servico, PatrocinioRepositorioAplicacao repositorio) {
+    public PatrocinioServicoAplicacao(PatrocinioServico servico,
+                                       PatrocinioRepositorioAplicacao repositorio,
+                                       IEventoRepositorio eventoRepositorio) {
         notNull(servico, "PatrocinioServico não pode ser nulo.");
         notNull(repositorio, "PatrocinioRepositorioAplicacao não pode ser nulo.");
+        notNull(eventoRepositorio, "IEventoRepositorio não pode ser nulo.");
         this.servico = servico;
         this.repositorio = repositorio;
+        this.eventoRepositorio = eventoRepositorio;
     }
 
     public List<PatrocinioResumo> pesquisarPorEvento(UUID eventoId) {
@@ -38,8 +46,31 @@ public class PatrocinioServicoAplicacao {
                 modalidade, valorContribuicao, dataEvento, eventoAprovado).getId();
     }
 
-    public void ativar(PatrocinioId id) {
+    /**
+     * Ativa o patrocínio. Se a modalidade for SUBSIDIO_INGRESSO_SOCIAL,
+     * aplica o desconto no preço social do evento automaticamente.
+     */
+    public ResultadoSubsidio ativar(PatrocinioId id) {
         servico.ativar(id);
+
+        Patrocinio patrocinio = servico.obterPorId(id);
+        if (patrocinio.getModalidade() != ModalidadeContribuicao.SUBSIDIO_INGRESSO_SOCIAL) {
+            return null; // sem efeito no preço
+        }
+
+        UUID eventoUuid = patrocinio.getEventoId().getValor();
+        Evento evento = eventoRepositorio.obter(eventoUuid)
+                .orElseThrow(() -> new IllegalStateException("Evento do patrocínio não encontrado: " + eventoUuid));
+
+        BigDecimal precoAtual = evento.getPreco() != null && evento.getPreco().getInteira() != null
+                ? evento.getPreco().getInteira()
+                : BigDecimal.ZERO;
+
+        ResultadoSubsidio subsidio = servico.calcularSubsidio(id, precoAtual);
+        evento.aplicarSubsidioNoPreco(subsidio.getNovoPrecoSocial());
+        eventoRepositorio.atualizar(evento);
+
+        return subsidio;
     }
 
     public ResultadoCancelamento cancelarPorEvento(PatrocinioId id, LocalDateTime agora) {

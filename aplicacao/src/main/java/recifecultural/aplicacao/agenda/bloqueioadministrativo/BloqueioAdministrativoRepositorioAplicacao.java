@@ -4,4 +4,5 @@ import java.util.List;
 
 public interface BloqueioAdministrativoRepositorioAplicacao {
     List<BloqueioAdministrativoResumo> pesquisarAtivos();
+    List<BloqueioAdministrativoResumo> pesquisarTodos();
 }

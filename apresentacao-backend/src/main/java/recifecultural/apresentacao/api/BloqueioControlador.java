@@ -52,7 +52,7 @@ public class BloqueioControlador extends AbstractBffControlador {
     @Operation(summary = "Desativa bloqueio")
     @PostMapping("/{id}/desativar")
     public ResponseEntity<Map<String, String>> desativar(@PathVariable UUID id) {
-        servico.desativar(BloqueioAdministrativoId.de(id.toString()));
+        servico.desativar(BloqueioAdministrativoId.de(id.toString()), false);
         return responderSemConteudo();
     }
 

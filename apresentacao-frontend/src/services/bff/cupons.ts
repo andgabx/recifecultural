@@ -43,11 +43,28 @@ export type CriarCupomRequisicao = {
   categoriaPermitida?: string | null;
 };
 
+export type PreviewCupomRequisicao = {
+  codigo: string;
+  cpf: string;
+  valor: number;
+  categoria: string;
+};
+
+export type PreviewCupomResposta = {
+  tipoDesconto: TipoDesconto;
+  configuracaoDesconto: number;
+  descontoCalculado: number;
+  valorFinal: number;
+};
+
 export const cuponsService = {
   aplicar: (payload: AplicarCupomRequisicao) =>
     api
       .post<ResultadoAplicacaoCupom>("/cupons/aplicar", payload)
       .then((r) => r.data),
+
+  preview: (payload: PreviewCupomRequisicao) =>
+    api.post<PreviewCupomResposta>("/cupons/preview", payload).then((r) => r.data),
 
   listar: () => api.get<CupomResumo[]>("/cupons").then((r) => r.data),
 

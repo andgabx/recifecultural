@@ -43,8 +43,18 @@ public class EventoServicoAplicacao {
         notNull(cmd, "Comando obrigatório.");
         notNull(cmd.promotorId(), "promotorId obrigatório.");
         notBlank(cmd.titulo(), "Título obrigatório.");
-        notNull(cmd.periodoInicio(), "Período de início obrigatório.");
-        notNull(cmd.periodoFim(), "Período de fim obrigatório.");
+
+        LocalDateTime inicio = cmd.periodoInicio();
+        LocalDateTime fim = cmd.periodoFim();
+        if (inicio == null && fim == null) {
+            if (cmd.datasApresentacao() == null || cmd.datasApresentacao().isEmpty())
+                throw new IllegalArgumentException("Informe o período ou ao menos uma data de apresentação.");
+            inicio = cmd.datasApresentacao().get(0);
+            fim = cmd.datasApresentacao().get(0);
+        } else {
+            notNull(inicio, "Período de início obrigatório.");
+            notNull(fim, "Período de fim obrigatório.");
+        }
 
         Preco preco = null;
         if (cmd.precoInteira() != null) {
@@ -58,7 +68,7 @@ public class EventoServicoAplicacao {
                 cmd.titulo(),
                 cmd.descricaoCurta(),
                 cmd.descricaoLonga(),
-                new Periodo(cmd.periodoInicio(), cmd.periodoFim()),
+                new Periodo(inicio, fim),
                 null,
                 preco
         );
@@ -81,8 +91,18 @@ public class EventoServicoAplicacao {
         notNull(id, "id obrigatório.");
         notNull(cmd, "Comando obrigatório.");
         notBlank(cmd.titulo(), "Título obrigatório.");
-        notNull(cmd.periodoInicio(), "Período de início obrigatório.");
-        notNull(cmd.periodoFim(), "Período de fim obrigatório.");
+
+        LocalDateTime inicio = cmd.periodoInicio();
+        LocalDateTime fim = cmd.periodoFim();
+        if (inicio == null && fim == null) {
+            if (cmd.datasApresentacao() == null || cmd.datasApresentacao().isEmpty())
+                throw new IllegalArgumentException("Informe o período ou ao menos uma data de apresentação.");
+            inicio = cmd.datasApresentacao().get(0);
+            fim = cmd.datasApresentacao().get(0);
+        } else {
+            notNull(inicio, "Período de início obrigatório.");
+            notNull(fim, "Período de fim obrigatório.");
+        }
 
         Preco preco = null;
         if (cmd.precoInteira() != null) {
@@ -93,7 +113,7 @@ public class EventoServicoAplicacao {
                 cmd.titulo(),
                 cmd.descricaoCurta(),
                 cmd.descricaoLonga(),
-                new Periodo(cmd.periodoInicio(), cmd.periodoFim()),
+                new Periodo(inicio, fim),
                 preco,
                 cmd.categoria(),
                 cmd.localId(),

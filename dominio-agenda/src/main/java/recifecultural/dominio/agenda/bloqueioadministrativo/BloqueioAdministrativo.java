@@ -1,6 +1,10 @@
 package recifecultural.dominio.agenda.bloqueioadministrativo;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 
 import recifecultural.dominio.espaco.espaco.EspacoId;
 
@@ -12,6 +16,7 @@ public class BloqueioAdministrativo {
     private LocalDate dataFim;
     private String justificativa;
     private boolean ativo;
+    private List<UUID> eventosCancelados;
 
     public BloqueioAdministrativo(EspacoId espacoId, LocalDate dataInicio, LocalDate dataFim, String justificativa) {
         this.id = BloqueioAdministrativoId.gerar();
@@ -19,18 +24,21 @@ public class BloqueioAdministrativo {
         setPeriodo(dataInicio, dataFim);
         setJustificativa(justificativa);
         this.ativo = true;
+        this.eventosCancelados = new ArrayList<>();
     }
 
     /** Reconstruction constructor — preserva ID e flag ativo ao recarregar do banco. */
     public BloqueioAdministrativo(BloqueioAdministrativoId id, EspacoId espacoId,
                                    LocalDate dataInicio, LocalDate dataFim,
-                                   String justificativa, boolean ativo) {
+                                   String justificativa, boolean ativo,
+                                   List<UUID> eventosCancelados) {
         if (id == null) throw new IllegalArgumentException("O ID do bloqueio é obrigatório.");
         this.id = id;
         setEspacoId(espacoId);
         setPeriodo(dataInicio, dataFim);
         setJustificativa(justificativa);
         this.ativo = ativo;
+        this.eventosCancelados = eventosCancelados != null ? new ArrayList<>(eventosCancelados) : new ArrayList<>();
     }
 
     public CriadoEvento eventoCriacao() {
@@ -44,6 +52,10 @@ public class BloqueioAdministrativo {
 
     public void desativar() {
         this.ativo = false;
+    }
+
+    public void registrarEventoCancelado(UUID eventoId) {
+        if (eventoId != null) this.eventosCancelados.add(eventoId);
     }
 
     private void setEspacoId(EspacoId espacoId) {
@@ -81,6 +93,7 @@ public class BloqueioAdministrativo {
     public LocalDate getDataFim() { return dataFim; }
     public String getJustificativa() { return justificativa; }
     public boolean isAtivo() { return ativo; }
+    public List<UUID> getEventosCancelados() { return Collections.unmodifiableList(eventosCancelados); }
 
     public static class BloqueioEvento {
         private final BloqueioAdministrativo bloqueio;

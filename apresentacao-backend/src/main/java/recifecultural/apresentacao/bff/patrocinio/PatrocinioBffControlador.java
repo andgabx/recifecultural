@@ -50,10 +50,13 @@ public class PatrocinioBffControlador extends AbstractBffControlador {
         return responderCriado(id.getValor().toString());
     }
 
-    @Operation(summary = "Ativa patrocínio")
+    @Operation(summary = "Ativa patrocínio. Se SUBSIDIO_INGRESSO_SOCIAL, aplica desconto no evento")
     @PostMapping("/{id}/ativar")
-    public ResponseEntity<Map<String, String>> ativar(@PathVariable UUID id) {
-        servico.ativar(new PatrocinioId(id));
+    public ResponseEntity<?> ativar(@PathVariable UUID id) {
+        var subsidio = servico.ativar(new PatrocinioId(id));
+        if (subsidio != null) {
+            return responder(new SimulacaoSubsidio(subsidio.getNovoPrecoSocial(), subsidio.isPisoAplicado()));
+        }
         return responderSemConteudo();
     }
 
@@ -61,14 +64,16 @@ public class PatrocinioBffControlador extends AbstractBffControlador {
     @PostMapping("/{id}/cancelar-por-evento")
     public ResponseEntity<SimulacaoCancelamentoPatrocinio> cancelarPorEvento(@PathVariable UUID id) {
         ResultadoCancelamento resultado = servico.cancelarPorEvento(new PatrocinioId(id), LocalDateTime.now());
-        return responder(new SimulacaoCancelamentoPatrocinio(resultado.getValorReembolsado(), resultado.getMultaAplicada()));
+        return responder(new SimulacaoCancelamentoPatrocinio(
+                resultado.getValorReembolsado(), resultado.getMultaAplicada(), resultado.getMotivo()));
     }
 
     @Operation(summary = "Cancela patrocínio por patrocinador + retorna simulação")
     @PostMapping("/{id}/cancelar-por-patrocinador")
     public ResponseEntity<SimulacaoCancelamentoPatrocinio> cancelarPorPatrocinador(@PathVariable UUID id) {
         ResultadoCancelamento resultado = servico.cancelarPorPatrocinador(new PatrocinioId(id), LocalDateTime.now());
-        return responder(new SimulacaoCancelamentoPatrocinio(resultado.getValorReembolsado(), resultado.getMultaAplicada()));
+        return responder(new SimulacaoCancelamentoPatrocinio(
+                resultado.getValorReembolsado(), resultado.getMultaAplicada(), resultado.getMotivo()));
     }
 
     @Operation(summary = "Calcula subsídio social do patrocínio")

@@ -27,6 +27,9 @@ export type SimulacaoReembolsoResposta = {
 };
 
 export const ingressosService = {
+  listarTodos: () =>
+    api.get<IngressoResumo[]>("/meus-ingressos").then((r) => r.data),
+
   listarPorEvento: (eventoId: UUID) =>
     api
       .get<IngressoResumo[]>(`/meus-ingressos/evento/${eventoId}`)

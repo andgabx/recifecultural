@@ -4,5 +4,6 @@ public record EventoConflitanteResumo(
         String id,
         String titulo,
         String periodoInicio,
-        String periodoFim
-) {}
+        String periodoFim,
+        int totalEspectadores,
+        java.math.BigDecimal totalReembolso) {}

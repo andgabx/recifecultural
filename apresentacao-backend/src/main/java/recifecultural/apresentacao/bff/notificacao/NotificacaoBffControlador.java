@@ -53,6 +53,15 @@ public class NotificacaoBffControlador extends AbstractBffControlador {
         return responderSemConteudo();
     }
 
+    @Operation(summary = "Envia broadcast — uso exclusivo do gestor")
+    @PostMapping("/broadcast")
+    public ResponseEntity<Map<String, String>> broadcast(@RequestBody BroadcastRequisicao req) {
+        servico.enviarBroadcast(req.mensagem(), req.contexto(), req.idReferencia());
+        return responderSemConteudo();
+    }
+
+    public record BroadcastRequisicao(String mensagem, String contexto, UUID idReferencia) {}
+
     public record NotificacaoResumo(
             UUID id,
             UUID usuarioAlvo,

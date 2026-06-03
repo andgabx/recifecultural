@@ -23,6 +23,13 @@ export function useNotificacoes(
   });
 }
 
+export function useEnviarBroadcast() {
+  return useMutation({
+    mutationFn: (payload: { mensagem: string; contexto: string; idReferencia?: UUID }) =>
+      notificacoesService.broadcast(payload),
+  });
+}
+
 export function useMarcarNotificacaoLida(usuarioId: UUID | undefined) {
   const queryClient = useQueryClient();
   return useMutation({

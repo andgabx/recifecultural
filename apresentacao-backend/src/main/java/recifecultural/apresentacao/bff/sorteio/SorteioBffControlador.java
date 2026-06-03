@@ -26,6 +26,12 @@ public class SorteioBffControlador extends AbstractBffControlador {
         this.servico = servico;
     }
 
+    @Operation(summary = "Lista sorteios com inscrições abertas")
+    @GetMapping("/abertos")
+    public ResponseEntity<List<SorteioResumo>> listarAbertos() {
+        return responder(servico.pesquisarAbertos());
+    }
+
     @Operation(summary = "Lista sorteios do evento")
     @GetMapping("/evento/{eventoId}")
     public ResponseEntity<List<SorteioResumo>> listarPorEvento(@PathVariable UUID eventoId) {

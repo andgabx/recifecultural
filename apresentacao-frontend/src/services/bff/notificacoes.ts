@@ -28,6 +28,10 @@ export const notificacoesService = {
     api
       .post<BffSemConteudo>(`/notificacoes/${id}/marcar-nao-lida`)
       .then((r) => r.data),
+  broadcast: (payload: { mensagem: string; contexto: string; idReferencia?: UUID }) =>
+    api
+      .post<BffSemConteudo>("/notificacoes/broadcast", payload)
+      .then((r) => r.data),
 };
 
 export type NotificacoesService = typeof notificacoesService;

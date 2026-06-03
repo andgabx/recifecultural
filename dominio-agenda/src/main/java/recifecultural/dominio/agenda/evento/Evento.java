@@ -1,5 +1,6 @@
 package recifecultural.dominio.agenda.evento;
 
+import java.math.BigDecimal;
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -268,6 +269,13 @@ public class Evento {
         return new CanceladoEvento(this);
     }
 
+    public void restaurar() {
+        if (this.status != StatusEvento.CANCELADO)
+            throw new IllegalStateException("Só é possível restaurar eventos cancelados.");
+        this.status = StatusEvento.APROVADO;
+        this.motivoCancelamento = null;
+    }
+
     private void exigirStatusEmAnalise(String acao) {
         if (this.status != StatusEvento.EM_ANALISE)
             throw new IllegalStateException("Não é possível " + acao + " um evento com status " + this.status + ".");
@@ -278,6 +286,18 @@ public class Evento {
         if (!periodo.contemData(dataHora))
             throw new IllegalArgumentException("Apresentação fora do período do evento.");
         this.datasApresentacao.add(dataHora);
+    }
+
+    /**
+     * Atualiza o preço operacionalmente — usado por patrocínios de subsídio.
+     * Não requer status RASCUNHO pois é um ajuste posterior à aprovação.
+     */
+    public void aplicarSubsidioNoPreco(BigDecimal novoPrecoSocial) {
+        if (novoPrecoSocial == null) throw new IllegalArgumentException("Novo preço social é obrigatório.");
+        this.preco = new Preco(
+                this.preco != null ? this.preco.getInteira() : null,
+                this.preco != null ? this.preco.getMeia() : null,
+                novoPrecoSocial);
     }
 
     public static class EventoEvento {

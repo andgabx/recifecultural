@@ -45,6 +45,9 @@ export type CriarSorteioRequisicao = {
 };
 
 export const sorteiosService = {
+  listarAbertos: () =>
+    api.get<SorteioResumo[]>("/sorteios/abertos").then((r) => r.data),
+
   listarPorEvento: (eventoId: UUID) =>
     api.get<SorteioResumo[]>(`/sorteios/evento/${eventoId}`).then((r) => r.data),
 

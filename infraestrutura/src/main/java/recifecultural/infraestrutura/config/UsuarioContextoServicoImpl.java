@@ -34,9 +34,8 @@ class UsuarioContextoServicoImpl implements IUsuarioContextoServico {
             case "PARTICIPANTES_EVENTO_CANCELADO",
                  "ACESSIBILIDADE_REMOVIDA",
                  "EQUIPAMENTO_MANUTENCAO",
-                 "SORTEIO_APURADO" -> List.of(ESPECTADOR_DEMO);
-            // Compradores de ingresso para um evento cancelado (idReferencia = eventoId).
-            case "TITULARES_INGRESSOS_EVENTO" -> List.of(ESPECTADOR_DEMO);
+                 "SORTEIO_CANCELADO",
+                 "TITULARES_INGRESSOS_EVENTO" -> List.of(ESPECTADOR_DEMO);
             // Artistas de um evento específico (idReferencia = eventoId).
             case "ARTISTAS_EVENTO" -> List.of(PRODUTOR_DEMO);
             // Todos os artistas cadastrados.
@@ -44,6 +43,8 @@ class UsuarioContextoServicoImpl implements IUsuarioContextoServico {
             // Comunicados administrativos: envolvem produtor e gestor.
             case "PROMOTORES",
                  "GESTORES_PROMOTORES" -> List.of(PRODUTOR_DEMO, GESTOR_DEMO);
+            // Chamados de suporte técnico são tratados pelo gestor.
+            case "SUPORTE_TECNICO" -> List.of(GESTOR_DEMO);
             case "TODOS_USUARIOS" -> List.of(ESPECTADOR_DEMO, PRODUTOR_DEMO, GESTOR_DEMO);
             default -> List.of(ESPECTADOR_DEMO);
         };

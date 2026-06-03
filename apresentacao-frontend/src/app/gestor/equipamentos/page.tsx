@@ -198,7 +198,7 @@ export default function EquipamentosPage() {
   return (
     <PageLayout
       titulo="Equipamentos"
-      subtitulo="Inventário por espaço. Manutenção em equipamento alocado notifica o evento (Observer F3.2)."
+      subtitulo="Inventário por espaço. Manutenção em equipamento alocado notifica o evento."
       acoes={
         <Button
           onClick={() => setCadastroAberto(true)}

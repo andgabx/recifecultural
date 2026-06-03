@@ -22,6 +22,10 @@ import java.util.UUID;
  *
  * Os registros vão tanto para o log (slf4j) quanto para o `IAuditoriaRepositorio`,
  * que persiste em banco e alimenta a tela `/gestor/auditoria`.
+ *
+ * Atomicidade: para que a operação no domínio e o registro de auditoria
+ * compartilhem a mesma transação, o método do serviço chamador deve ser
+ * anotado com @Transactional. O decorator em si não gerencia transações.
  */
 public class EventoRepositorioComAuditoria implements IEventoRepositorio {
 
@@ -41,10 +45,11 @@ public class EventoRepositorioComAuditoria implements IEventoRepositorio {
 
     @Override
     public void salvar(Evento evento) {
+        // Bug 5: salva primeiro — só loga e registra após confirmação do delegate
+        delegado.salvar(evento);
         log.info("[AUDITORIA EVENTO] criado id={} promotor={} titulo='{}' status={}",
                 evento.getId(), evento.getPromotorId(), evento.getTitulo(), evento.getStatus());
-        delegado.salvar(evento);
-        auditoria.registrar(new RegistroAuditoria(
+        registrarAuditoria(new RegistroAuditoria(
                 ENTIDADE, evento.getId(), AcaoAuditoria.CRIADO,
                 null, evento.getStatus().name(),
                 String.format("Evento '%s' criado pelo promotor %s",
@@ -60,7 +65,7 @@ public class EventoRepositorioComAuditoria implements IEventoRepositorio {
         if (statusAnterior != statusAtual) {
             log.info("[AUDITORIA EVENTO] transição id={} {} → {} titulo='{}'",
                     evento.getId(), statusAnterior, statusAtual, evento.getTitulo());
-            auditoria.registrar(new RegistroAuditoria(
+            registrarAuditoria(new RegistroAuditoria(
                     ENTIDADE, evento.getId(), AcaoAuditoria.TRANSICAO_STATUS,
                     statusAnterior != null ? statusAnterior.name() : null,
                     statusAtual.name(),
@@ -73,12 +78,25 @@ public class EventoRepositorioComAuditoria implements IEventoRepositorio {
     public void deletar(UUID id) {
         Optional<Evento> anterior = delegado.obter(id);
         String titulo = anterior.map(Evento::getTitulo).orElse("(desconhecido)");
-        log.info("[AUDITORIA EVENTO] removido id={}", id);
         delegado.deletar(id);
-        auditoria.registrar(new RegistroAuditoria(
+        log.info("[AUDITORIA EVENTO] removido id={}", id);
+        registrarAuditoria(new RegistroAuditoria(
                 ENTIDADE, id, AcaoAuditoria.REMOVIDO,
                 anterior.map(e -> e.getStatus().name()).orElse(null), null,
                 String.format("Evento '%s' removido", titulo)));
+    }
+
+    // Bug 4: isola a chamada ao repositório de auditoria para que uma falha aqui
+    // não reverta a operação já persistida no domínio (que é o comportamento correto).
+    // A garantia de atomicidade plena (rollback de ambos) depende de @Transactional
+    // no método do serviço chamador.
+    private void registrarAuditoria(RegistroAuditoria registro) {
+        try {
+            auditoria.registrar(registro);
+        } catch (RuntimeException e) {
+            log.error("[AUDITORIA EVENTO] falha ao persistir registro de auditoria para entidade={} id={}: {}",
+                    registro.getEntidade(), registro.getEntidadeId(), e.getMessage(), e);
+        }
     }
 
     @Override

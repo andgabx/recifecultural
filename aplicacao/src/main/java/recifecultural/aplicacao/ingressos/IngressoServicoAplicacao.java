@@ -29,6 +29,10 @@ public class IngressoServicoAplicacao {
         return repositorio.pesquisarPorEvento(eventoId);
     }
 
+    public List<IngressoResumo> listarTodos() {
+        return repositorio.listarTodos();
+    }
+
     public IngressoId comprar(UUID eventoId, LocalDateTime dataHora, TipoIngresso tipo,
                               BigDecimal valor, MetodoPagamento metodo, int capacidadeMaxima) {
         return servico.comprar(eventoId, dataHora, tipo, valor, metodo, capacidadeMaxima).getId();
@@ -39,6 +43,28 @@ public class IngressoServicoAplicacao {
                                       String codigoCupom, String cpfComprador, String categoriaEvento) {
         return servico.comprarComCupom(eventoId, dataHora, tipo, valor, metodo, capacidadeMaxima,
                 codigoCupom, cpfComprador, categoriaEvento).getId();
+    }
+
+    public IngressoId comprarComPreReserva(UUID eventoId, LocalDateTime dataHora,
+                                            UUID preReservaId, UUID assentoId,
+                                            TipoIngresso tipo, BigDecimal valor,
+                                            MetodoPagamento metodo, int capacidadeMaxima,
+                                            recifecultural.dominio.ingressos.IConfirmacaoReserva confirmacaoReserva) {
+        return servico.comprarComPreReserva(eventoId, dataHora, preReservaId, assentoId,
+                tipo, valor, metodo, capacidadeMaxima, confirmacaoReserva).getId();
+    }
+
+    public IngressoId comprarComPreReservaComCupom(UUID eventoId, LocalDateTime dataHora,
+                                                    UUID preReservaId, UUID assentoId,
+                                                    TipoIngresso tipo, BigDecimal valor,
+                                                    MetodoPagamento metodo, int capacidadeMaxima,
+                                                    String codigoCupom, String cpfComprador,
+                                                    String categoriaEvento,
+                                                    recifecultural.dominio.ingressos.IConfirmacaoReserva confirmacaoReserva) {
+        return servico.comprarComPreReservaComCupom(eventoId, dataHora, preReservaId, assentoId,
+                tipo, valor, metodo, capacidadeMaxima,
+                codigoCupom, cpfComprador, categoriaEvento,
+                confirmacaoReserva).getId();
     }
 
     public ResultadoReembolso solicitarReembolso(IngressoId id, LocalDateTime agora) {

@@ -8,20 +8,25 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 public class PassosCupom {
 
-    private final List<ValidacaoCupomStrategy> estrategiasDeValidacao = List.of(
-            new ValidarVigenciaStrategy(),
-            new ValidarMinimoStrategy(),
-            new ValidarCategoriaStrategy(),
-            new ValidarEscassezGlobalStrategy(),
-            new ValidarLimiteCpfStrategy()
-    );
+    // 1. O Padrão Decorator montado para os testes do Cucumber!
+    private final ValidadorCupom validadorPipeline =
+            new ValidarVigenciaDecorator(
+                    new ValidarMinimoDecorator(
+                            new ValidarCategoriaDecorator(
+                                    new ValidarEscassezGlobalDecorator(
+                                            new ValidarLimiteCpfDecorator(
+                                                    new ValidadorCupomBase()
+                                            )
+                                    )
+                            )
+                    )
+            );
 
     private ICupomRepositorio repositorioMock = mock(ICupomRepositorio.class);
     private ContextoCupom contexto = new ContextoCupom();
@@ -75,7 +80,7 @@ public class PassosCupom {
         try {
             BigDecimal valorBd = BigDecimal.valueOf(valor);
 
-            cupomValido.validarElegibilidade(cpf, valorBd, categoria, dataCompra, estrategiasDeValidacao);
+            cupomValido.validarElegibilidade(cpf, valorBd, categoria, dataCompra, validadorPipeline);
 
             BigDecimal desconto = cupomValido.calcularDesconto(valorBd);
             contexto.valorCalculado = valorBd.subtract(desconto).doubleValue();

@@ -2,21 +2,27 @@ package recifecultural.dominio.catraca;
 
 import recifecultural.dominio.catraca.validacoes.*;
 import java.time.LocalDateTime;
-import java.util.List;
 
 public class CatracaServico {
 
     private final ICatracaRepositorio repositorio;
-    private final List<ValidacaoAcessoStrategy> validacoes;
+    private final ValidadorAcesso validadorPipeline;
 
     public CatracaServico(ICatracaRepositorio repositorio) {
         this.repositorio = repositorio;
-        this.validacoes = List.of(
-                new ValidarEstornoStrategy(),
-                new ValidarDuplaEntradaStrategy(),
-                new ValidarPortaoStrategy(),
-                new ValidarToleranciaAtrasoStrategy()
-        );
+
+        // Padrão Decorator: Envolvendo objetos dentro de objetos!
+        // A validação passa de fora para dentro até chegar na Base.
+        this.validadorPipeline =
+                new ValidarEstornoDecorator(
+                        new ValidarDuplaEntradaDecorator(
+                                new ValidarPortaoDecorator(
+                                        new ValidarToleranciaAtrasoDecorator(
+                                                new ValidadorAcessoBase()
+                                        )
+                                )
+                        )
+                );
     }
 
     public String validarAcesso(String idIngresso, LocalDateTime horarioAtualDaCatraca, String identificacaoPortao) {
@@ -26,9 +32,7 @@ public class CatracaServico {
             throw new IllegalArgumentException("Ingresso não reconhecido pelo sistema.");
         }
 
-        for (ValidacaoAcessoStrategy validacao : validacoes) {
-            validacao.validar(ingresso, horarioAtualDaCatraca, identificacaoPortao);
-        }
+        validadorPipeline.validar(ingresso, horarioAtualDaCatraca, identificacaoPortao);
 
         ingresso.registrarEntrada(horarioAtualDaCatraca, identificacaoPortao);
         repositorio.salvar(ingresso);

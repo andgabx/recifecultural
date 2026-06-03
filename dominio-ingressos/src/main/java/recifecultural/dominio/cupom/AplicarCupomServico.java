@@ -3,27 +3,33 @@ package recifecultural.dominio.cupom;
 import recifecultural.dominio.cupom.validacoes.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 
 public class AplicarCupomServico {
     private final ICupomRepositorio repositorio;
-    private final List<ValidacaoCupomStrategy> validacoes; // O Pipeline!
+    private final ValidadorCupom validadorPipeline;
 
     public AplicarCupomServico(ICupomRepositorio repositorio) {
         this.repositorio = repositorio;
-        this.validacoes = List.of(
-                new ValidarVigenciaStrategy(),
-                new ValidarMinimoStrategy(),
-                new ValidarCategoriaStrategy(),
-                new ValidarEscassezGlobalStrategy(),
-                new ValidarLimiteCpfStrategy()
-        );
+
+        // Padrao decorator, A validação entra pelas camadas de fora e vai até o núcleo.
+        this.validadorPipeline =
+                new ValidarVigenciaDecorator(
+                        new ValidarMinimoDecorator(
+                                new ValidarCategoriaDecorator(
+                                        new ValidarEscassezGlobalDecorator(
+                                                new ValidarLimiteCpfDecorator(
+                                                        new ValidadorCupomBase()
+                                                )
+                                        )
+                                )
+                        )
+                );
     }
 
     public BigDecimal aplicarDesconto(String codigo, String cpf, BigDecimal valor, String categoria) {
         Cupom cupom = buscarOuLancar(codigo);
 
-        cupom.validarElegibilidade(cpf, valor, categoria, LocalDateTime.now(), validacoes);
+        cupom.validarElegibilidade(cpf, valor, categoria, LocalDateTime.now(), validadorPipeline);
 
         BigDecimal desconto = cupom.calcularDesconto(valor);
         cupom.registrarUso(cpf);
@@ -34,7 +40,7 @@ public class AplicarCupomServico {
     public PreviewDesconto previewDesconto(String codigo, String cpf, BigDecimal valor, String categoria) {
         Cupom cupom = buscarOuLancar(codigo);
 
-        cupom.validarElegibilidade(cpf, valor, categoria, LocalDateTime.now(), validacoes);
+        cupom.validarElegibilidade(cpf, valor, categoria, LocalDateTime.now(), validadorPipeline);
 
         BigDecimal desconto = cupom.calcularDesconto(valor);
         return new PreviewDesconto(

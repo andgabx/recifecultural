@@ -5,9 +5,12 @@ import org.apache.commons.lang3.Validate;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-public class ValidarVigenciaStrategy implements ValidacaoCupomStrategy {
+public class ValidarVigenciaDecorator extends ValidadorCupomDecorator {
+    public ValidarVigenciaDecorator(ValidadorCupom validadorInterno) { super(validadorInterno); }
+
     @Override
     public void validar(Cupom c, String cpf, BigDecimal valor, String cat, LocalDateTime data) {
+        super.validar(c, cpf, valor, cat, data);
         Validate.isTrue(data.isAfter(c.getDataInicio()) && data.isBefore(c.getDataFim()),
                 "Cupom expirado ou ainda não iniciado.");
     }

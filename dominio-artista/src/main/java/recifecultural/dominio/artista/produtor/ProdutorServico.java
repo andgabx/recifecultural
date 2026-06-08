@@ -1,13 +1,19 @@
 package recifecultural.dominio.artista.produtor;
 
+import recifecultural.dominio.artista.artista.Artista;
 import recifecultural.dominio.artista.artista.IArtistaRepositorio;
 import recifecultural.dominio.artista.artista.StatusArtista;
+import recifecultural.dominio.artista.artista.Iterador;
+import recifecultural.dominio.artista.artista.IteradorDeArtistas;
+import recifecultural.dominio.artista.artista.Iteravel;
 
-public class ProdutorServico {
+public class ProdutorServico implements Iteravel<Artista> {
 
     private final IProdutorRepositorio produtorRepositorio;
     private final IArtistaRepositorio artistaRepositorio;
     private final IHistoricoStatusProdutorRepositorio historicoRepositorio;
+
+    private ProdutorId produtorIdContexto;
 
     public ProdutorServico(IProdutorRepositorio produtorRepositorio,
                            IArtistaRepositorio artistaRepositorio) {
@@ -65,13 +71,15 @@ public class ProdutorServico {
     public void inativar(ProdutorId produtorId, String responsavel, String motivo) {
         Produtor produtor = obterOuLancar(produtorId);
 
-        boolean possuiArtistasAtivos = artistaRepositorio
-                .listarPorProdutor(produtorId).stream()
-                .anyMatch(a -> a.getStatus() == StatusArtista.ATIVO);
-
-        if (possuiArtistasAtivos)
-            throw new IllegalStateException(
-                    "Produtor possui artistas ativos vinculados. Inative-os antes de prosseguir.");
+        // Utiliza o padrão Iterator para verificar artistas ativos
+        Iterador<Artista> iterador = iterarArtistasPorProdutor(produtorId);
+        while (iterador.temProximo()) {
+            Artista artista = iterador.proximo();
+            if (artista.getStatus() == StatusArtista.ATIVO) {
+                throw new IllegalStateException(
+                        "Produtor possui artistas ativos vinculados. Inative-os antes de prosseguir.");
+            }
+        }
 
         StatusProdutor anterior = produtor.getStatus();
         produtor.inativar();
@@ -82,6 +90,24 @@ public class ProdutorServico {
 
     public void inativar(ProdutorId produtorId) {
         inativar(produtorId, "SISTEMA", null);
+    }
+
+    public Iterador<Artista> iterarArtistasPorProdutor(ProdutorId produtorId) {
+        return new IteradorDeArtistas(artistaRepositorio.listarPorProdutor(produtorId));
+    }
+
+    @Override
+    public Iterador<Artista> criarIterador() {
+        if (produtorIdContexto == null) {
+            throw new IllegalStateException(
+                    "Nenhum produtor definido no contexto. Use definirContexto(ProdutorId) antes de criar o iterador.");
+        }
+        return iterarArtistasPorProdutor(produtorIdContexto);
+    }
+
+    public void definirContexto(ProdutorId produtorId) {
+        if (produtorId == null) throw new IllegalArgumentException("ProdutorId não pode ser nulo.");
+        this.produtorIdContexto = produtorId;
     }
 
     private void registrarHistorico(ProdutorId produtorId,

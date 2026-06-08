@@ -26,7 +26,7 @@ public class AuditoriaJpa {
     LocalDateTime momento;
 }
 
-public interface AuditoriaJpaRepository extends JpaRepository<AuditoriaJpa, UUID> {
+interface AuditoriaJpaRepository extends JpaRepository<AuditoriaJpa, UUID> {
     List<AuditoriaJpa> findAllByOrderByMomentoDesc(PageRequest page);
     List<AuditoriaJpa> findByEntidadeOrderByMomentoDesc(String entidade, PageRequest page);
 }

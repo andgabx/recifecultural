@@ -9,11 +9,6 @@ import org.springframework.stereotype.Component;
 import recifecultural.dominio.compartilhado.evento.EventoBarramento;
 import recifecultural.dominio.compartilhado.evento.EventoObservador;
 
-/*
- * Padrão Observer: implementa o EventoBarramento usando o mecanismo de eventos
- * do Spring como infraestrutura de despacho. Desacopla publicadores de
- * assinantes sem conhecimento mútuo.
- */
 @Component
 public class EventoBarramentoImpl implements EventoBarramento {
 

@@ -29,7 +29,7 @@ public class ArtistaJpa {
     Set<ItemRider> riderItens = new HashSet<>();
 }
 
-public interface ArtistaJpaRepository extends JpaRepository<ArtistaJpa, UUID> {
+interface ArtistaJpaRepository extends JpaRepository<ArtistaJpa, UUID> {
     List<ArtistaJpa> findByProdutorId(UUID produtorId);
 
     @Query("SELECT COUNT(a) > 0 FROM ArtistaJpa a WHERE a.nome = :nome AND a.produtorId = :produtorId")

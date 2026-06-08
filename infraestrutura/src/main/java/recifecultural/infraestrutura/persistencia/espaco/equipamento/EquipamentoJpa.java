@@ -21,7 +21,7 @@ public class EquipamentoJpa {
     UUID eventoAlocadoId;
 }
 
-public interface EquipamentoJpaRepository extends JpaRepository<EquipamentoJpa, UUID> {
+interface EquipamentoJpaRepository extends JpaRepository<EquipamentoJpa, UUID> {
     @Query("SELECT e FROM EquipamentoJpa e WHERE e.espacoId = :espacoId AND e.nome = :nome AND e.status = 'DISPONIVEL'")
     List<EquipamentoJpa> findDisponiveisPorEspacoENome(UUID espacoId, String nome);
 

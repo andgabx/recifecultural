@@ -31,7 +31,7 @@ public class SorteioJpa {
 }
 
 @Embeddable
-public class InscricaoJpa {
+class InscricaoJpa {
     UUID espectadorId;
     LocalDateTime momentoInscricao;
     @Enumerated(EnumType.STRING)

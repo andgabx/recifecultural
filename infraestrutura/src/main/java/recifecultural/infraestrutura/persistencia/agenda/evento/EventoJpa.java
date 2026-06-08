@@ -44,7 +44,7 @@ public class EventoJpa {
     List<UUID> artistas = new ArrayList<>();
 }
 
-public interface EventoJpaRepository extends JpaRepository<EventoJpa, UUID> {
+interface EventoJpaRepository extends JpaRepository<EventoJpa, UUID> {
     List<EventoJpa> findByStatus(StatusEvento status);
 
     @Query("SELECT e FROM EventoJpa e WHERE e.localId = :localId AND e.periodoInicio < :fim AND e.periodoFim > :inicio")

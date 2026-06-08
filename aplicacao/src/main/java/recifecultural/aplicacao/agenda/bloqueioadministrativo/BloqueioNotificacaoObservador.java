@@ -5,12 +5,7 @@ import recifecultural.dominio.compartilhado.evento.EventoCanceladoPorBloqueioEve
 import recifecultural.dominio.compartilhado.evento.EventoObservador;
 import recifecultural.dominio.compartilhado.notificacao.INotificacaoServico;
 
-/*
- * Padrão Observer (Par 3): assinante do EventoBarramento. Quando um bloqueio
- * administrativo (F3.1) cancela um evento, este observador reage publicando
- * notificações (F3.2) para o promotor, os artistas e os participantes, sem acoplar
- * o serviço de bloqueios ao contexto de notificações.
- */
+
 public class BloqueioNotificacaoObservador implements EventoObservador<EventoCanceladoPorBloqueioEvento> {
 
     private final INotificacaoServico notificacaoServico;

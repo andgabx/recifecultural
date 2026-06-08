@@ -26,7 +26,7 @@ public class ChamadoSuporteJpa {
     LocalDateTime dataAbertura;
 }
 
-public interface ChamadoSuporteJpaRepository extends JpaRepository<ChamadoSuporteJpa, UUID> {
+interface ChamadoSuporteJpaRepository extends JpaRepository<ChamadoSuporteJpa, UUID> {
     @Query("SELECT c FROM ChamadoSuporteJpa c WHERE c.status IN ('ABERTO','EM_ANDAMENTO') AND c.dataAbertura < :limite")
     List<ChamadoSuporteJpa> findAbertosAntesDe(LocalDateTime limite);
 }

@@ -24,7 +24,7 @@ public class DespesaJpa {
     LocalDateTime dataRegistro;
 }
 
-public interface DespesaJpaRepository extends JpaRepository<DespesaJpa, UUID> {
+interface DespesaJpaRepository extends JpaRepository<DespesaJpa, UUID> {
     List<DespesaJpa> findByOrcamentoId(UUID orcamentoId);
 
     @Query("SELECT COALESCE(SUM(d.valor), 0) FROM DespesaJpa d WHERE d.orcamentoId = :orcamentoId")

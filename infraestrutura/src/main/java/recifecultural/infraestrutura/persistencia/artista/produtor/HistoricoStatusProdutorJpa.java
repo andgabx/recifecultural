@@ -24,6 +24,6 @@ public class HistoricoStatusProdutorJpa {
     LocalDateTime dataAlteracao;
 }
 
-public interface HistoricoStatusProdutorJpaRepository extends JpaRepository<HistoricoStatusProdutorJpa, UUID> {
+interface HistoricoStatusProdutorJpaRepository extends JpaRepository<HistoricoStatusProdutorJpa, UUID> {
     List<HistoricoStatusProdutorJpa> findByProdutorId(UUID produtorId);
 }

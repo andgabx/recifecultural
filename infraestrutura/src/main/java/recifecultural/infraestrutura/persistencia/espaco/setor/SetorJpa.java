@@ -30,7 +30,7 @@ public class SetorJpa {
 }
 
 @Embeddable
-public class AssentoJpa {
+class AssentoJpa {
     UUID id;
     String codigo;
     String fileira;

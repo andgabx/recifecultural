@@ -190,14 +190,12 @@ public class InfraestruturaConfig {
     @Bean
     BloqueioNotificacaoObservador bloqueioNotificacaoObservador(EventoBarramento barramento,
                                                                  INotificacaoServico notificacaoServico) {
-        // Observer (Par 3): assinante que reage a EventoCanceladoPorBloqueioEvento
         return new BloqueioNotificacaoObservador(barramento, notificacaoServico);
     }
 
     @Bean
     IngressoNotificacaoObservador ingressoNotificacaoObservador(EventoBarramento barramento,
                                                                  INotificacaoServico notificacaoServico) {
-        // Observer (Par 3): notifica titulares de ingressos do evento cancelado
         return new IngressoNotificacaoObservador(barramento, notificacaoServico);
     }
 

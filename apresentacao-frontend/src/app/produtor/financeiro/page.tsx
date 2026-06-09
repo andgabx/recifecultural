@@ -104,7 +104,7 @@ export default function FinanceiroPage() {
       acoes={
         <Button
           onClick={() => setDespesaAberto(true)}
-          className="bg-vinho hover:bg-vinho-light text-marquee"
+          className="bg-azul hover:bg-azul-light text-nevoa"
         >
           <Plus className="mr-1 h-4 w-4" />
           Nova despesa
@@ -172,8 +172,8 @@ export default function FinanceiroPage() {
         </div>
       )}
 
-      <Card className="border-dashed border-ouro/30 bg-ouro/5 p-5">
-        <h2 className="font-display text-palco text-sm font-semibold">
+      <Card className="border-dashed border-laranja/30 bg-laranja/5 p-5">
+        <h2 className="font-display text-noite text-sm font-semibold">
           Próximos incrementos
         </h2>
         <p className="text-muted-foreground mt-1 text-xs">
@@ -209,9 +209,9 @@ export default function FinanceiroPage() {
               type="button"
               onClick={form.handleSubmit(onRegistrar)}
               disabled={registrar.isPending}
-              className="bg-vinho hover:bg-vinho-light text-marquee"
+              className="bg-azul hover:bg-azul-light text-nevoa"
             >
-              {registrar.isPending && <LoadingSpinner className="mr-2 text-marquee" />}
+              {registrar.isPending && <LoadingSpinner className="mr-2 text-nevoa" />}
               Registrar
             </Button>
           </>
@@ -282,7 +282,7 @@ function Indicador({
           className={
             alerta
               ? "bg-destructive/10 text-destructive rounded-lg p-2"
-              : "bg-vinho/10 text-vinho rounded-lg p-2"
+              : "bg-azul/10 text-azul rounded-lg p-2"
           }
         >
           <Icon className="h-5 w-5" />
@@ -291,7 +291,7 @@ function Indicador({
           <p className="text-muted-foreground text-xs uppercase tracking-wide">
             {label}
           </p>
-          <p className="font-display text-palco mt-1 text-2xl font-bold">
+          <p className="font-display text-noite mt-1 text-2xl font-bold">
             {valor}
           </p>
         </div>

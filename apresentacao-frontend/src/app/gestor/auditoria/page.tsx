@@ -20,10 +20,10 @@ const acaoLabel: Record<AcaoAuditoria, string> = {
 
 const acaoVariant: Record<
   AcaoAuditoria,
-  "default" | "success" | "frevo" | "secondary" | "destructive" | "outline"
+  "default" | "success" | "violeta" | "secondary" | "destructive" | "outline"
 > = {
   CRIADO: "success",
-  TRANSICAO_STATUS: "frevo",
+  TRANSICAO_STATUS: "violeta",
   REMOVIDO: "destructive",
 };
 
@@ -128,7 +128,7 @@ function LinhaRegistro({ registro }: { registro: RegistroAuditoria }) {
             ? "bg-destructive/10 text-destructive flex h-9 w-9 shrink-0 items-center justify-center rounded-full"
             : registro.acao === "CRIADO"
               ? "bg-emerald-100 text-emerald-700 flex h-9 w-9 shrink-0 items-center justify-center rounded-full"
-              : "bg-frevo/15 text-frevo-dark flex h-9 w-9 shrink-0 items-center justify-center rounded-full"
+              : "bg-violeta/15 text-violeta-dark flex h-9 w-9 shrink-0 items-center justify-center rounded-full"
         }
       >
         <Icone className="h-4 w-4" />
@@ -149,15 +149,15 @@ function LinhaRegistro({ registro }: { registro: RegistroAuditoria }) {
           </span>
         </div>
         {registro.descricao && (
-          <p className="text-palco mt-1.5 text-sm">{registro.descricao}</p>
+          <p className="text-noite mt-1.5 text-sm">{registro.descricao}</p>
         )}
         {registro.acao === "TRANSICAO_STATUS" && (
           <p className="text-muted-foreground mt-1 flex items-center gap-1 text-xs">
-            <span className="rounded bg-marquee-muted px-1.5 py-0.5 font-mono">
+            <span className="rounded bg-nevoa-muted px-1.5 py-0.5 font-mono">
               {registro.statusAnterior ?? "—"}
             </span>
             <ArrowRight className="h-3 w-3" />
-            <span className="text-vinho rounded bg-vinho/10 px-1.5 py-0.5 font-mono font-semibold">
+            <span className="text-azul rounded bg-azul/10 px-1.5 py-0.5 font-mono font-semibold">
               {registro.statusNovo}
             </span>
           </p>

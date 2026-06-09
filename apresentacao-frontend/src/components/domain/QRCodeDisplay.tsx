@@ -23,16 +23,16 @@ export function QRCodeDisplay({
       animate={{ rotateY: 0, opacity: 1 }}
       transition={{ ...springConfig, stiffness: 200 }}
       className={cn(
-        "bg-palco flex flex-col items-center gap-4 rounded-2xl p-6",
+        "bg-noite flex flex-col items-center gap-4 rounded-2xl p-6",
         className,
       )}
     >
       {eventoNome && (
-        <p className="text-marquee/70 font-display max-w-xs text-center text-sm">
+        <p className="text-nevoa/70 font-display max-w-xs text-center text-sm">
           {eventoNome}
         </p>
       )}
-      <div className="bg-marquee-card rounded-lg p-3">
+      <div className="bg-white rounded-lg p-3">
         <QRCodeSVG
           value={codigo}
           size={size}
@@ -41,7 +41,7 @@ export function QRCodeDisplay({
           bgColor="#ffffff"
         />
       </div>
-      <p className="text-marquee/60 font-mono text-xs tracking-[0.3em]">
+      <p className="text-nevoa/60 font-mono text-xs tracking-[0.3em]">
         {codigo.slice(0, 8).toUpperCase()}-{codigo.slice(-4).toUpperCase()}
       </p>
     </motion.div>

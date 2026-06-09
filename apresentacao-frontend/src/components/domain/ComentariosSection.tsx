@@ -134,8 +134,8 @@ export function ComentariosSection({ eventoId }: { eventoId: UUID }) {
     <section className="space-y-6">
       <header className="flex items-end justify-between gap-3 border-b border-border pb-3">
         <div>
-          <h2 className="font-display text-palco flex items-center gap-2 text-2xl font-semibold tracking-tight">
-            <MessageCircle className="text-vinho h-5 w-5" />
+          <h2 className="font-display text-noite flex items-center gap-2 text-2xl font-semibold tracking-tight">
+            <MessageCircle className="text-azul h-5 w-5" />
             Comentários
           </h2>
           <p className="text-muted-foreground text-sm">
@@ -145,9 +145,9 @@ export function ComentariosSection({ eventoId }: { eventoId: UUID }) {
           </p>
         </div>
         {mediaNotas != null && (
-          <Card className="bg-marquee-muted border-ouro/30 flex items-center gap-2 px-4 py-2">
-            <Star className="text-ouro h-4 w-4 fill-ouro" />
-            <span className="font-display text-palco text-lg font-bold">
+          <Card className="bg-nevoa-muted border-laranja/30 flex items-center gap-2 px-4 py-2">
+            <Star className="text-laranja h-4 w-4 fill-laranja" />
+            <span className="font-display text-noite text-lg font-bold">
               {mediaNotas.toFixed(1)}
             </span>
             <span className="text-muted-foreground text-xs">
@@ -160,7 +160,7 @@ export function ComentariosSection({ eventoId }: { eventoId: UUID }) {
       {/* Form de novo comentário (ou resposta) */}
       <Card className="space-y-3 p-5">
         {respondendoA && (
-          <div className="bg-vinho/5 border-l-vinho border-l-2 -mx-5 -mt-5 mb-3 px-5 py-2 text-xs">
+          <div className="bg-azul/5 border-l-azul border-l-2 -mx-5 -mt-5 mb-3 px-5 py-2 text-xs">
             <p className="text-muted-foreground">
               Respondendo a{" "}
               <span className="font-mono">
@@ -168,7 +168,7 @@ export function ComentariosSection({ eventoId }: { eventoId: UUID }) {
               </span>
               :
             </p>
-            <p className="text-palco line-clamp-1 italic">
+            <p className="text-noite line-clamp-1 italic">
               "{respondendoA.texto}"
             </p>
           </div>
@@ -191,7 +191,7 @@ export function ComentariosSection({ eventoId }: { eventoId: UUID }) {
               maxLength={TEXTO_MAX}
               placeholder="O que você achou desse evento?"
               {...form.register("texto")}
-              className="border-border bg-marquee-card placeholder:text-muted-foreground focus-visible:border-vinho focus-visible:ring-vinho/30 w-full rounded-lg border px-3 py-2 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2"
+              className="border-border bg-white placeholder:text-muted-foreground focus-visible:border-azul focus-visible:ring-azul/30 w-full rounded-lg border px-3 py-2 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2"
             />
           </FormField>
           <div className="flex justify-end gap-2">
@@ -212,10 +212,10 @@ export function ComentariosSection({ eventoId }: { eventoId: UUID }) {
               type="submit"
               size="sm"
               disabled={postar.isPending}
-              className="bg-vinho hover:bg-vinho-light text-marquee"
+              className="bg-azul hover:bg-azul-light text-nevoa"
             >
               {postar.isPending ? (
-                <LoadingSpinner className="mr-2 text-marquee" />
+                <LoadingSpinner className="mr-2 text-nevoa" />
               ) : (
                 <Send className="mr-2 h-3.5 w-3.5" />
               )}
@@ -242,8 +242,8 @@ export function ComentariosSection({ eventoId }: { eventoId: UUID }) {
       )}
 
       {comentarios && comentarios.length === 0 && (
-        <Card className="border-dashed border-ouro/30 bg-ouro/5 p-6 text-center">
-          <MessageCircle className="text-ouro/60 mx-auto mb-2 h-8 w-8" />
+        <Card className="border-dashed border-laranja/30 bg-laranja/5 p-6 text-center">
+          <MessageCircle className="text-laranja/60 mx-auto mb-2 h-8 w-8" />
           <p className="text-muted-foreground text-sm">
             Seja o primeiro a comentar sobre este evento.
           </p>
@@ -302,7 +302,7 @@ export function ComentariosSection({ eventoId }: { eventoId: UUID }) {
           comentarioParaDeletar && (
             <div className="space-y-2">
               <p>Esta ação é permanente. O comentário abaixo será removido:</p>
-              <blockquote className="border-l-vinho bg-marquee-muted text-palco border-l-2 px-3 py-2 text-sm italic">
+              <blockquote className="border-l-azul bg-nevoa-muted text-noite border-l-2 px-3 py-2 text-sm italic">
                 "{comentarioParaDeletar.texto}"
               </blockquote>
             </div>
@@ -341,11 +341,11 @@ function ComentarioCard({
     <Card className={cn("space-y-2", compacto ? "p-3" : "p-4")}>
       <header className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-2">
-          <div className="bg-vinho/15 text-vinho flex h-8 w-8 items-center justify-center rounded-full font-mono text-xs font-bold uppercase">
+          <div className="bg-azul/15 text-azul flex h-8 w-8 items-center justify-center rounded-full font-mono text-xs font-bold uppercase">
             {comentario.espectadorId.slice(0, 2)}
           </div>
           <div>
-            <p className="text-palco font-mono text-xs">
+            <p className="text-noite font-mono text-xs">
               {comentario.espectadorId.slice(0, 8)}…
             </p>
             <p className="text-muted-foreground text-[10px]">
@@ -355,12 +355,12 @@ function ComentarioCard({
         </div>
         {comentario.nota != null && (
           <Badge variant="accent" className="gap-1">
-            <Star className="h-3 w-3 fill-ouro-dark" />
+            <Star className="h-3 w-3 fill-laranja-dark" />
             {comentario.nota}
           </Badge>
         )}
       </header>
-      <p className="text-palco text-sm">{comentario.texto}</p>
+      <p className="text-noite text-sm">{comentario.texto}</p>
       <footer className="flex items-center gap-2 pt-1">
         <BotaoAcao
           icon={Heart}
@@ -422,8 +422,8 @@ function BotaoAcao({
         destructivo
           ? "text-destructive hover:bg-destructive/10"
           : ativo
-            ? "bg-vinho/10 text-vinho"
-            : "text-muted-foreground hover:bg-marquee-muted hover:text-palco",
+            ? "bg-azul/10 text-azul"
+            : "text-muted-foreground hover:bg-nevoa-muted hover:text-noite",
         disabled && "cursor-not-allowed opacity-50",
       )}
     >

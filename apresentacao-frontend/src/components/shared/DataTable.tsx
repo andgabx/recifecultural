@@ -30,7 +30,7 @@ export function DataTable<T>({
   return (
     <div className={cn("overflow-x-auto rounded-xl border border-border", className)}>
       <table className="w-full text-sm">
-        <thead className="bg-marquee-muted/60 border-b border-border">
+        <thead className="bg-nevoa-muted/60 border-b border-border">
           <tr>
             {columns.map((col, i) => (
               <th
@@ -50,7 +50,7 @@ export function DataTable<T>({
           {data.map((row) => (
             <tr
               key={rowKey(row)}
-              className="hover:bg-marquee-muted/30 transition-colors"
+              className="hover:bg-nevoa-muted/30 transition-colors"
             >
               {columns.map((col, i) => (
                 <td

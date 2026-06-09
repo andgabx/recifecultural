@@ -89,23 +89,23 @@ export default function CatracaPage() {
 
   return (
     <main className="relative flex flex-1 items-center justify-center px-4 py-12">
-      <div className="from-vinho-dark/30 via-palco to-palco absolute inset-0 bg-gradient-to-br" />
+      <div className="from-azul-dark/30 via-noite to-noite absolute inset-0 bg-gradient-to-br" />
 
-      <div className="bg-palco-surface/80 border-ouro/15 relative w-full max-w-lg space-y-6 rounded-3xl border p-8 shadow-stage backdrop-blur">
+      <div className="bg-noite-surface/80 border-laranja/15 relative w-full max-w-lg space-y-6 rounded-3xl border p-8 shadow-stage backdrop-blur">
         <header className="space-y-2 text-center">
-          <p className="text-frevo font-mono text-xs uppercase tracking-[0.4em]">
+          <p className="text-violeta font-mono text-xs uppercase tracking-[0.4em]">
             Catraca · Operação
           </p>
           <h1 className="font-display text-3xl font-bold">
             Validar acesso
           </h1>
-          <p className="text-marquee/60 text-sm">
+          <p className="text-nevoa/60 text-sm">
             Aponte o leitor para o QR Code ou digite o código manualmente.
           </p>
         </header>
 
-        <div className="border-ouro/30 mx-auto flex h-40 w-40 items-center justify-center rounded-2xl border-2 border-dashed">
-          <ScanLine className="text-ouro/60 h-16 w-16" />
+        <div className="border-laranja/30 mx-auto flex h-40 w-40 items-center justify-center rounded-2xl border-2 border-dashed">
+          <ScanLine className="text-laranja/60 h-16 w-16" />
         </div>
 
         <form onSubmit={onSubmit} className="space-y-4">
@@ -116,7 +116,7 @@ export default function CatracaPage() {
               value={codigoQr}
               onChange={(e) => setCodigoQr(e.target.value)}
               placeholder="Cole ou digite o código"
-              className="bg-palco border-ouro/30 text-marquee placeholder:text-marquee/30 text-center font-mono text-lg tracking-widest"
+              className="bg-noite border-laranja/30 text-nevoa placeholder:text-nevoa/30 text-center font-mono text-lg tracking-widest"
               autoComplete="off"
             />
           </FormField>
@@ -126,7 +126,7 @@ export default function CatracaPage() {
               id="portao"
               value={portao}
               onChange={(e) => setPortao(e.target.value)}
-              className="bg-palco border-ouro/30 text-marquee"
+              className="bg-noite border-laranja/30 text-nevoa"
             >
               {portoes.map((p) => (
                 <option key={p} value={p}>
@@ -139,11 +139,11 @@ export default function CatracaPage() {
           <Button
             type="submit"
             disabled={validar.isPending || !codigoQr.trim()}
-            className="bg-ouro hover:bg-ouro-light text-palco shadow-stage w-full"
+            className="bg-laranja hover:bg-laranja-light text-noite shadow-stage w-full"
             size="lg"
           >
             {validar.isPending ? (
-              <LoadingSpinner className="mr-2 text-palco" />
+              <LoadingSpinner className="mr-2 text-noite" />
             ) : (
               <DoorOpen className="mr-2 h-4 w-4" />
             )}
@@ -151,7 +151,7 @@ export default function CatracaPage() {
           </Button>
         </form>
 
-        <p className="text-marquee/30 text-center font-mono text-[10px] uppercase tracking-widest">
+        <p className="text-nevoa/30 text-center font-mono text-[10px] uppercase tracking-widest">
           Modo demonstração · sem leitor físico
         </p>
       </div>

@@ -135,7 +135,7 @@ export default function AcessibilidadeGestaoPage() {
       acoes={
         <Button
           onClick={() => setCadastroAberto(true)}
-          className="bg-vinho hover:bg-vinho-light text-marquee"
+          className="bg-azul hover:bg-azul-light text-nevoa"
         >
           <Plus className="mr-1 h-4 w-4" />
           Marcar recurso
@@ -179,7 +179,7 @@ export default function AcessibilidadeGestaoPage() {
           >
             <header className="border-border flex items-center justify-between border-b px-4 py-3">
               <div>
-                <h2 className="text-palco font-display text-base font-semibold">
+                <h2 className="text-noite font-display text-base font-semibold">
                   {grupo.titulo}
                 </h2>
                 <p className="text-muted-foreground text-xs">
@@ -197,7 +197,7 @@ export default function AcessibilidadeGestaoPage() {
                     <Accessibility
                       className={
                         r.status === "CONFIRMADO"
-                          ? "text-vinho h-5 w-5"
+                          ? "text-azul h-5 w-5"
                           : "text-muted-foreground h-5 w-5"
                       }
                     />
@@ -267,10 +267,10 @@ export default function AcessibilidadeGestaoPage() {
               type="button"
               onClick={form.handleSubmit(onMarcar)}
               disabled={marcar.isPending}
-              className="bg-vinho hover:bg-vinho-light text-marquee"
+              className="bg-azul hover:bg-azul-light text-nevoa"
             >
               {marcar.isPending && (
-                <LoadingSpinner className="mr-2 text-marquee" />
+                <LoadingSpinner className="mr-2 text-nevoa" />
               )}
               Marcar
             </Button>
@@ -383,7 +383,7 @@ export default function AcessibilidadeGestaoPage() {
                 id="justificativa"
                 rows={4}
                 {...formRemocao.register("justificativa")}
-                className="border-border bg-marquee-card placeholder:text-muted-foreground focus-visible:border-vinho focus-visible:ring-vinho/30 w-full rounded-lg border px-3 py-2 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2"
+                className="border-border bg-white placeholder:text-muted-foreground focus-visible:border-azul focus-visible:ring-azul/30 w-full rounded-lg border px-3 py-2 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2"
                 placeholder="O intérprete confirmado teve emergência médica e não há substituto disponível para esta data..."
               />
             </FormField>

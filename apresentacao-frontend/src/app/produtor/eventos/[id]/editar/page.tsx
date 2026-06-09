@@ -171,7 +171,7 @@ export default function EditarEventoPage() {
       acoes={
         <Link
           href="/produtor/eventos"
-          className="text-muted-foreground hover:text-vinho inline-flex items-center gap-1 text-sm"
+          className="text-muted-foreground hover:text-azul inline-flex items-center gap-1 text-sm"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
           Voltar
@@ -179,15 +179,15 @@ export default function EditarEventoPage() {
       }
     >
       {!editavel && (
-        <Card className="border-frevo/40 bg-frevo/10 flex items-center gap-3 p-4">
-          <Lock className="text-frevo h-5 w-5" />
+        <Card className="border-violeta/40 bg-violeta/10 flex items-center gap-3 p-4">
+          <Lock className="text-violeta h-5 w-5" />
           <div className="flex-1">
-            <p className="text-palco text-sm font-semibold">
+            <p className="text-noite text-sm font-semibold">
               Edição bloqueada
             </p>
             <p className="text-muted-foreground text-xs">
               Apenas eventos em RASCUNHO podem ser editados. Status atual:{" "}
-              <Badge variant="frevo">{evento.status}</Badge>
+              <Badge variant="violeta">{evento.status}</Badge>
             </p>
           </div>
         </Card>
@@ -199,7 +199,7 @@ export default function EditarEventoPage() {
       >
         <div className="space-y-6">
           <Card className="space-y-5 p-6">
-            <h2 className="font-display text-palco text-lg font-semibold">
+            <h2 className="font-display text-noite text-lg font-semibold">
               Informações básicas
             </h2>
             <FormField
@@ -250,13 +250,13 @@ export default function EditarEventoPage() {
                 rows={5}
                 disabled={!editavel}
                 {...form.register("descricaoLonga")}
-                className="border-border bg-marquee-card placeholder:text-muted-foreground focus-visible:border-vinho focus-visible:ring-vinho/30 w-full rounded-lg border px-3 py-2 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50"
+                className="border-border bg-white placeholder:text-muted-foreground focus-visible:border-azul focus-visible:ring-azul/30 w-full rounded-lg border px-3 py-2 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50"
               />
             </FormField>
           </Card>
 
           <Card className="space-y-5 p-6">
-            <h2 className="font-display text-palco text-lg font-semibold">
+            <h2 className="font-display text-noite text-lg font-semibold">
               Datas
             </h2>
             <div className="grid gap-4 sm:grid-cols-2">
@@ -289,7 +289,7 @@ export default function EditarEventoPage() {
             </div>
             <div className="space-y-3">
               <div className="flex items-center justify-between gap-2">
-                <p className="text-palco text-sm font-medium">
+                <p className="text-noite text-sm font-medium">
                   Datas de apresentação
                   <span className="text-destructive ml-1">*</span>
                 </p>
@@ -340,7 +340,7 @@ export default function EditarEventoPage() {
           </Card>
 
           <Card className="space-y-5 p-6">
-            <h2 className="font-display text-palco text-lg font-semibold">
+            <h2 className="font-display text-noite text-lg font-semibold">
               Preços e elenco
             </h2>
             <div className="grid gap-4 sm:grid-cols-2">
@@ -388,11 +388,11 @@ export default function EditarEventoPage() {
         </div>
 
         <aside className="space-y-5">
-          <Card className="bg-marquee-muted border-ouro/30 space-y-2 p-5">
+          <Card className="bg-nevoa-muted border-laranja/30 space-y-2 p-5">
             <p className="text-muted-foreground text-xs uppercase tracking-widest">
               Status atual
             </p>
-            <Badge variant={editavel ? "secondary" : "frevo"}>
+            <Badge variant={editavel ? "secondary" : "violeta"}>
               {evento.status}
             </Badge>
             <p className="text-muted-foreground text-xs">
@@ -405,10 +405,10 @@ export default function EditarEventoPage() {
             <Button
               type="submit"
               disabled={!editavel || editar.isPending}
-              className="bg-vinho hover:bg-vinho-light text-marquee shadow-stage w-full"
+              className="bg-azul hover:bg-azul-light text-nevoa shadow-stage w-full"
             >
               {editar.isPending ? (
-                <LoadingSpinner className="mr-2 text-marquee" />
+                <LoadingSpinner className="mr-2 text-nevoa" />
               ) : (
                 <Save className="mr-2 h-4 w-4" />
               )}

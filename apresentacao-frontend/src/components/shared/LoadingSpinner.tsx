@@ -10,7 +10,7 @@ export function LoadingSpinner({ className }: { className?: string }) {
     <motion.span
       animate={{ rotate: 360 }}
       transition={{ repeat: Infinity, duration: 0.9, ease: "linear" }}
-      className={cn("text-vinho inline-flex", className)}
+      className={cn("text-azul inline-flex", className)}
       aria-label="Carregando"
     >
       <Loader2 className="h-4 w-4" />

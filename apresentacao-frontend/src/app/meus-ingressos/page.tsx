@@ -111,7 +111,7 @@ export default function MeusIngressosPage() {
     <PublicLayout>
       <section className="mx-auto max-w-5xl space-y-6 px-6 py-10">
         <header>
-          <h1 className="font-display text-palco text-2xl font-semibold tracking-tight">
+          <h1 className="font-display text-noite text-2xl font-semibold tracking-tight">
             Meus ingressos
           </h1>
           <p className="text-muted-foreground text-sm">
@@ -179,7 +179,7 @@ export default function MeusIngressosPage() {
             {ingressosFiltrados.map((ingresso) => (
               <Card
                 key={ingresso.id}
-                className="border-l-4 border-l-vinho space-y-3 p-5"
+                className="border-l-4 border-l-azul space-y-3 p-5"
               >
                 <div className="flex items-start justify-between gap-2">
                   <div>
@@ -187,7 +187,7 @@ export default function MeusIngressosPage() {
                       {tipoLabel[ingresso.tipo] ?? ingresso.tipo}
                       {ingresso.metodoPagamento ? ` · ${ingresso.metodoPagamento}` : ""}
                     </p>
-                    <p className="font-display text-palco mt-0.5 text-lg font-semibold">
+                    <p className="font-display text-noite mt-0.5 text-lg font-semibold">
                       {formatarMoeda(ingresso.valorPago)}
                     </p>
                     <p className="text-muted-foreground text-xs truncate max-w-[180px]">
@@ -201,7 +201,7 @@ export default function MeusIngressosPage() {
 
                 <div className="text-muted-foreground space-y-1 text-xs">
                   <p className="flex items-center gap-1">
-                    <CalendarDays className="text-ouro h-3 w-3" />
+                    <CalendarDays className="text-laranja h-3 w-3" />
                     {formatarDataHora(ingresso.dataHoraApresentacao)}
                   </p>
                   <p>Comprado em: {formatarDataHora(ingresso.dataCompra)}</p>
@@ -270,7 +270,7 @@ export default function MeusIngressosPage() {
                 <span className="font-mono text-xs">{reembolsoAberto.id.slice(0, 8)}</span>{" "}
                 no valor de <strong>{formatarMoeda(reembolsoAberto.valorPago)}</strong>.
               </p>
-              <Card className="bg-marquee-muted border-ouro/30 p-3 text-xs">
+              <Card className="bg-nevoa-muted border-laranja/30 p-3 text-xs">
                 <p className="text-muted-foreground uppercase tracking-widest">
                   Política para {reembolsoAberto.metodoPagamento}
                 </p>
@@ -278,7 +278,7 @@ export default function MeusIngressosPage() {
                   <Skeleton className="mt-2 h-3 w-full" />
                 ) : estrategia.data ? (
                   <>
-                    <p className="text-palco mt-1 font-medium">Prazo: {estrategia.data.prazo}</p>
+                    <p className="text-noite mt-1 font-medium">Prazo: {estrategia.data.prazo}</p>
                     <p className="text-muted-foreground mt-0.5">{estrategia.data.descricao}</p>
                   </>
                 ) : null}

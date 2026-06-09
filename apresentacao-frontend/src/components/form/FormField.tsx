@@ -29,7 +29,7 @@ export function FormField({
     <div className={cn("flex flex-col gap-1.5", className)}>
       <Label htmlFor={htmlFor}>
         {label}
-        {required && <span className="text-vinho ml-0.5">*</span>}
+        {required && <span className="text-azul ml-0.5">*</span>}
       </Label>
       {children}
       {error ? (

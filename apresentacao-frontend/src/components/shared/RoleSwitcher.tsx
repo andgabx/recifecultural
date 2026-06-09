@@ -26,7 +26,7 @@ const icones: Record<Papel, LucideIcon> = {
 
 type RoleSwitcherProps = {
   /**
-   * "dark": para uso em fundo escuro (Sidebar/header do palco)
+   * "dark": para uso em fundo escuro (Sidebar/header do noite)
    * "light": para uso em fundo claro (TopBar do AppShell)
    */
   variant?: "dark" | "light";
@@ -79,8 +79,8 @@ export function RoleSwitcher({
         className={cn(
           "h-9 w-36 rounded-full",
           variant === "dark"
-            ? "bg-palco-surface/40 animate-pulse"
-            : "bg-marquee-muted animate-pulse",
+            ? "bg-noite-surface/40 animate-pulse"
+            : "bg-nevoa-muted animate-pulse",
         )}
       />
     );
@@ -91,8 +91,8 @@ export function RoleSwitcher({
 
   const triggerClasses =
     variant === "dark"
-      ? "bg-palco-surface/60 hover:bg-palco-surface border-palco-surface text-marquee"
-      : "bg-marquee-card hover:bg-marquee-muted border-border text-palco";
+      ? "bg-noite-surface/60 hover:bg-noite-surface border-noite-surface text-nevoa"
+      : "bg-white hover:bg-nevoa-muted border-border text-noite";
 
   return (
     <div ref={ref} className="relative">
@@ -109,7 +109,7 @@ export function RoleSwitcher({
         <span
           className={cn(
             "flex items-center justify-center rounded-full p-1",
-            "bg-vinho/15",
+            "bg-azul/15",
           )}
         >
           <Icon className={cn("h-3.5 w-3.5", meta.cor)} />
@@ -143,15 +143,15 @@ export function RoleSwitcher({
             transition={{ duration: 0.14 }}
             role="listbox"
             className={cn(
-              "bg-marquee-card border-border absolute z-50 mt-2 w-72 overflow-hidden rounded-xl border shadow-raised",
+              "bg-white border-border absolute z-50 mt-2 w-72 overflow-hidden rounded-xl border shadow-raised",
               alinhamento === "right" ? "right-0" : "left-0",
             )}
           >
-            <div className="border-border bg-marquee-muted/60 border-b px-4 py-2">
+            <div className="border-border bg-nevoa-muted/60 border-b px-4 py-2">
               <p className="text-muted-foreground text-[10px] uppercase tracking-widest">
                 Modo demonstração
               </p>
-              <p className="text-palco text-xs">
+              <p className="text-noite text-xs">
                 Sem autenticação real — escolha o papel para ver a UI dele.
               </p>
             </div>
@@ -170,14 +170,14 @@ export function RoleSwitcher({
                       className={cn(
                         "flex w-full items-start gap-3 rounded-lg px-3 py-2.5 text-left transition-colors",
                         ativo
-                          ? "bg-vinho/10 text-palco"
-                          : "hover:bg-marquee-muted text-palco/85",
+                          ? "bg-azul/10 text-noite"
+                          : "hover:bg-nevoa-muted text-noite/85",
                       )}
                     >
                       <span
                         className={cn(
                           "mt-0.5 flex items-center justify-center rounded-md p-1.5",
-                          ativo ? "bg-vinho text-marquee" : "bg-marquee-muted",
+                          ativo ? "bg-azul text-nevoa" : "bg-nevoa-muted",
                         )}
                       >
                         <PIcon
@@ -188,9 +188,9 @@ export function RoleSwitcher({
                         />
                       </span>
                       <span className="flex-1">
-                        <span className="text-palco flex items-center gap-1.5 text-sm font-semibold">
+                        <span className="text-noite flex items-center gap-1.5 text-sm font-semibold">
                           {m.label}
-                          {ativo && <Check className="text-vinho h-3.5 w-3.5" />}
+                          {ativo && <Check className="text-azul h-3.5 w-3.5" />}
                         </span>
                         <span className="text-muted-foreground mt-0.5 block text-[11px] leading-snug">
                           {m.descricao}

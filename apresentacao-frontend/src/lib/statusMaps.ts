@@ -4,7 +4,7 @@ export type BadgeVariant =
   | 'default'
   | 'secondary'
   | 'accent'
-  | 'frevo'
+  | 'violeta'
   | 'success'
   | 'warning'
   | 'destructive'
@@ -21,7 +21,7 @@ export const statusEventoLabel: Record<StatusEvento, string> = {
 
 export const statusEventoVariant: Record<StatusEvento, BadgeVariant> = {
   RASCUNHO: 'secondary',
-  EM_ANALISE: 'frevo',
+  EM_ANALISE: 'violeta',
   APROVADO: 'success',
   REPROVADO: 'destructive',
   CANCELADO: 'destructive',
@@ -36,7 +36,7 @@ export const statusSorteioLabel: Record<StatusSorteio, string> = {
 };
 
 export const statusSorteioVariant: Record<StatusSorteio, BadgeVariant> = {
-  INSCRICOES_ABERTAS: 'frevo',
+  INSCRICOES_ABERTAS: 'violeta',
   EM_APURACAO: 'default',
   CONCLUIDO: 'success',
   CANCELADO: 'destructive',

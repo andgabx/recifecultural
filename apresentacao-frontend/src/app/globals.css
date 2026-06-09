@@ -5,8 +5,8 @@
 @custom-variant dark (&:is(.dark *));
 
 /* ──────────────────────────────────────────────────────────────────────────
-   Recife Cultural — Paleta (Fase 6 §0.2)
-   Identidade: teatro clássico (vinho/dourado) + cultura popular (frevo/capibaribe)
+   Recife Cultural — Paleta ID PCR / Manual de Marca 2025
+   Identidade: azul institucional PCR + cultura popular pernambucana
    ────────────────────────────────────────────────────────────────────────── */
 
 @theme inline {
@@ -14,9 +14,9 @@
   --color-foreground: var(--foreground);
 
   --font-sans: var(--font-inter);
-  --font-display: var(--font-playfair);
+  --font-display: var(--font-inter);
   --font-mono: var(--font-jetbrains-mono);
-  --font-heading: var(--font-playfair);
+  --font-heading: var(--font-inter);
 
   /* shadcn semantic tokens */
   --color-sidebar-ring: var(--sidebar-ring);
@@ -49,33 +49,36 @@
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
 
-  /* Brand colors (utilities: bg-vinho, text-ouro, border-frevo, etc.) */
-  --color-vinho: #7b1d42;
-  --color-vinho-light: #9d2455;
-  --color-vinho-dark: #5a1330;
-  --color-vinho-50: #fdf2f6;
+  /* Brand colors ID PCR (utilities: bg-azul, text-laranja, border-noite, etc.) */
+  --color-azul: #173DB7;
+  --color-azul-light: #008AF4;
+  --color-azul-dark: #0D2D8A;
+  --color-azul-50: #EFF4FF;
 
-  --color-ouro: #c9920e;
-  --color-ouro-light: #e5a912;
-  --color-ouro-dark: #a07208;
+  --color-verde: #006E2B;
+  --color-verde-light: #42DA2E;
+  --color-verde-dark: #004D1E;
+  --color-verde-50: #EDFFF0;
 
-  --color-frevo: #f5c518;
-  --color-frevo-dark: #d4a800;
+  --color-laranja: #E94E1B;
+  --color-laranja-light: #FC9346;
+  --color-laranja-dark: #C03A10;
 
-  --color-capibaribe: #d4622a;
-  --color-capibaribe-light: #e87848;
+  /* violeta → verde claro (badges/detalhes, conforme manual de marca PCR) */
+  --color-violeta: #42DA2E;
+  --color-violeta-dark: #006E2B;
 
-  --color-palco: #1a1018;
-  --color-palco-surface: #2c2030;
+  --color-noite: #0A1628;
+  --color-noite-surface: #122040;
 
-  --color-marquee: #faf6f0;
-  --color-marquee-card: #ffffff;
-  --color-marquee-muted: #f0e8dc;
+  --color-nevoa: #F5F7FF;
+  --color-nevoa-card: #FFFFFF;
+  --color-nevoa-muted: #EBF0FF;
 
-  /* Shadows teatrais (Fase 6 §0.4) */
-  --shadow-card: 0 2px 8px rgba(26, 16, 24, 0.08);
-  --shadow-raised: 0 8px 24px rgba(26, 16, 24, 0.14);
-  --shadow-stage: 0 0 40px rgba(201, 146, 14, 0.18);
+  /* Shadows — profundidade da paisagem do Recife */
+  --shadow-card: 0 2px 8px rgba(10, 22, 40, 0.08);
+  --shadow-raised: 0 8px 24px rgba(10, 22, 40, 0.14);
+  --shadow-stage: 0 0 40px rgba(23, 61, 183, 0.22);
 
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
@@ -88,84 +91,84 @@
 
 :root {
   /* Backgrounds */
-  --background: #faf6f0; /* marquee */
-  --foreground: #1a1018; /* palco */
-  --card: #ffffff;
-  --card-foreground: #1a1018;
-  --popover: #ffffff;
-  --popover-foreground: #1a1018;
+  --background: #F5F7FF;
+  --foreground: #0A1628;
+  --card: #FFFFFF;
+  --card-foreground: #0A1628;
+  --popover: #FFFFFF;
+  --popover-foreground: #0A1628;
 
-  /* Primary = vinho (cortina de veludo) */
-  --primary: #7b1d42;
-  --primary-foreground: #faf6f0;
+  /* Primary = azul institucional PCR */
+  --primary: #173DB7;
+  --primary-foreground: #FFFFFF;
 
-  /* Secondary = creme pergaminho */
-  --secondary: #f0e8dc;
-  --secondary-foreground: #1a1018;
+  /* Secondary = névoa muted */
+  --secondary: #EBF0FF;
+  --secondary-foreground: #0A1628;
 
   /* Muted */
-  --muted: #f0e8dc;
-  --muted-foreground: #7a6b62;
+  --muted: #EBF0FF;
+  --muted-foreground: #5C6B8A;
 
-  /* Accent = ouro (dourado de palco) */
-  --accent: #c9920e;
-  --accent-foreground: #faf6f0;
+  /* Accent = laranja cultural */
+  --accent: #E94E1B;
+  --accent-foreground: #FFFFFF;
 
   /* Destructive */
-  --destructive: #b91c1c;
+  --destructive: #B91C1C;
 
   /* Borders/inputs/ring */
-  --border: #e4d8ce;
-  --input: #e4d8ce;
-  --ring: rgba(123, 29, 66, 0.4);
+  --border: #D0D8F0;
+  --input: #D0D8F0;
+  --ring: rgba(23, 61, 183, 0.4);
 
-  /* Charts — paleta gradiente vinho → ouro → frevo */
-  --chart-1: #7b1d42;
-  --chart-2: #c9920e;
-  --chart-3: #f5c518;
-  --chart-4: #d4622a;
-  --chart-5: #9d2455;
+  /* Charts — paleta ID PCR */
+  --chart-1: #173DB7;
+  --chart-2: #E94E1B;
+  --chart-3: #42DA2E;
+  --chart-4: #9346FC;
+  --chart-5: #006E2B;
 
   --radius: 0.625rem;
 
-  /* Sidebar = palco escuro */
-  --sidebar: #1a1018;
-  --sidebar-foreground: rgba(250, 246, 240, 0.8);
-  --sidebar-primary: #7b1d42;
-  --sidebar-primary-foreground: #faf6f0;
-  --sidebar-accent: #2c2030;
-  --sidebar-accent-foreground: #faf6f0;
-  --sidebar-border: #2c2030;
-  --sidebar-ring: #c9920e;
+  /* Sidebar = noite profundo */
+  --sidebar: #0A1628;
+  --sidebar-foreground: rgba(255, 255, 255, 0.8);
+  --sidebar-primary: #173DB7;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #122040;
+  --sidebar-accent-foreground: #FFFFFF;
+  --sidebar-border: #122040;
+  --sidebar-ring: #008AF4;
 }
 
 .dark {
-  --background: #1a1018;
-  --foreground: #faf6f0;
-  --card: #2c2030;
-  --card-foreground: #faf6f0;
-  --popover: #2c2030;
-  --popover-foreground: #faf6f0;
-  --primary: #9d2455;
-  --primary-foreground: #faf6f0;
-  --secondary: #2c2030;
-  --secondary-foreground: #faf6f0;
-  --muted: #2c2030;
-  --muted-foreground: rgba(250, 246, 240, 0.65);
-  --accent: #e5a912;
-  --accent-foreground: #1a1018;
+  --background: #0A1628;
+  --foreground: #F5F7FF;
+  --card: #122040;
+  --card-foreground: #F5F7FF;
+  --popover: #122040;
+  --popover-foreground: #F5F7FF;
+  --primary: #008AF4;
+  --primary-foreground: #FFFFFF;
+  --secondary: #122040;
+  --secondary-foreground: #F5F7FF;
+  --muted: #122040;
+  --muted-foreground: rgba(245, 247, 255, 0.65);
+  --accent: #FF6B3D;
+  --accent-foreground: #0A1628;
   --destructive: #ef4444;
-  --border: rgba(250, 246, 240, 0.1);
-  --input: rgba(250, 246, 240, 0.15);
-  --ring: rgba(201, 146, 14, 0.5);
-  --sidebar: #1a1018;
-  --sidebar-foreground: rgba(250, 246, 240, 0.8);
-  --sidebar-primary: #c9920e;
-  --sidebar-primary-foreground: #1a1018;
-  --sidebar-accent: #2c2030;
-  --sidebar-accent-foreground: #faf6f0;
-  --sidebar-border: rgba(250, 246, 240, 0.1);
-  --sidebar-ring: #c9920e;
+  --border: rgba(245, 247, 255, 0.1);
+  --input: rgba(245, 247, 255, 0.15);
+  --ring: rgba(0, 138, 244, 0.5);
+  --sidebar: #0A1628;
+  --sidebar-foreground: rgba(255, 255, 255, 0.8);
+  --sidebar-primary: #008AF4;
+  --sidebar-primary-foreground: #0A1628;
+  --sidebar-accent: #122040;
+  --sidebar-accent-foreground: #FFFFFF;
+  --sidebar-border: rgba(245, 247, 255, 0.1);
+  --sidebar-ring: #008AF4;
 }
 
 @layer base {
@@ -186,23 +189,23 @@
   }
 }
 
-/* ── Sonner toast — paleta Recife Cultural ─────────────────────────────── */
+/* ── Sonner toast — paleta ID PCR ──────────────────────────────────────── */
 [data-sonner-toaster] {
   --normal-bg: #ffffff;
-  --normal-border: #e8ddd0;
-  --normal-text: #1a1018;
+  --normal-border: #D0D8F0;
+  --normal-text: #0A1628;
   --success-bg: #f0fdf4;
   --success-border: #22c55e;
   --success-text: #15803d;
-  --error-bg: #fdf2f6;
-  --error-border: #7b1d42;
-  --error-text: #7b1d42;
-  --warning-bg: #fefce8;
-  --warning-border: #f5c518;
-  --warning-text: #a07208;
-  --info-bg: #fffbeb;
-  --info-border: #c9920e;
-  --info-text: #a07208;
+  --error-bg: #fef2f2;
+  --error-border: #B91C1C;
+  --error-text: #B91C1C;
+  --warning-bg: #EDFFF0;
+  --warning-border: #42DA2E;
+  --warning-text: #004D1E;
+  --info-bg: #EFF4FF;
+  --info-border: #173DB7;
+  --info-text: #0D2D8A;
   font-family: var(--font-sans, sans-serif);
 }
 
@@ -244,20 +247,20 @@
 
 [data-sonner-toast] [data-title] {
   font-weight: 600 !important;
-  color: #1a1018 !important;
+  color: #0A1628 !important;
 }
 
 [data-sonner-toast] [data-description] {
-  color: #6b5b52 !important;
+  color: #5C6B8A !important;
   font-size: 0.75rem !important;
 }
 
 [data-sonner-toast] [data-close-button] {
   background: transparent !important;
   border: none !important;
-  color: #9c8c80 !important;
+  color: #5C6B8A !important;
 }
 
 [data-sonner-toast] [data-close-button]:hover {
-  color: #1a1018 !important;
+  color: #0A1628 !important;
 }

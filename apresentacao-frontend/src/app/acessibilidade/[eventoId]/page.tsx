@@ -40,7 +40,7 @@ export default function AcessibilidadePublicaPage() {
           href={evento ? `/eventos/${evento.id}` : "/"}
           className={cn(
             buttonVariants({ variant: "ghost", size: "sm" }),
-            "text-vinho",
+            "text-azul",
           )}
         >
           <ArrowLeft className="mr-1 h-4 w-4" />
@@ -51,7 +51,7 @@ export default function AcessibilidadePublicaPage() {
           <p className="text-muted-foreground text-xs uppercase tracking-wider">
             Acessibilidade
           </p>
-          <h1 className="font-display text-palco text-3xl font-semibold">
+          <h1 className="font-display text-noite text-3xl font-semibold">
             {carregandoEvento ? <Skeleton className="h-9 w-72" /> : evento?.titulo}
           </h1>
           <p className="text-muted-foreground text-sm">
@@ -96,12 +96,12 @@ export default function AcessibilidadePublicaPage() {
               const Icone = detalhe.icon;
               return (
                 <motion.div key={r.id} variants={itemVariants}>
-                  <Card className="border-vinho/20 from-vinho/5 to-marquee-card flex h-full gap-3 bg-gradient-to-br p-4">
-                    <div className="bg-vinho/10 text-vinho flex h-10 w-10 shrink-0 items-center justify-center rounded-full">
+                  <Card className="border-azul/20 from-azul/5 to-white flex h-full gap-3 bg-gradient-to-br p-4">
+                    <div className="bg-azul/10 text-azul flex h-10 w-10 shrink-0 items-center justify-center rounded-full">
                       <Icone className="h-5 w-5" />
                     </div>
                     <div className="space-y-1">
-                      <p className="text-palco font-semibold">{detalhe.label}</p>
+                      <p className="text-noite font-semibold">{detalhe.label}</p>
                       <p className="text-muted-foreground text-xs">
                         {detalhe.descricao}
                       </p>

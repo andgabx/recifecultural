@@ -46,6 +46,9 @@ const tipoLabel: Record<string, string> = {
 };
 
 const formatarMoeda = (v: number | string | undefined) => {
+  if (v == null) return "—";
+  return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(Number(v));
+};
 
 export default function MeusIngressosPage() {
   const params = useSearchParams();

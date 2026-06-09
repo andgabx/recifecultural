@@ -121,8 +121,8 @@ export default function NovoEventoPage() {
         titulo: values.titulo,
         descricaoCurta: values.descricaoCurta || undefined,
         descricaoLonga: values.descricaoLonga || undefined,
-        periodoInicio: isoInicio,
-        periodoFim: isoFim,
+        periodoInicio: isoInicio ?? "",
+        periodoFim: isoFim ?? "",
         categoria: values.categoria,
         precoInteira:
           typeof values.precoInteira === "number" ? values.precoInteira : undefined,

@@ -14,17 +14,7 @@ export function Providers({ children }: { children: ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <RoleProvider>{children}</RoleProvider>
-      <Toaster
-        position="top-right"
-        toastOptions={{
-          classNames: {
-            toast: "border border-border shadow-card",
-            success: "border-l-4 border-l-emerald-500",
-            error: "border-l-4 border-l-destructive",
-            info: "border-l-4 border-l-vinho",
-          },
-        }}
-      />
+      <Toaster position="bottom-right" closeButton />
       {process.env.NODE_ENV === "development" && (
         <ReactQueryDevtools initialIsOpen={false} buttonPosition="bottom-left" />
       )}

@@ -185,3 +185,79 @@
     @apply font-display tracking-tight;
   }
 }
+
+/* ── Sonner toast — paleta Recife Cultural ─────────────────────────────── */
+[data-sonner-toaster] {
+  --normal-bg: #ffffff;
+  --normal-border: #e8ddd0;
+  --normal-text: #1a1018;
+  --success-bg: #f0fdf4;
+  --success-border: #22c55e;
+  --success-text: #15803d;
+  --error-bg: #fdf2f6;
+  --error-border: #7b1d42;
+  --error-text: #7b1d42;
+  --warning-bg: #fefce8;
+  --warning-border: #f5c518;
+  --warning-text: #a07208;
+  --info-bg: #fffbeb;
+  --info-border: #c9920e;
+  --info-text: #a07208;
+  font-family: var(--font-sans, sans-serif);
+}
+
+[data-sonner-toast] {
+  border-radius: 0.75rem !important;
+  font-size: 0.875rem !important;
+  box-shadow: 0 4px 16px 0 rgb(0 0 0 / 0.10) !important;
+  border-width: 1px !important;
+  padding: 0.875rem 1rem !important;
+}
+
+[data-sonner-toast][data-type="success"] {
+  background: var(--success-bg) !important;
+  border-color: var(--success-border) !important;
+  color: var(--success-text) !important;
+  border-left-width: 4px !important;
+}
+
+[data-sonner-toast][data-type="error"] {
+  background: var(--error-bg) !important;
+  border-color: var(--error-border) !important;
+  color: var(--error-text) !important;
+  border-left-width: 4px !important;
+}
+
+[data-sonner-toast][data-type="warning"] {
+  background: var(--warning-bg) !important;
+  border-color: var(--warning-border) !important;
+  color: var(--warning-text) !important;
+  border-left-width: 4px !important;
+}
+
+[data-sonner-toast][data-type="info"] {
+  background: var(--info-bg) !important;
+  border-color: var(--info-border) !important;
+  color: var(--info-text) !important;
+  border-left-width: 4px !important;
+}
+
+[data-sonner-toast] [data-title] {
+  font-weight: 600 !important;
+  color: #1a1018 !important;
+}
+
+[data-sonner-toast] [data-description] {
+  color: #6b5b52 !important;
+  font-size: 0.75rem !important;
+}
+
+[data-sonner-toast] [data-close-button] {
+  background: transparent !important;
+  border: none !important;
+  color: #9c8c80 !important;
+}
+
+[data-sonner-toast] [data-close-button]:hover {
+  color: #1a1018 !important;
+}

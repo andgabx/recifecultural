@@ -52,7 +52,7 @@ const schema = z.object({
 type CheckoutForm = z.infer<typeof schema>;
 
 const formatarMoeda = (v: number) =>
-
+  new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(v);
 export default function CheckoutPage() {
   const router = useRouter();
   const params = useSearchParams();

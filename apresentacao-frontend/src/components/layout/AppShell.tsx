@@ -14,10 +14,11 @@ export function AppShell({
   children: ReactNode;
 }) {
   return (
-    <div className="bg-marquee text-foreground flex min-h-screen">
+    <div className="bg-nevoa text-foreground flex min-h-screen">
       <Sidebar papel={papel} />
       <div className="flex min-w-0 flex-1 flex-col">
         <TopBar titulo={titulo} />
+        <div aria-hidden="true" className="h-[5px] w-full shrink-0" style={{background:'linear-gradient(90deg,#173DB7 0%,#008AF4 40%,#42DA2E 70%,#FC9346 100%)'}} />
         <main className="flex-1 overflow-y-auto">{children}</main>
       </div>
     </div>

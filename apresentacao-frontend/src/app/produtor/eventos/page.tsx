@@ -57,7 +57,7 @@ export default function MeusEventosPage() {
       header: "Título",
       cell: (e) => (
         <div className="min-w-0">
-          <p className="font-display text-palco truncate font-medium">
+          <p className="font-display text-noite truncate font-medium">
             {e.titulo}
           </p>
           {e.descricaoCurta && (
@@ -104,10 +104,10 @@ export default function MeusEventosPage() {
         return (
           <Link
             href={`/acessibilidade/${e.id}`}
-            className="hover:text-vinho flex flex-wrap items-center gap-1 text-xs transition-colors"
+            className="hover:text-azul flex flex-wrap items-center gap-1 text-xs transition-colors"
             title="Ver visão pública"
           >
-            <Accessibility className="text-vinho h-3.5 w-3.5" />
+            <Accessibility className="text-azul h-3.5 w-3.5" />
             <span className="font-semibold">{recursos.length}</span>
             <span className="text-muted-foreground">recurso(s):</span>
             {tipos.slice(0, 3).map((tipo) => {
@@ -116,7 +116,7 @@ export default function MeusEventosPage() {
                 <span
                   key={tipo}
                   title={detalheAcessibilidade(tipo).label}
-                  className="bg-vinho/10 text-vinho rounded-full p-1"
+                  className="bg-azul/10 text-azul rounded-full p-1"
                 >
                   <Icone className="h-3 w-3" />
                 </span>
@@ -152,10 +152,10 @@ export default function MeusEventosPage() {
                 variant="outline"
                 onClick={() => onSubmeter(e)}
                 disabled={submeter.isPending}
-                className="border-ouro/40 text-ouro-dark hover:bg-ouro/10"
+                className="border-laranja/40 text-laranja-dark hover:bg-laranja/10"
               >
                 {submeter.isPending ? (
-                  <LoadingSpinner className="mr-1 text-ouro" />
+                  <LoadingSpinner className="mr-1 text-laranja" />
                 ) : (
                   <Send className="mr-1 h-3 w-3" />
                 )}
@@ -177,7 +177,7 @@ export default function MeusEventosPage() {
           href="/produtor/eventos/novo"
           className={cn(
             buttonVariants({ variant: "default" }),
-            "bg-vinho hover:bg-vinho-light text-marquee",
+            "bg-azul hover:bg-azul-light text-nevoa",
           )}
         >
           <Plus className="mr-1 h-4 w-4" />
@@ -185,9 +185,9 @@ export default function MeusEventosPage() {
         </Link>
       }
     >
-      <Card className="border-dashed border-ouro/30 bg-ouro/5 p-4">
+      <Card className="border-dashed border-laranja/30 bg-laranja/5 p-4">
         <p className="text-xs text-muted-foreground">
-          <span className="text-ouro-dark font-semibold uppercase tracking-widest">
+          <span className="text-laranja-dark font-semibold uppercase tracking-widest">
             Modo demonstração
           </span>{" "}
           — promotor fixo{" "}

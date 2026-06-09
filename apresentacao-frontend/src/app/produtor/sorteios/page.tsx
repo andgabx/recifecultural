@@ -61,10 +61,10 @@ type NovoFormOutput = z.output<typeof novoSchema>;
 
 const statusInscricaoVariant: Record<
   StatusInscricao,
-  "success" | "frevo" | "secondary" | "destructive"
+  "success" | "violeta" | "secondary" | "destructive"
 > = {
   GANHADOR: "success",
-  SUPLENTE: "frevo",
+  SUPLENTE: "violeta",
   INSCRITO: "secondary",
   DESISTENTE: "destructive",
   CANCELADA: "destructive",
@@ -157,7 +157,7 @@ export default function SorteiosProdutorPage() {
             if (eventoConsultado) form.setValue("eventoId", eventoConsultado);
             setNovoAberto(true);
           }}
-          className="bg-vinho hover:bg-vinho-light text-marquee"
+          className="bg-azul hover:bg-azul-light text-nevoa"
         >
           <Plus className="mr-1 h-4 w-4" />
           Novo sorteio
@@ -214,8 +214,8 @@ export default function SorteiosProdutorPage() {
                 key={s.id}
                 className={
                   s.status === "INSCRICOES_ABERTAS"
-                    ? "border-t-frevo space-y-3 border-t-4 p-5"
-                    : "border-t-vinho space-y-3 border-t-4 p-5"
+                    ? "border-t-violeta space-y-3 border-t-4 p-5"
+                    : "border-t-azul space-y-3 border-t-4 p-5"
                 }
               >
                 <div className="flex items-start justify-between gap-2">
@@ -228,7 +228,7 @@ export default function SorteiosProdutorPage() {
                           ? `${s.apresentacaoId.slice(0, 8)}…`
                           : "—"}
                     </p>
-                    <p className="font-display text-palco mt-1 text-base font-semibold">
+                    <p className="font-display text-noite mt-1 text-base font-semibold">
                       {s.vagas} {s.vagas === 1 ? "vaga" : "vagas"}
                     </p>
                   </div>
@@ -238,19 +238,19 @@ export default function SorteiosProdutorPage() {
                 </div>
                 <div className="text-muted-foreground space-y-1 text-xs">
                   <p className="flex items-center gap-1.5">
-                    <CalendarClock className="text-ouro h-3 w-3" />
+                    <CalendarClock className="text-laranja h-3 w-3" />
                     Prazo: {formatarDataHora(s.prazoInscricao)}
                   </p>
                   <p className="flex items-center gap-1.5">
-                    <CalendarClock className="text-ouro h-3 w-3" />
+                    <CalendarClock className="text-laranja h-3 w-3" />
                     Apresentação: {formatarDataHora(s.dataApresentacao)}
                   </p>
                 </div>
                 {s.status === "INSCRICOES_ABERTAS" && (
                   <div className="space-y-1">
-                    <div className="bg-marquee-muted h-1.5 overflow-hidden rounded-full">
+                    <div className="bg-nevoa-muted h-1.5 overflow-hidden rounded-full">
                       <div
-                        className="bg-ouro h-full transition-all"
+                        className="bg-laranja h-full transition-all"
                         style={{ width: `${progresso}%` }}
                       />
                     </div>
@@ -273,7 +273,7 @@ export default function SorteiosProdutorPage() {
                       <Button
                         size="sm"
                         onClick={() => setApurar(s)}
-                        className="bg-frevo text-palco hover:bg-frevo-dark font-semibold"
+                        className="bg-violeta text-noite hover:bg-violeta-dark font-semibold"
                       >
                         <Shuffle className="mr-1 h-3 w-3" />
                         Apurar
@@ -321,9 +321,9 @@ export default function SorteiosProdutorPage() {
               type="button"
               onClick={form.handleSubmit(onCriar)}
               disabled={criar.isPending}
-              className="bg-vinho hover:bg-vinho-light text-marquee"
+              className="bg-azul hover:bg-azul-light text-nevoa"
             >
-              {criar.isPending && <LoadingSpinner className="mr-2 text-marquee" />}
+              {criar.isPending && <LoadingSpinner className="mr-2 text-nevoa" />}
               Criar
             </Button>
           </>
@@ -483,7 +483,7 @@ function InscricoesModal({
                 <span className="text-muted-foreground font-mono text-xs">
                   {String(index + 1).padStart(2, "0")}
                 </span>
-                <span className="text-palco truncate font-mono text-xs">
+                <span className="text-noite truncate font-mono text-xs">
                   {i.espectadorId}
                 </span>
               </div>

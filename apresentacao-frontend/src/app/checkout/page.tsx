@@ -186,14 +186,14 @@ export default function CheckoutPage() {
       <section className="mx-auto max-w-5xl space-y-6 px-6 py-10">
         <Link
           href={eventoId ? `/eventos/${eventoId}` : "/"}
-          className="text-muted-foreground hover:text-vinho inline-flex items-center gap-1 text-sm transition-colors"
+          className="text-muted-foreground hover:text-azul inline-flex items-center gap-1 text-sm transition-colors"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
           Voltar ao evento
         </Link>
 
         <header>
-          <h1 className="font-display text-palco text-2xl font-semibold tracking-tight">
+          <h1 className="font-display text-noite text-2xl font-semibold tracking-tight">
             Checkout
           </h1>
           {evento && (
@@ -209,16 +209,16 @@ export default function CheckoutPage() {
           <div className="space-y-4">
             {/* Resumo do evento (read-only) */}
             <Card className="space-y-3 p-6">
-              <h2 className="font-display text-palco text-lg font-semibold">
+              <h2 className="font-display text-noite text-lg font-semibold">
                 Apresentação
               </h2>
               <div className="text-muted-foreground grid gap-1 text-sm">
                 <p>
-                  <span className="text-palco font-medium">Data: </span>
+                  <span className="text-noite font-medium">Data: </span>
                   {dataHoraIso ? formatarDataHora(dataHoraIso) : "—"}
                 </p>
                 <p>
-                  <span className="text-palco font-medium">Evento: </span>
+                  <span className="text-noite font-medium">Evento: </span>
                   {evento?.titulo ?? "Carregando…"}
                 </p>
               </div>
@@ -226,10 +226,10 @@ export default function CheckoutPage() {
 
             {/* Card de assento reservado (quando vem da seleção de mapa) */}
             {temPreReserva && (
-              <Card className="border-ouro/40 bg-ouro/5 flex items-center gap-3 p-4">
-                <Sofa className="text-ouro h-5 w-5 shrink-0" />
+              <Card className="border-laranja/40 bg-laranja/5 flex items-center gap-3 p-4">
+                <Sofa className="text-laranja h-5 w-5 shrink-0" />
                 <div>
-                  <p className="text-palco text-sm font-semibold">
+                  <p className="text-noite text-sm font-semibold">
                     Assento {assentoCodigo || assentoId.slice(0, 8)} reservado
                   </p>
                   <p className="text-muted-foreground text-xs">
@@ -241,7 +241,7 @@ export default function CheckoutPage() {
 
             {/* Seleção de tipo */}
             <Card className="space-y-5 p-6">
-              <h2 className="font-display text-palco text-lg font-semibold">
+              <h2 className="font-display text-noite text-lg font-semibold">
                 Ingresso
               </h2>
 
@@ -279,10 +279,10 @@ export default function CheckoutPage() {
           {/* Coluna direita */}
           <aside className="space-y-5">
             {/* Cupom */}
-            <Card className="border-dashed border-ouro/40 space-y-3 p-5">
+            <Card className="border-dashed border-laranja/40 space-y-3 p-5">
               <div className="flex items-center gap-2">
-                <Tag className="text-ouro h-4 w-4" />
-                <h3 className="font-display text-palco text-sm font-semibold">
+                <Tag className="text-laranja h-4 w-4" />
+                <h3 className="font-display text-noite text-sm font-semibold">
                   Cupom de desconto
                 </h3>
               </div>
@@ -312,10 +312,10 @@ export default function CheckoutPage() {
                 size="sm"
                 disabled={aplicarCupomMutation.isPending}
                 onClick={aplicarCupomHandler}
-                className="border-ouro text-ouro-dark hover:bg-ouro hover:text-marquee w-full"
+                className="border-laranja text-laranja-dark hover:bg-laranja hover:text-nevoa w-full"
               >
                 {aplicarCupomMutation.isPending && (
-                  <LoadingSpinner className="mr-2 text-ouro" />
+                  <LoadingSpinner className="mr-2 text-laranja" />
                 )}
                 {aplicarCupomMutation.isPending ? "Validando…" : "Validar cupom"}
               </Button>
@@ -328,7 +328,7 @@ export default function CheckoutPage() {
             </Card>
 
             {/* Total e finalizar */}
-            <Card className="bg-marquee-muted border-ouro/30 space-y-4 p-5">
+            <Card className="bg-nevoa-muted border-laranja/30 space-y-4 p-5">
               <p className="text-muted-foreground text-xs uppercase tracking-widest">
                 Total
               </p>
@@ -338,16 +338,16 @@ export default function CheckoutPage() {
                     {formatarMoeda(valorBase)}
                   </p>
                 )}
-                <p className="font-display text-vinho text-3xl font-bold">
+                <p className="font-display text-azul text-3xl font-bold">
                   {formatarMoeda(valorFinal)}
                 </p>
               </div>
               <Button
                 type="submit"
                 disabled={submetendo}
-                className="bg-vinho hover:bg-vinho-light text-marquee shadow-stage w-full"
+                className="bg-azul hover:bg-azul-light text-nevoa shadow-stage w-full"
               >
-                {submetendo && <LoadingSpinner className="mr-2 text-marquee" />}
+                {submetendo && <LoadingSpinner className="mr-2 text-nevoa" />}
                 <ShoppingBag className="mr-2 h-4 w-4" />
                 Finalizar compra
               </Button>

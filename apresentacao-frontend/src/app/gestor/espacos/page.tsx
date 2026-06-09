@@ -150,14 +150,14 @@ export default function EspacosPage() {
           icon={Plus}
           titulo="Novo espaço"
           descricao="Cadastrar teatro, casa de shows ou centro cultural."
-          cor="vinho"
+          cor="azul"
           onClick={() => setAcao("cadastrar")}
         />
         <CardAcao
           icon={Settings2}
           titulo="Atualizar capacidade"
           descricao="Alterar lotação máxima sem invalidar ingressos vendidos."
-          cor="ouro"
+          cor="laranja"
           onClick={() => setAcao("capacidade")}
         />
         <CardAcao
@@ -178,7 +178,7 @@ export default function EspacosPage() {
 
       {/* Listagem de espaços */}
       <div className="mt-2">
-        <h2 className="font-display text-palco mb-3 text-sm font-semibold">
+        <h2 className="font-display text-noite mb-3 text-sm font-semibold">
           Espaços cadastrados
         </h2>
         {espacos && espacos.length > 0 ? (
@@ -242,9 +242,9 @@ export default function EspacosPage() {
               type="button"
               onClick={cadastroForm.handleSubmit(onCadastrar)}
               disabled={cadastrar.isPending}
-              className="bg-vinho hover:bg-vinho-light text-marquee"
+              className="bg-azul hover:bg-azul-light text-nevoa"
             >
-              {cadastrar.isPending && <LoadingSpinner className="mr-2 text-marquee" />}
+              {cadastrar.isPending && <LoadingSpinner className="mr-2 text-nevoa" />}
               Cadastrar
             </Button>
           </>
@@ -308,9 +308,9 @@ export default function EspacosPage() {
               type="button"
               onClick={capacidadeForm.handleSubmit(onAtualizarCapacidade)}
               disabled={atualizar.isPending}
-              className="bg-ouro hover:bg-ouro-dark text-marquee"
+              className="bg-laranja hover:bg-laranja-dark text-nevoa"
             >
-              {atualizar.isPending && <LoadingSpinner className="mr-2 text-marquee" />}
+              {atualizar.isPending && <LoadingSpinner className="mr-2 text-nevoa" />}
               Atualizar
             </Button>
           </>
@@ -475,12 +475,12 @@ function CardAcao({
   icon: typeof Plus;
   titulo: string;
   descricao: string;
-  cor: "vinho" | "ouro" | "destructive" | "verde";
+  cor: "azul" | "laranja" | "destructive" | "verde";
   onClick: () => void;
 }) {
   const corClasses = {
-    vinho: "bg-vinho/10 text-vinho",
-    ouro: "bg-ouro/15 text-ouro-dark",
+    azul: "bg-azul/10 text-azul",
+    laranja: "bg-laranja/15 text-laranja-dark",
     destructive: "bg-destructive/10 text-destructive",
     verde: "bg-green-100 text-green-700",
   };
@@ -494,7 +494,7 @@ function CardAcao({
       >
         <Icon className="h-5 w-5" />
       </span>
-      <h3 className="font-display text-palco mt-3 text-base font-semibold">
+      <h3 className="font-display text-noite mt-3 text-base font-semibold">
         {titulo}
       </h3>
       <p className="text-muted-foreground mt-1 text-xs">{descricao}</p>

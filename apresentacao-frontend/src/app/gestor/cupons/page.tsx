@@ -132,7 +132,7 @@ export default function CuponsPage() {
     {
       header: "Desconto",
       cell: (c) => (
-        <Badge variant="outline" className="text-vinho border-vinho/40">
+        <Badge variant="outline" className="text-azul border-azul/40">
           {descreverDesconto(c)}
         </Badge>
       ),
@@ -194,7 +194,7 @@ export default function CuponsPage() {
       acoes={
         <Button
           onClick={() => setCadastroAberto(true)}
-          className="bg-vinho hover:bg-vinho-light text-marquee"
+          className="bg-azul hover:bg-azul-light text-nevoa"
         >
           <Plus className="mr-1 h-4 w-4" />
           Novo cupom
@@ -262,10 +262,10 @@ export default function CuponsPage() {
               type="button"
               onClick={form.handleSubmit(onSubmit)}
               disabled={criar.isPending}
-              className="bg-vinho hover:bg-vinho-light text-marquee"
+              className="bg-azul hover:bg-azul-light text-nevoa"
             >
               {criar.isPending && (
-                <LoadingSpinner className="mr-2 text-marquee" />
+                <LoadingSpinner className="mr-2 text-nevoa" />
               )}
               Criar cupom
             </Button>

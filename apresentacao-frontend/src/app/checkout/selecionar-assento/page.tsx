@@ -62,7 +62,7 @@ const corAssento = (
   noCarrinho: boolean,
 ): string => {
   if (noCarrinho)
-    return "bg-vinho ring-2 ring-vinho ring-offset-1 scale-110 cursor-pointer text-white";
+    return "bg-azul ring-2 ring-azul ring-offset-1 scale-110 cursor-pointer text-white";
   switch (status) {
     case "LIVRE":         return "bg-emerald-500 hover:bg-emerald-400 cursor-pointer text-white";
     case "PRE_RESERVADO": return "bg-amber-400 cursor-not-allowed opacity-60 text-white";
@@ -313,7 +313,7 @@ export default function SelecionarAssentoPage() {
             <Ticket className="h-8 w-8 text-emerald-600" />
           </div>
           <div>
-            <h1 className="font-display text-palco text-2xl font-bold">
+            <h1 className="font-display text-noite text-2xl font-bold">
               Pagamento aprovado!
             </h1>
             <p className="text-muted-foreground mt-1 text-sm">
@@ -324,14 +324,14 @@ export default function SelecionarAssentoPage() {
 
           {isPix ? (
             <Card className="space-y-4 p-6 text-left">
-              <p className="text-palco font-semibold">Pagamento via PIX</p>
+              <p className="text-noite font-semibold">Pagamento via PIX</p>
               {/* QR fictício — em produção viria do gateway */}
-              <div className="bg-marquee-muted flex aspect-square w-full max-w-[180px] mx-auto items-center justify-center rounded-xl border border-dashed text-center text-xs text-muted-foreground">
+              <div className="bg-nevoa-muted flex aspect-square w-full max-w-[180px] mx-auto items-center justify-center rounded-xl border border-dashed text-center text-xs text-muted-foreground">
                 QR Code PIX<br />(simulado)
               </div>
               <div className="space-y-1">
                 <p className="text-muted-foreground text-xs uppercase tracking-wide">Copia e cola</p>
-                <div className="bg-marquee-muted rounded-md p-2 font-mono text-xs break-all">
+                <div className="bg-nevoa-muted rounded-md p-2 font-mono text-xs break-all">
                   00020126580014BR.GOV.BCB.PIX01364D98F3E2-DEMO-RECIFE-CULTURAL-{compraConfirmada.ids[0]?.slice(0, 8).toUpperCase()}
                 </div>
                 <p className="text-muted-foreground text-[10px]">
@@ -341,7 +341,7 @@ export default function SelecionarAssentoPage() {
             </Card>
           ) : (
             <Card className="space-y-2 p-6 text-left">
-              <p className="text-palco font-semibold">
+              <p className="text-noite font-semibold">
                 {compraConfirmada.metodo === "CARTAO_CREDITO" ? "Cartão de crédito" : "Cartão de débito"}
               </p>
               <p className="text-muted-foreground text-sm">
@@ -356,13 +356,13 @@ export default function SelecionarAssentoPage() {
           <Card className="p-4 text-left space-y-1">
             <p className="text-muted-foreground text-xs uppercase tracking-wide">Seus ingressos</p>
             {compraConfirmada.ids.map((id) => (
-              <p key={id} className="font-mono text-xs text-palco">#{id.slice(0, 8).toUpperCase()}</p>
+              <p key={id} className="font-mono text-xs text-noite">#{id.slice(0, 8).toUpperCase()}</p>
             ))}
           </Card>
 
           <Button
             onClick={() => router.push(`/meus-ingressos?eventoId=${eventoId}`)}
-            className="bg-vinho hover:bg-vinho-light text-marquee w-full"
+            className="bg-azul hover:bg-azul-light text-nevoa w-full"
           >
             Ver meus ingressos
           </Button>
@@ -379,12 +379,12 @@ export default function SelecionarAssentoPage() {
           <div>
             <Link
               href={eventoId ? `/eventos/${eventoId}` : "/"}
-              className="text-muted-foreground hover:text-vinho mb-1 inline-flex items-center gap-1 text-sm transition-colors"
+              className="text-muted-foreground hover:text-azul mb-1 inline-flex items-center gap-1 text-sm transition-colors"
             >
               <ArrowLeft className="h-3.5 w-3.5" />
               Voltar ao evento
             </Link>
-            <h1 className="font-display text-palco text-2xl font-semibold">
+            <h1 className="font-display text-noite text-2xl font-semibold">
               Escolha seus assentos
             </h1>
             {evento && (
@@ -416,7 +416,7 @@ export default function SelecionarAssentoPage() {
             <div className="flex flex-wrap items-center gap-4 text-xs">
               {[
                 { cor: "bg-emerald-500",   label: "Disponível" },
-                { cor: "bg-vinho",         label: "Selecionado" },
+                { cor: "bg-azul",         label: "Selecionado" },
                 { cor: "bg-amber-400",     label: "Pré-reservado" },
                 { cor: "bg-rose-500",      label: "Ocupado" },
                 { cor: "bg-zinc-400",      label: "Bloqueado" },
@@ -466,7 +466,7 @@ export default function SelecionarAssentoPage() {
                   <Card key={setor.id} className="space-y-4 overflow-x-auto p-5">
                     <div className="flex items-center justify-between gap-2">
                       <div>
-                        <p className="font-display text-palco font-semibold">
+                        <p className="font-display text-noite font-semibold">
                           {setor.nome}
                         </p>
                         <p className="text-muted-foreground text-xs">
@@ -539,12 +539,12 @@ export default function SelecionarAssentoPage() {
           <div className="w-72 shrink-0 space-y-4 sticky top-6">
             <Card className="space-y-4 p-5">
               <div className="flex items-center gap-2">
-                <ShoppingCart className="text-vinho h-4 w-4" />
-                <h2 className="font-display text-palco font-semibold">
+                <ShoppingCart className="text-azul h-4 w-4" />
+                <h2 className="font-display text-noite font-semibold">
                   Meus ingressos
                 </h2>
                 {carrinho.length > 0 && (
-                  <Badge variant="frevo" className="ml-auto">
+                  <Badge variant="violeta" className="ml-auto">
                     {carrinho.length}
                   </Badge>
                 )}
@@ -563,7 +563,7 @@ export default function SelecionarAssentoPage() {
                     >
                       <div className="flex items-center justify-between gap-1">
                         <div>
-                          <p className="text-palco text-sm font-semibold">
+                          <p className="text-noite text-sm font-semibold">
                             {item.codigo}
                           </p>
                           <p className="text-muted-foreground text-xs">
@@ -644,14 +644,14 @@ export default function SelecionarAssentoPage() {
                         placeholder="FREVO20"
                         value={codigoCupom}
                         onChange={(e) => setCodigoCupom(e.target.value.toUpperCase())}
-                        className="border-border bg-marquee-card text-foreground placeholder:text-muted-foreground h-9 w-full rounded-lg border px-3 text-sm font-mono uppercase focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-vinho/30"
+                        className="border-border bg-white text-foreground placeholder:text-muted-foreground h-9 w-full rounded-lg border px-3 text-sm font-mono uppercase focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-azul/30"
                       />
                       <input
                         type="text"
                         placeholder="CPF (11 dígitos)"
                         value={cpfComprador}
                         onChange={(e) => setCpfComprador(e.target.value.replace(/\D/g, "").slice(0, 11))}
-                        className="border-border bg-marquee-card text-foreground placeholder:text-muted-foreground h-9 w-full rounded-lg border px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-vinho/30"
+                        className="border-border bg-white text-foreground placeholder:text-muted-foreground h-9 w-full rounded-lg border px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-azul/30"
                       />
                       <Button
                         type="button"
@@ -659,10 +659,10 @@ export default function SelecionarAssentoPage() {
                         variant="outline"
                         onClick={validarCupom}
                         disabled={previewCupom.isPending || !codigoCupom || !cpfComprador}
-                        className="border-ouro text-ouro-dark hover:bg-ouro hover:text-marquee w-full"
+                        className="border-laranja text-laranja-dark hover:bg-laranja hover:text-nevoa w-full"
                       >
                         {previewCupom.isPending ? (
-                          <LoadingSpinner className="mr-1 text-ouro" />
+                          <LoadingSpinner className="mr-1 text-laranja" />
                         ) : (
                           <Check className="mr-1 h-3.5 w-3.5" />
                         )}
@@ -697,7 +697,7 @@ export default function SelecionarAssentoPage() {
                       <span className="text-muted-foreground text-xs uppercase tracking-wide">
                         Subtotal
                       </span>
-                      <span className="text-palco text-sm">
+                      <span className="text-noite text-sm">
                         {formatarMoeda(totalSemDesconto)}
                       </span>
                     </div>
@@ -713,7 +713,7 @@ export default function SelecionarAssentoPage() {
                       <span className="text-muted-foreground text-xs uppercase tracking-wide">
                         Total
                       </span>
-                      <span className="font-display text-vinho text-xl font-bold">
+                      <span className="font-display text-azul text-xl font-bold">
                         {formatarMoeda(total)}
                       </span>
                     </div>
@@ -722,10 +722,10 @@ export default function SelecionarAssentoPage() {
                   <Button
                     onClick={finalizarCompra}
                     disabled={comprar.isPending}
-                    className="bg-vinho hover:bg-vinho-light text-marquee w-full"
+                    className="bg-azul hover:bg-azul-light text-nevoa w-full"
                   >
                     {comprar.isPending ? (
-                      <LoadingSpinner className="mr-2 text-marquee" />
+                      <LoadingSpinner className="mr-2 text-nevoa" />
                     ) : (
                       <Ticket className="mr-2 h-4 w-4" />
                     )}

@@ -118,7 +118,7 @@ export default function ProdutorDashboardPage() {
         {stats.map((s) => (
           <Card key={s.label}>
             <CardContent className="flex items-start gap-3 p-5">
-              <span className="bg-vinho/10 text-vinho rounded-lg p-2">
+              <span className="bg-azul/10 text-azul rounded-lg p-2">
                 <s.icone className="h-5 w-5" />
               </span>
               <div className="min-w-0">
@@ -128,7 +128,7 @@ export default function ProdutorDashboardPage() {
                 {s.valor == null ? (
                   <Skeleton className="mt-2 h-7 w-24" />
                 ) : (
-                  <p className="font-display text-palco mt-1 truncate text-2xl font-bold">
+                  <p className="font-display text-noite mt-1 truncate text-2xl font-bold">
                     {s.valor}
                   </p>
                 )}
@@ -153,7 +153,7 @@ export default function ProdutorDashboardPage() {
         <Card className="p-6">
           <header className="flex items-end justify-between gap-2">
             <div>
-              <h2 className="font-display text-palco text-lg font-semibold">
+              <h2 className="font-display text-noite text-lg font-semibold">
                 Próximas apresentações
               </h2>
               <p className="text-muted-foreground text-sm">
@@ -202,7 +202,7 @@ export default function ProdutorDashboardPage() {
         </Card>
 
         <Card className="p-6">
-          <h2 className="font-display text-palco text-lg font-semibold">
+          <h2 className="font-display text-noite text-lg font-semibold">
             Atalhos
           </h2>
           <ul className="mt-4 space-y-2 text-sm">
@@ -237,7 +237,7 @@ function LinhaEvento({ evento }: { evento: EventoResumo }) {
       <div className="min-w-0">
         <Link
           href={`/produtor/eventos/${evento.id}/editar`}
-          className="text-palco hover:text-vinho block truncate text-sm font-medium transition-colors"
+          className="text-noite hover:text-azul block truncate text-sm font-medium transition-colors"
         >
           {evento.titulo}
         </Link>
@@ -272,13 +272,13 @@ function Atalho({
     <li>
       <Link
         href={href}
-        className="hover:bg-marquee-muted -mx-2 flex items-start gap-3 rounded-lg px-2 py-2 transition-colors"
+        className="hover:bg-nevoa-muted -mx-2 flex items-start gap-3 rounded-lg px-2 py-2 transition-colors"
       >
-        <span className="bg-ouro/10 text-ouro-dark rounded-md p-2">
+        <span className="bg-laranja/10 text-laranja-dark rounded-md p-2">
           <Icone className="h-4 w-4" />
         </span>
         <div>
-          <p className="text-palco text-sm font-medium">{titulo}</p>
+          <p className="text-noite text-sm font-medium">{titulo}</p>
           <p className="text-muted-foreground text-xs">{descricao}</p>
         </div>
       </Link>

@@ -19,7 +19,7 @@ export function PageLayout({
     <div className={cn("mx-auto max-w-7xl space-y-6 p-6", className)}>
       <header className="flex items-end justify-between gap-4 border-b border-border pb-4">
         <div>
-          <h1 className="font-display text-palco text-2xl font-semibold tracking-tight">
+          <h1 className="font-display text-noite text-2xl font-semibold tracking-tight">
             {titulo}
           </h1>
           {subtitulo && (

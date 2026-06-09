@@ -116,7 +116,7 @@ export default function AprovacoesPage() {
         <div className="space-y-8">
           <ColunaStatus
             titulo="Em análise"
-            badge="frevo"
+            badge="violeta"
             eventos={grupos.EM_ANALISE}
             onAprovar={onAprovar}
             aprovando={aprovar.isPending}
@@ -179,7 +179,7 @@ function ColunaStatus({
   somenteLeitura,
 }: {
   titulo: string;
-  badge: "frevo" | "secondary" | "outline";
+  badge: "violeta" | "secondary" | "outline";
   eventos: EventoResumo[];
   onAprovar?: (e: EventoResumo) => void;
   onReprovar?: (e: EventoResumo) => void;
@@ -187,11 +187,11 @@ function ColunaStatus({
   aprovando?: boolean;
   somenteLeitura?: boolean;
 }) {
-  if (eventos.length === 0 && badge === "frevo") {
+  if (eventos.length === 0 && badge === "violeta") {
     return (
       <section>
         <header className="flex items-baseline justify-between border-b border-border pb-2">
-          <h2 className="font-display text-palco text-lg font-semibold">
+          <h2 className="font-display text-noite text-lg font-semibold">
             {titulo}
           </h2>
           <Badge variant={badge}>0</Badge>
@@ -205,7 +205,7 @@ function ColunaStatus({
   return (
     <section>
       <header className="flex items-baseline justify-between border-b border-border pb-2">
-        <h2 className="font-display text-palco text-lg font-semibold">
+        <h2 className="font-display text-noite text-lg font-semibold">
           {titulo}
         </h2>
         <Badge variant={badge}>{eventos.length}</Badge>
@@ -233,7 +233,7 @@ function ColunaStatus({
                     <p className="font-mono text-[10px] text-muted-foreground uppercase tracking-widest">
                       {evento.id.slice(0, 8)}
                     </p>
-                    <h3 className="font-display text-palco mt-0.5 truncate text-base font-semibold">
+                    <h3 className="font-display text-noite mt-0.5 truncate text-base font-semibold">
                       {evento.titulo}
                     </h3>
                   </div>
@@ -248,13 +248,13 @@ function ColunaStatus({
                 )}
                 <div className="text-muted-foreground space-y-1 text-xs">
                   <p className="flex items-center gap-1.5">
-                    <CalendarDays className="text-ouro h-3 w-3" />
+                    <CalendarDays className="text-laranja h-3 w-3" />
                     {formatarDataCurta(evento.periodoInicio)}
                     {evento.periodoFim && ` → ${formatarDataCurta(evento.periodoFim)}`}
                   </p>
                   {evento.localId && (
                     <p className="flex items-center gap-1.5">
-                      <MapPin className="text-ouro h-3 w-3" />
+                      <MapPin className="text-laranja h-3 w-3" />
                       <span className="font-mono">
                         {evento.localId.slice(0, 8)}…
                       </span>
@@ -340,7 +340,7 @@ function DetalheModal({
           {/* Período */}
           <Section label="Período">
             <p className="flex items-center gap-1.5 text-muted-foreground">
-              <CalendarDays className="h-3.5 w-3.5 text-ouro" />
+              <CalendarDays className="h-3.5 w-3.5 text-laranja" />
               {formatarDataCurta(evento.periodoInicio)}
               {evento.periodoFim && ` → ${formatarDataCurta(evento.periodoFim)}`}
             </p>
@@ -359,7 +359,7 @@ function DetalheModal({
               <ul className="space-y-1">
                 {evento.artistas.map((id) => (
                   <li key={id} className="flex items-center gap-1.5 text-muted-foreground">
-                    <Users className="h-3.5 w-3.5 shrink-0 text-ouro" />
+                    <Users className="h-3.5 w-3.5 shrink-0 text-laranja" />
                     <span className="font-mono text-xs">{id}</span>
                   </li>
                 ))}
@@ -373,19 +373,19 @@ function DetalheModal({
               <ul className="space-y-1 text-muted-foreground">
                 {evento.precoInteira && (
                   <li className="flex items-center gap-1.5">
-                    <Ticket className="h-3.5 w-3.5 text-ouro" />
+                    <Ticket className="h-3.5 w-3.5 text-laranja" />
                     Inteira: <strong>{formatarPreco(evento.precoInteira)}</strong>
                   </li>
                 )}
                 {evento.precoMeia && (
                   <li className="flex items-center gap-1.5">
-                    <Ticket className="h-3.5 w-3.5 text-ouro" />
+                    <Ticket className="h-3.5 w-3.5 text-laranja" />
                     Meia: <strong>{formatarPreco(evento.precoMeia)}</strong>
                   </li>
                 )}
                 {evento.precoSocial && (
                   <li className="flex items-center gap-1.5">
-                    <Ticket className="h-3.5 w-3.5 text-ouro" />
+                    <Ticket className="h-3.5 w-3.5 text-laranja" />
                     Social: <strong>{formatarPreco(evento.precoSocial)}</strong>
                   </li>
                 )}
@@ -408,7 +408,7 @@ function DetalheModal({
               <ul className="space-y-1 text-muted-foreground">
                 {evento.apresentacoes.map((a) => (
                   <li key={a.id} className="flex items-center gap-1.5">
-                    <CalendarDays className="h-3.5 w-3.5 text-ouro" />
+                    <CalendarDays className="h-3.5 w-3.5 text-laranja" />
                     {formatarDataHora(a.dataHora)}
                   </li>
                 ))}
@@ -520,7 +520,7 @@ function ReprovacaoModal({
           id="feedback"
           rows={5}
           {...form.register("feedback")}
-          className="border-border bg-marquee-card placeholder:text-muted-foreground focus-visible:border-vinho focus-visible:ring-vinho/30 w-full rounded-lg border px-3 py-2 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2"
+          className="border-border bg-white placeholder:text-muted-foreground focus-visible:border-azul focus-visible:ring-azul/30 w-full rounded-lg border px-3 py-2 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2"
           placeholder="Explique de forma clara o motivo da reprovação..."
         />
       </FormField>

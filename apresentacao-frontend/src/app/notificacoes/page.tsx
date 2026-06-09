@@ -39,15 +39,15 @@ const iconePorContexto: Record<string, IconContexto> = {
   PARTICIPANTES_EVENTO_CANCELADO: { icone: AlertCircle, cor: "text-destructive" },
   EVENTO_APROVADO: { icone: CheckCircle2, cor: "text-emerald-600" },
   EVENTO_REPROVADO: { icone: ShieldAlert, cor: "text-destructive" },
-  SORTEIO_CANCELADO: { icone: Gift, cor: "text-frevo" },
-  SORTEIO_GANHADOR: { icone: Gift, cor: "text-ouro-dark" },
-  SORTEIO_PROMOCAO: { icone: Gift, cor: "text-ouro-dark" },
-  ACESSIBILIDADE_REMOVIDA: { icone: ShieldAlert, cor: "text-capibaribe" },
+  SORTEIO_CANCELADO: { icone: Gift, cor: "text-violeta" },
+  SORTEIO_GANHADOR: { icone: Gift, cor: "text-laranja-dark" },
+  SORTEIO_PROMOCAO: { icone: Gift, cor: "text-laranja-dark" },
+  ACESSIBILIDADE_REMOVIDA: { icone: ShieldAlert, cor: "text-laranja" },
   INGRESSO_CONFIRMADO: { icone: Ticket, cor: "text-emerald-600" },
 };
 
 function iconePara(contexto: string): IconContexto {
-  return iconePorContexto[contexto] ?? { icone: Bell, cor: "text-vinho" };
+  return iconePorContexto[contexto] ?? { icone: Bell, cor: "text-azul" };
 }
 
 function chaveDoDia(iso: string) {
@@ -97,7 +97,7 @@ export default function NotificacoesPage() {
       <section className="mx-auto max-w-3xl space-y-6 px-6 py-10">
         <header className="flex items-end justify-between gap-4">
           <div>
-            <h1 className="font-display text-palco text-2xl font-semibold tracking-tight">
+            <h1 className="font-display text-noite text-2xl font-semibold tracking-tight">
               Notificações
             </h1>
             <p className="text-muted-foreground text-sm">
@@ -161,18 +161,18 @@ export default function NotificacoesPage() {
                         <Card
                           className={cn(
                             "flex items-start gap-3 p-4",
-                            !n.foiLida && "bg-vinho/5 border-l-vinho border-l-2",
+                            !n.foiLida && "bg-azul/5 border-l-azul border-l-2",
                           )}
                         >
                           <span
                             className={cn(
-                              "mt-0.5 flex h-9 w-9 items-center justify-center rounded-lg bg-marquee-muted",
+                              "mt-0.5 flex h-9 w-9 items-center justify-center rounded-lg bg-nevoa-muted",
                             )}
                           >
                             <Icon className={cn("h-4 w-4", meta.cor)} />
                           </span>
                           <div className="min-w-0 flex-1 space-y-1">
-                            <p className="text-palco text-sm">{n.mensagem}</p>
+                            <p className="text-noite text-sm">{n.mensagem}</p>
                             <p className="text-muted-foreground flex items-center gap-2 text-xs">
                               <span className="font-mono uppercase tracking-widest text-[10px]">
                                 {n.contexto}
@@ -187,10 +187,10 @@ export default function NotificacoesPage() {
                               variant="ghost"
                               onClick={() => marcarLida(n)}
                               disabled={marcar.isPending}
-                              className="text-vinho hover:bg-vinho/10 shrink-0"
+                              className="text-azul hover:bg-azul/10 shrink-0"
                             >
                               {marcar.isPending && (
-                                <LoadingSpinner className="mr-1 text-vinho" />
+                                <LoadingSpinner className="mr-1 text-azul" />
                               )}
                               Marcar lida
                             </Button>

@@ -89,7 +89,7 @@ export function DesktopSidebar({
   return (
     <motion.div
       className={cn(
-        "bg-palco text-marquee/80 border-r border-palco-surface hidden h-screen w-[72px] shrink-0 flex-col px-3 py-4 md:flex",
+        "bg-azul text-white/80 border-r border-white/10 hidden h-screen w-[72px] shrink-0 flex-col px-3 py-4 md:flex",
         className,
       )}
       animate={{ width: animate ? (open ? 264 : 72) : 264 }}
@@ -112,7 +112,7 @@ export function MobileSidebar({
     <>
       <div
         className={cn(
-          "bg-palco text-marquee/80 border-palco-surface flex h-14 w-full items-center justify-between border-b px-4 md:hidden",
+          "bg-azul text-white/80 border-white/10 flex h-14 w-full items-center justify-between border-b px-4 md:hidden",
         )}
         {...props}
       >
@@ -120,7 +120,7 @@ export function MobileSidebar({
           type="button"
           onClick={() => setOpen(true)}
           aria-label="Abrir menu"
-          className="text-marquee/80 hover:text-marquee p-1"
+          className="text-white/80 hover:text-white p-1"
         >
           <Menu className="h-5 w-5" />
         </button>
@@ -133,13 +133,13 @@ export function MobileSidebar({
             exit={{ x: "-100%", opacity: 0 }}
             transition={{ duration: 0.25, ease: "easeInOut" }}
             className={cn(
-              "bg-palco text-marquee/80 fixed inset-0 z-50 flex h-full w-full flex-col p-6 md:hidden",
+              "bg-azul text-white/80 fixed inset-0 z-50 flex h-full w-full flex-col p-6 md:hidden",
               className,
             )}
           >
             <button
               type="button"
-              className="text-marquee/80 hover:text-marquee absolute right-4 top-4 z-40"
+              className="text-white/80 hover:text-white absolute right-4 top-4 z-40"
               onClick={() => setOpen(false)}
               aria-label="Fechar menu"
             >
@@ -176,8 +176,8 @@ export function SidebarLink({
       className={cn(
         "group/sidebar flex items-center justify-start gap-3 rounded-lg px-3 py-2 text-sm transition-colors",
         active
-          ? "bg-vinho text-marquee shadow-sm"
-          : "text-marquee/75 hover:bg-palco-surface hover:text-marquee",
+          ? "bg-white/15 text-white shadow-sm"
+          : "text-white/75 hover:bg-white/15 hover:text-white",
         className,
       )}
       title={!open ? link.label : undefined}

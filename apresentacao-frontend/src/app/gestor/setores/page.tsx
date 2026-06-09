@@ -139,7 +139,7 @@ export default function SetoresPage() {
             if (espacoId) novoForm.setValue("espacoId", espacoId);
             setNovoAberto(true);
           }}
-          className="bg-vinho hover:bg-vinho-light text-marquee"
+          className="bg-azul hover:bg-azul-light text-nevoa"
         >
           <Plus className="mr-1 h-4 w-4" />
           Novo setor
@@ -205,7 +205,7 @@ export default function SetoresPage() {
             <Card key={setor.id} className="overflow-hidden p-0">
               <div className="border-border flex items-center justify-between gap-2 border-b px-6 py-4">
                 <div>
-                  <h2 className="font-display text-palco text-lg font-semibold">
+                  <h2 className="font-display text-noite text-lg font-semibold">
                     {setor.nome}
                   </h2>
                   <p className="text-muted-foreground text-xs">
@@ -243,11 +243,11 @@ export default function SetoresPage() {
       )}
 
       {!espacoId && (
-        <Card className="border-dashed border-ouro/30 bg-ouro/5 p-6">
+        <Card className="border-dashed border-laranja/30 bg-laranja/5 p-6">
           <p className="text-muted-foreground text-sm">
             Selecione um espaço acima para ver o mapa de cadeiras. A soma de
             todos os setores não pode ultrapassar a{" "}
-            <strong className="text-palco">capacidade máxima</strong>{" "}
+            <strong className="text-noite">capacidade máxima</strong>{" "}
             cadastrada para o espaço — o backend valida isso na criação e
             edição. Setores podem ser editados livremente em nome/tipo;
             mudança de dimensões só é permitida se nenhum assento estiver
@@ -281,10 +281,10 @@ export default function SetoresPage() {
               type="button"
               onClick={novoForm.handleSubmit(onCriar)}
               disabled={configurar.isPending}
-              className="bg-vinho hover:bg-vinho-light text-marquee"
+              className="bg-azul hover:bg-azul-light text-nevoa"
             >
               {configurar.isPending && (
-                <LoadingSpinner className="mr-2 text-marquee" />
+                <LoadingSpinner className="mr-2 text-nevoa" />
               )}
               Configurar
             </Button>
@@ -352,10 +352,10 @@ export default function SetoresPage() {
               />
             </FormField>
           </div>
-          <Card className="bg-marquee-muted border-ouro/30 p-3 text-xs">
+          <Card className="bg-nevoa-muted border-laranja/30 p-3 text-xs">
             <p className="text-muted-foreground">
               Total de assentos:{" "}
-              <strong className="text-palco font-mono">
+              <strong className="text-noite font-mono">
                 {(Number(novoForm.watch("fileirasHorizontais")) || 0) *
                   (Number(novoForm.watch("assentosPorFileiraVertical")) || 0)}
               </strong>
@@ -389,10 +389,10 @@ export default function SetoresPage() {
               type="button"
               onClick={editForm.handleSubmit(onEditar)}
               disabled={editar.isPending}
-              className="bg-vinho hover:bg-vinho-light text-marquee"
+              className="bg-azul hover:bg-azul-light text-nevoa"
             >
               {editar.isPending && (
-                <LoadingSpinner className="mr-2 text-marquee" />
+                <LoadingSpinner className="mr-2 text-nevoa" />
               )}
               Salvar alterações
             </Button>
@@ -446,10 +446,10 @@ export default function SetoresPage() {
               />
             </FormField>
           </div>
-          <Card className="bg-marquee-muted border-ouro/30 p-3 text-xs">
+          <Card className="bg-nevoa-muted border-laranja/30 p-3 text-xs">
             <p className="text-muted-foreground">
               Novo total de assentos:{" "}
-              <strong className="text-palco font-mono">
+              <strong className="text-noite font-mono">
                 {(Number(editForm.watch("fileirasHorizontais")) || 0) *
                   (Number(editForm.watch("assentosPorFileiraVertical")) || 0)}
               </strong>

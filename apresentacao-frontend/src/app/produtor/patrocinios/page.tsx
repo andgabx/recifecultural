@@ -51,9 +51,9 @@ type NovoFormOutput = z.output<typeof novoSchema>;
 
 const statusVariant: Record<
   StatusPatrocinio,
-  "default" | "success" | "frevo" | "destructive" | "outline"
+  "default" | "success" | "violeta" | "destructive" | "outline"
 > = {
-  PROPOSTA: "frevo",
+  PROPOSTA: "violeta",
   ATIVO: "success",
   ENCERRADO: "outline",
   CANCELADO_EVENTO: "destructive",
@@ -164,7 +164,7 @@ export default function PatrociniosPage() {
             if (eventoConsultado) form.setValue("eventoId", eventoConsultado);
             setNovoAberto(true);
           }}
-          className="bg-vinho hover:bg-vinho-light text-marquee"
+          className="bg-azul hover:bg-azul-light text-nevoa"
         >
           <Plus className="mr-1 h-4 w-4" />
           Novo patrocínio
@@ -222,7 +222,7 @@ export default function PatrociniosPage() {
                   <p className="text-muted-foreground text-xs uppercase tracking-widest">
                     {p.tipo} · {p.modalidade}
                   </p>
-                  <h3 className="font-display text-palco mt-0.5 text-lg font-semibold">
+                  <h3 className="font-display text-noite mt-0.5 text-lg font-semibold">
                     {p.patrocinadorNome}
                   </h3>
                   <p className="text-muted-foreground text-xs">
@@ -233,7 +233,7 @@ export default function PatrociniosPage() {
                   {statusLabel[p.status]}
                 </Badge>
               </div>
-              <div className="text-vinho font-mono text-lg font-bold">
+              <div className="text-azul font-mono text-lg font-bold">
                 {p.valorContribuicao != null ? formatarMoeda(Number(p.valorContribuicao)) : "—"}
               </div>
               {p.valorReembolsado != null && Number(p.valorReembolsado) > 0 && (
@@ -272,7 +272,7 @@ export default function PatrociniosPage() {
                       onClick={() =>
                         setCancelar({ tipo: "patrocinador", patrocinio: p })
                       }
-                      className="border-frevo/40 text-yellow-800 hover:bg-frevo/10"
+                      className="border-violeta/40 text-yellow-800 hover:bg-violeta/10"
                     >
                       <Sparkles className="mr-1 h-3 w-3" />
                       Cancelar (patrocinador)
@@ -310,9 +310,9 @@ export default function PatrociniosPage() {
               type="button"
               onClick={form.handleSubmit(onCriar)}
               disabled={criar.isPending}
-              className="bg-vinho hover:bg-vinho-light text-marquee"
+              className="bg-azul hover:bg-azul-light text-nevoa"
             >
-              {criar.isPending && <LoadingSpinner className="mr-2 text-marquee" />}
+              {criar.isPending && <LoadingSpinner className="mr-2 text-nevoa" />}
               Cadastrar
             </Button>
           </>

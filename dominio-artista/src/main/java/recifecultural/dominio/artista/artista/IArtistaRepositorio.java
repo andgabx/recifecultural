@@ -10,4 +10,12 @@ public interface IArtistaRepositorio {
     Optional<Artista> obterPorId(ArtistaId id);
     List<Artista> listarPorProdutor(ProdutorId produtorId);
     boolean existePorNomeEProdutor(String nome, ProdutorId produtorId);
+    default Iterador<Artista> criarIteradorPorProdutor(ProdutorId produtorId) {
+        return new IteradorDeArtistas(listarPorProdutor(produtorId));
+    }
+    default Iterador<ItemRider> criarIteradorDeItensRider(ArtistaId artistaId) {
+        Artista artista = obterPorId(artistaId)
+                .orElseThrow(() -> new IllegalArgumentException("Artista não encontrado."));
+        return new IteradorDeItensRider(artista.getRiderTecnico().itens());
+    }
 }

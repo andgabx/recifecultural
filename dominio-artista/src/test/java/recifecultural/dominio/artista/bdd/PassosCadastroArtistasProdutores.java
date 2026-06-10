@@ -12,6 +12,7 @@ import recifecultural.dominio.artista.artista.Artista;
 import recifecultural.dominio.artista.artista.ArtistaId;
 import recifecultural.dominio.artista.artista.ArtistaServico;
 import recifecultural.dominio.artista.artista.IArtistaRepositorio;
+import recifecultural.dominio.artista.artista.IteradorDeArtistas;
 import recifecultural.dominio.artista.artista.ItemRider;
 import recifecultural.dominio.artista.artista.RiderTecnico;
 import recifecultural.dominio.artista.artista.StatusArtista;
@@ -114,11 +115,15 @@ public class PassosCadastroArtistasProdutores {
                 "Artista Vinculado", RiderTecnico.vazio(),
                 StatusArtista.valueOf(status));
         when(artistaRepo.listarPorProdutor(produtorIdAtual)).thenReturn(List.of(a));
+        when(artistaRepo.criarIteradorPorProdutor(produtorIdAtual))
+                .thenReturn(new IteradorDeArtistas(List.of(a)));
     }
 
     @Dado("o produtor não possui artistas ativos vinculados")
     public void oProdutorNaoPossuiArtistasAtivosVinculados() {
         when(artistaRepo.listarPorProdutor(produtorIdAtual)).thenReturn(Collections.emptyList());
+        when(artistaRepo.criarIteradorPorProdutor(produtorIdAtual))
+                .thenReturn(new IteradorDeArtistas(Collections.emptyList()));
     }
 
     @Quando("eu solicitar o cadastro de um produtor com nome fantasia {string}, CNPJ {string}, e-mail {string} e telefone {string}")

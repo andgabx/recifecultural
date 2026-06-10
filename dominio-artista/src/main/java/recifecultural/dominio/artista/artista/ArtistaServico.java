@@ -4,12 +4,10 @@ import recifecultural.dominio.artista.produtor.ProdutorId;
 import recifecultural.dominio.artista.produtor.IProdutorRepositorio;
 import recifecultural.dominio.artista.produtor.StatusProdutor;
 
-public class ArtistaServico implements Iteravel<ItemRider> {
+public class ArtistaServico {
 
     private final IArtistaRepositorio artistaRepositorio;
     private final IProdutorRepositorio produtorRepositorio;
-
-    private ArtistaId artistaIdContexto;
 
     public ArtistaServico(IArtistaRepositorio artistaRepositorio,
                           IProdutorRepositorio produtorRepositorio) {
@@ -42,47 +40,19 @@ public class ArtistaServico implements Iteravel<ItemRider> {
     public void inativar(ArtistaId artistaId) {
         Artista artista = artistaRepositorio.obterPorId(artistaId)
                 .orElseThrow(() -> new IllegalArgumentException("Artista não encontrado."));
-                
+
         artista.inativar();
         artistaRepositorio.atualizar(artista);
     }
 
     /**
-     * Cria um iterador sobre os itens do rider técnico de um artista específico.
-     * Permite percorrer os itens sem expor a estrutura interna (Set) do RiderTecnico.
+     * Cria um iterador sobre os itens do rider técnico de um artista,
+     * delegando ao repositório (Aggregate no padrão Iterator GoF).
      *
      * @param artistaId o ID do artista cujos itens do rider serão iterados
      * @return um {@link Iterador} de {@link ItemRider}
      */
     public Iterador<ItemRider> iterarItensRider(ArtistaId artistaId) {
-        Artista artista = artistaRepositorio.obterPorId(artistaId)
-                .orElseThrow(() -> new IllegalArgumentException("Artista não encontrado."));
-        return new IteradorDeItensRider(artista.getRiderTecnico().itens());
-    }
-
-    /**
-     * Implementação do padrão Iterator (GoF) — método factory do Aggregate.
-     * Cria um iterador para o artista definido no contexto atual.
-     *
-     * @return um {@link Iterador} de {@link ItemRider}
-     * @throws IllegalStateException se nenhum artista foi definido no contexto
-     */
-    @Override
-    public Iterador<ItemRider> criarIterador() {
-        if (artistaIdContexto == null) {
-            throw new IllegalStateException(
-                    "Nenhum artista definido no contexto. Use definirContexto(ArtistaId) antes de criar o iterador.");
-        }
-        return iterarItensRider(artistaIdContexto);
-    }
-
-    /**
-     * Define o artista no contexto para uso com {@link #criarIterador()}.
-     *
-     * @param artistaId o ID do artista a ser iterado
-     */
-    public void definirContexto(ArtistaId artistaId) {
-        if (artistaId == null) throw new IllegalArgumentException("ArtistaId não pode ser nulo.");
-        this.artistaIdContexto = artistaId;
+        return artistaRepositorio.criarIteradorDeItensRider(artistaId);
     }
 }

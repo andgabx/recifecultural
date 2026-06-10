@@ -29,7 +29,7 @@ public class PatrocinioJpa {
     BigDecimal multaAplicada;
 }
 
-public interface PatrocinioJpaRepository extends JpaRepository<PatrocinioJpa, UUID> {
+interface PatrocinioJpaRepository extends JpaRepository<PatrocinioJpa, UUID> {
     Optional<PatrocinioJpa> findByEventoIdAndTipo(UUID eventoId, String tipo);
     Optional<PatrocinioJpa> findByEventoIdAndCategoriaPatrocinio(UUID eventoId, String categoria);
     List<PatrocinioJpa> findByEventoId(UUID eventoId);

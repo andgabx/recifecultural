@@ -22,5 +22,5 @@ public class IngressoCatracaJpa {
     String portaoAcesso;
 }
 
-public interface IngressoCatracaJpaRepository extends JpaRepository<IngressoCatracaJpa, String> {
+interface IngressoCatracaJpaRepository extends JpaRepository<IngressoCatracaJpa, String> {
 }

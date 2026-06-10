@@ -33,6 +33,6 @@ public class CupomJpa {
     Set<String> cpfsQueJaUsaram = new HashSet<>();
 }
 
-public interface CupomJpaRepository extends JpaRepository<CupomJpa, String> {
+interface CupomJpaRepository extends JpaRepository<CupomJpa, String> {
     CupomJpa findByCodigo(String codigo);
 }

@@ -1,5 +1,6 @@
 import { api } from "@/lib/api";
 
+import type { AcaoAuditoria } from "@/types/dominio";
 export type { AcaoAuditoria } from "@/types/dominio";
 
 export type RegistroAuditoria = {

@@ -10,8 +10,8 @@ import recifecultural.apresentacao.bff.AbstractBffControlador;
 import recifecultural.dominio.ingressos.IngressoId;
 import recifecultural.dominio.ingressos.MetodoPagamento;
 import recifecultural.dominio.ingressos.ResultadoReembolso;
-import recifecultural.infraestrutura.padroes.EstrategiaProcessamentoReembolso;
-import recifecultural.infraestrutura.padroes.SeletorEstrategiaReembolso;
+import recifecultural.dominio.ingressos.EstrategiaProcessamentoReembolso;
+import recifecultural.dominio.ingressos.SeletorEstrategiaReembolso;
 
 import java.time.LocalDateTime;
 import java.util.List;

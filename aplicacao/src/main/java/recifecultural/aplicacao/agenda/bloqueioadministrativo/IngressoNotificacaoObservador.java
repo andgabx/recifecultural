@@ -5,13 +5,6 @@ import recifecultural.dominio.compartilhado.evento.EventoCanceladoPorBloqueioEve
 import recifecultural.dominio.compartilhado.evento.EventoObservador;
 import recifecultural.dominio.compartilhado.notificacao.INotificacaoServico;
 
-/*
- * Padrão Observer (Par 3): notifica os titulares de ingressos quando um bloqueio
- * administrativo cancela o evento para o qual compraram ingresso.
- * O contexto "TITULARES_INGRESSOS_EVENTO" com idReferencia=eventoId permite que
- * IUsuarioContextoServico resolva os compradores reais quando a autenticação
- * for implementada.
- */
 public class IngressoNotificacaoObservador implements EventoObservador<EventoCanceladoPorBloqueioEvento> {
 
     private final INotificacaoServico notificacaoServico;

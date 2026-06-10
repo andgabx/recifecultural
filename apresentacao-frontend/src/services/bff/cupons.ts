@@ -1,6 +1,7 @@
 import { api } from "@/lib/api";
 import type { BffCriado, BffSemConteudo, UUID } from "@/types/dominio";
 
+import type { TipoDesconto } from "@/types/dominio";
 export type { TipoDesconto } from "@/types/dominio";
 
 export type AplicarCupomRequisicao = {

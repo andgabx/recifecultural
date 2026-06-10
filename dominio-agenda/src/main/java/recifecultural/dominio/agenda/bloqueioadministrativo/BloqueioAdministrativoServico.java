@@ -153,8 +153,7 @@ public class BloqueioAdministrativoServico {
             bloqueio.registrarEventoCancelado(evento.getId());
             eventoRepositorio.atualizar(evento);
 
-            // Padrão Observer (Par 3): publica evento de domínio no barramento.
-            // O contexto de Notificações assina via observador e dispara as mensagens.
+
             barramento.postar(new EventoCanceladoPorBloqueioEvento(
                     evento.getId(),
                     evento.getPromotorId(),

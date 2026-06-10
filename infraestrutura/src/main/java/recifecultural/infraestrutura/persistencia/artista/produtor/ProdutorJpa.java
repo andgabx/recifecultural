@@ -20,6 +20,6 @@ public class ProdutorJpa {
     StatusProdutor status;
 }
 
-public interface ProdutorJpaRepository extends JpaRepository<ProdutorJpa, UUID> {
+interface ProdutorJpaRepository extends JpaRepository<ProdutorJpa, UUID> {
     boolean existsByCnpj(String cnpj);
 }

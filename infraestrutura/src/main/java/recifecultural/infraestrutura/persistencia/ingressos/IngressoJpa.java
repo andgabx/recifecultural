@@ -33,14 +33,3 @@ public class IngressoJpa {
     public BigDecimal getValorReembolsado() { return valorReembolsado; }
 }
 
-public interface IngressoJpaRepository extends JpaRepository<IngressoJpa, UUID> {
-    IngressoJpa findByCodigoQr(String codigoQr);
-
-    @Query("SELECT COUNT(i) FROM IngressoJpa i WHERE i.eventoId = :eventoId AND i.dataHoraApresentacao = :dataHora AND i.status = 'ATIVO'")
-    int countAtivosPorApresentacao(UUID eventoId, LocalDateTime dataHora);
-
-    @Query("SELECT i FROM IngressoJpa i WHERE i.dataHoraApresentacao >= :inicio AND i.dataHoraApresentacao <= :fim")
-    List<IngressoJpa> findByPeriodo(LocalDateTime inicio, LocalDateTime fim);
-
-    List<IngressoJpa> findByEventoId(UUID eventoId);
-}

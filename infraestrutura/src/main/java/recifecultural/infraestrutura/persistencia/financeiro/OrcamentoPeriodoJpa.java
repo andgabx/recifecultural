@@ -22,7 +22,7 @@ public class OrcamentoPeriodoJpa {
     StatusOrcamento status;
 }
 
-public interface OrcamentoPeriodoJpaRepository extends JpaRepository<OrcamentoPeriodoJpa, UUID> {
+interface OrcamentoPeriodoJpaRepository extends JpaRepository<OrcamentoPeriodoJpa, UUID> {
     @Query("SELECT o FROM OrcamentoPeriodoJpa o WHERE o.periodoInicio <= :fim AND o.periodoFim >= :inicio")
     OrcamentoPeriodoJpa findByPeriodo(LocalDateTime inicio, LocalDateTime fim);
 }

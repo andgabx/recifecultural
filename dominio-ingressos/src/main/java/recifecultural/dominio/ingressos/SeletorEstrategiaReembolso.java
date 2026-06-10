@@ -1,6 +1,4 @@
-package recifecultural.infraestrutura.padroes;
-
-import recifecultural.dominio.ingressos.MetodoPagamento;
+package recifecultural.dominio.ingressos;
 
 import java.util.List;
 

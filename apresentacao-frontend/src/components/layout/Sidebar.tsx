@@ -64,7 +64,7 @@ function Logo() {
       href="/"
       className="relative z-20 flex items-center gap-2 py-1 text-sm font-normal"
     >
-      <span className="bg-vinho text-marquee flex h-7 w-7 shrink-0 items-center justify-center rounded-md">
+      <span className="bg-white/15 text-white flex h-7 w-7 shrink-0 items-center justify-center rounded-md">
         <span className="font-display text-xs font-bold leading-none">RC</span>
       </span>
       <motion.span
@@ -72,7 +72,7 @@ function Logo() {
           display: animate ? (open ? "inline-block" : "none") : "inline-block",
           opacity: animate ? (open ? 1 : 0) : 1,
         }}
-        className="font-display text-marquee whitespace-pre text-sm font-medium"
+        className="font-display text-white whitespace-pre text-sm font-semibold"
       >
         Recife Cultural
       </motion.span>
@@ -89,7 +89,7 @@ function GrupoTitulo({ titulo }: { titulo: string }) {
         height: animate ? (open ? "auto" : 0) : "auto",
       }}
       className={cn(
-        "text-marquee/35 overflow-hidden px-3 pb-1 text-[10px] font-semibold uppercase tracking-[0.2em]",
+        "text-white/35 overflow-hidden px-3 pb-1 text-[10px] font-bold uppercase tracking-[0.2em]",
       )}
     >
       {titulo}
@@ -105,9 +105,9 @@ function Rodape({ papel }: { papel: Papel }) {
         opacity: animate ? (open ? 1 : 0) : 1,
         height: animate ? (open ? "auto" : 0) : "auto",
       }}
-      className="border-palco-surface text-marquee/45 mt-4 overflow-hidden border-t pt-3 text-[11px] leading-snug"
+      className="border-white/15 text-white/45 mt-4 overflow-hidden border-t pt-3 text-[11px] leading-snug"
     >
-      <span className="text-ouro/80 font-mono uppercase tracking-widest">
+      <span className="text-laranja-light font-mono uppercase tracking-widest">
         {papel}
       </span>
       <p className="mt-1">Visão sem autenticação (dev)</p>

@@ -38,9 +38,9 @@ const cadastroSchema = z.object({
 });
 type CadastroForm = z.infer<typeof cadastroSchema>;
 
-const statusVariant: Record<StatusProdutor, "success" | "frevo" | "destructive"> = {
+const statusVariant: Record<StatusProdutor, "success" | "violeta" | "destructive"> = {
   ATIVO: "success",
-  SUSPENSO: "frevo",
+  SUSPENSO: "violeta",
   INATIVO: "destructive",
 };
 
@@ -165,7 +165,7 @@ export default function ProdutoresPage() {
       acoes={
         <Button
           onClick={() => setCadastroAberto(true)}
-          className="bg-vinho hover:bg-vinho-light text-marquee"
+          className="bg-azul hover:bg-azul-light text-nevoa"
         >
           <Plus className="mr-1 h-4 w-4" />
           Novo produtor
@@ -236,9 +236,9 @@ export default function ProdutoresPage() {
               type="button"
               onClick={form.handleSubmit(onSubmit)}
               disabled={cadastrar.isPending}
-              className="bg-vinho hover:bg-vinho-light text-marquee"
+              className="bg-azul hover:bg-azul-light text-nevoa"
             >
-              {cadastrar.isPending && <LoadingSpinner className="mr-2 text-marquee" />}
+              {cadastrar.isPending && <LoadingSpinner className="mr-2 text-nevoa" />}
               Cadastrar
             </Button>
           </>

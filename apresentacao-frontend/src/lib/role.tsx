@@ -22,19 +22,19 @@ export const papelMeta: Record<
     label: "Espectador",
     descricao: "Explora eventos, compra ingressos e participa de sorteios.",
     rotaHome: "/",
-    cor: "text-ouro",
+    cor: "text-laranja",
   },
   produtor: {
     label: "Produtor",
     descricao: "Cria e gerencia eventos culturais, vendas e patrocínios.",
     rotaHome: "/produtor",
-    cor: "text-capibaribe-light",
+    cor: "text-laranja-light",
   },
   admin: {
     label: "Gestor",
     descricao: "Aprova eventos, administra espaços, artistas e bloqueios.",
     rotaHome: "/gestor/aprovacoes",
-    cor: "text-frevo",
+    cor: "text-violeta-dark",
   },
   catraca: {
     label: "Catraca",

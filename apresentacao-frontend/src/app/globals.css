@@ -5,8 +5,7 @@
 @custom-variant dark (&:is(.dark *));
 
 /* ──────────────────────────────────────────────────────────────────────────
-   Recife Cultural — Paleta (Fase 6 §0.2)
-   Identidade: teatro clássico (vinho/dourado) + cultura popular (frevo/capibaribe)
+   Recife Cultural — Paleta ID PCR / Manual de Marca 2021
    ────────────────────────────────────────────────────────────────────────── */
 
 @theme inline {
@@ -14,9 +13,9 @@
   --color-foreground: var(--foreground);
 
   --font-sans: var(--font-inter);
-  --font-display: var(--font-playfair);
+  --font-display: var(--font-inter);
   --font-mono: var(--font-jetbrains-mono);
-  --font-heading: var(--font-playfair);
+  --font-heading: var(--font-inter);
 
   /* shadcn semantic tokens */
   --color-sidebar-ring: var(--sidebar-ring);
@@ -49,123 +48,128 @@
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
 
-  /* Brand colors (utilities: bg-vinho, text-ouro, border-frevo, etc.) */
-  --color-vinho: #7b1d42;
-  --color-vinho-light: #9d2455;
-  --color-vinho-dark: #5a1330;
-  --color-vinho-50: #fdf2f6;
+  /* ── Cores institucionais PCR (Manual de Marca 2021) ── */
+  --color-azul: #173DB7;
+  --color-azul-light: #008AF4;
+  --color-azul-dark: #0D2D8A;
+  --color-azul-50: #EFF4FF;
+  --color-azul-fill: #deeafd;     /* fill de badge/tag azul */
 
-  --color-ouro: #c9920e;
-  --color-ouro-light: #e5a912;
-  --color-ouro-dark: #a07208;
+  --color-verde: #006E2B;
+  --color-verde-light: #42DA2E;
+  --color-verde-dark: #004D1E;
+  --color-verde-50: #EDFFF0;
+  --color-verde-fill: #d4f0dc;    /* fill de badge/tag verde */
 
-  --color-frevo: #f5c518;
-  --color-frevo-dark: #d4a800;
+  --color-laranja: #E94E1B;
+  --color-laranja-light: #FC9346;
+  --color-laranja-dark: #C03A10;
+  --color-laranja-fill: #fde8de;  /* fill de badge/tag laranja */
 
-  --color-capibaribe: #d4622a;
-  --color-capibaribe-light: #e87848;
+  --color-amber: #fff0d4;         /* fill de badge pendente/aviso */
+  --color-amber-dark: #854f0b;
 
-  --color-palco: #1a1018;
-  --color-palco-surface: #2c2030;
+  --color-violeta: #f0eafd;       /* fill de badge roxo */
+  --color-violeta-dark: #533AB7;
 
-  --color-marquee: #faf6f0;
-  --color-marquee-card: #ffffff;
-  --color-marquee-muted: #f0e8dc;
+  /* ── Superfícies ── */
+  --color-noite: #111827;         /* footer, overlays, texto principal escuro */
+  --color-noite-surface: #1a4fd6; /* hover/active em fundos azul (#173DB7) */
 
-  /* Shadows teatrais (Fase 6 §0.4) */
-  --shadow-card: 0 2px 8px rgba(26, 16, 24, 0.08);
-  --shadow-raised: 0 8px 24px rgba(26, 16, 24, 0.14);
-  --shadow-stage: 0 0 40px rgba(201, 146, 14, 0.18);
+  --color-nevoa: #f4f7ff;         /* background geral */
+  --color-nevoa-card: #ffffff;
+  --color-nevoa-muted: #e0e7f5;   /* bordas e preenchimentos sutis */
 
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
+  /* ── Sombras ── */
+  --shadow-card: 0 1px 4px rgba(17,24,39,0.06), 0 1px 2px rgba(17,24,39,0.04);
+  --shadow-raised: 0 4px 16px rgba(17,24,39,0.10), 0 2px 4px rgba(17,24,39,0.06);
+  --shadow-stage: 0 0 40px rgba(23,61,183,0.22);
+
+  /* ── Border radius (escala do DS: 4 / 8 / 10 / 12 / 14 / pill) ── */
+  --radius-sm: 0.25rem;   /* 4px  — pequeno */
+  --radius-md: 0.5rem;    /* 8px  — padrão */
+  --radius-lg: 0.625rem;  /* 10px — médio */
+  --radius-xl: 0.75rem;   /* 12px — card */
+  --radius-2xl: 0.875rem; /* 14px — card XL */
+  --radius-3xl: 1rem;
+  --radius-4xl: 9999px;   /* pill / badge */
 }
 
 :root {
-  /* Backgrounds */
-  --background: #faf6f0; /* marquee */
-  --foreground: #1a1018; /* palco */
+  --background: #f4f7ff;
+  --foreground: #111827;
   --card: #ffffff;
-  --card-foreground: #1a1018;
+  --card-foreground: #111827;
   --popover: #ffffff;
-  --popover-foreground: #1a1018;
+  --popover-foreground: #111827;
 
-  /* Primary = vinho (cortina de veludo) */
-  --primary: #7b1d42;
-  --primary-foreground: #faf6f0;
+  /* Primary = azul escuro PCR */
+  --primary: #173DB7;
+  --primary-foreground: #ffffff;
 
-  /* Secondary = creme pergaminho */
-  --secondary: #f0e8dc;
-  --secondary-foreground: #1a1018;
+  --secondary: #f4f7ff;
+  --secondary-foreground: #111827;
 
-  /* Muted */
-  --muted: #f0e8dc;
-  --muted-foreground: #7a6b62;
+  --muted: #e0e7f5;
+  --muted-foreground: #888888;
 
-  /* Accent = ouro (dourado de palco) */
-  --accent: #c9920e;
-  --accent-foreground: #faf6f0;
+  /* Accent = laranja queimado */
+  --accent: #E94E1B;
+  --accent-foreground: #ffffff;
 
-  /* Destructive */
-  --destructive: #b91c1c;
+  --destructive: #B91C1C;
 
-  /* Borders/inputs/ring */
-  --border: #e4d8ce;
-  --input: #e4d8ce;
-  --ring: rgba(123, 29, 66, 0.4);
+  --border: #e0e7f5;
+  --input: #e0e7f5;
+  --ring: rgba(23, 61, 183, 0.35);
 
-  /* Charts — paleta gradiente vinho → ouro → frevo */
-  --chart-1: #7b1d42;
-  --chart-2: #c9920e;
-  --chart-3: #f5c518;
-  --chart-4: #d4622a;
-  --chart-5: #9d2455;
+  /* Charts */
+  --chart-1: #173DB7;
+  --chart-2: #E94E1B;
+  --chart-3: #42DA2E;
+  --chart-4: #FC9346;
+  --chart-5: #006E2B;
 
   --radius: 0.625rem;
 
-  /* Sidebar = palco escuro */
-  --sidebar: #1a1018;
-  --sidebar-foreground: rgba(250, 246, 240, 0.8);
-  --sidebar-primary: #7b1d42;
-  --sidebar-primary-foreground: #faf6f0;
-  --sidebar-accent: #2c2030;
-  --sidebar-accent-foreground: #faf6f0;
-  --sidebar-border: #2c2030;
-  --sidebar-ring: #c9920e;
+  /* Sidebar / Topbar = azul institucional */
+  --sidebar: #173DB7;
+  --sidebar-foreground: rgba(255, 255, 255, 0.75);
+  --sidebar-primary: #ffffff;
+  --sidebar-primary-foreground: #173DB7;
+  --sidebar-accent: #1a4fd6;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: rgba(255, 255, 255, 0.12);
+  --sidebar-ring: #008AF4;
 }
 
 .dark {
-  --background: #1a1018;
-  --foreground: #faf6f0;
-  --card: #2c2030;
-  --card-foreground: #faf6f0;
-  --popover: #2c2030;
-  --popover-foreground: #faf6f0;
-  --primary: #9d2455;
-  --primary-foreground: #faf6f0;
-  --secondary: #2c2030;
-  --secondary-foreground: #faf6f0;
-  --muted: #2c2030;
-  --muted-foreground: rgba(250, 246, 240, 0.65);
-  --accent: #e5a912;
-  --accent-foreground: #1a1018;
+  --background: #111827;
+  --foreground: #f4f7ff;
+  --card: #1e2a45;
+  --card-foreground: #f4f7ff;
+  --popover: #1e2a45;
+  --popover-foreground: #f4f7ff;
+  --primary: #008AF4;
+  --primary-foreground: #ffffff;
+  --secondary: #1e2a45;
+  --secondary-foreground: #f4f7ff;
+  --muted: #1e2a45;
+  --muted-foreground: rgba(244, 247, 255, 0.6);
+  --accent: #FC9346;
+  --accent-foreground: #111827;
   --destructive: #ef4444;
-  --border: rgba(250, 246, 240, 0.1);
-  --input: rgba(250, 246, 240, 0.15);
-  --ring: rgba(201, 146, 14, 0.5);
-  --sidebar: #1a1018;
-  --sidebar-foreground: rgba(250, 246, 240, 0.8);
-  --sidebar-primary: #c9920e;
-  --sidebar-primary-foreground: #1a1018;
-  --sidebar-accent: #2c2030;
-  --sidebar-accent-foreground: #faf6f0;
-  --sidebar-border: rgba(250, 246, 240, 0.1);
-  --sidebar-ring: #c9920e;
+  --border: rgba(244, 247, 255, 0.1);
+  --input: rgba(244, 247, 255, 0.12);
+  --ring: rgba(0, 138, 244, 0.45);
+  --sidebar: #111827;
+  --sidebar-foreground: rgba(255, 255, 255, 0.8);
+  --sidebar-primary: #008AF4;
+  --sidebar-primary-foreground: #111827;
+  --sidebar-accent: #1e2a45;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: rgba(255, 255, 255, 0.08);
+  --sidebar-ring: #008AF4;
 }
 
 @layer base {
@@ -178,38 +182,35 @@
   html {
     @apply font-sans antialiased;
   }
-  h1,
-  h2,
-  h3,
-  h4 {
+  h1, h2, h3, h4 {
     @apply font-display tracking-tight;
   }
 }
 
-/* ── Sonner toast — paleta Recife Cultural ─────────────────────────────── */
+/* ── Sonner toast — paleta PCR ─────────────────────────────────────────── */
 [data-sonner-toaster] {
   --normal-bg: #ffffff;
-  --normal-border: #e8ddd0;
-  --normal-text: #1a1018;
-  --success-bg: #f0fdf4;
-  --success-border: #22c55e;
-  --success-text: #15803d;
-  --error-bg: #fdf2f6;
-  --error-border: #7b1d42;
-  --error-text: #7b1d42;
-  --warning-bg: #fefce8;
-  --warning-border: #f5c518;
-  --warning-text: #a07208;
-  --info-bg: #fffbeb;
-  --info-border: #c9920e;
-  --info-text: #a07208;
+  --normal-border: #e0e7f5;
+  --normal-text: #111827;
+  --success-bg: #d4f0dc;
+  --success-border: #006E2B;
+  --success-text: #006E2B;
+  --error-bg: #fde8de;
+  --error-border: #E94E1B;
+  --error-text: #E94E1B;
+  --warning-bg: #fff0d4;
+  --warning-border: #854f0b;
+  --warning-text: #854f0b;
+  --info-bg: #deeafd;
+  --info-border: #173DB7;
+  --info-text: #173DB7;
   font-family: var(--font-sans, sans-serif);
 }
 
 [data-sonner-toast] {
   border-radius: 0.75rem !important;
   font-size: 0.875rem !important;
-  box-shadow: 0 4px 16px 0 rgb(0 0 0 / 0.10) !important;
+  box-shadow: 0 4px 16px 0 rgb(0 0 0 / 0.08) !important;
   border-width: 1px !important;
   padding: 0.875rem 1rem !important;
 }
@@ -244,20 +245,20 @@
 
 [data-sonner-toast] [data-title] {
   font-weight: 600 !important;
-  color: #1a1018 !important;
+  color: #111827 !important;
 }
 
 [data-sonner-toast] [data-description] {
-  color: #6b5b52 !important;
+  color: #888888 !important;
   font-size: 0.75rem !important;
 }
 
 [data-sonner-toast] [data-close-button] {
   background: transparent !important;
   border: none !important;
-  color: #9c8c80 !important;
+  color: #888888 !important;
 }
 
 [data-sonner-toast] [data-close-button]:hover {
-  color: #1a1018 !important;
+  color: #111827 !important;
 }

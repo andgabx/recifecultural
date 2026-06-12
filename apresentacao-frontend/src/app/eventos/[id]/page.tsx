@@ -71,26 +71,26 @@ export default function EventoDetalhePage() {
         exit="exit"
       >
         {/* Hero */}
-        <section className="bg-palco text-marquee relative overflow-hidden">
-          <div className="from-vinho-dark via-palco to-palco absolute inset-0 bg-gradient-to-br" />
-          <div className="from-palco/80 absolute inset-0 bg-gradient-to-t to-transparent" />
+        <section className="bg-noite text-nevoa relative overflow-hidden">
+          <div className="from-azul-dark via-noite to-noite absolute inset-0 bg-gradient-to-br" />
+          <div className="from-noite/80 absolute inset-0 bg-gradient-to-t to-transparent" />
           <div className="relative mx-auto max-w-5xl space-y-4 px-6 py-16">
             <Link
               href="/"
-              className="text-marquee/60 hover:text-marquee inline-flex items-center gap-1 text-sm transition-colors"
+              className="text-nevoa/60 hover:text-nevoa inline-flex items-center gap-1 text-sm transition-colors"
             >
               <ArrowLeft className="h-3.5 w-3.5" />
               Voltar à grade
             </Link>
             {isLoading ? (
-              <Skeleton className="bg-marquee/20 h-12 w-2/3" />
+              <Skeleton className="bg-nevoa/20 h-12 w-2/3" />
             ) : evento ? (
               <>
                 <h1 className="font-display max-w-3xl text-3xl font-bold leading-tight md:text-4xl">
                   {evento.titulo}
                 </h1>
                 {evento.descricaoCurta && (
-                  <p className="text-marquee/80 max-w-2xl text-base">
+                  <p className="text-nevoa/80 max-w-2xl text-base">
                     {evento.descricaoCurta}
                   </p>
                 )}
@@ -145,7 +145,7 @@ export default function EventoDetalhePage() {
             <Card className="grid gap-8 p-8 md:grid-cols-[1fr_320px] md:gap-10 md:p-10">
               <div className="space-y-8">
                 <div className="space-y-3">
-                  <h2 className="font-display text-palco text-xl font-semibold">
+                  <h2 className="font-display text-noite text-xl font-semibold">
                     Sobre o espetáculo
                   </h2>
                   <p className="text-muted-foreground whitespace-pre-line text-sm leading-relaxed">
@@ -182,13 +182,13 @@ export default function EventoDetalhePage() {
                 {tiposAcessibilidade.length > 0 && (
                   <div className="space-y-3">
                     <div className="flex items-center justify-between gap-3">
-                      <h3 className="font-display text-palco flex items-center gap-2 text-base font-semibold">
-                        <Accessibility className="text-vinho h-4 w-4" />
+                      <h3 className="font-display text-noite flex items-center gap-2 text-base font-semibold">
+                        <Accessibility className="text-azul h-4 w-4" />
                         Acessibilidade confirmada
                       </h3>
                       <Link
                         href={`/acessibilidade/${evento.id}`}
-                        className="text-vinho hover:text-vinho-light text-xs font-medium transition-colors"
+                        className="text-azul hover:text-azul-light text-xs font-medium transition-colors"
                       >
                         Ver detalhes →
                       </Link>
@@ -201,7 +201,7 @@ export default function EventoDetalhePage() {
                           <span
                             key={tipo}
                             title={d.descricao}
-                            className="bg-vinho/10 text-vinho border-vinho/20 inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs"
+                            className="bg-azul/10 text-azul border-azul/20 inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs"
                           >
                             <Icone className="h-3.5 w-3.5" />
                             {d.label}
@@ -214,7 +214,7 @@ export default function EventoDetalhePage() {
               </div>
 
               {/* Box compra */}
-              <aside className="bg-marquee-muted border-ouro/20 space-y-5 self-start rounded-xl border p-6">
+              <aside className="bg-nevoa-muted border-laranja/20 space-y-5 self-start rounded-xl border p-6">
                 <div className="space-y-3">
                   <p className="text-muted-foreground text-xs uppercase tracking-widest">
                     Valores do ingresso
@@ -234,7 +234,7 @@ export default function EventoDetalhePage() {
                       )}
                     </div>
                   ) : (
-                    <p className="font-display text-vinho text-2xl font-bold">
+                    <p className="font-display text-azul text-2xl font-bold">
                       Sob consulta
                     </p>
                   )}
@@ -253,7 +253,7 @@ export default function EventoDetalhePage() {
                   }}
                   className={cn(
                     buttonVariants({ variant: "default", size: "lg" }),
-                    "bg-vinho hover:bg-vinho-light text-marquee shadow-stage w-full",
+                    "bg-azul hover:bg-azul-light text-nevoa shadow-stage w-full",
                     evento.status !== "APROVADO" && "pointer-events-none opacity-50",
                   )}
                   aria-disabled={evento.status !== "APROVADO"}
@@ -286,8 +286,8 @@ export default function EventoDetalhePage() {
         {evento && evento.status === "APROVADO" && sorteiosAbertos.length > 0 && (
           <section className="mx-auto max-w-5xl px-6 pb-4">
             <div className="space-y-3">
-              <h2 className="font-display text-palco flex items-center gap-2 text-xl font-semibold">
-                <Gift className="text-frevo h-5 w-5" />
+              <h2 className="font-display text-noite flex items-center gap-2 text-xl font-semibold">
+                <Gift className="text-violeta h-5 w-5" />
                 Sorteios abertos
               </h2>
               <p className="text-muted-foreground text-sm">
@@ -295,9 +295,9 @@ export default function EventoDetalhePage() {
               </p>
               <div className="grid gap-3 sm:grid-cols-2">
                 {sorteiosAbertos.map((s) => (
-                  <Card key={s.id} className="border-t-frevo space-y-3 border-t-4 p-5">
+                  <Card key={s.id} className="border-t-violeta space-y-3 border-t-4 p-5">
                     <div>
-                      <p className="font-display text-palco text-lg font-semibold">
+                      <p className="font-display text-noite text-lg font-semibold">
                         {s.vagas} {s.vagas === 1 ? "vaga" : "vagas"}
                       </p>
                       <p className="text-muted-foreground text-xs">
@@ -325,10 +325,10 @@ export default function EventoDetalhePage() {
                         }
                       }}
                       disabled={inscrever.isPending}
-                      className="bg-frevo text-palco hover:bg-frevo-dark w-full font-semibold"
+                      className="bg-violeta text-noite hover:bg-violeta-dark w-full font-semibold"
                     >
                       {inscrever.isPending ? (
-                        <LoadingSpinner className="mr-2 text-palco" />
+                        <LoadingSpinner className="mr-2 text-noite" />
                       ) : (
                         <Gift className="mr-2 h-4 w-4" />
                       )}
@@ -366,10 +366,10 @@ function Info({
   return (
     <div className="border-border space-y-1 rounded-lg border p-3">
       <p className="text-muted-foreground flex items-center gap-1 text-xs uppercase tracking-wide">
-        <Icon className="text-ouro h-3 w-3" />
+        <Icon className="text-laranja h-3 w-3" />
         {label}
       </p>
-      <p className="text-palco text-sm font-medium">{valor}</p>
+      <p className="text-noite text-sm font-medium">{valor}</p>
     </div>
   );
 }
@@ -388,7 +388,7 @@ function PrecoLinha({
       <span
         className={cn(
           "text-xs uppercase tracking-wide",
-          destaque ? "text-palco font-semibold" : "text-muted-foreground",
+          destaque ? "text-noite font-semibold" : "text-muted-foreground",
         )}
       >
         {label}
@@ -396,7 +396,7 @@ function PrecoLinha({
       <span
         className={cn(
           "font-display font-bold",
-          destaque ? "text-vinho text-2xl" : "text-ouro-dark text-base",
+          destaque ? "text-azul text-2xl" : "text-laranja-dark text-base",
         )}
       >
         {valor}

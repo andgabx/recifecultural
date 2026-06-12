@@ -147,7 +147,7 @@ export default function NovoEventoPage() {
       acoes={
         <Link
           href="/produtor/eventos"
-          className="text-muted-foreground hover:text-vinho inline-flex items-center gap-1 text-sm transition-colors"
+          className="text-muted-foreground hover:text-azul inline-flex items-center gap-1 text-sm transition-colors"
         >
           <ArrowLeft className="h-3.5 w-3.5" />
           Voltar
@@ -160,7 +160,7 @@ export default function NovoEventoPage() {
       >
         <div className="space-y-6">
           <Card className="space-y-5 p-6">
-            <h2 className="font-display text-palco text-lg font-semibold">
+            <h2 className="font-display text-noite text-lg font-semibold">
               Informações básicas
             </h2>
             <FormField
@@ -217,13 +217,13 @@ export default function NovoEventoPage() {
                 rows={5}
                 placeholder="Texto completo exibido na página do evento"
                 {...form.register("descricaoLonga")}
-                className="border-border bg-marquee-card placeholder:text-muted-foreground focus-visible:border-vinho focus-visible:ring-vinho/30 w-full rounded-lg border px-3 py-2 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2"
+                className="border-border bg-white placeholder:text-muted-foreground focus-visible:border-azul focus-visible:ring-azul/30 w-full rounded-lg border px-3 py-2 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2"
               />
             </FormField>
           </Card>
 
           <Card className="space-y-5 p-6">
-            <h2 className="font-display text-palco text-lg font-semibold">
+            <h2 className="font-display text-noite text-lg font-semibold">
               Datas e apresentação
             </h2>
             <div className="grid gap-4 sm:grid-cols-2">
@@ -266,7 +266,7 @@ export default function NovoEventoPage() {
           </Card>
 
           <Card className="space-y-5 p-6">
-            <h2 className="font-display text-palco text-lg font-semibold">
+            <h2 className="font-display text-noite text-lg font-semibold">
               Preços e elenco
             </h2>
             <div className="grid gap-4 sm:grid-cols-2">
@@ -313,11 +313,11 @@ export default function NovoEventoPage() {
         </div>
 
         <aside className="space-y-5">
-          <Card className="bg-marquee-muted border-ouro/30 space-y-3 p-5">
+          <Card className="bg-nevoa-muted border-laranja/30 space-y-3 p-5">
             <p className="text-muted-foreground text-xs uppercase tracking-widest">
               Próximos passos
             </p>
-            <ol className="text-palco list-decimal space-y-2 pl-4 text-sm">
+            <ol className="text-noite list-decimal space-y-2 pl-4 text-sm">
               <li>Crie o evento em rascunho preenchendo o formulário.</li>
               <li>Acerte os detalhes (espaço, datas, artistas, categoria).</li>
               <li>Na lista de eventos, clique em <strong>Submeter</strong>.</li>
@@ -329,17 +329,17 @@ export default function NovoEventoPage() {
             <Button
               type="submit"
               disabled={criar.isPending}
-              className="bg-vinho hover:bg-vinho-light text-marquee shadow-stage w-full"
+              className="bg-azul hover:bg-azul-light text-nevoa shadow-stage w-full"
             >
               {criar.isPending ? (
-                <LoadingSpinner className="mr-2 text-marquee" />
+                <LoadingSpinner className="mr-2 text-nevoa" />
               ) : (
                 <Save className="mr-2 h-4 w-4" />
               )}
               {criar.isPending ? "Salvando" : "Salvar rascunho"}
             </Button>
             <p className="text-muted-foreground flex items-center gap-1 text-center text-[10px]">
-              <Sparkles className="h-3 w-3 text-ouro" />
+              <Sparkles className="h-3 w-3 text-laranja" />
               O evento nasce com status <strong>RASCUNHO</strong>.
             </p>
           </Card>

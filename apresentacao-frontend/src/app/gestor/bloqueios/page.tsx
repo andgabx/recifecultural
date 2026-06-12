@@ -171,7 +171,7 @@ export default function BloqueiosPage() {
       acoes={
         <Button
           onClick={() => setCadastroAberto(true)}
-          className="bg-vinho hover:bg-vinho-light text-marquee"
+          className="bg-azul hover:bg-azul-light text-nevoa"
         >
           <Plus className="mr-1 h-4 w-4" />
           Novo bloqueio
@@ -280,9 +280,9 @@ export default function BloqueiosPage() {
                 type="button"
                 onClick={() => confirmarDesativacao(false)}
                 disabled={desativar.isPending}
-                className="bg-vinho hover:bg-vinho-light text-marquee"
+                className="bg-azul hover:bg-azul-light text-nevoa"
               >
-                {desativar.isPending && <LoadingSpinner className="mr-2 text-marquee" />}
+                {desativar.isPending && <LoadingSpinner className="mr-2 text-nevoa" />}
                 Desativar
               </Button>
             )}
@@ -322,10 +322,10 @@ export default function BloqueiosPage() {
               type="button"
               onClick={form.handleSubmit(onVerificarImpacto)}
               disabled={preview.isPending}
-              className="bg-vinho hover:bg-vinho-light text-marquee"
+              className="bg-azul hover:bg-azul-light text-nevoa"
             >
               {preview.isPending && (
-                <LoadingSpinner className="mr-2 text-marquee" />
+                <LoadingSpinner className="mr-2 text-nevoa" />
               )}
               Verificar impacto
             </Button>
@@ -378,7 +378,7 @@ export default function BloqueiosPage() {
               id="justificativa"
               rows={3}
               {...form.register("justificativa")}
-              className="border-border bg-marquee-card placeholder:text-muted-foreground focus-visible:border-vinho focus-visible:ring-vinho/30 w-full rounded-lg border px-3 py-2 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2"
+              className="border-border bg-white placeholder:text-muted-foreground focus-visible:border-azul focus-visible:ring-azul/30 w-full rounded-lg border px-3 py-2 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2"
               placeholder="Manutenção emergencial do sistema de som, prevista para..."
             />
           </FormField>
@@ -409,10 +409,10 @@ export default function BloqueiosPage() {
               type="button"
               onClick={onConfirmar}
               disabled={cadastrar.isPending}
-              className="bg-vinho hover:bg-vinho-light text-marquee"
+              className="bg-azul hover:bg-azul-light text-nevoa"
             >
               {cadastrar.isPending && (
-                <LoadingSpinner className="mr-2 text-marquee" />
+                <LoadingSpinner className="mr-2 text-nevoa" />
               )}
               Confirmar bloqueio
             </Button>

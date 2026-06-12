@@ -51,10 +51,10 @@ export function ConfirmDialog({
             className={
               dangerous
                 ? "bg-destructive hover:bg-destructive/90 text-white"
-                : "bg-vinho hover:bg-vinho-light text-marquee"
+                : "bg-azul hover:bg-azul-light text-nevoa"
             }
           >
-            {loading && <LoadingSpinner className="mr-2 text-marquee" />}
+            {loading && <LoadingSpinner className="mr-2 text-nevoa" />}
             {confirmLabel}
           </Button>
         </>

@@ -127,7 +127,7 @@ export default function GestorNotificacoesPage() {
       <div className="space-y-8">
         {/* Formulário de envio */}
         <Card className="space-y-5 p-6">
-          <h2 className="font-display text-palco text-lg font-semibold">Enviar comunicado</h2>
+          <h2 className="font-display text-noite text-lg font-semibold">Enviar comunicado</h2>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             {/* Destino */}
             <FormField
@@ -150,13 +150,13 @@ export default function GestorNotificacoesPage() {
                       }}
                       className={`flex items-start gap-3 rounded-lg border p-3 text-left transition-colors ${
                         selected
-                          ? "border-vinho bg-vinho/5"
-                          : "border-border hover:bg-marquee-muted"
+                          ? "border-azul bg-azul/5"
+                          : "border-border hover:bg-nevoa-muted"
                       }`}
                     >
-                      <Icon className={`mt-0.5 h-4 w-4 shrink-0 ${selected ? "text-vinho" : "text-muted-foreground"}`} />
+                      <Icon className={`mt-0.5 h-4 w-4 shrink-0 ${selected ? "text-azul" : "text-muted-foreground"}`} />
                       <div>
-                        <p className={`text-sm font-medium ${selected ? "text-vinho" : "text-palco"}`}>
+                        <p className={`text-sm font-medium ${selected ? "text-azul" : "text-noite"}`}>
                           {d.label}
                         </p>
                         <p className="text-xs text-muted-foreground">{d.descricao}</p>
@@ -197,7 +197,7 @@ export default function GestorNotificacoesPage() {
                 rows={4}
                 {...form.register("mensagem")}
                 placeholder="Informe o comunicado que será enviado aos destinatários…"
-                className="border-border bg-marquee-card placeholder:text-muted-foreground focus-visible:border-vinho focus-visible:ring-vinho/30 w-full rounded-lg border px-3 py-2 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2"
+                className="border-border bg-white placeholder:text-muted-foreground focus-visible:border-azul focus-visible:ring-azul/30 w-full rounded-lg border px-3 py-2 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2"
               />
             </FormField>
 
@@ -205,9 +205,9 @@ export default function GestorNotificacoesPage() {
               <Button
                 type="submit"
                 disabled={enviar.isPending}
-                className="bg-vinho hover:bg-vinho-light text-marquee"
+                className="bg-azul hover:bg-azul-light text-nevoa"
               >
-                {enviar.isPending && <LoadingSpinner className="mr-2 text-marquee" />}
+                {enviar.isPending && <LoadingSpinner className="mr-2 text-nevoa" />}
                 Enviar notificação
               </Button>
             </div>
@@ -216,7 +216,7 @@ export default function GestorNotificacoesPage() {
 
         {/* Notificações recebidas pelo gestor */}
         <section className="space-y-3">
-          <h2 className="font-display text-palco text-lg font-semibold">Recebidas</h2>
+          <h2 className="font-display text-noite text-lg font-semibold">Recebidas</h2>
 
           {isLoading && (
             <div className="space-y-2">
@@ -242,14 +242,14 @@ export default function GestorNotificacoesPage() {
                   <li
                     key={n.id}
                     className={`flex items-start gap-3 rounded-lg border p-4 ${
-                      !n.foiLida ? "bg-vinho/5 border-l-vinho border-l-2" : ""
+                      !n.foiLida ? "bg-azul/5 border-l-azul border-l-2" : ""
                     }`}
                   >
-                    <span className="mt-0.5 flex h-9 w-9 items-center justify-center rounded-lg bg-marquee-muted">
-                      <Icon className="h-4 w-4 text-vinho" />
+                    <span className="mt-0.5 flex h-9 w-9 items-center justify-center rounded-lg bg-nevoa-muted">
+                      <Icon className="h-4 w-4 text-azul" />
                     </span>
                     <div className="min-w-0 flex-1 space-y-1">
-                      <p className="text-palco text-sm">{n.mensagem}</p>
+                      <p className="text-noite text-sm">{n.mensagem}</p>
                       <p className="text-muted-foreground flex items-center gap-2 text-xs">
                         <span className="font-mono uppercase tracking-widest text-[10px]">
                           {n.contexto}
@@ -259,7 +259,7 @@ export default function GestorNotificacoesPage() {
                       </p>
                     </div>
                     {!n.foiLida && (
-                      <Badge variant="frevo" className="shrink-0 text-[10px]">Nova</Badge>
+                      <Badge variant="violeta" className="shrink-0 text-[10px]">Nova</Badge>
                     )}
                   </li>
                 );

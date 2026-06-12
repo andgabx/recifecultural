@@ -52,13 +52,13 @@ const statusInscricaoConfig: Record<
     label: "Suplente",
     icon: Crown,
     cor: "text-yellow-800",
-    bg: "bg-frevo/20 border-frevo/40",
+    bg: "bg-violeta/20 border-violeta/40",
   },
   INSCRITO: {
     label: "Inscrito",
     icon: Sparkles,
-    cor: "text-vinho",
-    bg: "bg-vinho/10 border-vinho/30",
+    cor: "text-azul",
+    bg: "bg-azul/10 border-azul/30",
   },
   DESISTENTE: {
     label: "Desistente",
@@ -132,10 +132,10 @@ export default function MeusSorteiosPage() {
         {/* Sorteios abertos */}
         <div className="space-y-4">
           <header className="space-y-1">
-            <p className="text-frevo font-mono text-xs uppercase tracking-[0.25em]">
+            <p className="text-violeta font-mono text-xs uppercase tracking-[0.25em]">
               Participar
             </p>
-            <h1 className="font-display text-palco text-3xl font-bold tracking-tight">
+            <h1 className="font-display text-noite text-3xl font-bold tracking-tight">
               Sorteios abertos
             </h1>
             <p className="text-muted-foreground text-sm">
@@ -169,39 +169,39 @@ export default function MeusSorteiosPage() {
                 return (
                   <Card
                     key={s.id}
-                    className="border-t-frevo space-y-3 border-t-4 p-5"
+                    className="border-t-violeta space-y-3 border-t-4 p-5"
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0 flex-1">
                         <p className="text-muted-foreground font-mono text-[10px] uppercase tracking-widest">
                           Evento {s.eventoId.slice(0, 8)}…
                         </p>
-                        <h3 className="font-display text-palco mt-1 text-base font-semibold">
+                        <h3 className="font-display text-noite mt-1 text-base font-semibold">
                           {s.vagas} {s.vagas === 1 ? "vaga" : "vagas"}
                         </h3>
                       </div>
                       {jaInscrito ? (
                         <Badge variant="success">Inscrito</Badge>
                       ) : (
-                        <Badge variant="frevo">Inscrições abertas</Badge>
+                        <Badge variant="violeta">Inscrições abertas</Badge>
                       )}
                     </div>
 
                     <div className="text-muted-foreground space-y-1 text-xs">
                       <p className="flex items-center gap-1.5">
-                        <CalendarClock className="text-ouro h-3 w-3" />
+                        <CalendarClock className="text-laranja h-3 w-3" />
                         Apresentação: {formatarDataHora(s.dataApresentacao)}
                       </p>
                       <p className="flex items-center gap-1.5">
-                        <CalendarClock className="text-ouro h-3 w-3" />
+                        <CalendarClock className="text-laranja h-3 w-3" />
                         Prazo: {formatarDataHora(s.prazoInscricao)}
                       </p>
                     </div>
 
                     <div className="space-y-1">
-                      <div className="bg-marquee-muted h-1.5 overflow-hidden rounded-full">
+                      <div className="bg-nevoa-muted h-1.5 overflow-hidden rounded-full">
                         <div
-                          className="bg-ouro h-full transition-all"
+                          className="bg-laranja h-full transition-all"
                           style={{ width: `${progresso}%` }}
                         />
                       </div>
@@ -222,10 +222,10 @@ export default function MeusSorteiosPage() {
                           size="sm"
                           onClick={() => onInscrever(s)}
                           disabled={inscrever.isPending}
-                          className="bg-frevo text-palco hover:bg-frevo-dark font-semibold"
+                          className="bg-violeta text-noite hover:bg-violeta-dark font-semibold"
                         >
                           {inscrever.isPending && (
-                            <LoadingSpinner className="mr-1 text-palco" />
+                            <LoadingSpinner className="mr-1 text-noite" />
                           )}
                           Participar
                         </Button>
@@ -241,10 +241,10 @@ export default function MeusSorteiosPage() {
         {/* Meus sorteios */}
         <div className="space-y-4">
           <header className="space-y-1">
-            <p className="text-frevo font-mono text-xs uppercase tracking-[0.25em]">
+            <p className="text-violeta font-mono text-xs uppercase tracking-[0.25em]">
               Espectador · {usuario.nome}
             </p>
-            <h2 className="font-display text-palco text-2xl font-bold tracking-tight">
+            <h2 className="font-display text-noite text-2xl font-bold tracking-tight">
               Meus sorteios
             </h2>
             <p className="text-muted-foreground text-sm">
@@ -304,7 +304,7 @@ export default function MeusSorteiosPage() {
                             <p className="text-muted-foreground font-mono text-[10px] uppercase tracking-widest">
                               Apresentação {s.apresentacaoId.slice(0, 8)}…
                             </p>
-                            <h3 className="font-display text-palco mt-1 text-lg font-semibold">
+                            <h3 className="font-display text-noite mt-1 text-lg font-semibold">
                               {s.vagas} {s.vagas === 1 ? "vaga" : "vagas"} ·{" "}
                               <span className="text-muted-foreground text-sm font-normal">
                                 {s.totalInscritos} inscritos
@@ -336,20 +336,20 @@ export default function MeusSorteiosPage() {
 
                         <div className="text-muted-foreground space-y-1 text-xs">
                           <p className="flex items-center gap-1.5">
-                            <CalendarClock className="text-ouro h-3 w-3" />
+                            <CalendarClock className="text-laranja h-3 w-3" />
                             Apresentação: {formatarDataHora(s.dataApresentacao)}
                           </p>
                           <p className="flex items-center gap-1.5">
-                            <CalendarClock className="text-ouro h-3 w-3" />
+                            <CalendarClock className="text-laranja h-3 w-3" />
                             Prazo de inscrição: {formatarDataHora(s.prazoInscricao)}
                           </p>
                         </div>
 
                         {aindaAberto && (
                           <div className="space-y-1">
-                            <div className="bg-marquee-muted h-1.5 overflow-hidden rounded-full">
+                            <div className="bg-nevoa-muted h-1.5 overflow-hidden rounded-full">
                               <div
-                                className="bg-ouro h-full transition-all"
+                                className="bg-laranja h-full transition-all"
                                 style={{ width: `${progresso}%` }}
                               />
                             </div>
@@ -372,7 +372,7 @@ export default function MeusSorteiosPage() {
                         )}
 
                         {s.statusInscricao === "SUPLENTE" && (
-                          <Card className="bg-frevo/10 border-frevo/30 p-3 text-xs">
+                          <Card className="bg-violeta/10 border-violeta/30 p-3 text-xs">
                             <p className="text-yellow-900">
                               <Crown className="mr-1 inline h-3 w-3" />
                               Você é o {s.posicao}º suplente. Se um ganhador

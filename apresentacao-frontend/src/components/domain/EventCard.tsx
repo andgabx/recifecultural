@@ -37,9 +37,9 @@ export function EventCard({
       className="h-full"
     >
       <Card className="h-full overflow-hidden p-0">
-        <div className="from-vinho-dark via-vinho to-capibaribe relative aspect-[4/3] overflow-hidden bg-gradient-to-br">
+        <div className="from-azul-dark via-azul to-laranja relative aspect-[4/3] overflow-hidden bg-gradient-to-br">
           <div className="absolute inset-0 opacity-20 [background-image:repeating-linear-gradient(45deg,#fff_0,#fff_1px,transparent_1px,transparent_8px)]" />
-          <div className="from-palco/70 via-palco/20 absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t to-transparent" />
+          <div className="from-noite/70 via-noite/20 absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t to-transparent" />
           <Badge
             variant={statusEventoVariant[evento.status]}
             className="absolute left-3 top-3"
@@ -49,14 +49,14 @@ export function EventCard({
           {tiposAcessibilidade && tiposAcessibilidade.length > 0 && (
             <span
               title={`Acessibilidade: ${tiposAcessibilidade.map((t) => detalheAcessibilidade(t).label).join(", ")}`}
-              className="bg-marquee/95 text-vinho absolute right-3 top-3 inline-flex items-center gap-1 rounded-full px-2 py-1 text-[10px] font-semibold shadow-sm"
+              className="bg-nevoa/95 text-azul absolute right-3 top-3 inline-flex items-center gap-1 rounded-full px-2 py-1 text-[10px] font-semibold shadow-sm"
             >
               <Accessibility className="h-3 w-3" />
               {tiposAcessibilidade.length}
             </span>
           )}
           <div className="absolute bottom-3 left-4 right-4">
-            <h3 className="font-display text-marquee text-xl font-semibold leading-tight drop-shadow-md">
+            <h3 className="font-display text-nevoa text-xl font-semibold leading-tight drop-shadow-md">
               {evento.titulo}
             </h3>
           </div>
@@ -69,12 +69,12 @@ export function EventCard({
           )}
           <div className="text-muted-foreground space-y-1 text-xs">
             <div className="flex items-center gap-1.5">
-              <CalendarDays className="text-ouro h-3.5 w-3.5" />
+              <CalendarDays className="text-laranja h-3.5 w-3.5" />
               <span>{formatarPeriodo(evento.periodoInicio, evento.periodoFim)}</span>
             </div>
             {evento.localId && (
               <div className="flex items-center gap-1.5">
-                <MapPin className="text-ouro h-3.5 w-3.5" />
+                <MapPin className="text-laranja h-3.5 w-3.5" />
                 <span className="font-mono text-[10px]">
                   {evento.localId.slice(0, 8)}…
                 </span>
@@ -89,7 +89,7 @@ export function EventCard({
                   <span
                     key={tipo}
                     title={detalheAcessibilidade(tipo).label}
-                    className="bg-vinho/10 text-vinho rounded-full p-1"
+                    className="bg-azul/10 text-azul rounded-full p-1"
                   >
                     <Icone className="h-3 w-3" />
                   </span>
@@ -104,7 +104,7 @@ export function EventCard({
           )}
           <Link
             href={`/eventos/${evento.id}`}
-            className="text-vinho hover:text-vinho-light mt-auto inline-flex items-center gap-1 text-sm font-medium transition-colors"
+            className="text-azul hover:text-azul-light mt-auto inline-flex items-center gap-1 text-sm font-medium transition-colors"
           >
             Ver detalhes
             <ArrowRight className="h-3.5 w-3.5" />

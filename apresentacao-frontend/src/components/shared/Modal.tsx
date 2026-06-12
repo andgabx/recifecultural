@@ -49,7 +49,7 @@ export function Modal({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.18 }}
-            className="bg-palco/70 absolute inset-0 backdrop-blur-sm"
+            className="bg-noite/70 absolute inset-0 backdrop-blur-sm"
             onClick={onClose}
             aria-hidden
           />
@@ -61,7 +61,7 @@ export function Modal({
             exit={{ opacity: 0, scale: 0.96, y: 12 }}
             transition={{ type: "spring", stiffness: 400, damping: 32 }}
             className={cn(
-              "bg-marquee-card relative z-10 w-full max-w-lg overflow-hidden rounded-2xl shadow-raised",
+              "bg-white relative z-10 w-full max-w-lg overflow-hidden rounded-2xl shadow-raised",
               className,
             )}
           >
@@ -78,7 +78,7 @@ export function Modal({
             {(title || description) && (
               <header className="border-border border-b p-6 pr-12">
                 {title && (
-                  <h2 className="font-display text-palco text-lg font-semibold">
+                  <h2 className="font-display text-noite text-lg font-semibold">
                     {title}
                   </h2>
                 )}
@@ -91,7 +91,7 @@ export function Modal({
             )}
             <div className="p-6">{children}</div>
             {footer && (
-              <footer className="bg-marquee-muted/40 border-border flex items-center justify-end gap-2 border-t px-6 py-4">
+              <footer className="bg-nevoa-muted/40 border-border flex items-center justify-end gap-2 border-t px-6 py-4">
                 {footer}
               </footer>
             )}

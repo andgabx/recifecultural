@@ -69,7 +69,7 @@ function ComboboxAsyncInner<T>(
         ))}
       </Select>
       {isLoading && (
-        <Loader2 className="text-vinho/60 absolute right-9 top-1/2 h-3.5 w-3.5 -translate-y-1/2 animate-spin" />
+        <Loader2 className="text-azul/60 absolute right-9 top-1/2 h-3.5 w-3.5 -translate-y-1/2 animate-spin" />
       )}
     </div>
   );

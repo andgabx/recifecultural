@@ -40,10 +40,10 @@ const statusLabel: Record<StatusEquipamento, string> = {
 
 const statusVariant: Record<
   StatusEquipamento,
-  "default" | "success" | "frevo" | "secondary" | "destructive" | "outline"
+  "default" | "success" | "violeta" | "secondary" | "destructive" | "outline"
 > = {
   DISPONIVEL: "success",
-  ALOCADO: "frevo",
+  ALOCADO: "violeta",
   EM_MANUTENCAO: "secondary",
 };
 
@@ -128,7 +128,7 @@ export default function EquipamentosPage() {
       header: "Equipamento",
       cell: (e) => (
         <div className="flex items-center gap-2">
-          <Speaker className="text-vinho h-4 w-4" />
+          <Speaker className="text-azul h-4 w-4" />
           <span className="font-medium">{e.nome}</span>
         </div>
       ),
@@ -203,7 +203,7 @@ export default function EquipamentosPage() {
         <Button
           onClick={() => setCadastroAberto(true)}
           disabled={!espacoId}
-          className="bg-vinho hover:bg-vinho-light text-marquee"
+          className="bg-azul hover:bg-azul-light text-nevoa"
         >
           <Plus className="mr-1 h-4 w-4" />
           Novo equipamento
@@ -289,10 +289,10 @@ export default function EquipamentosPage() {
               type="button"
               onClick={form.handleSubmit(onAdquirir)}
               disabled={adquirir.isPending}
-              className="bg-vinho hover:bg-vinho-light text-marquee"
+              className="bg-azul hover:bg-azul-light text-nevoa"
             >
               {adquirir.isPending && (
-                <LoadingSpinner className="mr-2 text-marquee" />
+                <LoadingSpinner className="mr-2 text-nevoa" />
               )}
               Adquirir
             </Button>

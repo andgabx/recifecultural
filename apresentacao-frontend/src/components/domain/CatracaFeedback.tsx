@@ -35,7 +35,7 @@ const config: Record<
     bg: "bg-yellow-950",
     texto: "text-yellow-100",
     icone: AlertTriangle,
-    cor: "text-frevo",
+    cor: "text-violeta",
   },
 };
 
@@ -80,10 +80,10 @@ export function CatracaFeedback({
               {titulo}
             </h2>
             {evento && (
-              <p className="text-marquee/70 font-display text-lg">{evento}</p>
+              <p className="text-nevoa/70 font-display text-lg">{evento}</p>
             )}
             {detalhe && (
-              <p className="text-marquee/60 max-w-xl text-sm">{detalhe}</p>
+              <p className="text-nevoa/60 max-w-xl text-sm">{detalhe}</p>
             )}
           </div>
         </motion.div>

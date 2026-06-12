@@ -76,17 +76,17 @@ export default function HomePage() {
   return (
     <PublicLayout>
       {/* Hero */}
-      <section className="bg-palco text-marquee relative overflow-hidden">
-        <div className="from-palco via-palco to-vinho-dark/40 absolute inset-0 bg-gradient-to-br" />
+      <section className="text-white relative overflow-hidden">
+        <div className="absolute inset-0" style={{background:'linear-gradient(135deg,#173DB7 0%,#1a4fd6 60%,#008AF4 100%)'}} />
         <div className="relative mx-auto max-w-7xl space-y-5 px-6 py-20">
-          <p className="text-frevo font-mono text-xs uppercase tracking-[0.25em]">
-            Teatros e palcos · Recife — PE
+          <p className="text-white/55 font-mono text-xs uppercase tracking-[0.25em]">
+            Cultura popular · Recife — PE
           </p>
           <h1 className="font-display max-w-3xl text-4xl font-bold leading-tight md:text-5xl">
-            Do veludo do palco ao amarelo do{" "}
-            <span className="text-ouro">frevo</span>
+            Do Capibaribe ao frevo,{" "}
+            <span className="text-laranja-light">toda a cultura do Recife</span>
           </h1>
-          <p className="text-marquee/80 max-w-xl text-base md:text-lg">
+          <p className="text-white/75 max-w-xl text-base md:text-lg">
             Compre ingressos, participe de sorteios e descubra os próximos
             espetáculos culturais da cidade.
           </p>
@@ -97,7 +97,7 @@ export default function HomePage() {
       <section className="mx-auto max-w-7xl space-y-6 px-6 py-12">
         <header className="flex items-end justify-between gap-4">
           <div>
-            <h2 className="font-display text-palco text-2xl font-semibold tracking-tight">
+            <h2 className="font-display text-noite text-2xl font-semibold tracking-tight">
               Em cartaz
             </h2>
             <p className="text-muted-foreground mt-1 text-sm">
@@ -194,8 +194,8 @@ export default function HomePage() {
             className={cn(
               "inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors",
               apenasAcessivel
-                ? "bg-vinho text-marquee border-vinho shadow-sm"
-                : "border-border text-muted-foreground hover:border-vinho/40 hover:text-vinho",
+                ? "bg-azul text-nevoa border-azul shadow-sm"
+                : "border-border text-muted-foreground hover:border-azul/40 hover:text-azul",
             )}
             aria-pressed={apenasAcessivel}
           >
@@ -239,8 +239,8 @@ export default function HomePage() {
 
         {eventos && eventos.length === 0 && (
           <Card className="flex flex-col items-center gap-3 p-12 text-center">
-            <CalendarSearch className="text-ouro/50 h-12 w-12" />
-            <h3 className="font-display text-palco text-lg">
+            <CalendarSearch className="text-laranja/50 h-12 w-12" />
+            <h3 className="font-display text-noite text-lg">
               Ainda sem eventos no catálogo
             </h3>
             <p className="text-muted-foreground max-w-sm text-sm">
@@ -252,8 +252,8 @@ export default function HomePage() {
 
         {eventos && eventos.length > 0 && filtrados.length === 0 && (
           <Card className="flex flex-col items-center gap-3 p-12 text-center">
-            <CalendarSearch className="text-ouro/50 h-12 w-12" />
-            <h3 className="font-display text-palco text-lg">
+            <CalendarSearch className="text-laranja/50 h-12 w-12" />
+            <h3 className="font-display text-noite text-lg">
               Nenhum evento corresponde aos filtros
             </h3>
             <p className="text-muted-foreground max-w-sm text-sm">

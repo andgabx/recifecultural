@@ -1,10 +1,7 @@
-package recifecultural.infraestrutura.padroes;
+package recifecultural.dominio.agenda.evento;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import recifecultural.dominio.agenda.evento.Evento;
-import recifecultural.dominio.agenda.evento.IEventoRepositorio;
-import recifecultural.dominio.agenda.evento.StatusEvento;
 import recifecultural.dominio.compartilhado.auditoria.AcaoAuditoria;
 import recifecultural.dominio.compartilhado.auditoria.IAuditoriaRepositorio;
 import recifecultural.dominio.compartilhado.auditoria.RegistroAuditoria;
@@ -14,19 +11,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-/*
- * Padrão Decorator (Par 4): decora IEventoRepositorio adicionando trilha de
- * auditoria em mudanças de status (aprovação, reprovação, cancelamento).
- * O serviço de aprovação (F4.1) continua a chamar repositorio.atualizar(...)
- * sem saber que está sendo auditado.
- *
- * Os registros vão tanto para o log (slf4j) quanto para o `IAuditoriaRepositorio`,
- * que persiste em banco e alimenta a tela `/gestor/auditoria`.
- *
- * Atomicidade: para que a operação no domínio e o registro de auditoria
- * compartilhem a mesma transação, o método do serviço chamador deve ser
- * anotado com @Transactional. O decorator em si não gerencia transações.
- */
 public class EventoRepositorioComAuditoria implements IEventoRepositorio {
 
     private static final String ENTIDADE = "EVENTO";
@@ -36,7 +20,7 @@ public class EventoRepositorioComAuditoria implements IEventoRepositorio {
     private final IAuditoriaRepositorio auditoria;
 
     public EventoRepositorioComAuditoria(IEventoRepositorio delegado,
-                                          IAuditoriaRepositorio auditoria) {
+                                         IAuditoriaRepositorio auditoria) {
         if (delegado == null) throw new IllegalArgumentException("Delegado não pode ser nulo.");
         if (auditoria == null) throw new IllegalArgumentException("Auditoria não pode ser nula.");
         this.delegado = delegado;

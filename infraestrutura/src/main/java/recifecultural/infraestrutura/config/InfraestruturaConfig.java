@@ -73,11 +73,11 @@ import recifecultural.dominio.ingressos.IIngressoRepositorio;
 import recifecultural.dominio.ingressos.IngressoServico;
 import recifecultural.dominio.patrocinio.IPatrocinioRepositorio;
 import recifecultural.dominio.patrocinio.PatrocinioServico;
+import recifecultural.dominio.agenda.comentario.ComentarioRepositorioComModeracao;
+import recifecultural.dominio.agenda.evento.EventoRepositorioComAuditoria;
 import recifecultural.infraestrutura.gateway.GatewayPagamentoSimulado;
-import recifecultural.infraestrutura.padroes.ComentarioRepositorioComModeracao;
 import recifecultural.infraestrutura.padroes.EquipamentoRepositorioProxyCache;
 import recifecultural.infraestrutura.padroes.EspacoRepositorioProxyCache;
-import recifecultural.infraestrutura.padroes.EventoRepositorioComAuditoria;
 import recifecultural.infraestrutura.padroes.GatewayPagamentoComLog;
 import recifecultural.infraestrutura.padroes.PatrocinioRepositorioProxyCache;
 

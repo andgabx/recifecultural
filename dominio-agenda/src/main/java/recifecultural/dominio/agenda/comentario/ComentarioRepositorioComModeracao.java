@@ -1,4 +1,4 @@
-package recifecultural.infraestrutura.padroes;
+package recifecultural.dominio.agenda.comentario;
 
 import recifecultural.dominio.agenda.comentario.Comentario;
 import recifecultural.dominio.agenda.comentario.ComentarioRepositorio;
@@ -10,11 +10,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
-/*
- * Padrão Decorator (Par 4): decora ComentarioRepositorio aplicando moderação
- * textual antes de persistir. Substitui palavras proibidas por asteriscos sem
- * o ComentarioService precisar conhecer a lista de termos vetados.
- */
 public class ComentarioRepositorioComModeracao implements ComentarioRepositorio {
 
     private static final Set<String> PALAVRAS_VETADAS = Set.of(

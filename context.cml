@@ -172,6 +172,16 @@ ContextMap RecifeCulturalMap {
         implementationTechnology = "Decorator no Composition Root (envolve IEventoRepositorio)"
         exposedAggregates = RegistroAuditoriaAggregate
     }
+
+    // Patrocínio → Agenda: quando o patrocínio do tipo SUBSIDIO_INGRESSO_SOCIAL
+    // é ativado, o PatrocinioServicoAplicacao (camada de aplicação) aplica o
+    // desconto no evento via port IEventoParaSubsidio (adapter no dominio-patrocinio).
+    // O PatrocinioServico não depende diretamente de IEventoRepositorio —
+    // recebe o port como parâmetro (DIP preservada).
+    PatrocinioContext [U, OHS] -> [D, ACL] AgendaContext {
+        implementationTechnology = "Port IEventoParaSubsidio — adaptador na camada de aplicação"
+        exposedAggregates = PatrocinioAggregate
+    }
 }
 
 Domain RecifeCultural {
@@ -224,6 +234,8 @@ BoundedContext AgendaContext implements RecifeCultural {
                 void reprovar(@FeedbackReprovacao feedback);
                 void cancelar(String motivo);
                 void programarApresentacao(LocalDateTime dataHora);
+                /* Atualiza preço social com resultado de subsídio de patrocínio (sem exigir RASCUNHO) */
+                void aplicarSubsidioNoPreco(BigDecimal novoPrecoSocial);
             }
 
             ValueObject Periodo {
@@ -234,7 +246,8 @@ BoundedContext AgendaContext implements RecifeCultural {
             ValueObject Preco {
                 BigDecimal inteira
                 BigDecimal meia
-                String social
+                /* BigDecimal (não String) — preenchido automaticamente via subsídio de patrocínio */
+                BigDecimal social
             }
 
             ValueObject FeedbackReprovacao {
@@ -381,8 +394,11 @@ BoundedContext SorteioContext implements RecifeCultural {
                 List<@Inscricao> inscricoes
 
                 void inscrever(UUID espectadorId);
+                /* Retorna ConcluidoEvento (domain event) com ganhadores e suplentes definidos */
                 void apurar();
+                /* Retorna Optional<SuplentePromovidoEvento> — promove primeiro suplente se ganhador desiste */
                 void desistir(UUID espectadorId);
+                /* Retorna CanceladoEvento (domain event) */
                 void cancelar();
                 long contarPorStatus(StatusInscricao status);
             }
@@ -448,9 +464,13 @@ BoundedContext BloqueioAdministrativoContext implements RecifeCultural {
                 LocalDate dataFim
                 String justificativa
                 boolean ativo
+                /* Rastreia quais eventos foram cancelados por este bloqueio */
+                List<UUID> eventosCancelados
 
                 void atualizarInformacoes(String novaJustificativa, LocalDate novoInicio, LocalDate novoFim);
                 void desativar();
+                /* Registra um eventoCancelado na lista interna — chamado durante cancelarEventosConflitantes */
+                void registrarEventoCancelado(UUID eventoId);
             }
 
             ValueObject BloqueioAdministrativoId {
@@ -468,11 +488,16 @@ BoundedContext BloqueioAdministrativoContext implements RecifeCultural {
 
             DomainService BloqueioAdministrativoServico {
                 @BloqueioAdministrativo criarBloqueio(@EspacoId espacoId, LocalDate inicio, LocalDate fim, String justificativa);
-                void desativarBloqueio(@BloqueioAdministrativoId id);
+                /* boolean reativarEventos — controla se eventos cancelados são reativados ao desbloquear */
+                void desativarBloqueio(@BloqueioAdministrativoId id, boolean reativarEventos);
+                /* Desativa todos os bloqueios ativos de um espaço (usado ao reativar espaço interditado) */
+                void desativarBloqueiosAtivosDoEspaco(@EspacoId espacoId);
                 @BloqueioAdministrativo obterPorId(@BloqueioAdministrativoId id);
                 void atualizarBloqueio(@BloqueioAdministrativoId id, String novaJustificativa, LocalDate novoInicio, LocalDate novoFim);
                 void deletarBloqueio(@BloqueioAdministrativoId id);
                 List<@BloqueioAdministrativo> obterTodosBloqueios();
+                /* Retorna eventos que conflitariam com o novo bloqueio — usado na UI antes de confirmar */
+                List<Evento> previewConflitantes(@EspacoId espacoId, LocalDate inicio, LocalDate fim);
             }
         }
     }
@@ -563,6 +588,7 @@ BoundedContext AcessibilidadeContext implements RecifeCultural {
                 StatusRecurso status
                 String justificativaRemocao
 
+                /* Retorna RemovidoEvento (domain event) — emite para acionar broadcast de notificação */
                 void remover(String justificativa);
             }
 
@@ -613,6 +639,7 @@ BoundedContext EquipamentoContext implements RecifeCultural {
                 UUID eventoAlocadoId
 
                 void alocarParaEvento(UUID eventoId);
+                /* Retorna Optional<EmManutencaoEvento> — emitido apenas se estava ALOCADO (contém eventoAlocadoId) */
                 void enviarParaManutencao();
                 void liberar();
             }
@@ -888,6 +915,8 @@ BoundedContext BilheteriaContext implements RecifeCultural {
                 @Ingresso comprar(UUID eventoId, LocalDateTime dataHora, TipoIngresso tipo, BigDecimal valor, MetodoPagamento metodo, int capacidadeMaxima);
                 @Ingresso comprarComCupom(UUID eventoId, LocalDateTime dataHora, TipoIngresso tipo, BigDecimal valor, MetodoPagamento metodo, int capacidadeMaxima, String codigoCupom, String cpfComprador, String categoriaEvento);
                 @Ingresso comprarComPreReserva(UUID eventoId, LocalDateTime dataHora, UUID preReservaId, UUID assentoId, TipoIngresso tipo, BigDecimal valor, MetodoPagamento metodo, int capacidadeMaxima, IConfirmacaoReserva confirmacaoReserva);
+                /* Combinação: pré-reserva + cupom em uma única operação */
+                @Ingresso comprarComPreReservaComCupom(UUID eventoId, LocalDateTime dataHora, UUID preReservaId, UUID assentoId, TipoIngresso tipo, BigDecimal valor, MetodoPagamento metodo, int capacidadeMaxima, String codigoCupom, String cpfComprador, String categoriaEvento, IConfirmacaoReserva confirmacaoReserva);
                 @ResultadoReembolso solicitarReembolso(@IngressoId id, LocalDateTime agora);
             }
         }
@@ -896,6 +925,14 @@ BoundedContext BilheteriaContext implements RecifeCultural {
          * Ports (interfaces no domínio, implementações na infraestrutura):
          *   IGatewayPagamento    — processa cobrança e reembolso
          *   IConfirmacaoReserva  — confirma/cancela pré-reserva no fluxo de compra
+         *
+         * Padrão Strategy — Política de Reembolso por Método de Pagamento
+         * (vive no dominio-ingressos, NÃO na infraestrutura):
+         *   EstrategiaProcessamentoReembolso  — interface: prazoProcessamento() + descricao() + aplicavelA()
+         *   EstrategiaReembolsoImediato       — PIX: devolução na hora
+         *   EstrategiaReembolsoBancario       — Cartão: até 2 dias úteis
+         *   SeletorEstrategiaReembolso        — Context: seleciona por MetodoPagamento
+         * Consumidas por MeusIngressosControlador (BFF) para exibir a política antes de confirmar.
          */
     }
 }
@@ -905,7 +942,7 @@ BoundedContext BilheteriaContext implements RecifeCultural {
 //  Pacote Java: dominio-ingressos/cupom
 // ════════════════════════════════════════════════════════════════════════
 BoundedContext CupomContext implements RecifeCultural {
-    domainVisionStatement = "Gerencia cupons promocionais. Template Method em Cupom.validarElegibilidade: vigência → categoria → valor mínimo → limite global → limite por CPF. Suporta desconto percentual ou valor fixo, com limites globais e por CPF."
+    domainVisionStatement = "Gerencia cupons promocionais. A validação usa Decorator em cadeia: ValidarVigencia → ValidarMinimo → ValidarCategoria → ValidarEscassezGlobal → ValidarLimiteCpf → ValidadorBase. Suporta desconto percentual ou valor fixo. Dois modos: previewDesconto (sem consumir) e aplicarDesconto (registra uso)."
     type = FEATURE
 
     Module CupomModule {
@@ -927,9 +964,23 @@ BoundedContext CupomContext implements RecifeCultural {
                 Set<String> cpfsQueJaUsaram
 
                 BigDecimal calcularDesconto(BigDecimal valorOriginal);
-                void validarElegibilidade(String cpfUsuario, BigDecimal valorPedido, String categoriaEvento, LocalDateTime dataAtual);
+                /* Parâmetro validador recebe a cadeia de Decorators montada em AplicarCupomServico */
+                void validarElegibilidade(String cpfUsuario, BigDecimal valorPedido, String categoriaEvento, LocalDateTime dataAtual, ValidadorCupom validador);
                 void registrarUso(String cpfUsuario);
             }
+
+            /*
+             * Padrão Decorator — Pipeline de validação (pacote dominio-ingressos/cupom/validacoes/):
+             *   ValidadorCupom (interface)         — boolean + void validar(...)
+             *   ValidadorCupomBase                 — implementação vazia (núcleo)
+             *   ValidadorCupomDecorator (abstrato) — delega ao interno antes de validar
+             *   ValidarVigenciaDecorator           — dataInicio ≤ agora ≤ dataFim
+             *   ValidarMinimoDecorator             — valorPedido ≥ valorMinimoPedido
+             *   ValidarCategoriaDecorator          — categoriaPermitida == null OU bate
+             *   ValidarEscassezGlobalDecorator     — usosGlobais < limiteGlobal
+             *   ValidarLimiteCpfDecorator          — usos do CPF < limitePorCpf
+             * Pipeline montado no construtor de AplicarCupomServico (fora→dentro).
+             */
 
             ValueObject CupomId {
                 String valor
@@ -948,7 +999,10 @@ BoundedContext CupomContext implements RecifeCultural {
             }
 
             DomainService AplicarCupomServico {
+                /* Valida, aplica e registra uso — usar apenas na finalização da compra */
                 BigDecimal aplicarDesconto(String codigo, String cpf, BigDecimal valor, String categoria);
+                /* Valida e calcula SEM registrar uso — usar para preview antes de confirmar */
+                PreviewDesconto previewDesconto(String codigo, String cpf, BigDecimal valor, String categoria);
             }
         }
     }
@@ -959,7 +1013,7 @@ BoundedContext CupomContext implements RecifeCultural {
 //  Pacote Java: dominio-ingressos/catraca
 // ════════════════════════════════════════════════════════════════════════
 BoundedContext CatracaContext implements RecifeCultural {
-    domainVisionStatement = "Controle físico de acesso na portaria. Template Method anti-fraude em validarAcesso: QR válido → status ativo → portão correto → janela de horário. Recebe ReembolsadoEvento da Bilheteria para inativar ingressos reembolsados antes que entrem."
+    domainVisionStatement = "Controle físico de acesso na portaria. Usa Decorator pipeline anti-fraude em validarAcesso: ValidarEstorno → ValidarDuplaEntrada → ValidarPortao → ValidarToleranciaAtraso → ValidadorAcessoBase. Recebe ReembolsadoEvento da Bilheteria para inativar ingressos reembolsados antes que entrem."
     type = FEATURE
 
     Module CatracaModule {
@@ -999,6 +1053,19 @@ BoundedContext CatracaContext implements RecifeCultural {
                 String validarAcesso(String idIngresso, LocalDateTime horarioAtual, String identificacaoPortao);
                 void inativarIngresso(String idIngresso);
             }
+
+            /*
+             * Padrão Decorator — Pipeline de validação de acesso
+             * (pacote dominio-ingressos/catraca/validacoes/):
+             *   ValidadorAcesso (interface)          — void validar(IngressoCatraca, LocalDateTime, String)
+             *   ValidadorAcessoBase                  — núcleo sem lógica
+             *   ValidadorAcessoDecorator (abstrato)  — delega ao interno
+             *   ValidarEstornoDecorator              — rejeita se CANCELADO_OU_REEMBOLSADO
+             *   ValidarDuplaEntradaDecorator         — rejeita se UTILIZADO
+             *   ValidarPortaoDecorator               — rejeita se portão errado
+             *   ValidarToleranciaAtrasoDecorator     — rejeita se fora da janela de horário
+             * Pipeline montado no construtor de CatracaServico (fora→dentro).
+             */
         }
     }
 }
@@ -1084,6 +1151,12 @@ BoundedContext PatrocinioContext implements RecifeCultural {
              *   EstrategiaCancelamentoPatrocinio — abstração
              *   EstrategiaCancelamentoPorEvento  — >7d: 100% · 2-7d: 50% · <2d: 0%
              *   EstrategiaCancelamentoPorPatrocinador — >15d: 100% · ≤15d: 80% + 20% multa
+             *
+             * Port IEventoParaSubsidio (declarado em dominio-patrocinio):
+             *   Permite que PatrocinioServico.ativarComSubsidio() aplique o desconto
+             *   no Evento sem depender diretamente de IEventoRepositorio.
+             *   Implementado na camada de aplicação (PatrocinioServicoAplicacao) como adapter.
+             *   Métodos: getPrecoInteiro() + aplicarSubsidioNoPreco(BigDecimal)
              */
 
             Repository IPatrocinioRepositorio {
@@ -1097,11 +1170,15 @@ BoundedContext PatrocinioContext implements RecifeCultural {
 
             DomainService PatrocinioServico {
                 @Patrocinio criar(@EventoId eventoId, String patrocinadorNome, String categoriaPatrocinio, TipoPatrocinio tipo, ModalidadeContribuicao modalidade, BigDecimal valorContribuicao, LocalDateTime dataEvento, boolean eventoAprovado);
+                /* Transição simples PROPOSTA → ATIVO sem subsídio */
                 void ativar(@PatrocinioId id);
+                /* Ativa E aplica subsídio no evento via IEventoParaSubsidio (retorna null se modalidade FINANCEIRO) */
+                @ResultadoSubsidio ativarComSubsidio(@PatrocinioId id, IEventoParaSubsidio evento);
                 void encerrar(@PatrocinioId id);
                 @ResultadoCancelamento cancelarPorEvento(@PatrocinioId id, LocalDateTime agora);
                 @ResultadoCancelamento cancelarPorPatrocinador(@PatrocinioId id, LocalDateTime agora);
                 @ResultadoSubsidio calcularSubsidio(@PatrocinioId id, BigDecimal precoSocialAtual);
+                @Patrocinio obterPorId(@PatrocinioId id);
             }
         }
     }
@@ -1137,6 +1214,7 @@ BoundedContext FinanceiroContext implements RecifeCultural {
                 LocalDateTime dataInicio
                 LocalDateTime dataFim
 
+                /* Método Java real: contem() — verifica se dataHora está dentro do período */
                 boolean contem(LocalDateTime dataHora);
                 boolean sobrepoe(@Periodo outro);
             }
@@ -1216,7 +1294,7 @@ BoundedContext FinanceiroContext implements RecifeCultural {
 //  Pacotes Java: dominio-artista/artista, dominio-artista/produtor
 // ════════════════════════════════════════════════════════════════════════
 BoundedContext ArtistaContext implements RecifeCultural {
-    domainVisionStatement = "Cadastro e ciclo de vida de produtores culturais (PJ com CNPJ) e artistas vinculados a eles. Produtor tem trilha de mudanças de status (histórico) e regras de inativação que verificam artistas ativos. Artista carrega rider técnico (lista de itens necessários para o palco)."
+    domainVisionStatement = "Cadastro e ciclo de vida de produtores culturais (PJ com CNPJ) e artistas vinculados a eles. Produtor tem trilha de mudanças de status (histórico) e regras de inativação que percorrem artistas ativos via Iterator próprio do domínio. Artista carrega rider técnico iterável item a item."
     type = APPLICATION
 
     Module ProdutorModule {
@@ -1281,12 +1359,39 @@ BoundedContext ArtistaContext implements RecifeCultural {
                 void atualizarContato(@ProdutorId produtorId, String novoEmail, String novoTelefone);
                 void suspender(@ProdutorId produtorId, String responsavel, String motivo);
                 void reativar(@ProdutorId produtorId, String responsavel, String motivo);
+                /*
+                 * Usa Iterador<Artista> (criarIteradorPorProdutor) para percorrer
+                 * artistas ativos do produtor antes de permitir a inativação.
+                 * Se encontrar algum ATIVO, lança IllegalStateException.
+                 */
                 void inativar(@ProdutorId produtorId, String responsavel, String motivo);
             }
         }
     }
 
     Module ArtistaModule {
+
+        /*
+         * Padrão Iterator — Par 5 · F5.1
+         *
+         * O grupo implementou um Iterator customizado (sem usar java.util.Iterator)
+         * com interface própria do domínio:
+         *   Iterador<T>   — boolean temProximo() + T proximo()
+         *   Iteravel<T>   — Iterador<T> criarIterador()
+         *
+         * Duas implementações concretas:
+         *   IteradorDeArtistas    — percorre List<Artista>
+         *   IteradorDeItensRider  — percorre Set<ItemRider> (converte para array)
+         *
+         * Expostos via métodos default em IArtistaRepositorio:
+         *   criarIteradorPorProdutor(ProdutorId) → Iterador<Artista>
+         *   criarIteradorDeItensRider(ArtistaId) → Iterador<ItemRider>
+         *
+         * Consumidos em:
+         *   ProdutorServico.inativar()    → itera artistas para bloquear inativação
+         *   ArtistaServico.iterarItensRider() → itera itens do rider
+         */
+
         Aggregate ArtistaAggregate {
             Entity Artista {
                 aggregateRoot
@@ -1324,12 +1429,19 @@ BoundedContext ArtistaContext implements RecifeCultural {
                 Optional<@Artista> obterPorId(@ArtistaId id);
                 List<@Artista> listarPorProdutor(@ProdutorId produtorId);
                 boolean existePorNomeEProdutor(String nome, @ProdutorId produtorId);
+                /*
+                 * Métodos default que encapsulam a criação dos iteradores concretos:
+                 *   criarIteradorPorProdutor → new IteradorDeArtistas(listarPorProdutor(...))
+                 *   criarIteradorDeItensRider → new IteradorDeItensRider(artista.getRiderTecnico().getItens())
+                 */
             }
 
             DomainService ArtistaServico {
                 @ArtistaId cadastrar(@ProdutorId produtorId, String nome, @RiderTecnico riderTecnico);
                 void atualizarRider(@ArtistaId artistaId, @RiderTecnico novoRider);
                 void inativar(@ArtistaId artistaId);
+                /* Retorna Iterador<ItemRider> via IArtistaRepositorio.criarIteradorDeItensRider */
+                void iterarItensRider(@ArtistaId artistaId);
             }
         }
     }

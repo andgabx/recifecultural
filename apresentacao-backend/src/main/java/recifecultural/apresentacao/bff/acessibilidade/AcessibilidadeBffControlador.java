@@ -42,12 +42,6 @@ public class AcessibilidadeBffControlador extends AbstractBffControlador {
         return responder(servico.listarPorEvento(eventoId));
     }
 
-    @Operation(summary = "Lista recursos de um evento em ordem de status (CONFIRMADO → REMOVIDO) — Iterator")
-    @GetMapping("/evento/{eventoId}/ordenados")
-    public ResponseEntity<List<RecursoResumo>> listarPorStatus(@PathVariable UUID eventoId) {
-        return responder(servico.listarPorStatus(eventoId));
-    }
-
     @Operation(summary = "Marca recurso em uma apresentação")
     @PostMapping
     public ResponseEntity<Map<String, String>> marcar(@RequestBody MarcarRecursoRequisicao req) {

@@ -37,23 +37,11 @@ public class RecursoAcessibilidadeServico {
     }
 
     public void remover(UUID recursoId, String justificativa) {
-        RecursoAcessibilidade recurso = repositorio.obter(recursoId)
-                .orElseThrow(() -> new IllegalArgumentException("Recurso não encontrado: " + recursoId));
-        recurso.remover(justificativa);
-        repositorio.atualizar(recurso);
-
-        String mensagem = String.format(
-                "O recurso de acessibilidade %s foi removido do evento %s. Justificativa: %s",
-                recurso.getTipo(), recurso.getEventoId(), justificativa);
-        notificacaoServico.enviarBroadcast(mensagem, "ACESSIBILIDADE_REMOVIDA", recurso.getEventoId());
+        new RemocaoRecursoAcessibilidadeOperacao(repositorio, notificacaoServico, recursoId, justificativa)
+                .executar();
     }
 
     public List<RecursoAcessibilidade> listarAtivosPorEvento(UUID eventoId) {
         return repositorio.listarAtivosPorEvento(eventoId);
-    }
-
-    // Iterator: percorre os recursos do evento em ordem de status (CONFIRMADO → REMOVIDO)
-    public Iterable<RecursoAcessibilidade> iterarRecursosPorStatus(UUID eventoId) {
-        return new RecursosOrdenados(repositorio, eventoId);
     }
 }

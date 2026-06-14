@@ -69,7 +69,7 @@ public class SorteioControlador extends AbstractBffControlador {
         return responderSemConteudo();
     }
 
-    @Operation(summary = "Lista inscrições por prioridade (Iterator)")
+    @Operation(summary = "Lista inscrições por prioridade")
     @GetMapping("/{id}/inscricoes")
     public ResponseEntity<List<Inscricao>> inscricoesPorPrioridade(@PathVariable UUID id) {
         return responder(servico.listarInscricoesPorPrioridade(id));

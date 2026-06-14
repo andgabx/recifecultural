@@ -12,7 +12,4 @@ public interface IRecursoAcessibilidadeRepositorio {
     List<RecursoAcessibilidade> listarPorEvento(UUID eventoId);
     List<RecursoAcessibilidade> listarTodos();
     void atualizar(RecursoAcessibilidade recurso);
-
-    /** Lê recursos de um evento em ordem de status (CONFIRMADO → REMOVIDO), de forma paginada. */
-    List<RecursoAcessibilidade> listarRecursosOrdenados(UUID eventoId, int pagina, int tamanhoPagina);
 }

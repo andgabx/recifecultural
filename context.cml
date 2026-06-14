@@ -410,13 +410,12 @@ BoundedContext SorteioContext implements RecifeCultural {
             }
 
             /*
-             * Padrão Iterator (vivo no domínio):
-             * itera as inscrições em ordem de prioridade (GANHADOR →
-             * SUPLENTE → INSCRITO → DESISTENTE → CANCELADA).
+             * Padrão Template Method (vivo no domínio):
+             * OperacaoSorteioTemplate fixa o esqueleto buscar → aplicarRegra →
+             * persistir → notificar (executar() é final). As operações concretas
+             * InscreverOperacao, ApurarOperacao, DesistirOperacao e CancelarOperacao
+             * preenchem a regra de negócio e a notificação de cada caso.
              */
-            ValueObject InscricoesOrdenadas {
-                List<@Inscricao> inscricoes
-            }
 
             enum StatusInscricao {
                 INSCRITO, GANHADOR, SUPLENTE, DESISTENTE, CANCELADA

@@ -3,7 +3,6 @@ package recifecultural.dominio.agenda.sorteio;
 import recifecultural.dominio.agenda.evento.Evento;
 import recifecultural.dominio.agenda.evento.IEventoRepositorio;
 import recifecultural.dominio.compartilhado.notificacao.INotificacaoServico;
-import recifecultural.dominio.agenda.sorteio.StatusInscricao;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -35,55 +34,22 @@ public class SorteioServico {
     }
 
     public void inscrever(UUID sorteioId, UUID espectadorId) {
-        Sorteio sorteio = buscarOuLancar(sorteioId);
-        sorteio.inscrever(espectadorId);
-        sorteioRepositorio.atualizar(sorteio);
+        new InscreverOperacao(sorteioRepositorio, notificacaoServico, sorteioId, espectadorId).executar();
     }
 
     public void apurar(UUID sorteioId) {
-        Sorteio sorteio = buscarOuLancar(sorteioId);
-        sorteio.apurar();
-        sorteioRepositorio.atualizar(sorteio);
-        sorteio.getInscricoes().stream()
-                .filter(i -> i.getStatus() == StatusInscricao.GANHADOR)
-                .forEach(i -> notificacaoServico.enviarNotificacao(
-                        i.getEspectadorId(),
-                        "Parabéns! Você foi sorteado para o evento " + sorteio.getEventoId(),
-                        "SORTEIO_GANHADOR", sorteioId));
+        new ApurarOperacao(sorteioRepositorio, notificacaoServico, sorteioId).executar();
     }
 
     public void desistir(UUID sorteioId, UUID espectadorId) {
-        Sorteio sorteio = buscarOuLancar(sorteioId);
-        sorteio.desistir(espectadorId).ifPresent(evento ->
-                notificacaoServico.enviarNotificacao(
-                        evento.getEspectadorPromovidoId(),
-                        "Parabéns! Você foi promovido de suplente para ganhador no sorteio " + sorteioId,
-                        "SORTEIO_PROMOCAO", sorteioId));
-        sorteioRepositorio.atualizar(sorteio);
+        new DesistirOperacao(sorteioRepositorio, notificacaoServico, sorteioId, espectadorId).executar();
     }
 
     public void cancelar(UUID sorteioId) {
-        Sorteio sorteio = buscarOuLancar(sorteioId);
-        sorteio.cancelar();
-        sorteioRepositorio.atualizar(sorteio);
-        notificacaoServico.enviarBroadcast(
-                "O sorteio " + sorteioId + " foi cancelado.",
-                "SORTEIO_CANCELADO", sorteioId);
+        new CancelarOperacao(sorteioRepositorio, notificacaoServico, sorteioId).executar();
     }
 
     public Optional<Sorteio> obter(UUID sorteioId) {
         return sorteioRepositorio.obter(sorteioId);
-    }
-
-    public Iterable<Inscricao> iterarInscricoesPorPrioridade(UUID sorteioId) {
-        if (!sorteioRepositorio.existe(sorteioId)) {
-            throw new IllegalArgumentException("Sorteio não encontrado: " + sorteioId);
-        }
-        return new InscricoesOrdenadas(sorteioRepositorio, sorteioId);
-    }
-
-    private Sorteio buscarOuLancar(UUID id) {
-        return sorteioRepositorio.obter(id)
-                .orElseThrow(() -> new IllegalArgumentException("Sorteio não encontrado: " + id));
     }
 }

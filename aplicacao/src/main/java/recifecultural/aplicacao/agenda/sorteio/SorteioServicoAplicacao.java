@@ -1,12 +1,14 @@
 package recifecultural.aplicacao.agenda.sorteio;
 
 import recifecultural.dominio.agenda.sorteio.Inscricao;
+import recifecultural.dominio.agenda.sorteio.Sorteio;
 import recifecultural.dominio.agenda.sorteio.SorteioServico;
+import recifecultural.dominio.agenda.sorteio.StatusInscricao;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.StreamSupport;
 
 import static org.apache.commons.lang3.Validate.notNull;
 
@@ -55,9 +57,22 @@ public class SorteioServicoAplicacao {
         servico.cancelar(sorteioId);
     }
 
-    // Iterator: retorna inscrições do sorteio em ordem de prioridade (GANHADOR → SUPLENTE → INSCRITO → ...)
+    // Retorna inscrições do sorteio em ordem de prioridade (GANHADOR → SUPLENTE → INSCRITO → ...)
     public List<Inscricao> listarInscricoesPorPrioridade(UUID sorteioId) {
-        Iterable<Inscricao> ordenadas = servico.iterarInscricoesPorPrioridade(sorteioId);
-        return StreamSupport.stream(ordenadas.spliterator(), false).toList();
+        Sorteio sorteio = servico.obter(sorteioId)
+                .orElseThrow(() -> new IllegalArgumentException("Sorteio não encontrado."));
+        return sorteio.getInscricoes().stream()
+                .sorted(Comparator.comparingInt(i -> prioridade(i.getStatus())))
+                .toList();
+    }
+
+    private static int prioridade(StatusInscricao status) {
+        return switch (status) {
+            case GANHADOR -> 0;
+            case SUPLENTE -> 1;
+            case INSCRITO -> 2;
+            case DESISTENTE -> 3;
+            case CANCELADA -> 4;
+        };
     }
 }

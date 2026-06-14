@@ -1,7 +1,6 @@
 package recifecultural.infraestrutura.persistencia.agenda.acessibilidade;
 
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Repository;
 
 import recifecultural.dominio.agenda.acessibilidade.IRecursoAcessibilidadeRepositorio;
@@ -57,16 +56,6 @@ public class RecursoAcessibilidadeRepositorioImpl implements IRecursoAcessibilid
     @Override
     public List<RecursoAcessibilidade> listarTodos() {
         return jpa.findAll().stream()
-                .map(r -> mapeador.map(r, RecursoAcessibilidade.class))
-                .toList();
-    }
-
-    @Override
-    public List<RecursoAcessibilidade> listarRecursosOrdenados(UUID eventoId, int pagina, int tamanhoPagina) {
-        if (pagina < 0) throw new IllegalArgumentException("Página não pode ser negativa.");
-        if (tamanhoPagina <= 0) throw new IllegalArgumentException("Tamanho da página deve ser positivo.");
-
-        return jpa.findRecursosOrdenados(eventoId, PageRequest.of(pagina, tamanhoPagina)).stream()
                 .map(r -> mapeador.map(r, RecursoAcessibilidade.class))
                 .toList();
     }

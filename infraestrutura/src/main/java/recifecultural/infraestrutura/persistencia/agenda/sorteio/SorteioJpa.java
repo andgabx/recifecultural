@@ -1,7 +1,6 @@
 package recifecultural.infraestrutura.persistencia.agenda.sorteio;
 
 import jakarta.persistence.*;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -45,21 +44,4 @@ interface SorteioJpaRepository extends JpaRepository<SorteioJpa, UUID> {
 
     @Query("SELECT DISTINCT s FROM SorteioJpa s JOIN s.inscricoes i WHERE i.espectadorId = :espectadorId")
     List<SorteioJpa> findByEspectadorId(UUID espectadorId);
-
-    @Query("""
-            SELECT i
-            FROM SorteioJpa s JOIN s.inscricoes i
-            WHERE s.id = :sorteioId
-            ORDER BY
-                CASE
-                    WHEN i.status = recifecultural.dominio.agenda.sorteio.StatusInscricao.GANHADOR THEN 0
-                    WHEN i.status = recifecultural.dominio.agenda.sorteio.StatusInscricao.SUPLENTE THEN 1
-                    WHEN i.status = recifecultural.dominio.agenda.sorteio.StatusInscricao.INSCRITO THEN 2
-                    WHEN i.status = recifecultural.dominio.agenda.sorteio.StatusInscricao.DESISTENTE THEN 3
-                    WHEN i.status = recifecultural.dominio.agenda.sorteio.StatusInscricao.CANCELADA THEN 4
-                    ELSE 5
-                END,
-                i.momentoInscricao
-            """)
-    List<InscricaoJpa> findInscricoesOrdenadas(UUID sorteioId, Pageable pageable);
 }

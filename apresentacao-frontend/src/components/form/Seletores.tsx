@@ -4,7 +4,7 @@ import { ComboboxAsync } from "@/components/form/ComboboxAsync";
 import { formatarDataHora } from "@/lib/format";
 import { artistasService } from "@/services/bff/artistas";
 import { espacosService } from "@/services/bff/espacos";
-import { eventosService } from "@/services/bff/eventos";
+import { eventosService, type ApresentacaoResumo } from "@/services/bff/eventos";
 import { produtoresService } from "@/services/bff/produtores";
 import type { StatusEvento, UUID } from "@/types/dominio";
 
@@ -112,12 +112,16 @@ export function SeletorEvento(
  * mesma apresentação consistentemente sem o usuário digitar UUID.
  */
 export function SeletorApresentacao(
-  props: Base & { eventoId: UUID | undefined },
+  props: Base & {
+    eventoId: UUID | undefined;
+    onSelectApresentacao?: (apresentacao: ApresentacaoResumo | undefined) => void;
+  },
 ) {
-  const { eventoId, ...rest } = props;
+  const { eventoId, onSelectApresentacao, ...rest } = props;
   return (
     <ComboboxAsync
       {...rest}
+      onItemChange={onSelectApresentacao}
       enabled={Boolean(eventoId)}
       queryKey={["evento", eventoId ?? "vazio", "apresentacoes"]}
       queryFn={async () => {

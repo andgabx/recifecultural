@@ -1,6 +1,7 @@
 package recifecultural.infraestrutura.persistencia.agenda.sorteio;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.data.domain.PageRequest;
 
 import recifecultural.aplicacao.agenda.sorteio.SorteioInscritoResumo;
 import recifecultural.aplicacao.agenda.sorteio.SorteioRepositorioAplicacao;
@@ -38,6 +39,11 @@ public class SorteioRepositorioImpl implements ISorteioRepositorio, SorteioRepos
     }
 
     @Override
+    public boolean existe(UUID id) {
+        return jpa.existsById(id);
+    }
+
+    @Override
     public void atualizar(Sorteio sorteio) {
         jpa.save(mapeador.toJpa(sorteio));
     }
@@ -45,6 +51,16 @@ public class SorteioRepositorioImpl implements ISorteioRepositorio, SorteioRepos
     @Override
     public void deletar(UUID id) {
         jpa.deleteById(id);
+    }
+
+    @Override
+    public List<Inscricao> listarInscricoesOrdenadas(UUID sorteioId, int pagina, int tamanhoPagina) {
+        if (pagina < 0) throw new IllegalArgumentException("Página não pode ser negativa.");
+        if (tamanhoPagina <= 0) throw new IllegalArgumentException("Tamanho da página deve ser positivo.");
+
+        return jpa.findInscricoesOrdenadas(sorteioId, PageRequest.of(pagina, tamanhoPagina)).stream()
+                .map(i -> new Inscricao(i.espectadorId, i.momentoInscricao, i.status))
+                .toList();
     }
 
     @Override

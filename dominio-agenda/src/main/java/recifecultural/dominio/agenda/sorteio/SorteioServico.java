@@ -75,6 +75,13 @@ public class SorteioServico {
         return sorteioRepositorio.obter(sorteioId);
     }
 
+    public Iterable<Inscricao> iterarInscricoesPorPrioridade(UUID sorteioId) {
+        if (!sorteioRepositorio.existe(sorteioId)) {
+            throw new IllegalArgumentException("Sorteio não encontrado: " + sorteioId);
+        }
+        return new InscricoesOrdenadas(sorteioRepositorio, sorteioId);
+    }
+
     private Sorteio buscarOuLancar(UUID id) {
         return sorteioRepositorio.obter(id)
                 .orElseThrow(() -> new IllegalArgumentException("Sorteio não encontrado: " + id));

@@ -14,6 +14,7 @@ type ComboboxAsyncProps<T> = {
   queryKey: QueryKey;
   queryFn: () => Promise<T[]>;
   toOption: (item: T) => { value: string; label: string; hint?: string };
+  onItemChange?: (item: T | undefined) => void;
   enabled?: boolean;
   placeholder?: string;
   emptyMessage?: string;
@@ -28,6 +29,7 @@ function ComboboxAsyncInner<T>(
     queryKey,
     queryFn,
     toOption,
+    onItemChange,
     enabled = true,
     placeholder = "Selecione…",
     emptyMessage = "Nenhuma opção encontrada",
@@ -41,7 +43,7 @@ function ComboboxAsyncInner<T>(
     enabled,
   });
 
-  const options = data?.map(toOption) ?? [];
+  const options = data?.map((item) => ({ ...toOption(item), item })) ?? [];
 
   return (
     <div className={cn("relative", className)}>
@@ -49,7 +51,11 @@ function ComboboxAsyncInner<T>(
         id={id}
         ref={ref}
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(e) => {
+          const newValue = e.target.value;
+          onChange(newValue);
+          onItemChange?.(options.find((opt) => opt.value === newValue)?.item);
+        }}
         disabled={!enabled || isLoading}
       >
         <option value="">

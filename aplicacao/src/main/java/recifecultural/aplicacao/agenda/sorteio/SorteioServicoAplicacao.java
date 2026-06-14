@@ -1,7 +1,6 @@
 package recifecultural.aplicacao.agenda.sorteio;
 
 import recifecultural.dominio.agenda.sorteio.Inscricao;
-import recifecultural.dominio.agenda.sorteio.InscricoesOrdenadas;
 import recifecultural.dominio.agenda.sorteio.SorteioServico;
 
 import java.time.LocalDateTime;
@@ -58,9 +57,7 @@ public class SorteioServicoAplicacao {
 
     // Iterator: retorna inscrições do sorteio em ordem de prioridade (GANHADOR → SUPLENTE → INSCRITO → ...)
     public List<Inscricao> listarInscricoesPorPrioridade(UUID sorteioId) {
-        var sorteio = servico.obter(sorteioId)
-                .orElseThrow(() -> new IllegalArgumentException("Sorteio não encontrado."));
-        InscricoesOrdenadas ordenadas = new InscricoesOrdenadas(sorteio.getInscricoes());
+        Iterable<Inscricao> ordenadas = servico.iterarInscricoesPorPrioridade(sorteioId);
         return StreamSupport.stream(ordenadas.spliterator(), false).toList();
     }
 }

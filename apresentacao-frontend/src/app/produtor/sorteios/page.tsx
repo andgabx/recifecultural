@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import {
@@ -37,7 +37,7 @@ import type { ApiError } from "@/lib/api";
 import { formatarDataHora } from "@/lib/format";
 import { statusSorteioLabel, statusSorteioVariant } from "@/lib/statusMaps";
 import type { SorteioResumo } from "@/services/bff/sorteios";
-import type { StatusInscricao, StatusSorteio } from "@/types/dominio";
+import type { StatusInscricao } from "@/types/dominio";
 
 const novoSchema = z
   .object({
@@ -45,7 +45,7 @@ const novoSchema = z
     apresentacaoId: z.string().uuid("apresentacaoId inválido"),
     vagas: z.coerce.number().int().positive("Vagas devem ser positivas"),
     prazoInscricao: z.string().min(1, "Informe o prazo de inscrição"),
-    dataApresentacao: z.string().min(1, "Informe a data da apresentação"),
+    dataApresentacao: z.string().min(1, "Apresentação sem data vinculada"),
   })
   .refine(
     (v) =>
@@ -104,10 +104,11 @@ export default function SorteiosProdutorPage() {
       dataApresentacao: "",
     },
   });
-
-  function consultar() {
-    if (eventoId) setEventoConsultado(eventoId);
-  }
+  const novoEventoId = useWatch({ control: form.control, name: "eventoId" });
+  const novaApresentacaoId = useWatch({
+    control: form.control,
+    name: "apresentacaoId",
+  });
 
   async function onCriar(values: NovoFormOutput) {
     try {
@@ -338,16 +339,23 @@ export default function SorteiosProdutorPage() {
           >
             <SeletorEvento
               id="eventoIdNovo"
-              value={form.watch("eventoId") ?? ""}
-              onChange={(v) => form.setValue("eventoId", v)}
+              value={novoEventoId ?? ""}
+              onChange={(v) => {
+                form.setValue("eventoId", v, { shouldValidate: true });
+                form.setValue("apresentacaoId", "", { shouldValidate: true });
+                form.setValue("dataApresentacao", "", { shouldValidate: true });
+              }}
             />
           </FormField>
           <FormField
             label="Apresentação"
             htmlFor="apresentacaoId"
-            error={form.formState.errors.apresentacaoId?.message}
+            error={
+              form.formState.errors.apresentacaoId?.message ??
+              form.formState.errors.dataApresentacao?.message
+            }
             hint={
-              form.watch("eventoId")
+              novoEventoId
                 ? "Mostra as datas programadas no evento."
                 : "Selecione um evento para listar as apresentações."
             }
@@ -355,9 +363,16 @@ export default function SorteiosProdutorPage() {
           >
             <SeletorApresentacao
               id="apresentacaoId"
-              eventoId={form.watch("eventoId") || undefined}
-              value={form.watch("apresentacaoId") ?? ""}
-              onChange={(v) => form.setValue("apresentacaoId", v)}
+              eventoId={novoEventoId || undefined}
+              value={novaApresentacaoId ?? ""}
+              onChange={(v) =>
+                form.setValue("apresentacaoId", v, { shouldValidate: true })
+              }
+              onSelectApresentacao={(apresentacao) =>
+                form.setValue("dataApresentacao", apresentacao?.dataHora ?? "", {
+                  shouldValidate: true,
+                })
+              }
             />
           </FormField>
           <FormField
@@ -373,32 +388,18 @@ export default function SorteiosProdutorPage() {
               {...form.register("vagas")}
             />
           </FormField>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <FormField
-              label="Prazo de inscrição"
-              htmlFor="prazoInscricao"
-              error={form.formState.errors.prazoInscricao?.message}
-              required
-            >
-              <Input
-                id="prazoInscricao"
-                type="datetime-local"
-                {...form.register("prazoInscricao")}
-              />
-            </FormField>
-            <FormField
-              label="Data da apresentação"
-              htmlFor="dataApresentacao"
-              error={form.formState.errors.dataApresentacao?.message}
-              required
-            >
-              <Input
-                id="dataApresentacao"
-                type="datetime-local"
-                {...form.register("dataApresentacao")}
-              />
-            </FormField>
-          </div>
+          <FormField
+            label="Prazo de inscrição"
+            htmlFor="prazoInscricao"
+            error={form.formState.errors.prazoInscricao?.message}
+            required
+          >
+            <Input
+              id="prazoInscricao"
+              type="datetime-local"
+              {...form.register("prazoInscricao")}
+            />
+          </FormField>
         </form>
       </Modal>
 

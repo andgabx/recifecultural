@@ -1,61 +1,85 @@
 package recifecultural.dominio.agenda.sorteio;
 
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.UUID;
 
 /*
  * Padrão Iterator: percorre inscrições de um sorteio em ordem de prioridade
  * (GANHADOR → SUPLENTE → INSCRITO → outros), abstraindo a estrutura interna
- * da coleção e garantindo encapsulamento.
+ * da coleção e lendo os itens do repositório em páginas.
  */
 public class InscricoesOrdenadas implements Iterable<Inscricao> {
 
-    private static final Comparator<Inscricao> ORDEM_PRIORIDADE = Comparator
-            .comparingInt(i -> ordemStatus(i.getStatus()));
+    public static final int TAMANHO_PADRAO_PAGINA = 10;
 
-    private final List<Inscricao> inscricoes;
+    private final ISorteioRepositorio repositorio;
+    private final UUID sorteioId;
+    private final int tamanhoPagina;
 
-    public InscricoesOrdenadas(List<Inscricao> inscricoes) {
-        if (inscricoes == null) throw new IllegalArgumentException("Lista de inscrições não pode ser nula.");
-        this.inscricoes = inscricoes.stream()
-                .sorted(ORDEM_PRIORIDADE)
-                .toList();
+    public InscricoesOrdenadas(ISorteioRepositorio repositorio, UUID sorteioId) {
+        this(repositorio, sorteioId, TAMANHO_PADRAO_PAGINA);
+    }
+
+    public InscricoesOrdenadas(ISorteioRepositorio repositorio, UUID sorteioId, int tamanhoPagina) {
+        if (repositorio == null) throw new IllegalArgumentException("Repositório é obrigatório.");
+        if (sorteioId == null) throw new IllegalArgumentException("Sorteio é obrigatório.");
+        if (tamanhoPagina <= 0) throw new IllegalArgumentException("Tamanho da página deve ser positivo.");
+
+        this.repositorio = repositorio;
+        this.sorteioId = sorteioId;
+        this.tamanhoPagina = tamanhoPagina;
     }
 
     @Override
     public Iterator<Inscricao> iterator() {
-        return new IteradorPrioridade(inscricoes);
-    }
-
-    private static int ordemStatus(StatusInscricao status) {
-        return switch (status) {
-            case GANHADOR -> 0;
-            case SUPLENTE -> 1;
-            case INSCRITO -> 2;
-            case DESISTENTE -> 3;
-            case CANCELADA -> 4;
-        };
+        return new IteradorPrioridade(repositorio, sorteioId, tamanhoPagina);
     }
 
     private static class IteradorPrioridade implements Iterator<Inscricao> {
-        private final List<Inscricao> lista;
-        private int posicao = 0;
+        private final ISorteioRepositorio repositorio;
+        private final UUID sorteioId;
+        private final int tamanhoPagina;
+        private List<Inscricao> paginaAtual = List.of();
+        private int pagina = 0;
+        private int posicaoNaPagina = 0;
+        private boolean fim;
 
-        IteradorPrioridade(List<Inscricao> lista) {
-            this.lista = lista;
+        IteradorPrioridade(ISorteioRepositorio repositorio, UUID sorteioId, int tamanhoPagina) {
+            this.repositorio = repositorio;
+            this.sorteioId = sorteioId;
+            this.tamanhoPagina = tamanhoPagina;
         }
 
         @Override
         public boolean hasNext() {
-            return posicao < lista.size();
+            return carregarPaginaSeNecessario();
         }
 
         @Override
         public Inscricao next() {
             if (!hasNext()) throw new NoSuchElementException();
-            return lista.get(posicao++);
+            return paginaAtual.get(posicaoNaPagina++);
+        }
+
+        private boolean carregarPaginaSeNecessario() {
+            if (posicaoNaPagina < paginaAtual.size()) {
+                return true;
+            }
+            if (fim) {
+                return false;
+            }
+
+            paginaAtual = repositorio.listarInscricoesOrdenadas(sorteioId, pagina, tamanhoPagina);
+            pagina++;
+            posicaoNaPagina = 0;
+
+            if (paginaAtual.isEmpty()) {
+                fim = true;
+                return false;
+            }
+            return true;
         }
     }
 }

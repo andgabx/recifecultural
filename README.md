@@ -91,7 +91,7 @@ O projeto distribui os 6 padrões GoF entre 7 pares de features (um padrão é r
 ---
 
 ### Par 6 — F6.1 Sorteio · F6.2 Acessibilidade
-**Padrão:** Iterator *(reutilizado — um padrão repete entre 7 pares e 6 padrões)*
+**Padrão:** Iterator
 **Responsável:** Yuri Cavalcanti
 
 | Arquivo | Papel |
@@ -106,7 +106,7 @@ O projeto distribui os 6 padrões GoF entre 7 pares de features (um padrão é r
 ---
 
 ### Par 7 — F7.1 Cupom · F7.2 Catraca
-**Padrão:** Template Method
+**Padrão:** Decorator *(reutilizado — um padrão repete entre 7 pares e 6 padrões)*
 **Responsável:** Raphael Vilela
 
 | Arquivo | Papel |

@@ -7,6 +7,7 @@ import recifecultural.dominio.agenda.acessibilidade.TipoRecursoAcessibilidade;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.StreamSupport;
 
 import static org.apache.commons.lang3.Validate.notNull;
 
@@ -42,6 +43,12 @@ public class RecursoAcessibilidadeServicoAplicacao {
 
     public void remover(UUID recursoId, String justificativa) {
         servico.remover(recursoId, justificativa);
+    }
+
+    // Iterator: recursos do evento em ordem de status (CONFIRMADO → REMOVIDO)
+    public List<RecursoResumo> listarPorStatus(UUID eventoId) {
+        Iterable<RecursoAcessibilidade> ordenados = servico.iterarRecursosPorStatus(eventoId);
+        return StreamSupport.stream(ordenados.spliterator(), false).map(this::toResumo).toList();
     }
 
     private RecursoResumo toResumo(RecursoAcessibilidade r) {

@@ -58,7 +58,7 @@ public class IngressoServico {
         ResultadoPagamento resultado = gateway.processar(ingressoId, valor, metodo);
         isTrue(resultado.isAprovado(), "Pagamento recusado pelo gateway.");
 
-        String codigoQr = UUID.randomUUID().toString();
+        String codigoQr = ingressoId.valor().toString();
 
         Ingresso ingresso = new Ingresso(
                 ingressoId,
@@ -125,7 +125,7 @@ public class IngressoServico {
             throw new IllegalStateException("Pagamento recusado pelo gateway.");
         }
 
-        String codigoQr = UUID.randomUUID().toString();
+        String codigoQr = ingressoId.valor().toString();
 
         Ingresso ingresso = new Ingresso(
                 ingressoId,

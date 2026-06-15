@@ -5,17 +5,15 @@ import type { TipoDesconto } from "@/types/dominio";
 export type { TipoDesconto } from "@/types/dominio";
 
 export type AplicarCupomRequisicao = {
-  codigoCupom: string;
-  cpfComprador: string;
-  categoriaEvento: string;
-  valorPedido: number;
+  codigo: string;
+  cpf: string;
+  valor: number;
+  categoria: string;
 };
 
 export type ResultadoAplicacaoCupom = {
-  valorComDesconto: number;
+  valorFinal: number;
   descontoAplicado: number;
-  aplicavel: boolean;
-  motivo?: string;
 };
 
 export type CupomResumo = {

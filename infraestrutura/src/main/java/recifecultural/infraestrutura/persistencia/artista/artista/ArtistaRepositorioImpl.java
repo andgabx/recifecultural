@@ -7,6 +7,7 @@ import recifecultural.aplicacao.artista.artista.ArtistaResumo;
 import recifecultural.dominio.artista.artista.Artista;
 import recifecultural.dominio.artista.artista.ArtistaId;
 import recifecultural.dominio.artista.artista.IArtistaRepositorio;
+import recifecultural.dominio.artista.artista.Iterador;
 import recifecultural.dominio.artista.artista.RiderTecnico;
 import recifecultural.dominio.artista.artista.StatusArtista;
 import recifecultural.dominio.artista.produtor.ProdutorId;
@@ -50,6 +51,16 @@ public class ArtistaRepositorioImpl implements IArtistaRepositorio, ArtistaRepos
     @Override
     public boolean existePorNomeEProdutor(String nome, ProdutorId produtorId) {
         return jpa.existsByNomeAndProdutorId(nome, produtorId.valor());
+    }
+
+    @Override
+    public boolean existeAtivoPorProdutor(ProdutorId produtorId) {
+        return jpa.existsByProdutorIdAndStatus(produtorId.valor(), StatusArtista.ATIVO);
+    }
+
+    @Override
+    public Iterador<Artista> iterarTodos() {
+        return new IteradorPaginadoArtistas(jpa, mapeador);
     }
 
     @Override

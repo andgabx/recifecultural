@@ -119,18 +119,13 @@ export default function CheckoutPage() {
     }
     try {
       const resultado = await aplicarCupomMutation.mutateAsync({
-        codigoCupom: codigo,
-        cpfComprador: cpf,
-        categoriaEvento: categoria,
-        valorPedido: valorBase,
+        codigo: codigo,
+        cpf: cpf,
+        categoria: categoria,
+        valor: valorBase,
       });
-      if (resultado.aplicavel) {
-        setDescontoAplicado(resultado.descontoAplicado);
-        toast.success(`Cupom aplicado: ${formatarMoeda(resultado.descontoAplicado)} de desconto`);
-      } else {
-        setDescontoAplicado(null);
-        toast.warning(resultado.motivo ?? "Cupom não aplicável");
-      }
+      setDescontoAplicado(resultado.descontoAplicado);
+      toast.success(`Cupom aplicado: ${formatarMoeda(resultado.descontoAplicado)} de desconto`);
     } catch (error) {
       setDescontoAplicado(null);
       toast.error((error as ApiError).message);

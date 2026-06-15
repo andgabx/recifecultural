@@ -44,15 +44,4 @@ public class ArtistaServico {
         artista.inativar();
         artistaRepositorio.atualizar(artista);
     }
-
-    /**
-     * Cria um iterador sobre os itens do rider técnico de um artista,
-     * delegando ao repositório (Aggregate no padrão Iterator GoF).
-     *
-     * @param artistaId o ID do artista cujos itens do rider serão iterados
-     * @return um {@link Iterador} de {@link ItemRider}
-     */
-    public Iterador<ItemRider> iterarItensRider(ArtistaId artistaId) {
-        return artistaRepositorio.criarIteradorDeItensRider(artistaId);
-    }
 }

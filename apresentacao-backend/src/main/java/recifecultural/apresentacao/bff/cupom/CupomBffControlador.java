@@ -45,7 +45,11 @@ public class CupomBffControlador extends AbstractBffControlador {
     @PostMapping("/aplicar")
     public ResponseEntity<Map<String, Object>> aplicar(@RequestBody AplicarCupomRequisicao req) {
         BigDecimal valorFinal = aplicarServico.aplicarDesconto(req.codigo(), req.cpf(), req.valor(), req.categoria());
-        return responder(Map.of("valorFinal", valorFinal));
+        BigDecimal descontoAplicado = req.valor().subtract(valorFinal);
+        return responder(Map.of(
+                "valorFinal", valorFinal,
+                "descontoAplicado", descontoAplicado
+        ));
     }
 
     @Operation(summary = "Lista todos os cupons (gestão)")

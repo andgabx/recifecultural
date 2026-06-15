@@ -32,6 +32,8 @@ public class ArtistaJpa {
 interface ArtistaJpaRepository extends JpaRepository<ArtistaJpa, UUID> {
     List<ArtistaJpa> findByProdutorId(UUID produtorId);
 
+    boolean existsByProdutorIdAndStatus(UUID produtorId, StatusArtista status);
+
     @Query("SELECT COUNT(a) > 0 FROM ArtistaJpa a WHERE a.nome = :nome AND a.produtorId = :produtorId")
     boolean existsByNomeAndProdutorId(String nome, UUID produtorId);
 }

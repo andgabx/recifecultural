@@ -83,10 +83,8 @@ O projeto distribui os 6 padrões GoF entre 7 pares de features (um padrão é r
 | Arquivo | Papel |
 |---|---|
 | `dominio-artista/src/main/java/recifecultural/dominio/artista/artista/Iterador.java` | Interface do Iterator (`temProximo()` + `proximo()`) |
-| `dominio-artista/src/main/java/recifecultural/dominio/artista/artista/Iteravel.java` | Interface da coleção iterável (`criarIterador()`) |
-| `dominio-artista/src/main/java/recifecultural/dominio/artista/artista/IteradorDeArtistas.java` | ConcreteIterator — percorre `List<Artista>` |
-| `dominio-artista/src/main/java/recifecultural/dominio/artista/artista/IteradorDeItensRider.java` | ConcreteIterator — percorre `Set<ItemRider>` |
-| `dominio-artista/src/main/java/recifecultural/dominio/artista/artista/IArtistaRepositorio.java` | Expõe os iteradores via métodos `default` |
+| `dominio-artista/src/main/java/recifecultural/dominio/artista/artista/IArtistaRepositorio.java` | Aggregate — fábrica de iteradores (`iterarTodos()`) |
+| `infraestrutura/src/main/java/recifecultural/infraestrutura/persistencia/artista/artista/IteradorPaginadoArtistas.java` | ConcreteIterator — percorre o repositório em páginas via JPA (`findAll(Pageable)`), sem materializar a tabela inteira em memória |
 
 ---
 

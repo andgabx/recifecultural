@@ -1,9 +1,6 @@
 package recifecultural.dominio.artista.produtor;
 
-import recifecultural.dominio.artista.artista.Artista;
 import recifecultural.dominio.artista.artista.IArtistaRepositorio;
-import recifecultural.dominio.artista.artista.Iterador;
-import recifecultural.dominio.artista.artista.StatusArtista;
 
 public class ProdutorServico {
 
@@ -67,14 +64,9 @@ public class ProdutorServico {
     public void inativar(ProdutorId produtorId, String responsavel, String motivo) {
         Produtor produtor = obterOuLancar(produtorId);
 
-        // Utiliza o padrão Iterator via repositório para verificar artistas ativos
-        Iterador<Artista> iterador = artistaRepositorio.criarIteradorPorProdutor(produtorId);
-        while (iterador.temProximo()) {
-            Artista artista = iterador.proximo();
-            if (artista.getStatus() == StatusArtista.ATIVO) {
-                throw new IllegalStateException(
-                        "Produtor possui artistas ativos vinculados. Inative-os antes de prosseguir.");
-            }
+        if (artistaRepositorio.existeAtivoPorProdutor(produtorId)) {
+            throw new IllegalStateException(
+                    "Produtor possui artistas ativos vinculados. Inative-os antes de prosseguir.");
         }
 
         StatusProdutor anterior = produtor.getStatus();

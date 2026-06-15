@@ -12,7 +12,6 @@ import recifecultural.dominio.artista.artista.Artista;
 import recifecultural.dominio.artista.artista.ArtistaId;
 import recifecultural.dominio.artista.artista.ArtistaServico;
 import recifecultural.dominio.artista.artista.IArtistaRepositorio;
-import recifecultural.dominio.artista.artista.IteradorDeArtistas;
 import recifecultural.dominio.artista.artista.ItemRider;
 import recifecultural.dominio.artista.artista.RiderTecnico;
 import recifecultural.dominio.artista.artista.StatusArtista;
@@ -23,9 +22,7 @@ import recifecultural.dominio.artista.produtor.ProdutorId;
 import recifecultural.dominio.artista.produtor.ProdutorServico;
 import recifecultural.dominio.artista.produtor.StatusProdutor;
 
-import java.util.Collections;
 import java.util.EnumSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -110,20 +107,13 @@ public class PassosCadastroArtistasProdutores {
 
     @Dado("o produtor possui ao menos um artista com status {string}")
     public void oProdutorPossuiAoMenosUmArtistaComStatus(String status) {
-        Artista a = new Artista(
-                ArtistaId.novo(), produtorIdAtual,
-                "Artista Vinculado", RiderTecnico.vazio(),
-                StatusArtista.valueOf(status));
-        when(artistaRepo.listarPorProdutor(produtorIdAtual)).thenReturn(List.of(a));
-        when(artistaRepo.criarIteradorPorProdutor(produtorIdAtual))
-                .thenReturn(new IteradorDeArtistas(List.of(a)));
+        boolean existeAtivo = StatusArtista.valueOf(status) == StatusArtista.ATIVO;
+        when(artistaRepo.existeAtivoPorProdutor(produtorIdAtual)).thenReturn(existeAtivo);
     }
 
     @Dado("o produtor não possui artistas ativos vinculados")
     public void oProdutorNaoPossuiArtistasAtivosVinculados() {
-        when(artistaRepo.listarPorProdutor(produtorIdAtual)).thenReturn(Collections.emptyList());
-        when(artistaRepo.criarIteradorPorProdutor(produtorIdAtual))
-                .thenReturn(new IteradorDeArtistas(Collections.emptyList()));
+        when(artistaRepo.existeAtivoPorProdutor(produtorIdAtual)).thenReturn(false);
     }
 
     @Quando("eu solicitar o cadastro de um produtor com nome fantasia {string}, CNPJ {string}, e-mail {string} e telefone {string}")

@@ -96,7 +96,7 @@ export function PublicLayout({ children }: { children: ReactNode }) {
             )}
           </nav>
 
-          <RoleSwitcher variant="dark" />
+          <RoleSwitcher variant="light" />
           {papel === "espectador" && (
             <Link
               href="/notificacoes"

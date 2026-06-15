@@ -16,7 +16,8 @@ public class CupomMapeador {
                         new CupomId(s.id), s.codigo, s.tipoDesconto,
                         s.valorDesconto, s.valorMinimoPedido,
                         s.limiteGlobal, s.limitePorCpf,
-                        s.dataInicio, s.dataFim, s.categoriaPermitida
+                        s.dataInicio, s.dataFim, s.categoriaPermitida,
+                        s.usosGlobais, s.cpfsQueJaUsaram
                 );
             }
         });
@@ -36,6 +37,7 @@ public class CupomMapeador {
                 jpa.dataInicio = s.getDataInicio();
                 jpa.dataFim = s.getDataFim();
                 jpa.categoriaPermitida = s.getCategoriaPermitida();
+                jpa.cpfsQueJaUsaram = new java.util.HashSet<>(s.getCpfsQueJaUsaram());
                 return jpa;
             }
         });

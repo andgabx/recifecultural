@@ -181,14 +181,12 @@ public class IngressoServicoAplicacao {
                 ingresso.getTipo() == TipoIngresso.MEIA_ENTRADA
                         ? recifecultural.dominio.catraca.TipoIngresso.MEIA_ENTRADA
                         : recifecultural.dominio.catraca.TipoIngresso.COMUM;
-        // ID = UUID do ingresso (valor que o usuário vê e digita na catraca).
-        // horarioInicioEvento = agora - 5min para que a janela de validação
-        // (1h antes até 15min depois) esteja imediatamente ativa na demo.
+        // horarioInicioEvento = now+1h → portões abertos agora, janela fecha em 75min
         catracaRepositorio.salvar(new IngressoCatraca(
                 new IngressoCatracaId(ingresso.getId().valor().toString()),
                 ingresso.getEventoId().toString(),
                 StatusIngressoCatraca.VALIDO,
-                LocalDateTime.now().minusMinutes(5),
+                LocalDateTime.now().plusHours(1),
                 tipoCatraca,
                 null
         ));

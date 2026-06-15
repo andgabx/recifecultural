@@ -23,7 +23,7 @@ public class IngressoCatraca {
         Validate.notNull(status, "Status inicial é obrigatório.");
         Validate.notNull(horarioInicioEvento, "O horário do evento é obrigatório.");
         Validate.notNull(tipoIngresso, "O tipo de ingresso é obrigatório.");
-        Validate.notBlank(portaoAcesso, "O portão de acesso é obrigatório.");
+        // portaoAcesso é opcional na criação — pode ser atribuído depois
 
         this.id = id;
         this.idEvento = idEvento;
@@ -40,9 +40,10 @@ public class IngressoCatraca {
         Validate.isTrue(this.status != StatusIngressoCatraca.UTILIZADO,
                 "ALERTA FRAUDE: Este ingresso já foi utilizado.");
 
-
-        Validate.isTrue(this.portaoAcesso.equalsIgnoreCase(portaoDaCatracaFisica),
-                "Acesso Negado: Este ingresso pertence ao " + this.portaoAcesso + ". Dirija-se ao local correto.");
+        if (this.portaoAcesso != null) {
+            Validate.isTrue(this.portaoAcesso.equalsIgnoreCase(portaoDaCatracaFisica),
+                    "Acesso Negado: Este ingresso pertence ao " + this.portaoAcesso + ". Dirija-se ao local correto.");
+        }
 
         LocalDateTime limiteAbertura = horarioInicioEvento.minusHours(1);
         Validate.isTrue(horarioLeituraCatraca.isAfter(limiteAbertura) || horarioLeituraCatraca.isEqual(limiteAbertura),

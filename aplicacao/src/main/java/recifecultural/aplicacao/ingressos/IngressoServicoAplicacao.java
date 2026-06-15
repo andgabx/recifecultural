@@ -183,7 +183,7 @@ public class IngressoServicoAplicacao {
                         : recifecultural.dominio.catraca.TipoIngresso.COMUM;
         // horarioInicioEvento = now+1h → portões abertos agora, janela fecha em 75min
         catracaRepositorio.salvar(new IngressoCatraca(
-                new IngressoCatracaId(ingresso.getId().valor().toString()),
+                new IngressoCatracaId(ingresso.getCodigoQr()),
                 ingresso.getEventoId().toString(),
                 StatusIngressoCatraca.VALIDO,
                 LocalDateTime.now().plusHours(1),

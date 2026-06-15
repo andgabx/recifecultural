@@ -251,15 +251,15 @@ WHERE NOT EXISTS (
 );
 
 
--- ── INGRESSO_CATRACA — id = UUID do ingresso (valor que o usuário conhece) ─
+-- ── INGRESSO_CATRACA — id = codigo_qr do ingresso (string que o usuário digita) ─
 -- horario_inicio_evento = NOW()+1h → portões abertos agora, janela fecha em 75min
 INSERT INTO ingresso_catraca (id, id_evento, status, horario_inicio_evento, tipo_ingresso, portao_acesso)
 VALUES
-    ('40000000-0000-0000-0000-000000000001', '20000000-0000-0000-0000-000000000001', 'VALIDO',                  NOW() + INTERVAL '1 hour', 'COMUM',       NULL),
-    ('40000000-0000-0000-0000-000000000002', '20000000-0000-0000-0000-000000000001', 'UTILIZADO',               NOW() + INTERVAL '1 hour', 'COMUM',       'PORTAO_A'),
-    ('40000000-0000-0000-0000-000000000003', '20000000-0000-0000-0000-000000000001', 'CANCELADO_OU_REEMBOLSADO', NOW() + INTERVAL '1 hour', 'COMUM',       NULL),
-    ('40000000-0000-0000-0000-000000000004', '20000000-0000-0000-0000-000000000002', 'VALIDO',                  NOW() + INTERVAL '1 hour', 'MEIA_ENTRADA', NULL),
-    ('40000000-0000-0000-0000-000000000005', '20000000-0000-0000-0000-000000000002', 'VALIDO',                  NOW() + INTERVAL '1 hour', 'COMUM',       NULL)
+    ('QR-ATIVO-NOITEFREVO-001',     '20000000-0000-0000-0000-000000000001', 'VALIDO',                  NOW() + INTERVAL '1 hour', 'COMUM',       NULL),
+    ('QR-UTILIZADO-NOITEFREVO-002', '20000000-0000-0000-0000-000000000001', 'UTILIZADO',               NOW() + INTERVAL '1 hour', 'COMUM',       'PORTAO_A'),
+    ('QR-REEMB-NOITEFREVO-003',     '20000000-0000-0000-0000-000000000001', 'CANCELADO_OU_REEMBOLSADO', NOW() + INTERVAL '1 hour', 'COMUM',       NULL),
+    ('QR-ATIVO-FORROPARQUE-004',    '20000000-0000-0000-0000-000000000002', 'VALIDO',                  NOW() + INTERVAL '1 hour', 'MEIA_ENTRADA', NULL),
+    ('QR-SOCIAL-FORROPARQUE-005',   '20000000-0000-0000-0000-000000000002', 'VALIDO',                  NOW() + INTERVAL '1 hour', 'COMUM',       NULL)
 ON CONFLICT (id) DO NOTHING;
 
 

@@ -251,6 +251,19 @@ WHERE NOT EXISTS (
 );
 
 
+-- ── INGRESSO_CATRACA — espelho para validação na entrada ─────────────
+-- A catraca busca por id = codigoQr nesta tabela, não na tabela ingresso.
+-- ATIVO: pode validar ao vivo. UTILIZADO/REEMBOLSADO: já demonstram histórico.
+INSERT INTO ingresso_catraca (id, id_evento, status, horario_inicio_evento, tipo_ingresso, portao_acesso)
+VALUES
+    ('QR-ATIVO-NOITEFREVO-001',    '20000000-0000-0000-0000-000000000001', 'ATIVO',       NOW() + INTERVAL '30 days', 'INTEIRA',     NULL),
+    ('QR-UTILIZADO-NOITEFREVO-002','20000000-0000-0000-0000-000000000001', 'UTILIZADO',   NOW() + INTERVAL '30 days', 'INTEIRA',     'PORTAO_A'),
+    ('QR-REEMB-NOITEFREVO-003',    '20000000-0000-0000-0000-000000000001', 'REEMBOLSADO', NOW() + INTERVAL '30 days', 'INTEIRA',     NULL),
+    ('QR-ATIVO-FORROPARQUE-004',   '20000000-0000-0000-0000-000000000002', 'ATIVO',       NOW() + INTERVAL '45 days', 'MEIA_ENTRADA',NULL),
+    ('QR-SOCIAL-FORROPARQUE-005',  '20000000-0000-0000-0000-000000000002', 'ATIVO',       NOW() + INTERVAL '45 days', 'SOCIAL',      NULL)
+ON CONFLICT (id) DO NOTHING;
+
+
 -- ── INGRESSOS DO ESPECTADOR DEMO ─────────────────────────────────────
 INSERT INTO ingresso (id, evento_id, data_hora_apresentacao, tipo, status,
                       valor_pago, codigo_qr, codigo_transacao, metodo_pagamento, data_compra)

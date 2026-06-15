@@ -8,7 +8,8 @@ import recifecultural.dominio.catraca.ICatracaRepositorio;
 import recifecultural.dominio.catraca.IngressoCatraca;
 import recifecultural.dominio.catraca.IngressoCatracaId;
 import recifecultural.dominio.catraca.StatusIngressoCatraca;
-import recifecultural.dominio.catraca.TipoIngresso;
+import recifecultural.dominio.compartilhado.evento.EventoBarramento;
+import recifecultural.dominio.cupom.AplicarCupomServico;
 
 import static org.apache.commons.lang3.Validate.isTrue;
 import static org.apache.commons.lang3.Validate.notBlank;
@@ -208,11 +209,10 @@ public class IngressoServico {
 
     private void registrarNaCatraca(Ingresso ingresso, LocalDateTime dataHora) {
         if (catracaRepositorio == null) return;
-        TipoIngresso tipoCatraca = switch (ingresso.getTipo()) {
-            case MEIA_ENTRADA -> TipoIngresso.MEIA_ENTRADA;
-            case VIP          -> TipoIngresso.VIP;
-            default           -> TipoIngresso.COMUM;
-        };
+        recifecultural.dominio.catraca.TipoIngresso tipoCatraca =
+                ingresso.getTipo() == TipoIngresso.MEIA_ENTRADA
+                        ? recifecultural.dominio.catraca.TipoIngresso.MEIA_ENTRADA
+                        : recifecultural.dominio.catraca.TipoIngresso.COMUM;
         IngressoCatraca ic = new IngressoCatraca(
                 new IngressoCatracaId(ingresso.getCodigoQr()),
                 ingresso.getEventoId().toString(),

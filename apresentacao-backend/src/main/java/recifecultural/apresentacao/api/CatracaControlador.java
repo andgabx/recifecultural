@@ -24,9 +24,9 @@ public class CatracaControlador extends AbstractBffControlador {
     @Operation(summary = "Valida acesso pelo código QR do ingresso")
     @PostMapping("/validar")
     public ResponseEntity<Map<String, String>> validar(@RequestBody ValidarAcessoRequisicao req) {
-        String resultado = servico.validarAcesso(req.idIngresso(), req.horario(), req.portao());
+        String resultado = servico.validarAcesso(req.codigoQr(), req.horario(), req.portaoAcesso());
         return responder(Map.of("resultado", resultado));
     }
 
-    record ValidarAcessoRequisicao(String idIngresso, LocalDateTime horario, String portao) {}
+    record ValidarAcessoRequisicao(String codigoQr, LocalDateTime horario, String portaoAcesso) {}
 }

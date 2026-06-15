@@ -26,6 +26,10 @@ public class CatracaServico {
     }
 
     public String validarAcesso(String idIngresso, LocalDateTime horarioAtualDaCatraca, String identificacaoPortao) {
+        if (idIngresso == null || idIngresso.isBlank()) {
+            throw new IllegalArgumentException("ID do ingresso é obrigatório.");
+        }
+
         IngressoCatraca ingresso = repositorio.buscarPorId(idIngresso);
 
         if (ingresso == null) {

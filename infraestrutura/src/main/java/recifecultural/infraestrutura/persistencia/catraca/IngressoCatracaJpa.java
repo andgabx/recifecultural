@@ -13,12 +13,22 @@ import java.time.LocalDateTime;
 public class IngressoCatracaJpa {
     @Id
     String id;
+
+    @Column(name = "id_evento")
     String idEvento;
+
     @Enumerated(EnumType.STRING)
+    @Column(name = "status")
     StatusIngressoCatraca status;
+
+    @Column(name = "horario_inicio_evento")
     LocalDateTime horarioInicioEvento;
+
     @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_ingresso")
     TipoIngresso tipoIngresso;
+
+    @Column(name = "portao_acesso")
     String portaoAcesso;
 }
 

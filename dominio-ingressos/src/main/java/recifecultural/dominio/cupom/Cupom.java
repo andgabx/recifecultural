@@ -40,6 +40,25 @@ public class Cupom {
             LocalDateTime dataInicio,
             LocalDateTime dataFim,
             String categoriaPermitida) {
+        this(id, codigo, tipoDesconto, valorDesconto, valorMinimoPedido,
+                limiteGlobal, limitePorCpf, dataInicio, dataFim, categoriaPermitida,
+                0, new HashSet<>());
+    }
+
+    /** Construtor de restauração — usado pelo mapper ao carregar do banco. */
+    public Cupom(
+            CupomId id,
+            String codigo,
+            TipoDesconto tipoDesconto,
+            BigDecimal valorDesconto,
+            BigDecimal valorMinimoPedido,
+            int limiteGlobal,
+            int limitePorCpf,
+            LocalDateTime dataInicio,
+            LocalDateTime dataFim,
+            String categoriaPermitida,
+            int usosGlobais,
+            Set<String> cpfsQueJaUsaram) {
 
         Validate.notNull(id, "Id do cupom é obrigatório.");
         Validate.notBlank(codigo, "O código textual do cupom é obrigatório.");
@@ -74,8 +93,8 @@ public class Cupom {
         this.dataInicio = dataInicio;
         this.dataFim = dataFim;
         this.categoriaPermitida = categoriaPermitida;
-        this.usosGlobais = 0;
-        this.cpfsQueJaUsaram = new HashSet<>();
+        this.usosGlobais = usosGlobais;
+        this.cpfsQueJaUsaram = new HashSet<>(cpfsQueJaUsaram != null ? cpfsQueJaUsaram : new HashSet<>());
     }
 
     public BigDecimal calcularDesconto(BigDecimal valorOriginal) {

@@ -47,7 +47,7 @@ public class RecursoAcessibilidadeServicoAplicacao {
     private RecursoResumo toResumo(RecursoAcessibilidade r) {
         return new RecursoResumo(
                 r.getId().toString(),
-                r.getApresentacaoId().toString(),
+                r.getApresentacaoId() != null ? r.getApresentacaoId().toString() : null,
                 r.getEventoId().toString(),
                 r.getTipo().name(),
                 r.getStatus().name(),

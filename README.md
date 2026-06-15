@@ -91,17 +91,19 @@ O projeto distribui os 6 padrões GoF entre 7 pares de features (um padrão é r
 ---
 
 ### Par 6 — F6.1 Sorteio · F6.2 Acessibilidade
-**Padrão:** Iterator
+**Padrão:** Template Method
 **Responsável:** Yuri Cavalcanti
 
 | Arquivo | Papel |
 |---|---|
-| `dominio-agenda/src/main/java/recifecultural/dominio/agenda/sorteio/InscricoesOrdenadas.java` | ConcreteIterable — inscrições por prioridade (GANHADOR → SUPLENTE → INSCRITO) com paginação lazy |
-| `dominio-agenda/src/main/java/recifecultural/dominio/agenda/sorteio/ISorteioRepositorio.java` | Expõe `listarInscricoesOrdenadas(sorteioId, pagina, tamanhoPagina)` |
-| `dominio-agenda/src/main/java/recifecultural/dominio/agenda/sorteio/SorteioServico.java` | Expõe `iterarInscricoesPorPrioridade()` retornando `InscricoesOrdenadas` |
-| `dominio-agenda/src/main/java/recifecultural/dominio/agenda/acessibilidade/RecursosOrdenados.java` | ConcreteIterable — recursos por status (CONFIRMADO → REMOVIDO) com paginação lazy |
-| `dominio-agenda/src/main/java/recifecultural/dominio/agenda/acessibilidade/IRecursoAcessibilidadeRepositorio.java` | Expõe `listarRecursosOrdenados(eventoId, pagina, tamanhoPagina)` |
-| `dominio-agenda/src/main/java/recifecultural/dominio/agenda/acessibilidade/RecursoAcessibilidadeServico.java` | Expõe `iterarRecursosPorStatus()` retornando `RecursosOrdenados` |
+| `dominio-agenda/src/main/java/recifecultural/dominio/agenda/comum/OperacaoDominioTemplate.java` | AbstractClass genérica — esqueleto fixo: `buscar → aplicarRegra → persistir → notificar` |
+| `dominio-agenda/src/main/java/recifecultural/dominio/agenda/sorteio/OperacaoSorteioTemplate.java` | AbstractClass — especializa `buscar()` e `persistir()` para `Sorteio` |
+| `dominio-agenda/src/main/java/recifecultural/dominio/agenda/sorteio/ApurarOperacao.java` | ConcreteClass — `sorteio.apurar()` + notifica ganhadores |
+| `dominio-agenda/src/main/java/recifecultural/dominio/agenda/sorteio/InscreverOperacao.java` | ConcreteClass — `sorteio.inscrever(espectadorId)` |
+| `dominio-agenda/src/main/java/recifecultural/dominio/agenda/sorteio/DesistirOperacao.java` | ConcreteClass — `sorteio.desistir(espectadorId)` + notifica suplente promovido |
+| `dominio-agenda/src/main/java/recifecultural/dominio/agenda/sorteio/CancelarOperacao.java` | ConcreteClass — `sorteio.cancelar()` + broadcast de cancelamento |
+| `dominio-agenda/src/main/java/recifecultural/dominio/agenda/acessibilidade/OperacaoRecursoAcessibilidadeTemplate.java` | AbstractClass — especializa `buscar()` e `persistir()` para `RecursoAcessibilidade` |
+| `dominio-agenda/src/main/java/recifecultural/dominio/agenda/acessibilidade/RemocaoRecursoAcessibilidadeOperacao.java` | ConcreteClass — `recurso.remover(justificativa)` + broadcast ACESSIBILIDADE_REMOVIDA |
 
 ---
 
@@ -112,19 +114,19 @@ O projeto distribui os 6 padrões GoF entre 7 pares de features (um padrão é r
 | Arquivo | Papel |
 |---|---|
 | `dominio-ingressos/src/main/java/recifecultural/dominio/cupom/validacoes/ValidadorCupom.java` | Componente (interface do pipeline) |
-| `dominio-ingressos/src/main/java/recifecultural/dominio/cupom/validacoes/ValidadorCupomBase.java` | Núcleo (sem validação — base da cadeia) |
-| `dominio-ingressos/src/main/java/recifecultural/dominio/cupom/validacoes/ValidadorCupomDecorator.java` | Classe abstrata — delega ao interno antes de validar |
-| `dominio-ingressos/src/main/java/recifecultural/dominio/cupom/validacoes/ValidarVigenciaDecorator.java` | Passo 1 — `dataInicio ≤ agora ≤ dataFim` |
-| `dominio-ingressos/src/main/java/recifecultural/dominio/cupom/validacoes/ValidarMinimoDecorator.java` | Passo 2 — `valorPedido ≥ valorMinimoPedido` |
-| `dominio-ingressos/src/main/java/recifecultural/dominio/cupom/validacoes/ValidarCategoriaDecorator.java` | Passo 3 — categoria permitida |
-| `dominio-ingressos/src/main/java/recifecultural/dominio/cupom/validacoes/ValidarEscassezGlobalDecorator.java` | Passo 4 — limite global de usos |
-| `dominio-ingressos/src/main/java/recifecultural/dominio/cupom/validacoes/ValidarLimiteCpfDecorator.java` | Passo 5 — limite por CPF |
+| `dominio-ingressos/src/main/java/recifecultural/dominio/cupom/validacoes/ValidadorCupomBase.java` | Componente concreto — base vazia da cadeia |
+| `dominio-ingressos/src/main/java/recifecultural/dominio/cupom/validacoes/ValidadorCupomDecorator.java` | Decorator abstrato — encapsula `validadorInterno` e delega |
+| `dominio-ingressos/src/main/java/recifecultural/dominio/cupom/validacoes/ValidarVigenciaDecorator.java` | Camada 1 — `dataInicio ≤ agora ≤ dataFim` |
+| `dominio-ingressos/src/main/java/recifecultural/dominio/cupom/validacoes/ValidarMinimoDecorator.java` | Camada 2 — `valorPedido ≥ valorMinimoPedido` |
+| `dominio-ingressos/src/main/java/recifecultural/dominio/cupom/validacoes/ValidarCategoriaDecorator.java` | Camada 3 — categoria permitida |
+| `dominio-ingressos/src/main/java/recifecultural/dominio/cupom/validacoes/ValidarEscassezGlobalDecorator.java` | Camada 4 — limite global de usos |
+| `dominio-ingressos/src/main/java/recifecultural/dominio/cupom/validacoes/ValidarLimiteCpfDecorator.java` | Camada 5 — limite por CPF |
 | `dominio-ingressos/src/main/java/recifecultural/dominio/cupom/AplicarCupomServico.java` | Monta o pipeline no construtor e executa |
-| `dominio-ingressos/src/main/java/recifecultural/dominio/catraca/validacoes/ValidadorAcesso.java` | Interface do pipeline de validação de acesso |
-| `dominio-ingressos/src/main/java/recifecultural/dominio/catraca/validacoes/ValidadorAcessoBase.java` | Núcleo da cadeia de acesso |
+| `dominio-ingressos/src/main/java/recifecultural/dominio/catraca/validacoes/ValidadorAcesso.java` | Componente (interface do pipeline de acesso) |
+| `dominio-ingressos/src/main/java/recifecultural/dominio/catraca/validacoes/ValidadorAcessoBase.java` | Componente concreto — base vazia da cadeia |
 | `dominio-ingressos/src/main/java/recifecultural/dominio/catraca/validacoes/ValidadorAcessoDecorator.java` | Decorator abstrato de acesso |
-| `dominio-ingressos/src/main/java/recifecultural/dominio/catraca/validacoes/ValidarEstornoDecorator.java` | Passo 1 — rejeita se reembolsado |
-| `dominio-ingressos/src/main/java/recifecultural/dominio/catraca/validacoes/ValidarDuplaEntradaDecorator.java` | Passo 2 — rejeita se já utilizado |
-| `dominio-ingressos/src/main/java/recifecultural/dominio/catraca/validacoes/ValidarPortaoDecorator.java` | Passo 3 — rejeita se portão errado |
-| `dominio-ingressos/src/main/java/recifecultural/dominio/catraca/validacoes/ValidarToleranciaAtrasoDecorator.java` | Passo 4 — rejeita se fora da janela de horário |
+| `dominio-ingressos/src/main/java/recifecultural/dominio/catraca/validacoes/ValidarEstornoDecorator.java` | Camada 1 — rejeita se reembolsado |
+| `dominio-ingressos/src/main/java/recifecultural/dominio/catraca/validacoes/ValidarDuplaEntradaDecorator.java` | Camada 2 — rejeita se já utilizado |
+| `dominio-ingressos/src/main/java/recifecultural/dominio/catraca/validacoes/ValidarPortaoDecorator.java` | Camada 3 — rejeita se portão errado |
+| `dominio-ingressos/src/main/java/recifecultural/dominio/catraca/validacoes/ValidarToleranciaAtrasoDecorator.java` | Camada 4 — rejeita se fora da janela de horário |
 | `dominio-ingressos/src/main/java/recifecultural/dominio/catraca/CatracaServico.java` | Monta o pipeline no construtor e executa `validarAcesso()` |

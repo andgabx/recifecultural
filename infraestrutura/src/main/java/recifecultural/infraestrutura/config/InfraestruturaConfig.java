@@ -248,8 +248,9 @@ public class InfraestruturaConfig {
 
     @Bean
     EventoServicoAplicacao eventoServicoAplicacao(EventoServico eventoServico,
-                                                   EventoRepositorioAplicacao repositorio) {
-        return new EventoServicoAplicacao(eventoServico, repositorio);
+                                                   EventoRepositorioAplicacao repositorio,
+                                                   IBloqueioAdministrativoRepositorio bloqueioRepositorio) {
+        return new EventoServicoAplicacao(eventoServico, repositorio, bloqueioRepositorio);
     }
 
     @Bean

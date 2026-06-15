@@ -1,7 +1,12 @@
 package recifecultural.aplicacao.ingressos;
 
+import recifecultural.dominio.catraca.ICatracaRepositorio;
+import recifecultural.dominio.catraca.IngressoCatraca;
+import recifecultural.dominio.catraca.IngressoCatracaId;
+import recifecultural.dominio.catraca.StatusIngressoCatraca;
 import recifecultural.dominio.cupom.AplicarCupomServico;
 import recifecultural.dominio.ingressos.IConfirmacaoReserva;
+import recifecultural.dominio.ingressos.Ingresso;
 import recifecultural.dominio.ingressos.IngressoId;
 import recifecultural.dominio.ingressos.IngressoServico;
 import recifecultural.dominio.ingressos.MetodoPagamento;
@@ -29,16 +34,25 @@ public class IngressoServicoAplicacao {
     private final IngressoServico servico;
     private final IngressoRepositorioAplicacao repositorio;
     private final AplicarCupomServico cupomServico;
+    private final ICatracaRepositorio catracaRepositorio;
 
     public IngressoServicoAplicacao(IngressoServico servico,
                                     IngressoRepositorioAplicacao repositorio,
                                     AplicarCupomServico cupomServico) {
+        this(servico, repositorio, cupomServico, null);
+    }
+
+    public IngressoServicoAplicacao(IngressoServico servico,
+                                    IngressoRepositorioAplicacao repositorio,
+                                    AplicarCupomServico cupomServico,
+                                    ICatracaRepositorio catracaRepositorio) {
         notNull(servico, "IngressoServico não pode ser nulo.");
         notNull(repositorio, "IngressoRepositorioAplicacao não pode ser nulo.");
         notNull(cupomServico, "AplicarCupomServico não pode ser nulo.");
         this.servico = servico;
         this.repositorio = repositorio;
         this.cupomServico = cupomServico;
+        this.catracaRepositorio = catracaRepositorio;
     }
 
     public List<IngressoResumo> pesquisarPorEvento(UUID eventoId) {
@@ -51,14 +65,18 @@ public class IngressoServicoAplicacao {
 
     public IngressoId comprar(UUID eventoId, LocalDateTime dataHora, TipoIngresso tipo,
                               BigDecimal valor, MetodoPagamento metodo, int capacidadeMaxima) {
-        return servico.comprar(eventoId, dataHora, tipo, valor, metodo, capacidadeMaxima).getId();
+        Ingresso ingresso = servico.comprar(eventoId, dataHora, tipo, valor, metodo, capacidadeMaxima);
+        registrarNaCatraca(ingresso, dataHora);
+        return ingresso.getId();
     }
 
     public IngressoId comprarComCupom(UUID eventoId, LocalDateTime dataHora, TipoIngresso tipo,
                                       BigDecimal valor, MetodoPagamento metodo, int capacidadeMaxima,
                                       String codigoCupom, String cpfComprador, String categoriaEvento) {
-        return servico.comprarComCupom(eventoId, dataHora, tipo, valor, metodo, capacidadeMaxima,
-                codigoCupom, cpfComprador, categoriaEvento).getId();
+        Ingresso ingresso = servico.comprarComCupom(eventoId, dataHora, tipo, valor, metodo, capacidadeMaxima,
+                codigoCupom, cpfComprador, categoriaEvento);
+        registrarNaCatraca(ingresso, dataHora);
+        return ingresso.getId();
     }
 
     public IngressoId comprarComPreReserva(UUID eventoId, LocalDateTime dataHora,
@@ -66,8 +84,10 @@ public class IngressoServicoAplicacao {
                                             TipoIngresso tipo, BigDecimal valor,
                                             MetodoPagamento metodo, int capacidadeMaxima,
                                             recifecultural.dominio.ingressos.IConfirmacaoReserva confirmacaoReserva) {
-        return servico.comprarComPreReserva(eventoId, dataHora, preReservaId, assentoId,
-                tipo, valor, metodo, capacidadeMaxima, confirmacaoReserva).getId();
+        Ingresso ingresso = servico.comprarComPreReserva(eventoId, dataHora, preReservaId, assentoId,
+                tipo, valor, metodo, capacidadeMaxima, confirmacaoReserva);
+        registrarNaCatraca(ingresso, dataHora);
+        return ingresso.getId();
     }
 
     public IngressoId comprarComPreReservaComCupom(UUID eventoId, LocalDateTime dataHora,
@@ -139,18 +159,35 @@ public class IngressoServicoAplicacao {
         List<IngressoId> ids = new ArrayList<>();
         for (int i = 0; i < itens.size(); i++) {
             ItemCompraMultipla item = itens.get(i);
-            IngressoId id = servico.comprarComPreReserva(
+            Ingresso ingresso = servico.comprarComPreReserva(
                     eventoId, dataHora,
                     item.preReservaId(), item.assentoId(),
                     item.tipo(), valoresFinal.get(i),
                     metodoPagamento, capacidadeMaxima,
-                    confirmacaoReserva).getId();
-            ids.add(id);
+                    confirmacaoReserva);
+            registrarNaCatraca(ingresso, dataHora);
+            ids.add(ingresso.getId());
         }
         return ids;
     }
 
     public ResultadoReembolso solicitarReembolso(IngressoId id, LocalDateTime agora) {
         return servico.solicitarReembolso(id, agora);
+    }
+
+    private void registrarNaCatraca(Ingresso ingresso, LocalDateTime dataHora) {
+        if (catracaRepositorio == null) return;
+        recifecultural.dominio.catraca.TipoIngresso tipoCatraca =
+                ingresso.getTipo() == TipoIngresso.MEIA_ENTRADA
+                        ? recifecultural.dominio.catraca.TipoIngresso.MEIA_ENTRADA
+                        : recifecultural.dominio.catraca.TipoIngresso.COMUM;
+        catracaRepositorio.salvar(new IngressoCatraca(
+                new IngressoCatracaId(ingresso.getCodigoQr()),
+                ingresso.getEventoId().toString(),
+                StatusIngressoCatraca.VALIDO,
+                dataHora,
+                tipoCatraca,
+                null
+        ));
     }
 }

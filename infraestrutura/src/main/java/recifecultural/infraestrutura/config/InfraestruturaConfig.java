@@ -208,10 +208,10 @@ public class InfraestruturaConfig {
     IngressoServico ingressoServico(IIngressoRepositorio ingressoRepositorio,
                                      GatewayPagamentoSimulado gatewaySimulado,
                                      EventoBarramento barramento,
-                                     AplicarCupomServico cupomServico,
-                                     ICatracaRepositorio catracaRepositorio) {
+                                     AplicarCupomServico cupomServico) {
+        // Decorator: GatewayPagamentoComLog envolve o gateway real adicionando logs
         IGatewayPagamento gatewayComLog = new GatewayPagamentoComLog(gatewaySimulado);
-        return new IngressoServico(ingressoRepositorio, gatewayComLog, barramento, cupomServico, catracaRepositorio);
+        return new IngressoServico(ingressoRepositorio, gatewayComLog, barramento, cupomServico);
     }
 
     @Bean
@@ -269,8 +269,9 @@ public class InfraestruturaConfig {
     @Bean
     IngressoServicoAplicacao ingressoServicoAplicacao(IngressoServico ingressoServico,
                                                        IngressoRepositorioAplicacao repositorio,
-                                                       AplicarCupomServico aplicarCupomServico) {
-        return new IngressoServicoAplicacao(ingressoServico, repositorio, aplicarCupomServico);
+                                                       AplicarCupomServico aplicarCupomServico,
+                                                       ICatracaRepositorio catracaRepositorio) {
+        return new IngressoServicoAplicacao(ingressoServico, repositorio, aplicarCupomServico, catracaRepositorio);
     }
 
     @Bean

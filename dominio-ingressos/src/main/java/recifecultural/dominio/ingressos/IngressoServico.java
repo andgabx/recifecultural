@@ -4,10 +4,6 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import recifecultural.dominio.catraca.ICatracaRepositorio;
-import recifecultural.dominio.catraca.IngressoCatraca;
-import recifecultural.dominio.catraca.IngressoCatracaId;
-import recifecultural.dominio.catraca.StatusIngressoCatraca;
 import recifecultural.dominio.compartilhado.evento.EventoBarramento;
 import recifecultural.dominio.cupom.AplicarCupomServico;
 
@@ -21,35 +17,25 @@ public class IngressoServico {
     private final IGatewayPagamento gateway;
     private final EventoBarramento barramento;
     private final AplicarCupomServico cupomServico;
-    private final ICatracaRepositorio catracaRepositorio;
 
     public IngressoServico(IIngressoRepositorio repositorio, IGatewayPagamento gateway) {
-        this(repositorio, gateway, null, null, null);
+        this(repositorio, gateway, null, null);
     }
 
     public IngressoServico(IIngressoRepositorio repositorio, IGatewayPagamento gateway, EventoBarramento barramento) {
-        this(repositorio, gateway, barramento, null, null);
+        this(repositorio, gateway, barramento, null);
     }
 
     public IngressoServico(IIngressoRepositorio repositorio,
                            IGatewayPagamento gateway,
                            EventoBarramento barramento,
                            AplicarCupomServico cupomServico) {
-        this(repositorio, gateway, barramento, cupomServico, null);
-    }
-
-    public IngressoServico(IIngressoRepositorio repositorio,
-                           IGatewayPagamento gateway,
-                           EventoBarramento barramento,
-                           AplicarCupomServico cupomServico,
-                           ICatracaRepositorio catracaRepositorio) {
         notNull(repositorio, "O repositório de ingressos não pode ser nulo.");
         notNull(gateway, "O gateway de pagamento não pode ser nulo.");
         this.repositorio = repositorio;
         this.gateway = gateway;
         this.barramento = barramento;
         this.cupomServico = cupomServico;
-        this.catracaRepositorio = catracaRepositorio;
     }
 
 
@@ -86,7 +72,6 @@ public class IngressoServico {
         );
 
         repositorio.salvar(ingresso);
-        registrarNaCatraca(ingresso, dataHora);
         postar(ingresso.eventoCompra());
         return ingresso;
     }
@@ -156,7 +141,6 @@ public class IngressoServico {
 
         confirmacaoReserva.confirmar(preReservaId);
         repositorio.salvar(ingresso);
-        registrarNaCatraca(ingresso, dataHora);
         postar(ingresso.eventoCompra());
         return ingresso;
     }
@@ -205,22 +189,5 @@ public class IngressoServico {
         if (barramento != null) {
             barramento.postar(evento);
         }
-    }
-
-    private void registrarNaCatraca(Ingresso ingresso, LocalDateTime dataHora) {
-        if (catracaRepositorio == null) return;
-        recifecultural.dominio.catraca.TipoIngresso tipoCatraca =
-                ingresso.getTipo() == TipoIngresso.MEIA_ENTRADA
-                        ? recifecultural.dominio.catraca.TipoIngresso.MEIA_ENTRADA
-                        : recifecultural.dominio.catraca.TipoIngresso.COMUM;
-        IngressoCatraca ic = new IngressoCatraca(
-                new IngressoCatracaId(ingresso.getCodigoQr()),
-                ingresso.getEventoId().toString(),
-                StatusIngressoCatraca.VALIDO,
-                dataHora,
-                tipoCatraca,
-                null
-        );
-        catracaRepositorio.salvar(ic);
     }
 }

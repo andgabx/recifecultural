@@ -25,12 +25,12 @@ public class CatracaBffControlador extends AbstractBffControlador {
     @Operation(summary = "Valida acesso com QR code, horário e portão (Observer dispara invalidação)")
     @PostMapping("/validar")
     public ResponseEntity<Map<String, String>> validarAcesso(@RequestBody ValidarAcessoRequisicao req) {
-        String resultado = servico.validarAcesso(req.idIngresso(), req.horario(), req.portao());
+        String resultado = servico.validarAcesso(req.codigoQr(), req.horario(), req.portaoAcesso());
         return responder(Map.of("resultado", resultado));
     }
 
     public record ValidarAcessoRequisicao(
-            String idIngresso,
+            String codigoQr,
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime horario,
-            String portao) {}
+            String portaoAcesso) {}
 }

@@ -44,6 +44,14 @@ const schema = z
   .refine(
     (v) => new Date(v.periodoFim).getTime() >= new Date(v.periodoInicio).getTime(),
     { message: "Fim deve ser posterior ao início", path: ["periodoFim"] },
+  )
+  .refine(
+    (v) => v.apresentacoes.every((a) => {
+      if (!a.dataHora) return true;
+      const ts = new Date(a.dataHora).getTime();
+      return ts >= new Date(v.periodoInicio).getTime() && ts <= new Date(v.periodoFim).getTime();
+    }),
+    { message: "Todas as sessões devem estar dentro do período do evento", path: ["apresentacoes"] },
   );
 type EditarFormInput = z.input<typeof schema>;
 type EditarFormOutput = z.output<typeof schema>;
@@ -304,9 +312,9 @@ export default function EditarEventoPage() {
                   Adicionar sessão
                 </Button>
               </div>
-              {form.formState.errors.apresentacoes?.root?.message && (
+              {(form.formState.errors.apresentacoes?.root?.message || (form.formState.errors.apresentacoes as { message?: string })?.message) && (
                 <p className="text-destructive text-xs">
-                  {form.formState.errors.apresentacoes.root.message}
+                  {form.formState.errors.apresentacoes?.root?.message ?? (form.formState.errors.apresentacoes as { message?: string })?.message}
                 </p>
               )}
               <div className="space-y-2">

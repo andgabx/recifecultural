@@ -1,10 +1,13 @@
 package recifecultural.aplicacao.agenda.evento;
 
+import recifecultural.dominio.agenda.bloqueioadministrativo.BloqueioAdministrativo;
+import recifecultural.dominio.agenda.bloqueioadministrativo.IBloqueioAdministrativoRepositorio;
 import recifecultural.dominio.agenda.evento.Evento;
 import recifecultural.dominio.agenda.evento.EventoServico;
 import recifecultural.dominio.agenda.evento.FeedbackReprovacao;
 import recifecultural.dominio.agenda.evento.Periodo;
 import recifecultural.dominio.agenda.evento.Preco;
+import recifecultural.dominio.espaco.espaco.EspacoId;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -18,12 +21,17 @@ public class EventoServicoAplicacao {
 
     private final EventoServico servico;
     private final EventoRepositorioAplicacao repositorio;
+    private final IBloqueioAdministrativoRepositorio bloqueioRepositorio;
 
-    public EventoServicoAplicacao(EventoServico servico, EventoRepositorioAplicacao repositorio) {
+    public EventoServicoAplicacao(EventoServico servico,
+                                   EventoRepositorioAplicacao repositorio,
+                                   IBloqueioAdministrativoRepositorio bloqueioRepositorio) {
         notNull(servico, "EventoServico não pode ser nulo.");
         notNull(repositorio, "EventoRepositorioAplicacao não pode ser nulo.");
+        notNull(bloqueioRepositorio, "IBloqueioAdministrativoRepositorio não pode ser nulo.");
         this.servico = servico;
         this.repositorio = repositorio;
+        this.bloqueioRepositorio = bloqueioRepositorio;
     }
 
     public List<EventoResumo> pesquisarResumos() {
@@ -45,6 +53,9 @@ public class EventoServicoAplicacao {
         notBlank(cmd.titulo(), "Título obrigatório.");
 
         Periodo periodo = derivarPeriodo(cmd.periodoInicio(), cmd.periodoFim(), cmd.datasApresentacao());
+        if (cmd.localId() != null) {
+            verificarBloqueioAtivo(cmd.localId(), periodo);
+        }
 
         Preco preco = null;
         if (cmd.precoInteira() != null) {
@@ -83,6 +94,9 @@ public class EventoServicoAplicacao {
         notBlank(cmd.titulo(), "Título obrigatório.");
 
         Periodo periodo = derivarPeriodo(cmd.periodoInicio(), cmd.periodoFim(), cmd.datasApresentacao());
+        if (cmd.localId() != null) {
+            verificarBloqueioAtivo(cmd.localId(), periodo);
+        }
 
         Preco preco = null;
         if (cmd.precoInteira() != null) {
@@ -128,6 +142,29 @@ public class EventoServicoAplicacao {
 
     public void reprovar(UUID id, FeedbackReprovacao feedback) {
         servico.reprovar(id, feedback);
+    }
+
+    /**
+     * Rejeita a criação/edição de um evento cujo período se sobreponha
+     * a um BloqueioAdministrativo ativo no mesmo espaço.
+     * Sobreposição: bloqueio.inicio <= evento.fim AND bloqueio.fim >= evento.inicio
+     */
+    private void verificarBloqueioAtivo(UUID localId, Periodo periodo) {
+        EspacoId espacoId = new EspacoId(localId);
+        List<BloqueioAdministrativo> bloqueios = bloqueioRepositorio.buscarPorEspaco(espacoId);
+        boolean bloqueado = bloqueios.stream()
+                .filter(BloqueioAdministrativo::isAtivo)
+                .anyMatch(b -> {
+                    LocalDateTime bloqueioInicio = b.getDataInicio().atStartOfDay();
+                    LocalDateTime bloqueioFim    = b.getDataFim().atTime(23, 59, 59);
+                    return !periodo.getFim().isBefore(bloqueioInicio)
+                            && !periodo.getInicio().isAfter(bloqueioFim);
+                });
+        if (bloqueado) {
+            throw new IllegalStateException(
+                    "O espaço possui um bloqueio administrativo ativo que cobre o período informado. " +
+                    "Escolha datas fora do período de bloqueio.");
+        }
     }
 
     public record CriarEventoComando(

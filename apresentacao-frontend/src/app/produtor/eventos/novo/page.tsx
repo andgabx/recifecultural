@@ -68,6 +68,16 @@ const schema = z
       return true;
     },
     { message: "Fim deve ser igual ou posterior ao início", path: ["periodoFim"] },
+  )
+  .refine(
+    (v) => {
+      if (v.primeiraApresentacao && v.periodoInicio && v.periodoFim) {
+        const ts = new Date(v.primeiraApresentacao).getTime();
+        return ts >= new Date(v.periodoInicio).getTime() && ts <= new Date(v.periodoFim).getTime();
+      }
+      return true;
+    },
+    { message: "A primeira apresentação deve estar dentro do período informado", path: ["primeiraApresentacao"] },
   );
 
 type CriarFormInput = z.input<typeof schema>;

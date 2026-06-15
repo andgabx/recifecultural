@@ -251,16 +251,16 @@ WHERE NOT EXISTS (
 );
 
 
--- ── INGRESSO_CATRACA — espelho para validação na entrada ─────────────
--- A catraca busca por id = codigoQr nesta tabela, não na tabela ingresso.
--- ATIVO: pode validar ao vivo. UTILIZADO/REEMBOLSADO: já demonstram histórico.
+-- ── INGRESSO_CATRACA — id = UUID do ingresso (valor que o usuário conhece) ─
+-- horario_inicio_evento no passado para que a janela de validação (1h antes
+-- até 15min depois) esteja ativa durante a demo.
 INSERT INTO ingresso_catraca (id, id_evento, status, horario_inicio_evento, tipo_ingresso, portao_acesso)
 VALUES
-    ('QR-ATIVO-NOITEFREVO-001',    '20000000-0000-0000-0000-000000000001', 'VALIDO',                 NOW() + INTERVAL '30 days', 'COMUM',       NULL),
-    ('QR-UTILIZADO-NOITEFREVO-002','20000000-0000-0000-0000-000000000001', 'UTILIZADO',              NOW() + INTERVAL '30 days', 'COMUM',       'PORTAO_A'),
-    ('QR-REEMB-NOITEFREVO-003',    '20000000-0000-0000-0000-000000000001', 'CANCELADO_OU_REEMBOLSADO',NOW() + INTERVAL '30 days', 'COMUM',      NULL),
-    ('QR-ATIVO-FORROPARQUE-004',   '20000000-0000-0000-0000-000000000002', 'VALIDO',                 NOW() + INTERVAL '45 days', 'MEIA_ENTRADA',NULL),
-    ('QR-SOCIAL-FORROPARQUE-005',  '20000000-0000-0000-0000-000000000002', 'VALIDO',                 NOW() + INTERVAL '45 days', 'COMUM',       NULL)
+    ('40000000-0000-0000-0000-000000000001', '20000000-0000-0000-0000-000000000001', 'VALIDO',                  NOW() - INTERVAL '30 minutes', 'COMUM',       NULL),
+    ('40000000-0000-0000-0000-000000000002', '20000000-0000-0000-0000-000000000001', 'UTILIZADO',               NOW() - INTERVAL '30 minutes', 'COMUM',       'PORTAO_A'),
+    ('40000000-0000-0000-0000-000000000003', '20000000-0000-0000-0000-000000000001', 'CANCELADO_OU_REEMBOLSADO', NOW() - INTERVAL '30 minutes', 'COMUM',       NULL),
+    ('40000000-0000-0000-0000-000000000004', '20000000-0000-0000-0000-000000000002', 'VALIDO',                  NOW() - INTERVAL '30 minutes', 'MEIA_ENTRADA', NULL),
+    ('40000000-0000-0000-0000-000000000005', '20000000-0000-0000-0000-000000000002', 'VALIDO',                  NOW() - INTERVAL '30 minutes', 'COMUM',       NULL)
 ON CONFLICT (id) DO NOTHING;
 
 

@@ -28,8 +28,9 @@
  *   Bilheteria --OHS--> Financeiro       (DesempenhoTeatro le Ingressos)
  *   Auditoria  --OHS--> Agenda           (Decorator transparente sobre IEventoRepositorio)
  *
- * BCs sem dependencia cross-context: Patrocinio (recebe boolean eventoAprovado),
- * Artista (apenas intra-BC entre modulos Artista e Produtor).
+ * BC sem dependencia cross-context: Artista (apenas intra-BC entre modulos Artista e Produtor).
+ * Patrocinio expoe dependencia OHS para AgendaContext via port IEventoParaSubsidio
+ * (PatrocinioServico.ativarComSubsidio aplica desconto no Evento sem importar IEventoRepositorio).
  */
 ContextMap RecifeCulturalMap {
     type = SYSTEM_LANDSCAPE
@@ -376,7 +377,7 @@ BoundedContext AgendaContext implements RecifeCultural {
 //  Pacote Java: dominio-agenda/agenda/sorteio
 // ════════════════════════════════════════════════════════════════════════
 BoundedContext SorteioContext implements RecifeCultural {
-    domainVisionStatement = "Distribui vagas para apresentações via sorteio aleatório, com inscrição, apuração com embaralhamento, promoção automática de suplentes em desistência e cancelamento com broadcast aos inscritos."
+    domainVisionStatement = "Distribui vagas para apresentações via sorteio aleatório, com inscrição, apuração com embaralhamento, promoção automática de suplentes em desistência e cancelamento com broadcast aos inscritos. Operações mutantes delegam ao padrão Template Method: OperacaoDominioTemplate (comum) → OperacaoSorteioTemplate → operações concretas (InscreverOperacao, ApurarOperacao, DesistirOperacao, CancelarOperacao)."
     type = APPLICATION
 
     Module SorteioModule {
@@ -395,11 +396,11 @@ BoundedContext SorteioContext implements RecifeCultural {
 
                 void inscrever(UUID espectadorId);
                 /* Retorna ConcluidoEvento (domain event) com ganhadores e suplentes definidos */
-                void apurar();
+                ConcluidoEvento apurar();
                 /* Retorna Optional<SuplentePromovidoEvento> — promove primeiro suplente se ganhador desiste */
-                void desistir(UUID espectadorId);
+                Optional<SuplentePromovidoEvento> desistir(UUID espectadorId);
                 /* Retorna CanceladoEvento (domain event) */
-                void cancelar();
+                CanceladoEvento cancelar();
                 long contarPorStatus(StatusInscricao status);
             }
 
@@ -408,14 +409,6 @@ BoundedContext SorteioContext implements RecifeCultural {
                 LocalDateTime momentoInscricao
                 StatusInscricao status
             }
-
-            /*
-             * Padrão Template Method (vivo no domínio):
-             * OperacaoSorteioTemplate fixa o esqueleto buscar → aplicarRegra →
-             * persistir → notificar (executar() é final). As operações concretas
-             * InscreverOperacao, ApurarOperacao, DesistirOperacao e CancelarOperacao
-             * preenchem a regra de negócio e a notificação de cada caso.
-             */
 
             enum StatusInscricao {
                 INSCRITO, GANHADOR, SUPLENTE, DESISTENTE, CANCELADA
@@ -434,14 +427,48 @@ BoundedContext SorteioContext implements RecifeCultural {
 
             DomainService SorteioServico {
                 @Sorteio criar(UUID apresentacaoId, UUID eventoId, int vagas, LocalDateTime prazoInscricao, LocalDateTime dataApresentacao);
+                /* Delega a InscreverOperacao.executar() — Template Method */
                 void inscrever(UUID sorteioId, UUID espectadorId);
+                /* Delega a ApurarOperacao.executar() — Template Method; notifica ganhadores */
                 void apurar(UUID sorteioId);
+                /* Delega a DesistirOperacao.executar() — Template Method; notifica suplente promovido */
                 void desistir(UUID sorteioId, UUID espectadorId);
+                /* Delega a CancelarOperacao.executar() — Template Method; broadcast SORTEIO_CANCELADO */
                 void cancelar(UUID sorteioId);
                 Optional<@Sorteio> obter(UUID id);
             }
         }
     }
+
+    /*
+     * Padrão Template Method — hierarquia de operações (pacote sorteio/):
+     *
+     *   OperacaoDominioTemplate<T>       (pacote comum/)
+     *     executar() [final]: buscar() → aplicarRegra() → persistir() → notificar()
+     *     buscar(), aplicarRegra(), persistir() [abstratos]
+     *     notificar() [hook — no-op por padrão]
+     *
+     *   OperacaoSorteioTemplate          extends OperacaoDominioTemplate<Sorteio>
+     *     buscar(): sorteioRepositorio.obter(sorteioId)
+     *     persistir(): sorteioRepositorio.atualizar(sorteio)
+     *     Campos: ISorteioRepositorio, INotificacaoServico, UUID sorteioId
+     *
+     *   InscreverOperacao  extends OperacaoSorteioTemplate
+     *     aplicarRegra(): sorteio.inscrever(espectadorId)
+     *     (sem notificação)
+     *
+     *   ApurarOperacao     extends OperacaoSorteioTemplate
+     *     aplicarRegra(): sorteio.apurar()
+     *     notificar(): envia SORTEIO_GANHADOR a cada inscrição com status GANHADOR
+     *
+     *   DesistirOperacao   extends OperacaoSorteioTemplate
+     *     aplicarRegra(): this.promocao = sorteio.desistir(espectadorId)
+     *     notificar(): se promocao presente, envia SORTEIO_PROMOCAO ao suplente promovido
+     *
+     *   CancelarOperacao   extends OperacaoSorteioTemplate
+     *     aplicarRegra(): sorteio.cancelar()
+     *     notificar(): enviarBroadcast SORTEIO_CANCELADO
+     */
 }
 
 // ════════════════════════════════════════════════════════════════════════
@@ -572,7 +599,7 @@ BoundedContext ComentarioContext implements RecifeCultural {
 //  Pacote Java: dominio-agenda/agenda/acessibilidade
 // ════════════════════════════════════════════════════════════════════════
 BoundedContext AcessibilidadeContext implements RecifeCultural {
-    domainVisionStatement = "Marca recursos de acessibilidade confirmados por apresentação (LIBRAS, audiodescrição, legenda descritiva, espaço PCD, programa em braile). Exige Evento APROVADO para marcação e justificativa de no mínimo 30 caracteres para remoção, que dispara broadcast público (Template Method)."
+    domainVisionStatement = "Marca recursos de acessibilidade confirmados por apresentação (LIBRAS, audiodescrição, legenda descritiva, espaço PCD, programa em braile). Exige Evento APROVADO para marcação e justificativa de no mínimo 30 caracteres para remoção, que dispara broadcast público via padrão Template Method: OperacaoDominioTemplate (comum) → OperacaoRecursoAcessibilidadeTemplate → RemocaoRecursoAcessibilidadeOperacao."
     type = APPLICATION
 
     Module AcessibilidadeModule {
@@ -611,11 +638,30 @@ BoundedContext AcessibilidadeContext implements RecifeCultural {
 
             DomainService RecursoAcessibilidadeServico {
                 @RecursoAcessibilidade marcar(UUID apresentacaoId, UUID eventoId, TipoRecursoAcessibilidade tipo);
+                /* Delega a RemocaoRecursoAcessibilidadeOperacao.executar() — Template Method; broadcast ACESSIBILIDADE_REMOVIDA */
                 void remover(UUID recursoId, String justificativa);
                 List<@RecursoAcessibilidade> listarAtivosPorEvento(UUID eventoId);
             }
         }
     }
+
+    /*
+     * Padrão Template Method — hierarquia de operações (pacote acessibilidade/):
+     *
+     *   OperacaoDominioTemplate<T>                   (pacote comum/)
+     *     executar() [final]: buscar() → aplicarRegra() → persistir() → notificar()
+     *     buscar(), aplicarRegra(), persistir() [abstratos]
+     *     notificar() [hook — no-op por padrão]
+     *
+     *   OperacaoRecursoAcessibilidadeTemplate         extends OperacaoDominioTemplate<RecursoAcessibilidade>
+     *     buscar(): repositorio.obter(recursoId)
+     *     persistir(): repositorio.atualizar(recurso)
+     *     Campos: IRecursoAcessibilidadeRepositorio, INotificacaoServico, UUID recursoId
+     *
+     *   RemocaoRecursoAcessibilidadeOperacao          extends OperacaoRecursoAcessibilidadeTemplate
+     *     aplicarRegra(): recurso.remover(justificativa)
+     *     notificar(): enviarBroadcast ACESSIBILIDADE_REMOVIDA com tipo e eventoId
+     */
 }
 
 // ════════════════════════════════════════════════════════════════════════
@@ -970,7 +1016,7 @@ BoundedContext CupomContext implements RecifeCultural {
 
             /*
              * Padrão Decorator — Pipeline de validação (pacote dominio-ingressos/cupom/validacoes/):
-             *   ValidadorCupom (interface)         — boolean + void validar(...)
+             *   ValidadorCupom (interface)         — void validar(Cupom, cpf, valorPedido, categoriaEvento, dataAtual)
              *   ValidadorCupomBase                 — implementação vazia (núcleo)
              *   ValidadorCupomDecorator (abstrato) — delega ao interno antes de validar
              *   ValidarVigenciaDecorator           — dataInicio ≤ agora ≤ dataFim
@@ -1062,7 +1108,7 @@ BoundedContext CatracaContext implements RecifeCultural {
              *   ValidarEstornoDecorator              — rejeita se CANCELADO_OU_REEMBOLSADO
              *   ValidarDuplaEntradaDecorator         — rejeita se UTILIZADO
              *   ValidarPortaoDecorator               — rejeita se portão errado
-             *   ValidarToleranciaAtrasoDecorator     — rejeita se fora da janela de horário
+             *   ValidarToleranciaAtrasoDecorator     — rejeita COMUM com mais de 15 min de atraso após horarioInicioEvento
              * Pipeline montado no construtor de CatracaServico (fora→dentro).
              */
         }
@@ -1413,6 +1459,39 @@ BoundedContext ArtistaContext implements RecifeCultural {
                 Set<ItemRider> itens
             }
 
+            /*
+             * Iterador<T> — interface do domínio (sem java.util.Iterator):
+             *   boolean temProximo()
+             *   T proximo()
+             */
+            ValueObject Iterador {
+                /* type parameter T — boolean temProximo(); T proximo() */
+            }
+
+            /*
+             * Iteravel<T> — interface do domínio:
+             *   Iterador<T> criarIterador()
+             */
+            ValueObject Iteravel {
+                /* type parameter T — Iterador<T> criarIterador() */
+            }
+
+            /*
+             * IteradorDeArtistas — implementação concreta de Iterador<Artista>
+             *   Recebe List<Artista>; percorre com índice inteiro.
+             */
+            ValueObject IteradorDeArtistas {
+                /* implements Iterador<Artista> — boolean temProximo(); Artista proximo() */
+            }
+
+            /*
+             * IteradorDeItensRider — implementação concreta de Iterador<ItemRider>
+             *   Recebe Set<ItemRider>; converte para Object[] para permitir índice.
+             */
+            ValueObject IteradorDeItensRider {
+                /* implements Iterador<ItemRider> — boolean temProximo(); ItemRider proximo() */
+            }
+
             enum StatusArtista {
                 ATIVO, INATIVO
             }
@@ -1429,10 +1508,12 @@ BoundedContext ArtistaContext implements RecifeCultural {
                 List<@Artista> listarPorProdutor(@ProdutorId produtorId);
                 boolean existePorNomeEProdutor(String nome, @ProdutorId produtorId);
                 /*
-                 * Métodos default que encapsulam a criação dos iteradores concretos:
-                 *   criarIteradorPorProdutor → new IteradorDeArtistas(listarPorProdutor(...))
-                 *   criarIteradorDeItensRider → new IteradorDeItensRider(artista.getRiderTecnico().getItens())
+                 * Métodos default — encapsulam a criação dos iteradores concretos:
+                 *   criarIteradorPorProdutor  → new IteradorDeArtistas(listarPorProdutor(produtorId))
+                 *   criarIteradorDeItensRider → new IteradorDeItensRider(artista.getRiderTecnico().itens())
                  */
+                @Iterador criarIteradorPorProdutor(@ProdutorId produtorId);
+                @Iterador criarIteradorDeItensRider(@ArtistaId artistaId);
             }
 
             DomainService ArtistaServico {
@@ -1440,7 +1521,7 @@ BoundedContext ArtistaContext implements RecifeCultural {
                 void atualizarRider(@ArtistaId artistaId, @RiderTecnico novoRider);
                 void inativar(@ArtistaId artistaId);
                 /* Retorna Iterador<ItemRider> via IArtistaRepositorio.criarIteradorDeItensRider */
-                void iterarItensRider(@ArtistaId artistaId);
+                @Iterador iterarItensRider(@ArtistaId artistaId);
             }
         }
     }

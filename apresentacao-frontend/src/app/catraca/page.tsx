@@ -66,12 +66,29 @@ export default function CatracaPage() {
             : undefined,
         });
       } else {
-        const jaUsado = (resultado.motivo ?? "")
-          .toLowerCase()
-          .includes("utilizado");
+        const motivo = (resultado.motivo ?? "").toLowerCase();
+        const jaUsado = motivo.includes("utilizado");
+        const foraHorario =
+          motivo.includes("portões ainda não") ||
+          motivo.includes("limite de 15 minutos") ||
+          motivo.includes("portas do teatro estão fechadas");
+
+        let tipo: CatracaFeedbackTipo;
+        let titulo: string;
+        if (jaUsado) {
+          tipo = "ja-usado";
+          titulo = "Ingresso já utilizado";
+        } else if (foraHorario) {
+          tipo = "fora-horario";
+          titulo = "Ingresso válido — fora do horário";
+        } else {
+          tipo = "invalido";
+          titulo = "Acesso negado";
+        }
+
         setFeedback({
-          tipo: jaUsado ? "ja-usado" : "invalido",
-          titulo: jaUsado ? "Ingresso já utilizado" : "Acesso negado",
+          tipo,
+          titulo,
           detalhe: resultado.motivo,
         });
       }

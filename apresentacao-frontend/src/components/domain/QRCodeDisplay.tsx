@@ -1,7 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "motion/react";
 import { QRCodeSVG } from "qrcode.react";
+import { Check, Copy } from "lucide-react";
 
 import { springConfig } from "@/lib/motion";
 import { cn } from "@/lib/utils";
@@ -17,6 +19,18 @@ export function QRCodeDisplay({
   size?: number;
   className?: string;
 }) {
+  const [copiado, setCopiado] = useState(false);
+
+  async function copiar() {
+    try {
+      await navigator.clipboard.writeText(codigo);
+      setCopiado(true);
+      setTimeout(() => setCopiado(false), 1500);
+    } catch {
+      // clipboard pode não estar disponível (http, permissões); silencioso
+    }
+  }
+
   return (
     <motion.div
       initial={{ rotateY: 90, opacity: 0 }}
@@ -41,9 +55,19 @@ export function QRCodeDisplay({
           bgColor="#ffffff"
         />
       </div>
-      <p className="text-nevoa/60 font-mono text-xs tracking-[0.3em]">
-        {codigo.slice(0, 8).toUpperCase()}-{codigo.slice(-4).toUpperCase()}
-      </p>
+      <button
+        type="button"
+        onClick={copiar}
+        title="Copiar código"
+        className="text-nevoa/70 hover:text-nevoa flex max-w-full items-center gap-2 break-all rounded-md px-2 py-1 font-mono text-xs transition-colors"
+      >
+        <span>{codigo}</span>
+        {copiado ? (
+          <Check className="h-3.5 w-3.5 shrink-0" />
+        ) : (
+          <Copy className="h-3.5 w-3.5 shrink-0" />
+        )}
+      </button>
     </motion.div>
   );
 }

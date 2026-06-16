@@ -14,6 +14,8 @@ public class ValidarPortaoDecorator extends ValidadorAcessoDecorator {
     public void validar(IngressoCatraca ingresso, LocalDateTime horaAcesso, String portaoFisico) {
         super.validar(ingresso, horaAcesso, portaoFisico);
 
+        if (ingresso.getPortaoAcesso() == null) return;
+
         Validate.isTrue(ingresso.getPortaoAcesso().equals(portaoFisico),
                 "Acesso Negado: Este ingresso pertence ao " + ingresso.getPortaoAcesso() + ". Dirija-se ao local correto.");
     }

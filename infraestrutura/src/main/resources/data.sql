@@ -260,7 +260,10 @@ VALUES
     ('QR-REEMB-NOITEFREVO-003',     '20000000-0000-0000-0000-000000000001', 'CANCELADO_OU_REEMBOLSADO', NOW() + INTERVAL '1 hour', 'COMUM',       NULL),
     ('QR-ATIVO-FORROPARQUE-004',    '20000000-0000-0000-0000-000000000002', 'VALIDO',                  NOW() + INTERVAL '1 hour', 'MEIA_ENTRADA', NULL),
     ('QR-SOCIAL-FORROPARQUE-005',   '20000000-0000-0000-0000-000000000002', 'VALIDO',                  NOW() + INTERVAL '1 hour', 'COMUM',       NULL)
-ON CONFLICT (id) DO NOTHING;
+ON CONFLICT (id) DO UPDATE SET
+    horario_inicio_evento = EXCLUDED.horario_inicio_evento,
+    status = EXCLUDED.status,
+    portao_acesso = EXCLUDED.portao_acesso;
 
 
 -- ── INGRESSOS DO ESPECTADOR DEMO ─────────────────────────────────────

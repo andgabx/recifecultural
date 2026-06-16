@@ -1,11 +1,16 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
-import { AlertTriangle, CheckCircle2, XCircle } from "lucide-react";
+import { AlertTriangle, CheckCircle2, Clock, XCircle } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
-export type CatracaFeedbackTipo = "valido" | "invalido" | "ja-usado" | null;
+export type CatracaFeedbackTipo =
+  | "valido"
+  | "invalido"
+  | "ja-usado"
+  | "fora-horario"
+  | null;
 
 type Props = {
   tipo: CatracaFeedbackTipo;
@@ -36,6 +41,12 @@ const config: Record<
     texto: "text-yellow-100",
     icone: AlertTriangle,
     cor: "text-violeta",
+  },
+  "fora-horario": {
+    bg: "bg-sky-950",
+    texto: "text-sky-100",
+    icone: Clock,
+    cor: "text-sky-300",
   },
 };
 

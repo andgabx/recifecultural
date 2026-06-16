@@ -44,13 +44,13 @@ const schema = z
     apresentacoes: z.array(z.object({ dataHora: z.string().min(1, "esse campo deve ser preenchido") })).min(1, "Adicione ao menos uma data de apresentação"),
     artistaId: z
       .string()
-      .uuid("Id do artista deve ser UUID")
+      .min(1, "Selecione um artista")
       .optional()
       .or(z.literal("")),
     riderItems: z
       .array(
         z.object({
-          equipamentoId: z.string().uuid("Selecione um equipamento"),
+          equipamentoId: z.string().min(1, "Selecione um equipamento"),
           quantidade: z.coerce.number().int().min(1, "Quantidade mínima é 1"),
         }),
       )

@@ -36,7 +36,7 @@ type CadastroFormInput = z.input<typeof cadastroSchema>;
 type CadastroFormOutput = z.output<typeof cadastroSchema>;
 
 const capacidadeSchema = z.object({
-  espacoId: z.string().uuid("Id inválido"),
+  espacoId: z.string().min(1, "Selecione uma opção"),
   novaCapacidade: z.coerce.number().int().positive("Capacidade deve ser positiva"),
   ingressosVendidosFuturos: z.coerce.number().int().nonnegative("Não pode ser negativo"),
 });
@@ -44,12 +44,12 @@ type CapacidadeFormInput = z.input<typeof capacidadeSchema>;
 type CapacidadeFormOutput = z.output<typeof capacidadeSchema>;
 
 const interditarSchema = z.object({
-  espacoId: z.string().uuid("Id inválido"),
+  espacoId: z.string().min(1, "Selecione uma opção"),
 });
 type InterditarForm = z.infer<typeof interditarSchema>;
 
 const reativarSchema = z.object({
-  espacoId: z.string().uuid("Id inválido"),
+  espacoId: z.string().min(1, "Selecione uma opção"),
 });
 type ReativarForm = z.infer<typeof reativarSchema>;
 

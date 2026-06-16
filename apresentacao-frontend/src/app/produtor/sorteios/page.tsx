@@ -41,8 +41,8 @@ import type { StatusInscricao } from "@/types/dominio";
 
 const novoSchema = z
   .object({
-    eventoId: z.string().uuid("eventoId inválido"),
-    apresentacaoId: z.string().uuid("apresentacaoId inválido"),
+    eventoId: z.string().min(1, "Selecione um evento"),
+    apresentacaoId: z.string().min(1, "Selecione uma apresentação"),
     vagas: z.coerce.number().int().positive("Vagas devem ser positivas"),
     prazoInscricao: z.string().min(1, "Informe o prazo de inscrição"),
     dataApresentacao: z.string().min(1, "Apresentação sem data vinculada"),

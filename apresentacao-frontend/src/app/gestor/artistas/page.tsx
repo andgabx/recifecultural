@@ -28,7 +28,7 @@ import type { ArtistaResumo } from "@/services/bff/artistas";
 import type { StatusArtista } from "@/types/dominio";
 
 const cadastroSchema = z.object({
-  produtorId: z.string().uuid("Id de produtor inválido"),
+  produtorId: z.string().min(1, "Selecione um produtor"),
   nome: z.string().min(2, "Informe o nome do artista"),
 });
 type CadastroForm = z.infer<typeof cadastroSchema>;

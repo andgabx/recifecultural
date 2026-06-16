@@ -29,7 +29,7 @@ import { formatarDataCurta } from "@/lib/format";
 import type { BloqueioResumo, EventoConflitante } from "@/services/bff/bloqueios";
 
 const cadastroSchema = z.object({
-  espacoId: z.string().uuid("Id de espaço inválido"),
+  espacoId: z.string().min(1, "Selecione um espaço"),
   dataInicio: z.string().min(1, "Informe a data de início"),
   dataFim: z.string().min(1, "Informe a data de fim"),
   justificativa: z

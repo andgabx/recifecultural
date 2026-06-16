@@ -37,7 +37,7 @@ const TIPOS_SETOR = [
 ] as const;
 
 const novoSchema = z.object({
-  espacoId: z.string().uuid("Selecione um espaço"),
+  espacoId: z.string().min(1, "Selecione um espaço"),
   nome: z.string().min(2, "Nome muito curto"),
   tipoSetor: z.enum(["PLATEIA", "BALCAO", "CAMAROTE", "ARENA"]),
   fileirasHorizontais: z.coerce

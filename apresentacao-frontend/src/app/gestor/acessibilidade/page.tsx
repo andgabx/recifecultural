@@ -39,8 +39,8 @@ const tipoLabel = (tipo: string) =>
   TIPOS.find((t) => t.value === tipo)?.label ?? tipo;
 
 const marcacaoSchema = z.object({
-  eventoId: z.string().uuid("Selecione um evento aprovado"),
-  apresentacaoId: z.string().uuid("Apresentação inválida"),
+  eventoId: z.string().min(1, "Selecione um evento aprovado"),
+  apresentacaoId: z.string().min(1, "Selecione uma apresentação"),
   tipo: z.enum([
     "LIBRAS",
     "AUDIODESCRICAO",

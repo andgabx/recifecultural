@@ -38,7 +38,7 @@ import type { PatrocinioResumo } from "@/services/bff/patrocinios";
 import type { StatusPatrocinio } from "@/types/dominio";
 
 const novoSchema = z.object({
-  eventoId: z.string().uuid("eventoId inválido"),
+  eventoId: z.string().min(1, "Selecione um evento"),
   patrocinadorNome: z.string().min(2),
   categoriaPatrocinio: z.string().min(2),
   tipo: z.enum(["MASTER", "ASSOCIADO"]),

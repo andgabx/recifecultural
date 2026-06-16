@@ -37,7 +37,7 @@ const schema = z
     categoria: z.enum(["TEATRO", "DANCA", "MUSICA", "INFANTIL", "OUTROS"], {
       message: "Selecione uma categoria",
     }),
-    localId: z.string().uuid("Selecione um espaço válido (UUID)").optional().or(z.literal("")),
+    localId: z.string().min(1, "Selecione um espaço").optional().or(z.literal("")),
     periodoInicio: z.string().optional().or(z.literal("")),
     periodoFim: z.string().optional().or(z.literal("")),
     precoInteira: z.coerce
@@ -53,13 +53,13 @@ const schema = z
     primeiraApresentacao: z.string().optional().or(z.literal("")),
     artistaId: z
       .string()
-      .uuid("Id do artista deve ser UUID")
+      .min(1, "Selecione um artista")
       .optional()
       .or(z.literal("")),
     riderItems: z
       .array(
         z.object({
-          equipamentoId: z.string().uuid("Selecione um equipamento"),
+          equipamentoId: z.string().min(1, "Selecione um equipamento"),
           quantidade: z.coerce.number().int().min(1, "Quantidade mínima é 1"),
         }),
       )

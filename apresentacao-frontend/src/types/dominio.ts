@@ -77,7 +77,7 @@ export type AcaoAuditoria = "CRIADO" | "TRANSICAO_STATUS" | "REMOVIDO";
 export type StatusComentario = "ATIVO" | "DELETADO";
 
 export type RiderItem = {
-  nomeEquipamento: string;
+  equipamentoId: UUID;
   quantidade: number;
 };
 

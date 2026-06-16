@@ -59,7 +59,7 @@ const schema = z
     riderItems: z
       .array(
         z.object({
-          nomeEquipamento: z.string().min(1, "Selecione um equipamento"),
+          equipamentoId: z.string().uuid("Selecione um equipamento"),
           quantidade: z.coerce.number().int().min(1, "Quantidade mínima é 1"),
         }),
       )
@@ -215,9 +215,6 @@ export default function NovoEventoPage() {
   const { data: equipamentosDoEspaco } = useEquipamentosPorEspaco(
     localIdValue || undefined,
   );
-  const nomesUnicos = Array.from(
-    new Set((equipamentosDoEspaco ?? []).map((e) => e.nome)),
-  ).sort();
 
   async function onSubmit(values: CriarFormOutput) {
     try {
@@ -398,7 +395,7 @@ export default function NovoEventoPage() {
                 type="button"
                 size="sm"
                 variant="outline"
-                onClick={() => appendRider({ nomeEquipamento: "", quantidade: 1 })}
+                onClick={() => appendRider({ equipamentoId: "", quantidade: 1 })}
               >
                 <Plus className="mr-1 h-3.5 w-3.5" />
                 Adicionar equipamento
@@ -420,15 +417,16 @@ export default function NovoEventoPage() {
                 </div>
 
                 {riderFields.map((field, index) => {
-                  const nomeValue = (form.watch(`riderItems.${index}.nomeEquipamento`) as string) ?? "";
+                  const equipamentoId = (form.watch(`riderItems.${index}.equipamentoId`) as string) ?? "";
                   const qtdValue = Number(form.watch(`riderItems.${index}.quantidade`)) || 1;
-                  const nomeValido = nomeValue.trim().length > 0 && nomesUnicos.includes(nomeValue);
+                  const equipamentoSelecionado = (equipamentosDoEspaco ?? []).find((e) => e.id === equipamentoId);
+                  const nomeValue = equipamentoSelecionado?.nome ?? "";
 
                   return (
                     <div key={field.id} className="grid grid-cols-[1fr_5rem_1fr_1.75rem] items-center gap-2">
                       <Controller
                         control={form.control}
-                        name={`riderItems.${index}.nomeEquipamento`}
+                        name={`riderItems.${index}.equipamentoId`}
                         render={({ field }) => (
                           <Select
                             disabled={!localIdValue}
@@ -438,8 +436,8 @@ export default function NovoEventoPage() {
                             <option value="">
                               {localIdValue ? "Selecione" : "Selecione um espaço primeiro"}
                             </option>
-                            {nomesUnicos.map((nome) => (
-                              <option key={nome} value={nome}>{nome}</option>
+                            {(equipamentosDoEspaco ?? []).map((e) => (
+                              <option key={e.id} value={e.id}>{e.nome}</option>
                             ))}
                           </Select>
                         )}
@@ -453,7 +451,7 @@ export default function NovoEventoPage() {
                       />
 
                       <div>
-                        {localIdValue && nomeValido ? (
+                        {localIdValue && nomeValue ? (
                           <DisponibilidadeIndicator
                             espacoId={localIdValue}
                             nome={nomeValue}

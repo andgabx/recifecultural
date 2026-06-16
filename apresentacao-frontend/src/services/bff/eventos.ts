@@ -19,7 +19,7 @@ export type EventoResumo = {
 };
 
 export type RiderItemResumo = {
-  nomeEquipamento: string;
+  equipamentoId: UUID;
   quantidade: number;
 };
 

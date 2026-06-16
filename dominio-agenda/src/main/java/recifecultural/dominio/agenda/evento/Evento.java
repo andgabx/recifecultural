@@ -310,8 +310,8 @@ public class Evento {
                 novoPrecoSocial);
     }
 
-    public void adicionarRiderItem(String nome, int qtd) {
-        this.riderItems.add(new RiderItem(nome, qtd));
+    public void adicionarRiderItem(java.util.UUID equipamentoId, int qtd) {
+        this.riderItems.add(new RiderItem(equipamentoId, qtd));
     }
 
     public void substituirRiderItems(List<RiderItem> novosItens) {

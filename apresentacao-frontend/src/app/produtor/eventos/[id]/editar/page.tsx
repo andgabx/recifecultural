@@ -50,7 +50,7 @@ const schema = z
     riderItems: z
       .array(
         z.object({
-          nomeEquipamento: z.string().min(1, "Selecione um equipamento"),
+          equipamentoId: z.string().uuid("Selecione um equipamento"),
           quantidade: z.coerce.number().int().min(1, "Quantidade mínima é 1"),
         }),
       )
@@ -87,8 +87,8 @@ function RiderItemRow({
   index,
   espacoId,
   editavel,
-  nomesUnicos,
-  nomeEquipamento,
+  equipamentos,
+  equipamentoId,
   quantidade,
   onRemove,
   control,
@@ -99,8 +99,8 @@ function RiderItemRow({
   index: number;
   espacoId: string;
   editavel: boolean;
-  nomesUnicos: string[];
-  nomeEquipamento: string;
+  equipamentos: import("@/services/bff/equipamentos").EquipamentoResumo[];
+  equipamentoId: string;
   quantidade: number;
   onRemove: () => void;
   control: ReturnType<typeof useForm<EditarFormInput, unknown, EditarFormOutput>>["control"];
@@ -108,21 +108,20 @@ function RiderItemRow({
   periodoInicio?: string;
   periodoFim?: string;
 }) {
+  const nome = equipamentos.find((e) => e.id === equipamentoId)?.nome ?? "";
   const { quantidadeDisponivel: qtdDisp, isLoading: isFetching } = useVerificarDisponibilidade(
     espacoId || undefined,
-    nomeEquipamento,
+    nome,
     quantidade,
     periodoInicio,
     periodoFim,
   );
 
-  const nomeValido = nomeEquipamento.trim().length > 0 && nomesUnicos.includes(nomeEquipamento);
-
   return (
     <div className="grid grid-cols-[1fr_5rem_1fr_1.75rem] items-center gap-2">
       <Controller
         control={control}
-        name={`riderItems.${index}.nomeEquipamento`}
+        name={`riderItems.${index}.equipamentoId`}
         render={({ field }) => (
           <Select
             disabled={!editavel || !espacoId}
@@ -132,8 +131,8 @@ function RiderItemRow({
             <option value="">
               {espacoId ? "Selecione" : "Selecione um espaço primeiro"}
             </option>
-            {nomesUnicos.map((nome) => (
-              <option key={nome} value={nome}>{nome}</option>
+            {equipamentos.map((e) => (
+              <option key={e.id} value={e.id}>{e.nome}</option>
             ))}
           </Select>
         )}
@@ -147,7 +146,7 @@ function RiderItemRow({
       />
 
       <div>
-        {espacoId && nomeValido ? (
+        {espacoId && nome ? (
           isFetching ? (
             <span className="text-muted-foreground flex items-center gap-1 text-[11px]">
               <LoadingSpinner className="h-3 w-3" />
@@ -238,7 +237,7 @@ export default function EditarEventoPage() {
     const rider =
       evento.riderItems && evento.riderItems.length > 0
         ? evento.riderItems.map((r) => ({
-            nomeEquipamento: r.nomeEquipamento,
+            equipamentoId: r.equipamentoId,
             quantidade: r.quantidade,
           }))
         : [];
@@ -322,10 +321,6 @@ export default function EditarEventoPage() {
   }
 
   const editavel = evento.status === "RASCUNHO";
-
-  const nomesUnicos = Array.from(
-    new Set((equipamentosDoEspaco ?? []).map((e) => e.nome)),
-  ).sort();
 
   return (
     <PageLayout
@@ -578,7 +573,7 @@ export default function EditarEventoPage() {
                 size="sm"
                 variant="outline"
                 disabled={!editavel}
-                onClick={() => appendRider({ nomeEquipamento: "", quantidade: 1 })}
+                onClick={() => appendRider({ equipamentoId: "", quantidade: 1 })}
               >
                 <Plus className="mr-1 h-3.5 w-3.5" />
                 Adicionar equipamento
@@ -598,7 +593,7 @@ export default function EditarEventoPage() {
                   <span />
                 </div>
                 {riderFields.map((field, index) => {
-                  const nomeAtual = (form.watch(`riderItems.${index}.nomeEquipamento`) as string) ?? "";
+                  const equipamentoIdAtual = (form.watch(`riderItems.${index}.equipamentoId`) as string) ?? "";
                   const qtdAtual = Number(form.watch(`riderItems.${index}.quantidade`)) || 1;
                   return (
                     <RiderItemRow
@@ -606,8 +601,8 @@ export default function EditarEventoPage() {
                       index={index}
                       espacoId={espacoIdAtual}
                       editavel={editavel}
-                      nomesUnicos={nomesUnicos}
-                      nomeEquipamento={nomeAtual}
+                      equipamentos={equipamentosDoEspaco ?? []}
+                      equipamentoId={equipamentoIdAtual}
                       quantidade={qtdAtual}
                       onRemove={() => removeRider(index)}
                       control={form.control}

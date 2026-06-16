@@ -114,7 +114,7 @@ public class EventoRepositorioImpl implements IEventoRepositorio, EventoReposito
                             ? List.of()
                             : e.riderItems.stream()
                                 .map(item -> (RiderItemResposta) new RiderItemRespostaJpa(
-                                        item.getNomeEquipamento(), item.getQuantidade()))
+                                        item.getEquipamentoId(), item.getQuantidade()))
                                 .toList();
                     return (EventoResumoExpandido) new EventoResumoExpandidoJpa(
                             e.id.toString(), e.titulo, e.categoria,
@@ -174,9 +174,9 @@ public class EventoRepositorioImpl implements IEventoRepositorio, EventoReposito
         public List<RiderItemResposta> getRiderItems() { return riderItems; }
     }
 
-    record RiderItemRespostaJpa(String nomeEquipamento, int quantidade)
+    record RiderItemRespostaJpa(java.util.UUID equipamentoId, int quantidade)
             implements RiderItemResposta {
-        public String getNomeEquipamento() { return nomeEquipamento; }
+        public java.util.UUID getEquipamentoId() { return equipamentoId; }
         public int getQuantidade() { return quantidade; }
     }
 

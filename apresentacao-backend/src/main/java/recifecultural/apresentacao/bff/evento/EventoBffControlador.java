@@ -64,9 +64,9 @@ public class EventoBffControlador extends AbstractBffControlador {
                 req.precoMeia(),
                 req.artistas(),
                 req.datasApresentacao(),
-                req.riderItems() == null ? null :
+                        req.riderItems() == null ? null :
                         req.riderItems().stream()
-                                .map(r -> new RiderItemComando(r.nomeEquipamento(), r.quantidade()))
+                                .map(r -> new RiderItemComando(r.equipamentoId(), r.quantidade()))
                                 .toList()
         ));
         return responderCriado(id.toString());
@@ -91,7 +91,7 @@ public class EventoBffControlador extends AbstractBffControlador {
                 req.datasApresentacao(),
                         req.riderItems() == null ? null :
                         req.riderItems().stream()
-                                .map(r -> new RiderItemComando(r.nomeEquipamento(), r.quantidade()))
+                                .map(r -> new RiderItemComando(r.equipamentoId(), r.quantidade()))
                                 .toList()
         ));
         return responderSemConteudo();
@@ -119,7 +119,7 @@ public class EventoBffControlador extends AbstractBffControlador {
         return responderSemConteudo();
     }
 
-    public record RiderItemRequisicao(String nomeEquipamento, int quantidade) {}
+    public record RiderItemRequisicao(java.util.UUID equipamentoId, int quantidade) {}
 
     public record CriarEventoRequisicao(
             UUID promotorId,

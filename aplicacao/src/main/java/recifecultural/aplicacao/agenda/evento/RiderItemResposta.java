@@ -1,6 +1,8 @@
 package recifecultural.aplicacao.agenda.evento;
 
+import java.util.UUID;
+
 public interface RiderItemResposta {
-    String getNomeEquipamento();
+    UUID getEquipamentoId();
     int getQuantidade();
 }

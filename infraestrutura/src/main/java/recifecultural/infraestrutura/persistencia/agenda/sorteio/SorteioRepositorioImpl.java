@@ -98,7 +98,7 @@ public class SorteioRepositorioImpl implements ISorteioRepositorio, SorteioRepos
                     }
                     return new SorteioInscritoResumoJpa(
                             s.id.toString(), s.eventoId.toString(),
-                            s.apresentacaoId.toString(), s.vagas,
+                            s.apresentacaoId != null ? s.apresentacaoId.toString() : null, s.vagas,
                             s.status != null ? s.status.name() : null,
                             s.prazoInscricao != null ? s.prazoInscricao.toString() : null,
                             s.dataApresentacao != null ? s.dataApresentacao.toString() : null,

@@ -194,22 +194,22 @@ ON CONFLICT (id) DO NOTHING;
 
 
 -- ── SORTEIOS — 3 status distintos ────────────────────────────────────
-INSERT INTO sorteio (id, evento_id, vagas, prazo_inscricao, status)
+INSERT INTO sorteio (id, evento_id, apresentacao_id, vagas, prazo_inscricao, data_apresentacao, status)
 VALUES
     -- INSCRICOES_ABERTAS: Espectador já inscrito, apurar ao vivo → Template Method
     ('30000000-0000-0000-0000-000000000001',
-     '20000000-0000-0000-0000-000000000001', 5,
-     NOW() + INTERVAL '7 days', 'INSCRICOES_ABERTAS'),
+     '20000000-0000-0000-0000-000000000001', '40000000-0000-0000-0000-000000000001', 5,
+     NOW() + INTERVAL '7 days', NOW() + INTERVAL '14 days', 'INSCRICOES_ABERTAS'),
 
     -- CONCLUIDO: Espectador Demo é ganhador — mostra histórico
     ('30000000-0000-0000-0000-000000000002',
-     '20000000-0000-0000-0000-000000000002', 3,
-     NOW() - INTERVAL '5 days', 'CONCLUIDO'),
+     '20000000-0000-0000-0000-000000000002', '40000000-0000-0000-0000-000000000002', 3,
+     NOW() - INTERVAL '5 days', NOW() + INTERVAL '2 days', 'CONCLUIDO'),
 
     -- CANCELADO: junto com Axé Nordestino cancelado — mostra ciclo completo
     ('30000000-0000-0000-0000-000000000003',
-     '20000000-0000-0000-0000-000000000006', 2,
-     NOW() - INTERVAL '15 days', 'CANCELADO')
+     '20000000-0000-0000-0000-000000000006', '40000000-0000-0000-0000-000000000003', 2,
+     NOW() - INTERVAL '15 days', NOW() + INTERVAL '1 day', 'CANCELADO')
 ON CONFLICT (id) DO NOTHING;
 
 -- Inscrições sorteio 1 (INSCRICOES_ABERTAS) — Espectador Demo inscrito

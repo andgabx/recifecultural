@@ -35,7 +35,7 @@ const formatarMoeda = (valor: string | number) =>
 
 export default function EventoDetalhePage() {
   const params = useParams<{ id: string }>();
-  const { papel } = useRole()d;
+  const { papel } = useRole();
   const usuario = IDENTIDADES_MOCK[papel];
 
   const { data: evento, isLoading, isError } = useEvento(params.id);
@@ -100,7 +100,7 @@ export default function EventoDetalhePage() {
         </section>
 
         {/* Conteudo */}
-        <section className="mx-auto -mt-8 max-w-5xl px-6 pb-12">
+        <section className="mx-auto mt-8 max-w-5xl px-6 pb-12">
           {isLoading && (
             <Card className="space-y-3 p-8">
               <Skeleton className="h-5 w-1/3" />

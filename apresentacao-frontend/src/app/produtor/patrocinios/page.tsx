@@ -108,7 +108,8 @@ export default function PatrociniosPage() {
 
   async function onCriar(values: NovoFormOutput) {
     try {
-      const dataIso = new Date(values.dataEvento).toISOString();
+      // Remove o 'Z' do ISO — backend espera LocalDateTime sem timezone
+      const dataIso = new Date(values.dataEvento).toISOString().slice(0, 19);
       await criar.mutateAsync({
         ...values,
         dataEvento: dataIso,
@@ -161,7 +162,15 @@ export default function PatrociniosPage() {
       acoes={
         <Button
           onClick={() => {
-            if (eventoConsultado) form.setValue("eventoId", eventoConsultado);
+            form.reset({
+              eventoId: eventoConsultado ?? "",
+              patrocinadorNome: "",
+              categoriaPatrocinio: "",
+              tipo: "MASTER",
+              modalidade: "FINANCEIRO",
+              valorContribuicao: 0,
+              dataEvento: "",
+            });
             setNovoAberto(true);
           }}
           className="bg-azul hover:bg-azul-light text-nevoa"

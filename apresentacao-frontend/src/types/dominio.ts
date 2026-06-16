@@ -14,8 +14,8 @@ export type StatusEvento =
   | "EM_ANALISE"
   | "APROVADO"
   | "REPROVADO"
-  | "CANCELADO"
-  | "FINALIZADO";
+  | "REALIZADO"
+  | "CANCELADO";
 
 export type StatusSorteio =
   | "INSCRICOES_ABERTAS"
@@ -75,3 +75,13 @@ export type TipoDesconto = "PERCENTUAL" | "VALOR_FIXO";
 export type AcaoAuditoria = "CRIADO" | "TRANSICAO_STATUS" | "REMOVIDO";
 
 export type StatusComentario = "ATIVO" | "DELETADO";
+
+export type RiderItem = {
+  nomeEquipamento: string;
+  quantidade: number;
+};
+
+export type DisponibilidadeEquipamento = {
+  disponivel: boolean;
+  quantidadeDisponivel: number;
+};

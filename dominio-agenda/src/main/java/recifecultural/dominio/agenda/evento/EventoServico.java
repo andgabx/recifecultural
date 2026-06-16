@@ -1,5 +1,7 @@
 package recifecultural.dominio.agenda.evento;
 
+import recifecultural.dominio.agenda.equipamento.RiderItem;
+
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
@@ -107,8 +109,20 @@ public class EventoServico {
         repositorio.atualizar(evento);
     }
 
+    public void cancelar(UUID id, String motivo) {
+        Evento evento = buscarOuLancar(id);
+        evento.cancelar(motivo);
+        repositorio.atualizar(evento);
+    }
+
     public void deletar(UUID id) {
         repositorio.deletar(id);
+    }
+
+    public void editarRider(UUID id, List<RiderItem> novosItens) {
+        Evento evento = buscarOuLancar(id);
+        evento.substituirRiderItems(novosItens);
+        repositorio.atualizar(evento);
     }
 
     public void editar(UUID id,

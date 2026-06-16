@@ -3,6 +3,7 @@ package recifecultural.dominio.agenda.equipamento;
 import recifecultural.dominio.agenda.evento.IEventoRepositorio;
 import recifecultural.dominio.compartilhado.notificacao.INotificacaoServico;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -27,39 +28,40 @@ public class AlocacaoRiderTecnicoServico {
     public void alocarEquipamentos(UUID eventoId,
                                     recifecultural.dominio.espaco.espaco.EspacoId espacoId,
                                     String nomeEquipamento,
-                                    int quantidadeNecessaria) {
+                                    int quantidadeNecessaria,
+                                    LocalDate inicio,
+                                    LocalDate fim) {
         List<Equipamento> disponiveis = equipamentoRepositorio
-                .buscarDisponiveisPorEspacoENome(espacoId, nomeEquipamento, quantidadeNecessaria);
+                .buscarDisponiveisPorEspacoENome(espacoId, nomeEquipamento, quantidadeNecessaria, inicio, fim);
 
-        if (disponiveis.size() < quantidadeNecessaria) {
-            throw new IllegalStateException(
-                    "Conflito de Infraestrutura: O espaço não possui "
-                    + quantidadeNecessaria + " unidades de '" + nomeEquipamento + "' disponíveis.");
+        int count = disponiveis.size();
+
+        if (count < quantidadeNecessaria) {
+            String mensagem = "Equipamento '" + nomeEquipamento + "' indisponível para o evento "
+                    + eventoId + ": solicitado " + quantidadeNecessaria + ", disponível " + count + ".";
+            notificacaoServico.enviarBroadcast(mensagem);
         }
 
         for (Equipamento eq : disponiveis) {
-            eq.alocarParaEvento(eventoId);
+            eq.alocarParaEvento(eventoId, inicio, fim);
             equipamentoRepositorio.atualizar(eq);
         }
     }
 
-    public void registrarManutencao(EquipamentoId equipamentoId) {
-        Equipamento equipamento = equipamentoRepositorio.obterPorId(equipamentoId)
-                .orElseThrow(() -> new IllegalArgumentException("Equipamento não encontrado."));
-
-        UUID eventoAfetadoId = equipamento.getEventoAlocadoId();
-
-        if (eventoAfetadoId != null) {
-            eventoRepositorio.obter(eventoAfetadoId).ifPresent(evento -> {
-                String mensagem = "ALERTA: O equipamento '" + equipamento.getNome()
-                        + "' alocado para o evento '" + evento.getTitulo()
-                        + "' foi para manutenção.";
-                notificacaoServico.enviarNotificacao(evento.getPromotorId(), mensagem);
-            });
+    public boolean verificarDisponibilidade(recifecultural.dominio.espaco.espaco.EspacoId espacoId,
+                                             String nomeEquipamento,
+                                             int quantidade,
+                                             LocalDate inicio,
+                                             LocalDate fim) {
+        List<Equipamento> disponiveis;
+        if (inicio != null && fim != null) {
+            disponiveis = equipamentoRepositorio
+                    .buscarDisponiveisPorEspacoENome(espacoId, nomeEquipamento, quantidade, inicio, fim);
+        } else {
+            disponiveis = equipamentoRepositorio
+                    .buscarDisponiveisPorEspacoENomeSemData(espacoId, nomeEquipamento, quantidade);
         }
-
-        equipamento.enviarParaManutencao();
-        equipamentoRepositorio.atualizar(equipamento);
+        return disponiveis.size() >= quantidade;
     }
 
     public void desmobilizarEquipamentosDoEvento(UUID eventoId) {

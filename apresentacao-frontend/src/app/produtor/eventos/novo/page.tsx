@@ -3,10 +3,11 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { ArrowLeft, Save, Sparkles } from "lucide-react";
+import { useFieldArray, useForm, Controller } from "react-hook-form";
+import { ArrowLeft, CheckCircle2, AlertTriangle, XCircle, Plus, Save, Sparkles, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
+import { useQuery } from "@tanstack/react-query";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -17,7 +18,9 @@ import { SeletorArtista, SeletorEspaco } from "@/components/form/Seletores";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { useCriarEvento } from "@/hooks/useEventosProdutor";
+import { useEquipamentosPorEspaco } from "@/hooks/useEquipamentos";
 import { IDENTIDADES_MOCK } from "@/lib/identidadeMock";
+import { api } from "@/lib/api";
 import type { ApiError } from "@/lib/api";
 
 const promotor = IDENTIDADES_MOCK.produtor;
@@ -53,6 +56,15 @@ const schema = z
       .uuid("Id do artista deve ser UUID")
       .optional()
       .or(z.literal("")),
+    riderItems: z
+      .array(
+        z.object({
+          nomeEquipamento: z.string().min(1, "Selecione um equipamento"),
+          quantidade: z.coerce.number().int().min(1, "Quantidade mínima é 1"),
+        }),
+      )
+      .optional()
+      .default([]),
   })
   .refine(
     (v) => {
@@ -91,6 +103,81 @@ const CATEGORIAS = [
   { value: "OUTROS", label: "Outros" },
 ];
 
+type DisponibilidadeResponse = {
+  disponivel: boolean;
+  quantidadeDisponivel: number;
+};
+
+function DisponibilidadeIndicator({
+  espacoId,
+  nome,
+  quantidade,
+  periodoInicio,
+  periodoFim,
+}: {
+  espacoId: string;
+  nome: string;
+  quantidade: number;
+  periodoInicio?: string;
+  periodoFim?: string;
+}) {
+  const enabled = Boolean(espacoId && nome.trim().length > 0 && quantidade >= 1);
+  const inicioDate = periodoInicio ? periodoInicio.slice(0, 10) : undefined;
+  const fimDate = periodoFim ? periodoFim.slice(0, 10) : undefined;
+
+  const { data, isLoading } = useQuery<DisponibilidadeResponse>({
+    queryKey: ["equipamentos", "disponibilidade", espacoId, nome.trim(), quantidade, inicioDate ?? null, fimDate ?? null],
+    queryFn: () =>
+      api
+        .get<DisponibilidadeResponse>("/equipamentos/disponibilidade", {
+          params: { espacoId, nome: nome.trim(), quantidade, ...(inicioDate && { inicio: inicioDate }), ...(fimDate && { fim: fimDate }) },
+        })
+        .then((r) => r.data),
+    enabled,
+    staleTime: 30_000,
+  });
+
+  if (!enabled) return null;
+
+  if (isLoading) {
+    return (
+      <span className="text-muted-foreground flex items-center gap-1 text-[11px]">
+        <LoadingSpinner className="h-3 w-3" />
+        Verificando…
+      </span>
+    );
+  }
+
+  if (!data) return null;
+
+  const qtdDisp = data.quantidadeDisponivel;
+
+  if (qtdDisp === 0) {
+    return (
+      <span className="text-destructive flex items-center gap-1 text-[11px]">
+        <XCircle className="h-3 w-3" />
+        Indisponível
+      </span>
+    );
+  }
+
+  if (qtdDisp < quantidade) {
+    return (
+      <span className="flex items-center gap-1 text-[11px] text-orange-600">
+        <AlertTriangle className="h-3 w-3" />
+        Apenas {qtdDisp} disponíveis
+      </span>
+    );
+  }
+
+  return (
+    <span className="flex items-center gap-1 text-[11px] text-green-600">
+      <CheckCircle2 className="h-3 w-3" />
+      {qtdDisp} disponíveis
+    </span>
+  );
+}
+
 export default function NovoEventoPage() {
   const router = useRouter();
   const criar = useCriarEvento();
@@ -109,8 +196,28 @@ export default function NovoEventoPage() {
       precoMeia: "" as unknown as number,
       primeiraApresentacao: "",
       artistaId: "",
+      riderItems: [],
     },
   });
+
+  const {
+    fields: riderFields,
+    append: appendRider,
+    remove: removeRider,
+  } = useFieldArray({
+    control: form.control,
+    name: "riderItems",
+  });
+
+  const localIdValue = form.watch("localId") ?? "";
+  const riderItemsValue = form.watch("riderItems") ?? [];
+
+  const { data: equipamentosDoEspaco } = useEquipamentosPorEspaco(
+    localIdValue || undefined,
+  );
+  const nomesUnicos = Array.from(
+    new Set((equipamentosDoEspaco ?? []).map((e) => e.nome)),
+  ).sort();
 
   async function onSubmit(values: CriarFormOutput) {
     try {
@@ -140,6 +247,10 @@ export default function NovoEventoPage() {
           typeof values.precoMeia === "number" ? values.precoMeia : undefined,
         artistas: values.artistaId ? [values.artistaId] : undefined,
         datasApresentacao: isoApresentacao ? [isoApresentacao] : undefined,
+        riderItems:
+          values.riderItems && values.riderItems.length > 0
+            ? values.riderItems
+            : undefined,
       });
       toast.success(
         `Evento "${values.titulo}" criado em rascunho. Id ${resposta.id.slice(0, 8)}…`,
@@ -273,6 +384,107 @@ export default function NovoEventoPage() {
                 {...form.register("primeiraApresentacao")}
               />
             </FormField>
+          </Card>
+
+          <Card className="space-y-5 p-6">
+            <div className="flex items-center justify-between gap-2">
+              <h2 className="font-display text-noite text-lg font-semibold">
+                Equipamentos
+                <span className="text-muted-foreground ml-2 text-sm font-normal">
+                  (opcional)
+                </span>
+              </h2>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={() => appendRider({ nomeEquipamento: "", quantidade: 1 })}
+              >
+                <Plus className="mr-1 h-3.5 w-3.5" />
+                Adicionar equipamento
+              </Button>
+            </div>
+
+            {riderFields.length === 0 ? (
+              <p className="text-muted-foreground text-sm">
+                Nenhum equipamento adicionado. Clique em "Adicionar equipamento" para incluir itens do rider técnico.
+              </p>
+            ) : (
+              <div className="space-y-2">
+                {/* cabeçalho alinhado com as colunas abaixo */}
+                <div className="grid grid-cols-[1fr_5rem_1fr_1.75rem] items-center gap-2 px-0.5 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                  <span>Equipamento</span>
+                  <span className="text-center">Qtd.</span>
+                  <span>Disponibilidade</span>
+                  <span />
+                </div>
+
+                {riderFields.map((field, index) => {
+                  const nomeValue = (form.watch(`riderItems.${index}.nomeEquipamento`) as string) ?? "";
+                  const qtdValue = Number(form.watch(`riderItems.${index}.quantidade`)) || 1;
+                  const nomeValido = nomeValue.trim().length > 0 && nomesUnicos.includes(nomeValue);
+
+                  return (
+                    <div key={field.id} className="grid grid-cols-[1fr_5rem_1fr_1.75rem] items-center gap-2">
+                      <Controller
+                        control={form.control}
+                        name={`riderItems.${index}.nomeEquipamento`}
+                        render={({ field }) => (
+                          <Select
+                            disabled={!localIdValue}
+                            {...field}
+                            value={field.value ?? ""}
+                          >
+                            <option value="">
+                              {localIdValue ? "Selecione" : "Selecione um espaço primeiro"}
+                            </option>
+                            {nomesUnicos.map((nome) => (
+                              <option key={nome} value={nome}>{nome}</option>
+                            ))}
+                          </Select>
+                        )}
+                      />
+
+                      <Input
+                        type="number"
+                        min={1}
+                        placeholder="1"
+                        {...form.register(`riderItems.${index}.quantidade`)}
+                      />
+
+                      <div>
+                        {localIdValue && nomeValido ? (
+                          <DisponibilidadeIndicator
+                            espacoId={localIdValue}
+                            nome={nomeValue}
+                            quantidade={qtdValue}
+                            periodoInicio={form.watch("periodoInicio") ?? ""}
+                            periodoFim={form.watch("periodoFim") ?? ""}
+                          />
+                        ) : (
+                          <span className="text-muted-foreground text-[11px]">—</span>
+                        )}
+                      </div>
+
+                      <Button
+                        type="button"
+                        size="icon-sm"
+                        variant="ghost"
+                        onClick={() => removeRider(index)}
+                        className="text-destructive hover:bg-destructive/10"
+                        aria-label="Remover equipamento"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </Button>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            <p className="text-muted-foreground text-xs">
+              Selecione um espaço para verificar a disponibilidade de cada equipamento em tempo real.
+            </p>
           </Card>
 
           <Card className="space-y-5 p-6">

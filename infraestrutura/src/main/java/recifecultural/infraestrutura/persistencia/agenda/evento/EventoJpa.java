@@ -42,6 +42,50 @@ public class EventoJpa {
     @CollectionTable(name = "evento_artista", joinColumns = @JoinColumn(name = "evento_id"))
     @Column(name = "artista_id")
     List<UUID> artistas = new ArrayList<>();
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "evento_rider_items", joinColumns = @JoinColumn(name = "evento_id"))
+    List<RiderItemJpa> riderItems = new ArrayList<>();
+
+    public List<RiderItemJpa> getRiderItems() {
+        return riderItems;
+    }
+
+    public void setRiderItems(List<RiderItemJpa> riderItems) {
+        this.riderItems = riderItems;
+    }
+
+    @Embeddable
+    public static class RiderItemJpa {
+        @Column(name = "nome_equipamento")
+        private String nomeEquipamento;
+
+        @Column(name = "quantidade")
+        private int quantidade;
+
+        public RiderItemJpa() {}
+
+        public RiderItemJpa(String nomeEquipamento, int quantidade) {
+            this.nomeEquipamento = nomeEquipamento;
+            this.quantidade = quantidade;
+        }
+
+        public String getNomeEquipamento() {
+            return nomeEquipamento;
+        }
+
+        public void setNomeEquipamento(String nomeEquipamento) {
+            this.nomeEquipamento = nomeEquipamento;
+        }
+
+        public int getQuantidade() {
+            return quantidade;
+        }
+
+        public void setQuantidade(int quantidade) {
+            this.quantidade = quantidade;
+        }
+    }
 }
 
 interface EventoJpaRepository extends JpaRepository<EventoJpa, UUID> {

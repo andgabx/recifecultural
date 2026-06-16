@@ -8,6 +8,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+import recifecultural.dominio.agenda.equipamento.RiderItem;
+
 public class Evento {
     private final UUID id;
     private final UUID promotorId;
@@ -24,6 +26,8 @@ public class Evento {
     private URI enderecoIngresso;
 
     private Preco preco;
+
+    private List<RiderItem> riderItems = new ArrayList<>();
 
     private StatusEvento status;
     private FeedbackReprovacao feedbackReprovacao;
@@ -304,6 +308,21 @@ public class Evento {
                 this.preco != null ? this.preco.getInteira() : null,
                 this.preco != null ? this.preco.getMeia() : null,
                 novoPrecoSocial);
+    }
+
+    public void adicionarRiderItem(String nome, int qtd) {
+        this.riderItems.add(new RiderItem(nome, qtd));
+    }
+
+    public void substituirRiderItems(List<RiderItem> novosItens) {
+        this.riderItems.clear();
+        if (novosItens != null) {
+            this.riderItems.addAll(novosItens);
+        }
+    }
+
+    public List<RiderItem> getRiderItems() {
+        return Collections.unmodifiableList(riderItems);
     }
 
     public static class EventoEvento {

@@ -14,7 +14,7 @@ public class EquipamentoMapeador {
             @Override
             protected Equipamento convert(EquipamentoJpa s) {
                 return new Equipamento(new EquipamentoId(s.id), new EspacoId(s.espacoId),
-                        s.nome, s.status, s.eventoAlocadoId);
+                        s.nome, s.status, s.eventoAlocadoId, s.alocacaoInicio, s.alocacaoFim);
             }
         });
 
@@ -27,6 +27,8 @@ public class EquipamentoMapeador {
                 jpa.nome = s.getNome();
                 jpa.status = s.getStatus();
                 jpa.eventoAlocadoId = s.getEventoAlocadoId();
+                jpa.alocacaoInicio = s.getAlocacaoInicio();
+                jpa.alocacaoFim = s.getAlocacaoFim();
                 return jpa;
             }
         });

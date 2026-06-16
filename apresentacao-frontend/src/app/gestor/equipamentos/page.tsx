@@ -1,10 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { createPortal } from "react-dom";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { CircleCheck, Plus, Speaker, Trash2, Wrench } from "lucide-react";
+import {
+  CalendarDays,
+  ChevronLeft,
+  ChevronRight,
+  CircleCheck,
+  Plus,
+  Speaker,
+  Trash2,
+  Wrench,
+} from "lucide-react";
 import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
@@ -26,7 +36,9 @@ import {
   useMarcarManutencao,
   useRemoverEquipamento,
 } from "@/hooks/useEquipamentos";
+import { useEventos } from "@/hooks/useEventos";
 import type { ApiError } from "@/lib/api";
+import { cn } from "@/lib/utils";
 import type {
   EquipamentoResumo,
   StatusEquipamento,
@@ -55,6 +67,199 @@ const cadastroSchema = z.object({
 });
 type CadastroForm = z.infer<typeof cadastroSchema>;
 
+const DIAS_SEMANA = ["D", "S", "T", "Q", "Q", "S", "S"];
+
+const MESES = [
+  "janeiro", "fevereiro", "março", "abril", "maio", "junho",
+  "julho", "agosto", "setembro", "outubro", "novembro", "dezembro",
+];
+
+function statusEfetivo(e: EquipamentoResumo): StatusEquipamento {
+  if (e.status === "ALOCADO" && e.alocacaoInicio && e.alocacaoFim) {
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+    const inicio = new Date(e.alocacaoInicio + "T00:00:00");
+    const fim = new Date(e.alocacaoFim + "T00:00:00");
+    if (hoje < inicio || hoje > fim) return "DISPONIVEL";
+  }
+  return e.status;
+}
+
+function MiniCalendario({
+  inicio,
+  fim,
+  onClose,
+  anchorEl,
+}: {
+  inicio: string;
+  fim: string;
+  onClose: () => void;
+  anchorEl: HTMLElement | null;
+}) {
+  const inicioDate = new Date(inicio + "T00:00:00");
+  const fimDate = new Date(fim + "T00:00:00");
+
+  const [mesAtual, setMesAtual] = useState(
+    () => new Date(inicioDate.getFullYear(), inicioDate.getMonth(), 1),
+  );
+
+  const ref = useRef<HTMLDivElement>(null);
+
+  const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
+
+  useEffect(() => {
+    if (anchorEl) {
+      const rect = anchorEl.getBoundingClientRect();
+      setPos({
+        top: rect.bottom + 4 + window.scrollY,
+        left: Math.max(rect.right - 240 + window.scrollX, 8),
+      });
+    }
+  }, [anchorEl]);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      const target = e.target as Node;
+      const dentroCalendario = ref.current?.contains(target);
+      const dentroAnchor = anchorEl?.contains(target);
+      if (!dentroCalendario && !dentroAnchor) {
+        onClose();
+      }
+    }
+    const id = setTimeout(() => {
+      document.addEventListener("mousedown", handleClickOutside);
+    }, 0);
+    return () => {
+      clearTimeout(id);
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [onClose, anchorEl]);
+
+  const ano = mesAtual.getFullYear();
+  const mes = mesAtual.getMonth();
+  const primeiroDia = new Date(ano, mes, 1).getDay();
+  const diasNoMes = new Date(ano, mes + 1, 0).getDate();
+
+  function isAlocado(dia: number) {
+    const data = new Date(ano, mes, dia);
+    return data >= inicioDate && data <= fimDate;
+  }
+
+  function isHoje(dia: number) {
+    const hoje = new Date();
+    return (
+      dia === hoje.getDate() &&
+      mes === hoje.getMonth() &&
+      ano === hoje.getFullYear()
+    );
+  }
+
+  if (!pos) return null;
+
+  return createPortal(
+    <div
+      ref={ref}
+      style={{ top: pos.top, left: pos.left }}
+      className="fixed z-50 w-60 rounded-xl border bg-nevoa-card p-3 shadow-lg"
+    >
+      <div className="mb-2 flex items-center justify-between">
+        <button
+          type="button"
+          onClick={() => setMesAtual(new Date(ano, mes - 1, 1))}
+          className="rounded p-0.5 hover:bg-nevoa-muted"
+        >
+          <ChevronLeft className="h-3.5 w-3.5" />
+        </button>
+        <span className="text-xs font-semibold capitalize">
+          {MESES[mes]} {ano}
+        </span>
+        <button
+          type="button"
+          onClick={() => setMesAtual(new Date(ano, mes + 1, 1))}
+          className="rounded p-0.5 hover:bg-nevoa-muted"
+        >
+          <ChevronRight className="h-3.5 w-3.5" />
+        </button>
+      </div>
+
+      <div className="mb-1 grid grid-cols-7 gap-0.5">
+        {DIAS_SEMANA.map((d, i) => (
+          <div
+            key={i}
+            className="text-muted-foreground text-center text-[10px]"
+          >
+            {d}
+          </div>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-7 gap-0.5">
+        {Array.from({ length: primeiroDia }).map((_, i) => (
+          <div key={"v" + i} />
+        ))}
+        {Array.from({ length: diasNoMes }).map((_, i) => {
+          const dia = i + 1;
+          const alocado = isAlocado(dia);
+          const hoje = isHoje(dia);
+          return (
+            <div
+              key={dia}
+              className={cn(
+                "flex h-6 w-6 items-center justify-center rounded-full text-[11px]",
+                alocado && "bg-violeta-dark font-semibold text-white",
+                !alocado && hoje && "ring-1 ring-azul font-semibold",
+                !alocado && !hoje && "text-foreground",
+              )}
+            >
+              {dia}
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="mt-2 flex items-center gap-1.5 border-t pt-2">
+        <div className="h-2.5 w-2.5 rounded-full bg-violeta-dark" />
+        <span className="text-muted-foreground text-[10px]">Alocado</span>
+      </div>
+    </div>,
+    document.body,
+  );
+}
+
+function CalendarioAlocacao({
+  inicio,
+  fim,
+}: {
+  inicio: string;
+  fim: string;
+}) {
+  const [aberto, setAberto] = useState(false);
+  const btnRef = useRef<HTMLButtonElement>(null);
+
+  return (
+    <>
+      <Button
+        ref={btnRef}
+        size="icon-sm"
+        variant="ghost"
+        onClick={() => setAberto((v) => !v)}
+        aria-label="Ver calendário de alocação"
+        className="text-violeta-dark hover:bg-violeta"
+      >
+        <CalendarDays className="h-3.5 w-3.5" />
+      </Button>
+      {aberto && (
+        <MiniCalendario
+          inicio={inicio}
+          fim={fim}
+          onClose={() => setAberto(false)}
+          anchorEl={btnRef.current}
+        />
+      )}
+    </>
+  );
+}
+
 export default function EquipamentosPage() {
   const [espacoId, setEspacoId] = useState<string>("");
   const { data, isLoading, isError } = useEquipamentosPorEspaco(
@@ -64,6 +269,12 @@ export default function EquipamentosPage() {
   const manutencao = useMarcarManutencao(espacoId || undefined);
   const liberar = useLiberarEquipamento(espacoId || undefined);
   const remover = useRemoverEquipamento(espacoId || undefined);
+
+  const { data: eventos } = useEventos();
+  const tituloEvento = (id: string | null | undefined) => {
+    if (!id) return null;
+    return eventos?.find((e) => e.id === id)?.titulo ?? id.slice(0, 8) + "…";
+  };
 
   const [cadastroAberto, setCadastroAberto] = useState(false);
   const [paraRemover, setParaRemover] = useState<EquipamentoResumo | null>(
@@ -135,17 +346,16 @@ export default function EquipamentosPage() {
     },
     {
       header: "Status",
-      cell: (e) => (
-        <Badge variant={statusVariant[e.status]}>{statusLabel[e.status]}</Badge>
-      ),
+      cell: (e) => {
+        const s = statusEfetivo(e);
+        return <Badge variant={statusVariant[s]}>{statusLabel[s]}</Badge>;
+      },
     },
     {
       header: "Evento alocado",
       cell: (e) =>
         e.eventoAlocadoId ? (
-          <span className="font-mono text-xs">
-            {e.eventoAlocadoId.slice(0, 8)}…
-          </span>
+          <span className="text-xs">{tituloEvento(e.eventoAlocadoId)}</span>
         ) : (
           <span className="text-muted-foreground text-xs">—</span>
         ),
@@ -155,6 +365,9 @@ export default function EquipamentosPage() {
       width: "1%",
       cell: (e) => (
         <div className="flex items-center justify-end gap-1">
+          {e.status === "ALOCADO" && e.alocacaoInicio && e.alocacaoFim && (
+            <CalendarioAlocacao inicio={e.alocacaoInicio} fim={e.alocacaoFim} />
+          )}
           {e.status !== "EM_MANUTENCAO" && (
             <Button
               size="icon-sm"
@@ -179,17 +392,15 @@ export default function EquipamentosPage() {
               <CircleCheck className="h-3.5 w-3.5" />
             </Button>
           )}
-          {e.status !== "ALOCADO" && (
-            <Button
-              size="icon-sm"
-              variant="ghost"
-              onClick={() => setParaRemover(e)}
-              aria-label="Remover"
-              className="text-destructive hover:bg-destructive/10"
-            >
-              <Trash2 className="h-3.5 w-3.5" />
-            </Button>
-          )}
+          <Button
+            size="icon-sm"
+            variant="ghost"
+            onClick={() => setParaRemover(e)}
+            aria-label="Remover"
+            className="text-destructive hover:bg-destructive/10"
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+          </Button>
         </div>
       ),
     },
@@ -323,11 +534,18 @@ export default function EquipamentosPage() {
         title="Remover equipamento?"
         description={
           paraRemover && (
-            <p>
-              O equipamento{" "}
-              <span className="font-semibold">{paraRemover.nome}</span> será
-              removido do inventário do espaço. Esta ação não pode ser desfeita.
-            </p>
+            <div className="space-y-2">
+              {paraRemover.status === "ALOCADO" && (
+                <p className="text-destructive font-medium">
+                  Este equipamento está alocado a um evento. O produtor será notificado.
+                </p>
+              )}
+              <p>
+                O equipamento{" "}
+                <span className="font-semibold">{paraRemover.nome}</span> será
+                removido do inventário do espaço. Esta ação não pode ser desfeita.
+              </p>
+            </div>
           )
         }
         confirmLabel="Remover"

@@ -1,5 +1,6 @@
 package recifecultural.dominio.agenda.equipamento;
 
+import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -11,6 +12,8 @@ public class Equipamento {
     private String nome;
     private StatusEquipamento status;
     private UUID eventoAlocadoId;
+    private LocalDate alocacaoInicio;
+    private LocalDate alocacaoFim;
 
     public Equipamento(EspacoId espacoId, String nome) {
         if (espacoId == null) throw new IllegalArgumentException("Espaço é obrigatório.");
@@ -21,6 +24,8 @@ public class Equipamento {
         this.nome = nome;
         this.status = StatusEquipamento.DISPONIVEL;
         this.eventoAlocadoId = null;
+        this.alocacaoInicio = null;
+        this.alocacaoFim = null;
     }
 
     public Equipamento(EquipamentoId id, EspacoId espacoId, String nome,
@@ -30,14 +35,30 @@ public class Equipamento {
         this.nome = nome;
         this.status = status;
         this.eventoAlocadoId = eventoAlocadoId;
+        this.alocacaoInicio = null;
+        this.alocacaoFim = null;
     }
 
-    public void alocarParaEvento(UUID eventoId) {
+    public Equipamento(EquipamentoId id, EspacoId espacoId, String nome,
+                       StatusEquipamento status, UUID eventoAlocadoId,
+                       LocalDate alocacaoInicio, LocalDate alocacaoFim) {
+        this.id = id;
+        this.espacoId = espacoId;
+        this.nome = nome;
+        this.status = status;
+        this.eventoAlocadoId = eventoAlocadoId;
+        this.alocacaoInicio = alocacaoInicio;
+        this.alocacaoFim = alocacaoFim;
+    }
+
+    public void alocarParaEvento(UUID eventoId, LocalDate inicio, LocalDate fim) {
         if (this.status != StatusEquipamento.DISPONIVEL) {
             throw new IllegalStateException("O equipamento '" + this.nome + "' não está disponível para alocação.");
         }
         this.status = StatusEquipamento.ALOCADO;
         this.eventoAlocadoId = eventoId;
+        this.alocacaoInicio = inicio;
+        this.alocacaoFim = fim;
     }
 
     public Optional<EmManutencaoEvento> enviarParaManutencao() {
@@ -53,6 +74,8 @@ public class Equipamento {
     public void liberar() {
         this.status = StatusEquipamento.DISPONIVEL;
         this.eventoAlocadoId = null;
+        this.alocacaoInicio = null;
+        this.alocacaoFim = null;
     }
 
     public EquipamentoId getId() { return id; }
@@ -60,6 +83,8 @@ public class Equipamento {
     public String getNome() { return nome; }
     public StatusEquipamento getStatus() { return status; }
     public UUID getEventoAlocadoId() { return eventoAlocadoId; }
+    public LocalDate getAlocacaoInicio() { return alocacaoInicio; }
+    public LocalDate getAlocacaoFim() { return alocacaoFim; }
 
     public static class EquipamentoEvento {
         private final Equipamento equipamento;

@@ -8,6 +8,7 @@ import recifecultural.dominio.agenda.evento.Periodo;
 import recifecultural.dominio.agenda.evento.Preco;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class EventoMapeador {
 
@@ -15,7 +16,7 @@ public class EventoMapeador {
         mapper.addConverter(new AbstractConverter<EventoJpa, Evento>() {
             @Override
             protected Evento convert(EventoJpa s) {
-                return new Evento(
+                Evento evento = new Evento(
                         s.id, s.promotorId, s.localId,
                         s.titulo, s.descricaoCurta, s.descricaoLonga,
                         new Periodo(s.periodoInicio, s.periodoFim),
@@ -30,6 +31,14 @@ public class EventoMapeador {
                         s.requerRevisaoAdicional,
                         s.motivoCancelamento
                 );
+                if (s.riderItems != null) {
+                    for (EventoJpa.RiderItemJpa item : s.riderItems) {
+                        if (item != null && item.getNomeEquipamento() != null) {
+                            evento.adicionarRiderItem(item.getNomeEquipamento(), item.getQuantidade());
+                        }
+                    }
+                }
+                return evento;
             }
         });
 
@@ -60,6 +69,11 @@ public class EventoMapeador {
                 jpa.motivoCancelamento = s.getMotivoCancelamento();
                 jpa.datasApresentacao = new ArrayList<>(s.getDatasApresentacao());
                 jpa.artistas = new ArrayList<>(s.getArtistas());
+                List<EventoJpa.RiderItemJpa> riderItemsJpa = new ArrayList<>();
+                for (var item : s.getRiderItems()) {
+                    riderItemsJpa.add(new EventoJpa.RiderItemJpa(item.getNomeEquipamento(), item.getQuantidade()));
+                }
+                jpa.setRiderItems(riderItemsJpa);
                 return jpa;
             }
         });

@@ -12,4 +12,5 @@ public interface EventoResumoExpandido extends EventoResumo {
     String getPrecoSocial();
     List<String> getArtistas();
     List<ApresentacaoResumo> getApresentacoes();
+    List<RiderItemResposta> getRiderItems();
 }

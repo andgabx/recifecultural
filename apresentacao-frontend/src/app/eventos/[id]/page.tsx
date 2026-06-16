@@ -35,7 +35,7 @@ const formatarMoeda = (valor: string | number) =>
 
 export default function EventoDetalhePage() {
   const params = useParams<{ id: string }>();
-  const { papel } = useRole();
+  const { papel } = useRole()d;
   const usuario = IDENTIDADES_MOCK[papel];
 
   const { data: evento, isLoading, isError } = useEvento(params.id);

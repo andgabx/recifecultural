@@ -8,6 +8,7 @@ import recifecultural.aplicacao.agenda.evento.EventoResumo;
 import recifecultural.aplicacao.agenda.evento.EventoResumoExpandido;
 import recifecultural.aplicacao.agenda.evento.EventoServicoAplicacao;
 import recifecultural.aplicacao.agenda.evento.EventoServicoAplicacao.CriarEventoComando;
+import recifecultural.aplicacao.agenda.evento.EventoServicoAplicacao.RiderItemComando;
 import recifecultural.aplicacao.agenda.evento.EventoServicoAplicacao.EditarEventoComando;
 import recifecultural.apresentacao.bff.AbstractBffControlador;
 import org.springframework.http.ResponseEntity;
@@ -62,7 +63,11 @@ public class EventoBffControlador extends AbstractBffControlador {
                 req.precoInteira(),
                 req.precoMeia(),
                 req.artistas(),
-                req.datasApresentacao()
+                req.datasApresentacao(),
+                req.riderItems() == null ? null :
+                        req.riderItems().stream()
+                                .map(r -> new RiderItemComando(r.nomeEquipamento(), r.quantidade()))
+                                .toList()
         ));
         return responderCriado(id.toString());
     }
@@ -83,7 +88,11 @@ public class EventoBffControlador extends AbstractBffControlador {
                 req.precoInteira(),
                 req.precoMeia(),
                 req.artistas(),
-                req.datasApresentacao()
+                req.datasApresentacao(),
+                        req.riderItems() == null ? null :
+                        req.riderItems().stream()
+                                .map(r -> new RiderItemComando(r.nomeEquipamento(), r.quantidade()))
+                                .toList()
         ));
         return responderSemConteudo();
     }
@@ -110,6 +119,8 @@ public class EventoBffControlador extends AbstractBffControlador {
         return responderSemConteudo();
     }
 
+    public record RiderItemRequisicao(String nomeEquipamento, int quantidade) {}
+
     public record CriarEventoRequisicao(
             UUID promotorId,
             UUID localId,
@@ -122,7 +133,8 @@ public class EventoBffControlador extends AbstractBffControlador {
             BigDecimal precoInteira,
             BigDecimal precoMeia,
             List<UUID> artistas,
-            List<LocalDateTime> datasApresentacao
+            List<LocalDateTime> datasApresentacao,
+            List<RiderItemRequisicao> riderItems
     ) {}
 
     public record EditarEventoRequisicao(
@@ -136,6 +148,7 @@ public class EventoBffControlador extends AbstractBffControlador {
             BigDecimal precoInteira,
             BigDecimal precoMeia,
             List<UUID> artistas,
-            List<LocalDateTime> datasApresentacao
+            List<LocalDateTime> datasApresentacao,
+            List<RiderItemRequisicao> riderItems
     ) {}
 }

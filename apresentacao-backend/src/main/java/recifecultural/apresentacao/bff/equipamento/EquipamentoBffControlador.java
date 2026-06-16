@@ -6,8 +6,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import recifecultural.aplicacao.agenda.equipamento.EquipamentoServicoAplicacao;
 import recifecultural.aplicacao.agenda.equipamento.EquipamentoServicoAplicacao.EquipamentoResumo;
+import recifecultural.aplicacao.agenda.equipamento.EquipamentoServicoAplicacao.DisponibilidadeEquipamento;
 import recifecultural.apresentacao.bff.AbstractBffControlador;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -57,5 +59,19 @@ public class EquipamentoBffControlador extends AbstractBffControlador {
         return responderSemConteudo();
     }
 
+    @Operation(summary = "Verifica disponibilidade de equipamentos por espaço e nome")
+    @GetMapping("/disponibilidade")
+    public ResponseEntity<DisponibilidadeResposta> verificarDisponibilidade(
+            @RequestParam UUID espacoId,
+            @RequestParam String nome,
+            @RequestParam int quantidade,
+            @RequestParam(required = false) LocalDate inicio,
+            @RequestParam(required = false) LocalDate fim) {
+        DisponibilidadeEquipamento resultado = servico.verificarDisponibilidade(espacoId, nome, quantidade, inicio, fim);
+        return responder(new DisponibilidadeResposta(resultado.disponivel(), resultado.quantidadeDisponivel()));
+    }
+
     public record AdquirirRequisicao(String espacoId, String nome) {}
+
+    public record DisponibilidadeResposta(boolean disponivel, int quantidadeDisponivel) {}
 }

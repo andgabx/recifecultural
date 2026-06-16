@@ -4,8 +4,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { useFieldArray, useForm } from "react-hook-form";
-import { ArrowLeft, Lock, Plus, Save, Trash2 } from "lucide-react";
+import { useFieldArray, useForm, Controller } from "react-hook-form";
+import { ArrowLeft, CheckCircle2, Lock, Plus, Save, Trash2, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -22,6 +22,7 @@ import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { PageLayout } from "@/components/layout/PageLayout";
 import { useEvento } from "@/hooks/useEventos";
 import { useEditarEvento } from "@/hooks/useEventosProdutor";
+import { useVerificarDisponibilidade, useEquipamentosPorEspaco } from "@/hooks/useEquipamentos";
 import { IDENTIDADES_MOCK } from "@/lib/identidadeMock";
 import type { ApiError } from "@/lib/api";
 
@@ -32,14 +33,29 @@ const schema = z
     titulo: z.string().min(3, "Título precisa ter ao menos 3 caracteres"),
     descricaoCurta: z.string().max(280).optional().or(z.literal("")),
     descricaoLonga: z.string().optional().or(z.literal("")),
-    categoria: z.enum(["TEATRO", "DANCA", "MUSICA", "INFANTIL", "OUTROS"]),
-    localId: z.string().uuid().optional().or(z.literal("")),
-    periodoInicio: z.string().min(1, "Informe quando começa"),
-    periodoFim: z.string().min(1, "Informe quando termina"),
+    categoria: z.enum(["TEATRO", "DANCA", "MUSICA", "INFANTIL", "OUTROS"], {
+      message: "esse campo deve ser preenchido",
+    }),
+    localId: z.string().optional().or(z.literal("")),
+    periodoInicio: z.string().min(1, "esse campo deve ser preenchido"),
+    periodoFim: z.string().min(1, "esse campo deve ser preenchido"),
     precoInteira: z.coerce.number().nonnegative().optional().or(z.literal("")),
     precoMeia: z.coerce.number().nonnegative().optional().or(z.literal("")),
-    apresentacoes: z.array(z.object({ dataHora: z.string().min(1) })).min(1, "Adicione ao menos uma data de apresentação"),
-    artistaId: z.string().uuid().optional().or(z.literal("")),
+    apresentacoes: z.array(z.object({ dataHora: z.string().min(1, "esse campo deve ser preenchido") })).min(1, "Adicione ao menos uma data de apresentação"),
+    artistaId: z
+      .string()
+      .uuid("Id do artista deve ser UUID")
+      .optional()
+      .or(z.literal("")),
+    riderItems: z
+      .array(
+        z.object({
+          nomeEquipamento: z.string().min(1, "Selecione um equipamento"),
+          quantidade: z.coerce.number().int().min(1, "Quantidade mínima é 1"),
+        }),
+      )
+      .optional()
+      .default([]),
   })
   .refine(
     (v) => new Date(v.periodoFim).getTime() >= new Date(v.periodoInicio).getTime(),
@@ -66,6 +82,114 @@ const CATEGORIAS = [
 
 const toLocalInput = (iso?: string) => (iso ? iso.slice(0, 16) : "");
 
+// Sub-component that checks availability for a single rider row
+function RiderItemRow({
+  index,
+  espacoId,
+  editavel,
+  nomesUnicos,
+  nomeEquipamento,
+  quantidade,
+  onRemove,
+  control,
+  register,
+  periodoInicio,
+  periodoFim,
+}: {
+  index: number;
+  espacoId: string;
+  editavel: boolean;
+  nomesUnicos: string[];
+  nomeEquipamento: string;
+  quantidade: number;
+  onRemove: () => void;
+  control: ReturnType<typeof useForm<EditarFormInput, unknown, EditarFormOutput>>["control"];
+  register: ReturnType<typeof useForm<EditarFormInput, unknown, EditarFormOutput>>["register"];
+  periodoInicio?: string;
+  periodoFim?: string;
+}) {
+  const { quantidadeDisponivel: qtdDisp, isLoading: isFetching } = useVerificarDisponibilidade(
+    espacoId || undefined,
+    nomeEquipamento,
+    quantidade,
+    periodoInicio,
+    periodoFim,
+  );
+
+  const nomeValido = nomeEquipamento.trim().length > 0 && nomesUnicos.includes(nomeEquipamento);
+
+  return (
+    <div className="grid grid-cols-[1fr_5rem_1fr_1.75rem] items-center gap-2">
+      <Controller
+        control={control}
+        name={`riderItems.${index}.nomeEquipamento`}
+        render={({ field }) => (
+          <Select
+            disabled={!editavel || !espacoId}
+            {...field}
+            value={field.value ?? ""}
+          >
+            <option value="">
+              {espacoId ? "Selecione" : "Selecione um espaço primeiro"}
+            </option>
+            {nomesUnicos.map((nome) => (
+              <option key={nome} value={nome}>{nome}</option>
+            ))}
+          </Select>
+        )}
+      />
+
+      <Input
+        type="number"
+        min={1}
+        disabled={!editavel}
+        {...register(`riderItems.${index}.quantidade`)}
+      />
+
+      <div>
+        {espacoId && nomeValido ? (
+          isFetching ? (
+            <span className="text-muted-foreground flex items-center gap-1 text-[11px]">
+              <LoadingSpinner className="h-3 w-3" />
+              Verificando…
+            </span>
+          ) : qtdDisp === 0 ? (
+            <span className="text-destructive flex items-center gap-1 text-[11px]">
+              <XCircle className="h-3.5 w-3.5" />
+              Indisponível
+            </span>
+          ) : qtdDisp !== undefined && qtdDisp < quantidade ? (
+            <span className="flex items-center gap-1 text-[11px] text-orange-600">
+              <CheckCircle2 className="h-3 w-3" />
+              Apenas {qtdDisp} disponíveis
+            </span>
+          ) : qtdDisp !== undefined ? (
+            <span className="flex items-center gap-1 text-[11px] text-green-600">
+              <CheckCircle2 className="h-3 w-3" />
+              {qtdDisp} disponíveis
+            </span>
+          ) : null
+        ) : (
+          <span className="text-muted-foreground text-[11px]">—</span>
+        )}
+      </div>
+
+      {editavel && (
+        <Button
+          type="button"
+          size="icon-sm"
+          variant="ghost"
+          onClick={onRemove}
+          className="text-destructive hover:bg-destructive/10"
+          aria-label="Remover equipamento"
+        >
+          <Trash2 className="h-3.5 w-3.5" />
+        </Button>
+      )}
+    </div>
+  );
+}
+
 export default function EditarEventoPage() {
   const params = useParams<{ id: string }>();
   const router = useRouter();
@@ -86,12 +210,22 @@ export default function EditarEventoPage() {
       precoMeia: "" as unknown as number,
       apresentacoes: [{ dataHora: "" }],
       artistaId: "",
+      riderItems: [],
     },
   });
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: "apresentacoes",
+  });
+
+  const {
+    fields: riderFields,
+    append: appendRider,
+    remove: removeRider,
+  } = useFieldArray({
+    control: form.control,
+    name: "riderItems",
   });
 
   // Pré-preenche o form quando o evento carrega
@@ -101,6 +235,13 @@ export default function EditarEventoPage() {
     const datas = evento.apresentacoes && evento.apresentacoes.length > 0
       ? evento.apresentacoes.map((a) => ({ dataHora: toLocalInput(a.dataHora) }))
       : [{ dataHora: "" }];
+    const rider =
+      evento.riderItems && evento.riderItems.length > 0
+        ? evento.riderItems.map((r) => ({
+            nomeEquipamento: r.nomeEquipamento,
+            quantidade: r.quantidade,
+          }))
+        : [];
     form.reset({
       titulo: evento.titulo ?? "",
       descricaoCurta: evento.descricaoCurta ?? "",
@@ -118,6 +259,7 @@ export default function EditarEventoPage() {
         : ("" as unknown as number),
       apresentacoes: datas,
       artistaId: "",
+      riderItems: rider,
     });
   }, [evento, form]);
 
@@ -140,6 +282,10 @@ export default function EditarEventoPage() {
           artistas: values.artistaId ? [values.artistaId] : undefined,
           datasApresentacao: values.apresentacoes
             .map((a) => new Date(a.dataHora).toISOString()),
+          riderItems:
+            values.riderItems && values.riderItems.length > 0
+              ? values.riderItems
+              : undefined,
         },
       });
       toast.success("Evento atualizado");
@@ -150,6 +296,11 @@ export default function EditarEventoPage() {
   }
 
   // Renderização condicional
+  const espacoIdAtual = form.watch("localId") ?? "";
+  const { data: equipamentosDoEspaco } = useEquipamentosPorEspaco(
+    espacoIdAtual || undefined,
+  );
+
   if (isLoading) {
     return (
       <PageLayout titulo="Editar evento">
@@ -171,6 +322,10 @@ export default function EditarEventoPage() {
   }
 
   const editavel = evento.status === "RASCUNHO";
+
+  const nomesUnicos = Array.from(
+    new Set((equipamentosDoEspaco ?? []).map((e) => e.nome)),
+  ).sort();
 
   return (
     <PageLayout
@@ -202,7 +357,18 @@ export default function EditarEventoPage() {
       )}
 
       <form
-        onSubmit={form.handleSubmit(onSubmit)}
+        onSubmit={form.handleSubmit(onSubmit, (errors) => {
+          const primeiro = Object.values(errors)
+            .flatMap((e) =>
+              e && typeof e === "object" && "message" in e
+                ? [(e as { message?: string }).message]
+                : Object.values(e ?? {}).map(
+                    (nested) => (nested as { message?: string })?.message,
+                  ),
+            )
+            .find(Boolean);
+          toast.error(primeiro ?? "Verifique os campos obrigatórios.");
+        })}
         className="grid gap-6 lg:grid-cols-[1fr_320px]"
       >
         <div className="space-y-6">
@@ -219,7 +385,12 @@ export default function EditarEventoPage() {
               <Input id="titulo" disabled={!editavel} {...form.register("titulo")} />
             </FormField>
             <div className="grid gap-4 sm:grid-cols-2">
-              <FormField label="Categoria" htmlFor="categoria" required>
+              <FormField
+                label="Categoria"
+                htmlFor="categoria"
+                required
+                error={form.formState.errors.categoria?.message}
+              >
                 <Select
                   id="categoria"
                   disabled={!editavel}
@@ -392,6 +563,71 @@ export default function EditarEventoPage() {
                 onChange={(v) => editavel && form.setValue("artistaId", v)}
               />
             </FormField>
+          </Card>
+
+          <Card className="space-y-5 p-6">
+            <div className="flex items-center justify-between gap-2">
+              <h2 className="font-display text-noite text-lg font-semibold">
+                Equipamentos
+                <span className="text-muted-foreground ml-2 text-sm font-normal">
+                  (opcional)
+                </span>
+              </h2>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                disabled={!editavel}
+                onClick={() => appendRider({ nomeEquipamento: "", quantidade: 1 })}
+              >
+                <Plus className="mr-1 h-3.5 w-3.5" />
+                Adicionar equipamento
+              </Button>
+            </div>
+
+            {riderFields.length === 0 ? (
+              <p className="text-muted-foreground text-sm">
+                Nenhum equipamento no rider. Clique em "Adicionar equipamento" para incluir itens.
+              </p>
+            ) : (
+              <div className="space-y-2">
+                <div className="grid grid-cols-[1fr_5rem_1fr_1.75rem] gap-2 px-0.5 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                  <span>Equipamento</span>
+                  <span className="text-center">Qtd.</span>
+                  <span>Disponibilidade</span>
+                  <span />
+                </div>
+                {riderFields.map((field, index) => {
+                  const nomeAtual = (form.watch(`riderItems.${index}.nomeEquipamento`) as string) ?? "";
+                  const qtdAtual = Number(form.watch(`riderItems.${index}.quantidade`)) || 1;
+                  return (
+                    <RiderItemRow
+                      key={field.id}
+                      index={index}
+                      espacoId={espacoIdAtual}
+                      editavel={editavel}
+                      nomesUnicos={nomesUnicos}
+                      nomeEquipamento={nomeAtual}
+                      quantidade={qtdAtual}
+                      onRemove={() => removeRider(index)}
+                      control={form.control}
+                      register={form.register}
+                      periodoInicio={form.watch("periodoInicio") ?? ""}
+                      periodoFim={form.watch("periodoFim") ?? ""}
+                    />
+                  );
+                })}
+              </div>
+            )}
+
+            <p className="text-muted-foreground text-xs">
+              O rider técnico é alocado automaticamente quando o evento for aprovado.
+              {!espacoIdAtual && (
+                <span className="text-laranja ml-1">
+                  Selecione um espaço para verificar disponibilidade.
+                </span>
+              )}
+            </p>
           </Card>
         </div>
 

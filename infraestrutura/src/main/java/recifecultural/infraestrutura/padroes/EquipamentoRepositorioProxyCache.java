@@ -5,6 +5,7 @@ import recifecultural.dominio.agenda.equipamento.EquipamentoId;
 import recifecultural.dominio.agenda.equipamento.IEquipamentoRepositorio;
 import recifecultural.dominio.espaco.espaco.EspacoId;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -55,8 +56,13 @@ public class EquipamentoRepositorioProxyCache implements IEquipamentoRepositorio
     }
 
     @Override
-    public List<Equipamento> buscarDisponiveisPorEspacoENome(EspacoId espacoId, String nome, int quantidade) {
-        return delegado.buscarDisponiveisPorEspacoENome(espacoId, nome, quantidade);
+    public List<Equipamento> buscarDisponiveisPorEspacoENome(EspacoId espacoId, String nome, int quantidade, LocalDate inicio, LocalDate fim) {
+        return delegado.buscarDisponiveisPorEspacoENome(espacoId, nome, quantidade, inicio, fim);
+    }
+
+    @Override
+    public List<Equipamento> buscarDisponiveisPorEspacoENomeSemData(EspacoId espacoId, String nome, int quantidade) {
+        return delegado.buscarDisponiveisPorEspacoENomeSemData(espacoId, nome, quantidade);
     }
 
     @Override

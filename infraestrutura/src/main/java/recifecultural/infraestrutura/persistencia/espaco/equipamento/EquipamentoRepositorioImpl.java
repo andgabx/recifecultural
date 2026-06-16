@@ -8,6 +8,7 @@ import recifecultural.dominio.agenda.equipamento.EquipamentoId;
 import recifecultural.dominio.agenda.equipamento.IEquipamentoRepositorio;
 import recifecultural.dominio.espaco.espaco.EspacoId;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -44,7 +45,15 @@ public class EquipamentoRepositorioImpl implements IEquipamentoRepositorio {
     }
 
     @Override
-    public List<Equipamento> buscarDisponiveisPorEspacoENome(EspacoId espacoId, String nome, int quantidade) {
+    public List<Equipamento> buscarDisponiveisPorEspacoENome(EspacoId espacoId, String nome, int quantidade, LocalDate inicio, LocalDate fim) {
+        return jpa.findDisponiveisPorEspacoENomeEData(espacoId.valor(), nome, inicio, fim).stream()
+                .limit(quantidade)
+                .map(e -> mapeador.map(e, Equipamento.class))
+                .toList();
+    }
+
+    @Override
+    public List<Equipamento> buscarDisponiveisPorEspacoENomeSemData(EspacoId espacoId, String nome, int quantidade) {
         return jpa.findDisponiveisPorEspacoENome(espacoId.valor(), nome).stream()
                 .limit(quantidade)
                 .map(e -> mapeador.map(e, Equipamento.class))

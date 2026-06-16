@@ -32,15 +32,16 @@ Funcionalidade: Alocação de Rider Técnico (Inventário)
     Quando eu solicitar a exclusao definitiva do equipamento
     Entao o equipamento nao deve mais existir no repositorio
 
-  Cenario: Proibicao de deletar equipamento alocado
+  Cenario: Exclusao de equipamento alocado notifica o produtor
     Dado que uma "Mesa de Som" esta com status "ALOCADO" para o "Show de Rock"
     Quando eu tentar excluir definitivamente a "Mesa de Som"
-    Entao o sistema deve impedir a exclusao informando que o item esta em uso
+    Entao o equipamento nao deve mais existir no repositorio
+    E o sistema deve enviar uma notificacao de alerta para o promotor do "Show de Rock"
 
   Cenario: Conflito de infraestrutura por falta de equipamentos
       Dado que o teatro possui 1 unidades de "Mesa de Som" disponíveis
       Quando eu tentar alocar 2 unidades de "Mesa de Som" para um novo evento
-      Entao o sistema deve impedir a alocacao informando "Conflito de Infraestrutura"
+      Entao o sistema deve notificar sobre indisponibilidade de "Mesa de Som"
 
   Cenario: Manutencao preventiva de equipamento que nao esta em uso
     Dado que uma "Mesa de Som" esta com status "DISPONIVEL"

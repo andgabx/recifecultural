@@ -15,8 +15,8 @@ export const statusEventoLabel: Record<StatusEvento, string> = {
   EM_ANALISE: 'Em análise',
   APROVADO: 'Aprovado',
   REPROVADO: 'Reprovado',
+  REALIZADO: 'Realizado',
   CANCELADO: 'Cancelado',
-  FINALIZADO: 'Finalizado',
 };
 
 export const statusEventoVariant: Record<StatusEvento, BadgeVariant> = {
@@ -24,8 +24,8 @@ export const statusEventoVariant: Record<StatusEvento, BadgeVariant> = {
   EM_ANALISE: 'violeta',
   APROVADO: 'success',
   REPROVADO: 'destructive',
+  REALIZADO: 'outline',
   CANCELADO: 'destructive',
-  FINALIZADO: 'outline',
 };
 
 export const statusSorteioLabel: Record<StatusSorteio, string> = {

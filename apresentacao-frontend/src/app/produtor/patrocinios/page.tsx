@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import {
@@ -326,11 +326,17 @@ export default function PatrociniosPage() {
             error={form.formState.errors.eventoId?.message}
             required
           >
-            <SeletorEvento
-              id="eventoIdNovo"
-              value={form.watch("eventoId") ?? ""}
-              onChange={(v) => form.setValue("eventoId", v)}
-              status="APROVADO"
+            <Controller
+              control={form.control}
+              name="eventoId"
+              render={({ field }) => (
+                <SeletorEvento
+                  id="eventoIdNovo"
+                  value={field.value ?? ""}
+                  onChange={field.onChange}
+                  status="APROVADO"
+                />
+              )}
             />
           </FormField>
           <FormField

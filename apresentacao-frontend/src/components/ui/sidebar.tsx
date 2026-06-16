@@ -89,7 +89,7 @@ export function DesktopSidebar({
   return (
     <motion.div
       className={cn(
-        "bg-azul text-white/80 border-r border-white/10 hidden h-screen w-[72px] shrink-0 flex-col px-3 py-4 md:flex",
+        "bg-azul text-white/80 border-r border-white/10 hidden h-full w-[72px] shrink-0 flex-col px-3 py-4 md:flex",
         className,
       )}
       animate={{ width: animate ? (open ? 264 : 72) : 264 }}

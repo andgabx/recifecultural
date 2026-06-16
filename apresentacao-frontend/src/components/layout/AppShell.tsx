@@ -14,7 +14,7 @@ export function AppShell({
   children: ReactNode;
 }) {
   return (
-    <div className="bg-nevoa text-foreground flex min-h-screen">
+    <div className="bg-nevoa text-foreground flex h-screen overflow-hidden">
       <Sidebar papel={papel} />
       <div className="flex min-w-0 flex-1 flex-col">
         <TopBar titulo={titulo} />

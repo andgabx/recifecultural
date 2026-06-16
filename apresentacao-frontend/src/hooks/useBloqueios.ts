@@ -46,6 +46,7 @@ export function useDesativarBloqueio() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.ativos });
       queryClient.invalidateQueries({ queryKey: ["espacos"] });
+      queryClient.invalidateQueries({ queryKey: ["eventos"] });
     },
   });
 }

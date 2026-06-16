@@ -57,25 +57,25 @@ public class EventoJpa {
 
     @Embeddable
     public static class RiderItemJpa {
-        @Column(name = "nome_equipamento")
-        private String nomeEquipamento;
+        @Column(name = "equipamento_id")
+        private UUID equipamentoId;
 
         @Column(name = "quantidade")
         private int quantidade;
 
         public RiderItemJpa() {}
 
-        public RiderItemJpa(String nomeEquipamento, int quantidade) {
-            this.nomeEquipamento = nomeEquipamento;
+        public RiderItemJpa(UUID equipamentoId, int quantidade) {
+            this.equipamentoId = equipamentoId;
             this.quantidade = quantidade;
         }
 
-        public String getNomeEquipamento() {
-            return nomeEquipamento;
+        public UUID getEquipamentoId() {
+            return equipamentoId;
         }
 
-        public void setNomeEquipamento(String nomeEquipamento) {
-            this.nomeEquipamento = nomeEquipamento;
+        public void setEquipamentoId(UUID equipamentoId) {
+            this.equipamentoId = equipamentoId;
         }
 
         public int getQuantidade() {

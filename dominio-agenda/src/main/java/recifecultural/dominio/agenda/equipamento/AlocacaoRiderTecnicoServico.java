@@ -48,6 +48,18 @@ public class AlocacaoRiderTecnicoServico {
         }
     }
 
+    public void alocarEquipamentoPorId(UUID eventoId,
+                                        recifecultural.dominio.espaco.espaco.EspacoId espacoId,
+                                        UUID equipamentoId,
+                                        int quantidadeNecessaria,
+                                        LocalDate inicio,
+                                        LocalDate fim) {
+        Equipamento equipamento = equipamentoRepositorio
+                .obterPorId(new EquipamentoId(equipamentoId))
+                .orElseThrow(() -> new IllegalArgumentException("Equipamento não encontrado: " + equipamentoId));
+        alocarEquipamentos(eventoId, espacoId, equipamento.getNome(), quantidadeNecessaria, inicio, fim);
+    }
+
     public boolean verificarDisponibilidade(recifecultural.dominio.espaco.espaco.EspacoId espacoId,
                                              String nomeEquipamento,
                                              int quantidade,

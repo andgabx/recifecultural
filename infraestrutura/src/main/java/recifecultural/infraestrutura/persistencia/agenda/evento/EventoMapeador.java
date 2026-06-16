@@ -33,8 +33,8 @@ public class EventoMapeador {
                 );
                 if (s.riderItems != null) {
                     for (EventoJpa.RiderItemJpa item : s.riderItems) {
-                        if (item != null && item.getNomeEquipamento() != null) {
-                            evento.adicionarRiderItem(item.getNomeEquipamento(), item.getQuantidade());
+                        if (item != null && item.getEquipamentoId() != null) {
+                            evento.adicionarRiderItem(item.getEquipamentoId(), item.getQuantidade());
                         }
                     }
                 }
@@ -71,7 +71,7 @@ public class EventoMapeador {
                 jpa.artistas = new ArrayList<>(s.getArtistas());
                 List<EventoJpa.RiderItemJpa> riderItemsJpa = new ArrayList<>();
                 for (var item : s.getRiderItems()) {
-                    riderItemsJpa.add(new EventoJpa.RiderItemJpa(item.getNomeEquipamento(), item.getQuantidade()));
+                    riderItemsJpa.add(new EventoJpa.RiderItemJpa(item.getEquipamentoId(), item.getQuantidade()));
                 }
                 jpa.setRiderItems(riderItemsJpa);
                 return jpa;

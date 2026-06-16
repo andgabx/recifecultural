@@ -93,7 +93,7 @@ public class EventoServicoAplicacao {
         }
         if (cmd.riderItems() != null) {
             cmd.riderItems().forEach(item ->
-                    evento.adicionarRiderItem(item.nomeEquipamento(), item.quantidade()));
+                    evento.adicionarRiderItem(item.equipamentoId(), item.quantidade()));
         }
 
         servico.salvar(evento);
@@ -130,7 +130,7 @@ public class EventoServicoAplicacao {
 
         if (cmd.riderItems() != null) {
             List<RiderItem> novosItens = cmd.riderItems().stream()
-                    .map(item -> new RiderItem(item.nomeEquipamento(), item.quantidade()))
+                    .map(item -> new RiderItem(item.equipamentoId(), item.quantidade()))
                     .toList();
             servico.editarRider(id, novosItens);
         }
@@ -165,10 +165,10 @@ public class EventoServicoAplicacao {
                 LocalDate inicio = evento.getPeriodo().getInicio().toLocalDate();
                 LocalDate fim = evento.getPeriodo().getFim().toLocalDate();
                 for (RiderItem item : evento.getRiderItems()) {
-                    alocacaoRiderServico.alocarEquipamentos(
+                    alocacaoRiderServico.alocarEquipamentoPorId(
                             id,
                             espacoId,
-                            item.getNomeEquipamento(),
+                            item.getEquipamentoId(),
                             item.getQuantidade(),
                             inicio,
                             fim
@@ -211,7 +211,7 @@ public class EventoServicoAplicacao {
     }
 
     public record RiderItemComando(
-            String nomeEquipamento,
+            java.util.UUID equipamentoId,
             int quantidade
     ) {}
 

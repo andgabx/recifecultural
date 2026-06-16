@@ -1,6 +1,7 @@
 package recifecultural.dominio.agenda.equipamento;
 
 import recifecultural.dominio.espaco.espaco.EspacoId;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -12,6 +13,7 @@ public interface IEquipamentoRepositorio {
 
     Optional<Equipamento> obterPorId(EquipamentoId id);
     List<Equipamento> listarPorEspaco(EspacoId espacoId);
-    List<Equipamento> buscarDisponiveisPorEspacoENome(EspacoId espacoId, String nome, int quantidade);
+    List<Equipamento> buscarDisponiveisPorEspacoENome(EspacoId espacoId, String nome, int quantidade, LocalDate inicio, LocalDate fim);
+    List<Equipamento> buscarDisponiveisPorEspacoENomeSemData(EspacoId espacoId, String nome, int quantidade);
     List<Equipamento> buscarAlocadosPorEvento(UUID eventoId);
 }

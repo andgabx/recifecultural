@@ -54,7 +54,7 @@ public class ContextoCenario {
     // Equipamentos
     public IEquipamentoRepositorio repositorioEquipamento = Mockito.mock(IEquipamentoRepositorio.class);
     public EquipamentoId idEquipamentoAtual;
-    public EquipamentoServico servicoEquipamento = new EquipamentoServico(repositorioEquipamento, servicoNotificacao);
+    public EquipamentoServico servicoEquipamento = new EquipamentoServico(repositorioEquipamento, servicoNotificacao, repositorioEvento);
     public AlocacaoRiderTecnicoServico servicoAlocacao = new AlocacaoRiderTecnicoServico(repositorioEquipamento, repositorioEvento, servicoNotificacao);
 
     public ContextoCenario() {

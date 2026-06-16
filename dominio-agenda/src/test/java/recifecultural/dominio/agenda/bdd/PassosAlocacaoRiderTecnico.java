@@ -6,12 +6,15 @@ import recifecultural.dominio.agenda.equipamento.Equipamento;
 import recifecultural.dominio.agenda.equipamento.StatusEquipamento;
 import recifecultural.dominio.agenda.evento.Evento;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
@@ -33,7 +36,7 @@ public class PassosAlocacaoRiderTecnico {
         equipamentoMock = new Equipamento(espacoIdMock, nomeEq);
         contexto.idEquipamentoAtual = equipamentoMock.getId();
 
-        when(contexto.repositorioEquipamento.buscarDisponiveisPorEspacoENome(espacoIdMock, nomeEq, 1))
+        when(contexto.repositorioEquipamento.buscarDisponiveisPorEspacoENome(eq(espacoIdMock), eq(nomeEq), eq(1), any(LocalDate.class), any(LocalDate.class)))
                 .thenReturn(List.of(equipamentoMock));
     }
 
@@ -43,7 +46,8 @@ public class PassosAlocacaoRiderTecnico {
 
     @Quando("o sistema processar a alocacao do rider tecnico")
     public void oSistemaProcessarAAlocacaoDoRiderTecnico() {
-        contexto.servicoAlocacao.alocarEquipamentos(eventoIdMock, espacoIdMock, equipamentoMock.getNome(), 1);
+        contexto.servicoAlocacao.alocarEquipamentos(eventoIdMock, espacoIdMock, equipamentoMock.getNome(), 1,
+                LocalDate.now(), LocalDate.now().plusDays(1));
     }
 
     @Entao("o status do equipamento deve mudar para {string}")
@@ -58,7 +62,7 @@ public class PassosAlocacaoRiderTecnico {
     @Dado("que uma {string} esta com status {string} para o {string}")
     public void queUmaEstaComStatusParaO(String nomeEq, String status, String nomeEvento) {
         equipamentoMock = new Equipamento(espacoIdMock, nomeEq);
-        equipamentoMock.alocarParaEvento(eventoIdMock);
+        equipamentoMock.alocarParaEvento(eventoIdMock, LocalDate.now(), LocalDate.now().plusDays(1));
         contexto.idEquipamentoAtual = equipamentoMock.getId();
 
         contexto.evento = mock(Evento.class);
@@ -72,7 +76,7 @@ public class PassosAlocacaoRiderTecnico {
 
     @Quando("o zelador registrar que a {string} foi para manutencao")
     public void oZeladorRegistrarQueAFoiParaManutencao(String nomeEq) {
-        contexto.servicoAlocacao.registrarManutencao(contexto.idEquipamentoAtual);
+        contexto.servicoEquipamento.reportarManutencao(contexto.idEquipamentoAtual);
     }
 
     @E("o sistema deve enviar uma notificacao de alerta para o promotor do {string}")
@@ -131,26 +135,18 @@ public class PassosAlocacaoRiderTecnico {
 
     @Quando("eu tentar excluir definitivamente a {string}")
     public void euTentarExcluirDefinitivamenteA(String nome) {
-        try {
-            contexto.servicoEquipamento.removerEquipamento(contexto.idEquipamentoAtual);
-        } catch (Exception e) {
-            contexto.excecaoCapturada = e;
-        }
-    }
-
-    @Entao("o sistema deve impedir a exclusao informando que o item esta em uso")
-    public void oSistemaDeveImpedirAExclusao() {
-        assertNotNull(contexto.excecaoCapturada);
-        assertTrue(contexto.excecaoCapturada.getMessage().contains("alocado"));
+        contexto.servicoEquipamento.removerEquipamento(contexto.idEquipamentoAtual);
     }
 
     @Quando("eu tentar alocar {int} unidades de {string} para um novo evento")
     public void euTentarAlocarUnidadesDeParaUmNovoEvento(int qtd, String nomeEq) {
-        try {
-            contexto.servicoAlocacao.alocarEquipamentos(eventoIdMock, espacoIdMock, nomeEq, qtd);
-        } catch (Exception e) {
-            contexto.excecaoCapturada = e;
-        }
+        contexto.servicoAlocacao.alocarEquipamentos(eventoIdMock, espacoIdMock, nomeEq, qtd,
+                LocalDate.now(), LocalDate.now().plusDays(1));
+    }
+
+    @Entao("o sistema deve notificar sobre indisponibilidade de {string}")
+    public void oSistemaDeveNotificarSobreIndisponibilidadeDe(String nomeEq) {
+        verify(contexto.servicoNotificacao, times(1)).enviarBroadcast(contains(nomeEq));
     }
 
     @Entao("o sistema deve impedir a alocacao informando {string}")

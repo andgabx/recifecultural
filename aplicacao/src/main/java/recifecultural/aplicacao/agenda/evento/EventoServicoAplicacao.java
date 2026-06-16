@@ -2,14 +2,18 @@ package recifecultural.aplicacao.agenda.evento;
 
 import recifecultural.dominio.agenda.bloqueioadministrativo.BloqueioAdministrativo;
 import recifecultural.dominio.agenda.bloqueioadministrativo.IBloqueioAdministrativoRepositorio;
+import recifecultural.dominio.agenda.equipamento.AlocacaoRiderTecnicoServico;
+import recifecultural.dominio.agenda.equipamento.RiderItem;
 import recifecultural.dominio.agenda.evento.Evento;
 import recifecultural.dominio.agenda.evento.EventoServico;
 import recifecultural.dominio.agenda.evento.FeedbackReprovacao;
 import recifecultural.dominio.agenda.evento.Periodo;
 import recifecultural.dominio.agenda.evento.Preco;
 import recifecultural.dominio.espaco.espaco.EspacoId;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -22,16 +26,20 @@ public class EventoServicoAplicacao {
     private final EventoServico servico;
     private final EventoRepositorioAplicacao repositorio;
     private final IBloqueioAdministrativoRepositorio bloqueioRepositorio;
+    private final AlocacaoRiderTecnicoServico alocacaoRiderServico;
 
     public EventoServicoAplicacao(EventoServico servico,
                                    EventoRepositorioAplicacao repositorio,
-                                   IBloqueioAdministrativoRepositorio bloqueioRepositorio) {
+                                   IBloqueioAdministrativoRepositorio bloqueioRepositorio,
+                                   AlocacaoRiderTecnicoServico alocacaoRiderServico) {
         notNull(servico, "EventoServico não pode ser nulo.");
         notNull(repositorio, "EventoRepositorioAplicacao não pode ser nulo.");
         notNull(bloqueioRepositorio, "IBloqueioAdministrativoRepositorio não pode ser nulo.");
+        notNull(alocacaoRiderServico, "AlocacaoRiderTecnicoServico não pode ser nulo.");
         this.servico = servico;
         this.repositorio = repositorio;
         this.bloqueioRepositorio = bloqueioRepositorio;
+        this.alocacaoRiderServico = alocacaoRiderServico;
     }
 
     public List<EventoResumo> pesquisarResumos() {
@@ -83,11 +91,16 @@ public class EventoServicoAplicacao {
         if (cmd.datasApresentacao() != null) {
             cmd.datasApresentacao().forEach(evento::programarApresentacao);
         }
+        if (cmd.riderItems() != null) {
+            cmd.riderItems().forEach(item ->
+                    evento.adicionarRiderItem(item.nomeEquipamento(), item.quantidade()));
+        }
 
         servico.salvar(evento);
         return evento.getId();
     }
 
+    @Transactional
     public void editar(UUID id, EditarEventoComando cmd) {
         notNull(id, "id obrigatório.");
         notNull(cmd, "Comando obrigatório.");
@@ -114,6 +127,13 @@ public class EventoServicoAplicacao {
                 cmd.artistas(),
                 cmd.datasApresentacao()
         );
+
+        if (cmd.riderItems() != null) {
+            List<RiderItem> novosItens = cmd.riderItems().stream()
+                    .map(item -> new RiderItem(item.nomeEquipamento(), item.quantidade()))
+                    .toList();
+            servico.editarRider(id, novosItens);
+        }
     }
 
     private Periodo derivarPeriodo(LocalDateTime periodoInicio, LocalDateTime periodoFim,
@@ -138,10 +158,33 @@ public class EventoServicoAplicacao {
 
     public void aprovar(UUID id) {
         servico.aprovar(id);
+
+        servico.obter(id).ifPresent(evento -> {
+            if (evento.getLocalId() != null) {
+                EspacoId espacoId = new EspacoId(evento.getLocalId());
+                LocalDate inicio = evento.getPeriodo().getInicio().toLocalDate();
+                LocalDate fim = evento.getPeriodo().getFim().toLocalDate();
+                for (RiderItem item : evento.getRiderItems()) {
+                    alocacaoRiderServico.alocarEquipamentos(
+                            id,
+                            espacoId,
+                            item.getNomeEquipamento(),
+                            item.getQuantidade(),
+                            inicio,
+                            fim
+                    );
+                }
+            }
+        });
     }
 
     public void reprovar(UUID id, FeedbackReprovacao feedback) {
         servico.reprovar(id, feedback);
+    }
+
+    public void cancelar(UUID id) {
+        alocacaoRiderServico.desmobilizarEquipamentosDoEvento(id);
+        servico.cancelar(id, "Cancelado via aplicação.");
     }
 
     /**
@@ -167,6 +210,11 @@ public class EventoServicoAplicacao {
         }
     }
 
+    public record RiderItemComando(
+            String nomeEquipamento,
+            int quantidade
+    ) {}
+
     public record CriarEventoComando(
             UUID promotorId,
             UUID localId,
@@ -179,7 +227,8 @@ public class EventoServicoAplicacao {
             BigDecimal precoInteira,
             BigDecimal precoMeia,
             List<UUID> artistas,
-            List<LocalDateTime> datasApresentacao
+            List<LocalDateTime> datasApresentacao,
+            List<RiderItemComando> riderItems
     ) {}
 
     public record EditarEventoComando(
@@ -193,6 +242,7 @@ public class EventoServicoAplicacao {
             BigDecimal precoInteira,
             BigDecimal precoMeia,
             List<UUID> artistas,
-            List<LocalDateTime> datasApresentacao
+            List<LocalDateTime> datasApresentacao,
+            List<RiderItemComando> riderItems
     ) {}
 }

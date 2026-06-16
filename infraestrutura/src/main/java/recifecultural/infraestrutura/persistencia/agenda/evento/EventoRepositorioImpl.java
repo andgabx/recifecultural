@@ -7,6 +7,7 @@ import recifecultural.aplicacao.agenda.evento.ApresentacaoResumo;
 import recifecultural.aplicacao.agenda.evento.EventoRepositorioAplicacao;
 import recifecultural.aplicacao.agenda.evento.EventoResumo;
 import recifecultural.aplicacao.agenda.evento.EventoResumoExpandido;
+import recifecultural.aplicacao.agenda.evento.RiderItemResposta;
 import recifecultural.dominio.agenda.evento.Evento;
 import recifecultural.dominio.agenda.evento.IEventoRepositorio;
 import recifecultural.infraestrutura.persistencia.jpa.JpaMapeador;
@@ -109,6 +110,12 @@ public class EventoRepositorioImpl implements IEventoRepositorio, EventoReposito
                                         eventoId.toString(),
                                         d.toString()))
                                 .toList();
+                    List<RiderItemResposta> riderItems = e.riderItems == null
+                            ? List.of()
+                            : e.riderItems.stream()
+                                .map(item -> (RiderItemResposta) new RiderItemRespostaJpa(
+                                        item.getNomeEquipamento(), item.getQuantidade()))
+                                .toList();
                     return (EventoResumoExpandido) new EventoResumoExpandidoJpa(
                             e.id.toString(), e.titulo, e.categoria,
                             e.status != null ? e.status.name() : null,
@@ -122,7 +129,8 @@ public class EventoRepositorioImpl implements IEventoRepositorio, EventoReposito
                             e.precoMeia != null ? e.precoMeia.toPlainString() : null,
                             e.precoSocial != null ? e.precoSocial.toPlainString() : null,
                             e.artistas != null ? e.artistas.stream().map(UUID::toString).toList() : List.of(),
-                            apresentacoes);
+                            apresentacoes,
+                            riderItems);
                 })
                 .orElse(null);
     }
@@ -145,7 +153,8 @@ public class EventoRepositorioImpl implements IEventoRepositorio, EventoReposito
             String periodoInicio, String periodoFim,
             String precoInteira, String precoMeia, String precoSocial,
             List<String> artistas,
-            List<ApresentacaoResumo> apresentacoes)
+            List<ApresentacaoResumo> apresentacoes,
+            List<RiderItemResposta> riderItems)
             implements EventoResumoExpandido {
         public String getId() { return id; }
         public String getTitulo() { return titulo; }
@@ -162,6 +171,13 @@ public class EventoRepositorioImpl implements IEventoRepositorio, EventoReposito
         public String getPrecoSocial() { return precoSocial; }
         public List<String> getArtistas() { return artistas; }
         public List<ApresentacaoResumo> getApresentacoes() { return apresentacoes; }
+        public List<RiderItemResposta> getRiderItems() { return riderItems; }
+    }
+
+    record RiderItemRespostaJpa(String nomeEquipamento, int quantidade)
+            implements RiderItemResposta {
+        public String getNomeEquipamento() { return nomeEquipamento; }
+        public int getQuantidade() { return quantidade; }
     }
 
     record ApresentacaoResumoJpa(String id, String eventoId, String dataHora)

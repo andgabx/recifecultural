@@ -32,6 +32,7 @@ import recifecultural.aplicacao.patrocinio.PatrocinioRepositorioAplicacao;
 import recifecultural.aplicacao.patrocinio.PatrocinioServicoAplicacao;
 import recifecultural.dominio.agenda.acessibilidade.IRecursoAcessibilidadeRepositorio;
 import recifecultural.dominio.agenda.acessibilidade.RecursoAcessibilidadeServico;
+import recifecultural.dominio.agenda.equipamento.AlocacaoRiderTecnicoServico;
 import recifecultural.dominio.agenda.equipamento.EquipamentoServico;
 import recifecultural.dominio.agenda.equipamento.IEquipamentoRepositorio;
 import recifecultural.dominio.agenda.prereserva.IPreReservaRepositorio;
@@ -154,11 +155,20 @@ public class InfraestruturaConfig {
 
     @Bean
     EquipamentoServico equipamentoServico(IEquipamentoRepositorio equipamentoRepositorio,
-                                           INotificacaoServico notificacaoServico) {
+                                           INotificacaoServico notificacaoServico,
+                                           IEventoRepositorio eventoRepositorio) {
         // Proxy (Par 2): cache em memória sobre o repositório real de equipamentos
         return new EquipamentoServico(
                 new EquipamentoRepositorioProxyCache(equipamentoRepositorio),
-                notificacaoServico);
+                notificacaoServico,
+                eventoRepositorio);
+    }
+
+    @Bean
+    AlocacaoRiderTecnicoServico alocacaoRiderTecnicoServico(IEquipamentoRepositorio equipamentoRepositorio,
+                                                              IEventoRepositorio eventoRepositorio,
+                                                              INotificacaoServico notificacaoServico) {
+        return new AlocacaoRiderTecnicoServico(equipamentoRepositorio, eventoRepositorio, notificacaoServico);
     }
 
     @Bean
@@ -249,8 +259,9 @@ public class InfraestruturaConfig {
     @Bean
     EventoServicoAplicacao eventoServicoAplicacao(EventoServico eventoServico,
                                                    EventoRepositorioAplicacao repositorio,
-                                                   IBloqueioAdministrativoRepositorio bloqueioRepositorio) {
-        return new EventoServicoAplicacao(eventoServico, repositorio, bloqueioRepositorio);
+                                                   IBloqueioAdministrativoRepositorio bloqueioRepositorio,
+                                                   AlocacaoRiderTecnicoServico alocacaoRiderTecnicoServico) {
+        return new EventoServicoAplicacao(eventoServico, repositorio, bloqueioRepositorio, alocacaoRiderTecnicoServico);
     }
 
     @Bean
@@ -289,8 +300,9 @@ public class InfraestruturaConfig {
 
     @Bean
     EquipamentoServicoAplicacao equipamentoServicoAplicacao(EquipamentoServico equipamentoServico,
-                                                             IEquipamentoRepositorio equipamentoRepositorio) {
-        return new EquipamentoServicoAplicacao(equipamentoServico, equipamentoRepositorio);
+                                                             IEquipamentoRepositorio equipamentoRepositorio,
+                                                             AlocacaoRiderTecnicoServico alocacaoRiderTecnicoServico) {
+        return new EquipamentoServicoAplicacao(equipamentoServico, equipamentoRepositorio, alocacaoRiderTecnicoServico);
     }
 
     @Bean

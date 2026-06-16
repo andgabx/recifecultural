@@ -6,7 +6,7 @@ import {
   equipamentosService,
   type AdquirirEquipamentoRequisicao,
 } from "@/services/bff/equipamentos";
-import type { UUID } from "@/types/dominio";
+import type { DisponibilidadeEquipamento, UUID } from "@/types/dominio";
 
 const queryKeys = {
   porEspaco: (espacoId: UUID) => ["equipamentos", "espaco", espacoId] as const,
@@ -64,4 +64,44 @@ export function useRemoverEquipamento(espacoId?: UUID) {
     mutationFn: (id: UUID) => equipamentosService.remover(id),
     onSuccess: () => invalidateEspaco(queryClient, espacoId),
   });
+}
+
+export function useVerificarDisponibilidade(
+  espacoId: string | undefined,
+  nome: string,
+  quantidade: number,
+  inicio?: string,
+  fim?: string,
+): {
+  disponivel: boolean | undefined;
+  quantidadeDisponivel: number | undefined;
+  isLoading: boolean;
+} {
+  const query = useQuery<DisponibilidadeEquipamento>({
+    queryKey: [
+      "equipamentos",
+      "disponibilidade",
+      espacoId,
+      nome,
+      quantidade,
+      inicio ?? null,
+      fim ?? null,
+    ] as const,
+    queryFn: () =>
+      equipamentosService.verificarDisponibilidade(
+        espacoId as string,
+        nome,
+        quantidade,
+        inicio,
+        fim,
+      ),
+    enabled: Boolean(espacoId) && nome.trim().length > 0 && quantidade >= 1,
+    staleTime: 30_000,
+  });
+
+  return {
+    disponivel: query.data?.disponivel,
+    quantidadeDisponivel: query.data?.quantidadeDisponivel,
+    isLoading: query.isLoading,
+  };
 }

@@ -11,11 +11,16 @@ export type EventoResumo = {
   titulo: string;
   descricaoCurta?: string;
   status: StatusEvento;
-  promotorId: UUID;
+  promotorId?: UUID;
   localId?: UUID;
   categoria?: string;
   periodoInicio?: string;
   periodoFim?: string;
+};
+
+export type RiderItemResumo = {
+  nomeEquipamento: string;
+  quantidade: number;
 };
 
 export type ApresentacaoResumo = {
@@ -26,14 +31,13 @@ export type ApresentacaoResumo = {
 
 export type EventoResumoExpandido = EventoResumo & {
   descricaoLonga?: string;
-  promotorId?: string;
-  localId?: string;
   /** Backend serializa BigDecimal como string. */
   precoInteira?: string;
   precoMeia?: string;
   precoSocial?: string;
   artistas?: string[];
   apresentacoes?: ApresentacaoResumo[];
+  riderItems?: RiderItemResumo[];
 };
 
 export type ReprovarEventoRequisicao = { feedback: string };
@@ -51,6 +55,7 @@ export type CriarEventoRequisicao = {
   precoMeia?: number;
   artistas?: UUID[];
   datasApresentacao?: string[]; // ISO LocalDateTime[]
+  riderItems?: RiderItemResumo[];
 };
 
 export type EditarEventoRequisicao = Omit<CriarEventoRequisicao, "promotorId">;

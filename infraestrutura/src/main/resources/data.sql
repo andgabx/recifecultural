@@ -338,6 +338,48 @@ VALUES
 ON CONFLICT (id) DO NOTHING;
 
 
+-- ── EQUIPAMENTOS ─────────────────────────────────────────────────────
+-- Teatro do Parque: 3 equipamentos
+--   caixa de som  → ALOCADO no evento Noite do Frevo (demo de calendário + manutenção)
+--   holofote      → DISPONÍVEL
+--   microfone     → DISPONÍVEL
+-- Teatro UFPE: 1 equipamento DISPONÍVEL (espaço interditado, sem alocação)
+INSERT INTO equipamento (id, espaco_id, nome, status, evento_alocado_id, alocacao_inicio, alocacao_fim)
+VALUES
+    ('E0000000-0000-0000-0000-000000000001',
+     '10000000-0000-0000-0000-000000000001',
+     'caixa de som', 'ALOCADO',
+     '20000000-0000-0000-0000-000000000001',
+     CURRENT_DATE + INTERVAL '30 days',
+     CURRENT_DATE + INTERVAL '90 days'),
+
+    ('E0000000-0000-0000-0000-000000000002',
+     '10000000-0000-0000-0000-000000000001',
+     'holofote', 'DISPONIVEL', NULL, NULL, NULL),
+
+    ('E0000000-0000-0000-0000-000000000003',
+     '10000000-0000-0000-0000-000000000001',
+     'microfone', 'ALOCADO',
+     '20000000-0000-0000-0000-000000000001',
+     '2026-06-16', '2026-06-20'),
+
+    ('E0000000-0000-0000-0000-000000000004',
+     '10000000-0000-0000-0000-000000000002',
+     'mesa de som', 'DISPONIVEL', NULL, NULL, NULL)
+ON CONFLICT (id) DO NOTHING;
+
+-- rider item do evento Noite do Frevo referenciando a caixa de som
+INSERT INTO evento_rider_items (evento_id, equipamento_id, quantidade)
+SELECT '20000000-0000-0000-0000-000000000001',
+       'E0000000-0000-0000-0000-000000000001',
+       1
+WHERE NOT EXISTS (
+    SELECT 1 FROM evento_rider_items
+    WHERE evento_id = '20000000-0000-0000-0000-000000000001'
+      AND equipamento_id = 'E0000000-0000-0000-0000-000000000001'
+);
+
+
 -- ── BLOQUEIO HISTÓRICO (Teatro UFPE) ─────────────────────────────────
 -- Período no passado, ativo=false → mostra resultado do Observer sem cancelar eventos ativos
 INSERT INTO bloqueio_administrativo (id, espaco_id, data_inicio, data_fim, justificativa, ativo)

@@ -214,7 +214,7 @@ export default function AcessibilidadeGestaoPage() {
                         </Badge>
                       </p>
                       <p className="text-muted-foreground font-mono text-xs">
-                        Apresentação {r.apresentacaoId.slice(0, 8)}…
+                        Apresentação {r.apresentacaoId ? `${r.apresentacaoId.slice(0, 8)}…` : "—"}
                       </p>
                       {r.justificativaRemocao && (
                         <p className="text-destructive mt-1 flex items-start gap-1 text-xs">

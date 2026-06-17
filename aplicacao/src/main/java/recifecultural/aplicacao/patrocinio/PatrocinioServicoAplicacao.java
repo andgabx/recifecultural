@@ -77,11 +77,25 @@ public class PatrocinioServicoAplicacao {
     }
 
     public ResultadoCancelamento cancelarPorEvento(PatrocinioId id, LocalDateTime agora) {
-        return servico.cancelarPorEvento(id, agora);
+        ResultadoCancelamento resultado = servico.cancelarPorEvento(id, agora);
+        removerSubsidioSeAplicavel(id);
+        return resultado;
     }
 
     public ResultadoCancelamento cancelarPorPatrocinador(PatrocinioId id, LocalDateTime agora) {
-        return servico.cancelarPorPatrocinador(id, agora);
+        ResultadoCancelamento resultado = servico.cancelarPorPatrocinador(id, agora);
+        removerSubsidioSeAplicavel(id);
+        return resultado;
+    }
+
+    private void removerSubsidioSeAplicavel(PatrocinioId id) {
+        var patrocinio = servico.obterPorId(id);
+        if (patrocinio.getModalidade() != ModalidadeContribuicao.SUBSIDIO_INGRESSO_SOCIAL) return;
+        UUID eventoUuid = patrocinio.getEventoId().getValor();
+        eventoRepositorio.obter(eventoUuid).ifPresent(evento -> {
+            evento.removerSubsidioDoPreco();
+            eventoRepositorio.atualizar(evento);
+        });
     }
 
     public ResultadoSubsidio calcularSubsidio(PatrocinioId id, BigDecimal precoSocialAtual) {

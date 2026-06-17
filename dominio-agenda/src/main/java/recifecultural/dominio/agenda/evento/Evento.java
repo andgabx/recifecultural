@@ -310,6 +310,13 @@ public class Evento {
                 novoPrecoSocial);
     }
 
+    public void removerSubsidioDoPreco() {
+        this.preco = new Preco(
+                this.preco != null ? this.preco.getInteira() : null,
+                this.preco != null ? this.preco.getMeia() : null,
+                null);
+    }
+
     public void adicionarRiderItem(java.util.UUID equipamentoId, int qtd) {
         this.riderItems.add(new RiderItem(equipamentoId, qtd));
     }

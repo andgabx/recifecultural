@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, Check, Clock, ShoppingCart, Tag, Ticket, Trash2, X } from "lucide-react";
@@ -94,6 +94,14 @@ const formatarTempo = (seg: number) => {
 // ─── Componente principal ─────────────────────────────────────────────────────
 
 export default function SelecionarAssentoPage() {
+  return (
+    <Suspense>
+      <SelecionarAssentoContent />
+    </Suspense>
+  );
+}
+
+function SelecionarAssentoContent() {
   const router = useRouter();
   const params = useSearchParams();
   const { papel } = useRole();

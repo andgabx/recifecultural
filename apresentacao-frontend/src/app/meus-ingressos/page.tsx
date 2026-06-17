@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { CalendarDays, QrCode, RefreshCcw, TicketCheck } from "lucide-react";
@@ -51,6 +51,14 @@ const formatarMoeda = (v: number | string | undefined) => {
 };
 
 export default function MeusIngressosPage() {
+  return (
+    <Suspense>
+      <MeusIngressosContent />
+    </Suspense>
+  );
+}
+
+function MeusIngressosContent() {
   const params = useSearchParams();
   const eventoIdInicial = params.get("eventoId") ?? "";
 

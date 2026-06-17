@@ -198,7 +198,7 @@ INSERT INTO sorteio (id, evento_id, apresentacao_id, vagas, prazo_inscricao, dat
 VALUES
     -- INSCRICOES_ABERTAS: Espectador já inscrito, apurar ao vivo → Template Method
     ('30000000-0000-0000-0000-000000000001',
-     '20000000-0000-0000-0000-000000000001', '40000000-0000-0000-0000-000000000001', 5,
+     '20000000-0000-0000-0000-000000000001', '40000000-0000-0000-0000-000000000001', 3,
      NOW() + INTERVAL '7 days', NOW() + INTERVAL '14 days', 'INSCRICOES_ABERTAS'),
 
     -- CONCLUIDO: Espectador Demo é ganhador — mostra histórico
@@ -222,6 +222,20 @@ WHERE NOT EXISTS (
     SELECT 1 FROM sorteio_inscricao
     WHERE sorteio_id   = '30000000-0000-0000-0000-000000000001'
       AND espectador_id = '00000000-0000-0000-0000-000000000001'
+);
+
+-- Concorrentes do sorteio 1 — dão volume para a apuração ao vivo (3 vagas, 5 inscritos)
+INSERT INTO sorteio_inscricao (sorteio_id, espectador_id, momento_inscricao, status)
+SELECT v.sorteio_id, v.espectador_id, v.momento, v.status
+FROM (VALUES
+    ('30000000-0000-0000-0000-000000000001'::uuid, 'e1000000-0000-0000-0000-000000000001'::uuid, (NOW() - INTERVAL '22 hours')::timestamp, 'INSCRITO'),
+    ('30000000-0000-0000-0000-000000000001'::uuid, 'e1000000-0000-0000-0000-000000000002'::uuid, (NOW() - INTERVAL '20 hours')::timestamp, 'INSCRITO'),
+    ('30000000-0000-0000-0000-000000000001'::uuid, 'e1000000-0000-0000-0000-000000000003'::uuid, (NOW() - INTERVAL '18 hours')::timestamp, 'INSCRITO'),
+    ('30000000-0000-0000-0000-000000000001'::uuid, 'e1000000-0000-0000-0000-000000000004'::uuid, (NOW() - INTERVAL '16 hours')::timestamp, 'INSCRITO')
+) AS v(sorteio_id, espectador_id, momento, status)
+WHERE NOT EXISTS (
+    SELECT 1 FROM sorteio_inscricao
+    WHERE sorteio_id = v.sorteio_id AND espectador_id = v.espectador_id
 );
 
 -- Inscrições sorteio 2 (CONCLUIDO) — Espectador ganhador + 2 ganhadores + 3 suplentes

@@ -42,7 +42,7 @@ const novoSchema = z.object({
   patrocinadorNome: z.string().min(2),
   categoriaPatrocinio: z.string().min(2),
   tipo: z.enum(["MASTER", "ASSOCIADO"]),
-  modalidade: z.enum(["FINANCEIRO", "SUBSIDIO_INGRESSO_SOCIAL"]),
+  modalidade: z.enum(["SUBSIDIO_INGRESSO_SOCIAL"]),
   valorContribuicao: z.coerce.number().positive("Valor obrigatório"),
   dataEvento: z.string().min(1, "Data do evento obrigatória"),
 });
@@ -96,7 +96,7 @@ export default function PatrociniosPage() {
       patrocinadorNome: "",
       categoriaPatrocinio: "",
       tipo: "MASTER",
-      modalidade: "FINANCEIRO",
+      modalidade: "SUBSIDIO_INGRESSO_SOCIAL",
       valorContribuicao: 0,
       dataEvento: "",
     },
@@ -167,7 +167,7 @@ export default function PatrociniosPage() {
               patrocinadorNome: "",
               categoriaPatrocinio: "",
               tipo: "MASTER",
-              modalidade: "FINANCEIRO",
+              modalidade: "SUBSIDIO_INGRESSO_SOCIAL",
               valorContribuicao: 0,
               dataEvento: "",
             });
@@ -380,7 +380,6 @@ export default function PatrociniosPage() {
             </FormField>
             <FormField label="Modalidade" htmlFor="modalidade" required>
               <Select id="modalidade" {...form.register("modalidade")}>
-                <option value="FINANCEIRO">Financeiro</option>
                 <option value="SUBSIDIO_INGRESSO_SOCIAL">
                   Subsídio ingresso social
                 </option>

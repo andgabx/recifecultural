@@ -23,6 +23,7 @@ import {
   useCadastrarArtista,
   useInativarArtista,
 } from "@/hooks/useArtistas";
+import { useProdutores } from "@/hooks/useProdutores";
 import type { ApiError } from "@/lib/api";
 import type { ArtistaResumo } from "@/services/bff/artistas";
 import type { StatusArtista } from "@/types/dominio";
@@ -40,6 +41,7 @@ const statusVariant: Record<StatusArtista, "success" | "destructive"> = {
 
 export default function ArtistasPage() {
   const { data, isLoading, isError } = useArtistas();
+  const { data: produtores } = useProdutores();
   const [cadastroAberto, setCadastroAberto] = useState(false);
 
   const cadastrar = useCadastrarArtista();
@@ -78,7 +80,9 @@ export default function ArtistasPage() {
     {
       header: "Produtor",
       cell: (a) => (
-        <span className="font-mono text-xs">{a.produtorId.slice(0, 8)}…</span>
+        <span className="text-xs">
+          {produtores?.find((p) => p.id === a.produtorId)?.nomeFantasia ?? a.produtorId}
+        </span>
       ),
     },
     {

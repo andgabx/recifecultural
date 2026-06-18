@@ -9,12 +9,13 @@ public class PreReserva {
     private final UUID assentoId;
     private final UUID setorId;
     private final UUID usuarioId;
+    private final UUID eventoId;
     private final LocalDateTime criadaEm;
     private final LocalDateTime expiraEm;
     private StatusPreReserva status;
     private int versao;
 
-    public PreReserva(UUID assentoId, UUID setorId, UUID usuarioId,
+    public PreReserva(UUID assentoId, UUID setorId, UUID usuarioId, UUID eventoId,
                       DuracaoPreReserva duracao, LocalDateTime agora) {
         if (assentoId == null) throw new IllegalArgumentException("Assento é obrigatório.");
         if (setorId == null) throw new IllegalArgumentException("Setor é obrigatório.");
@@ -25,18 +26,19 @@ public class PreReserva {
         this.assentoId = assentoId;
         this.setorId = setorId;
         this.usuarioId = usuarioId;
+        this.eventoId = eventoId;
         this.criadaEm = agora;
         this.expiraEm = agora.plus(duracao.valor());
         this.status = StatusPreReserva.ATIVA;
         this.versao = 0;
     }
 
-    public PreReserva(PreReservaId id, UUID assentoId, UUID setorId, UUID usuarioId,
+    public PreReserva(PreReservaId id, UUID assentoId, UUID setorId, UUID usuarioId, UUID eventoId,
                       LocalDateTime criadaEm, LocalDateTime expiraEm,
                       StatusPreReserva status, int versao) {
         this.id = id; this.assentoId = assentoId; this.setorId = setorId;
-        this.usuarioId = usuarioId; this.criadaEm = criadaEm; this.expiraEm = expiraEm;
-        this.status = status; this.versao = versao;
+        this.usuarioId = usuarioId; this.eventoId = eventoId; this.criadaEm = criadaEm;
+        this.expiraEm = expiraEm; this.status = status; this.versao = versao;
     }
 
     public boolean estaExpirada(LocalDateTime agora) {
@@ -67,6 +69,7 @@ public class PreReserva {
     public UUID getAssentoId() { return assentoId; }
     public UUID getSetorId() { return setorId; }
     public UUID getUsuarioId() { return usuarioId; }
+    public UUID getEventoId() { return eventoId; }
     public LocalDateTime getCriadaEm() { return criadaEm; }
     public LocalDateTime getExpiraEm() { return expiraEm; }
     public StatusPreReserva getStatus() { return status; }

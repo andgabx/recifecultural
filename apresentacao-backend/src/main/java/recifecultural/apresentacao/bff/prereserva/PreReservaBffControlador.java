@@ -30,6 +30,7 @@ public class PreReservaBffControlador extends AbstractBffControlador {
                 req.setorId(),
                 req.assentoId(),
                 req.usuarioId(),
+                req.eventoId(),
                 DuracaoPreReserva.PADRAO);
         return responderCriado(id.valor().toString());
     }
@@ -41,5 +42,5 @@ public class PreReservaBffControlador extends AbstractBffControlador {
         return responderSemConteudo();
     }
 
-    public record ReservarRequisicao(UUID setorId, UUID assentoId, UUID usuarioId) {}
+    public record ReservarRequisicao(UUID setorId, UUID assentoId, UUID usuarioId, UUID eventoId) {}
 }

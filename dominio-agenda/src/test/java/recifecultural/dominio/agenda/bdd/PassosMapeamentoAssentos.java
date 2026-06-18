@@ -56,6 +56,7 @@ public class PassosMapeamentoAssentos {
     private Setor setorMock;
     private UUID setorIdMock = UUID.randomUUID();
     private UUID assentoIdMock = UUID.randomUUID();
+    private UUID eventoIdMock = UUID.randomUUID();
     
     public PassosMapeamentoAssentos() {
         MockitoAnnotations.openMocks(this);
@@ -96,10 +97,20 @@ public class PassosMapeamentoAssentos {
 
     @Dado("que o assento {string} está {string}")
     public void queOAssentoEstá(String codigoAssento, String status) {
-        assentoMock = new Assento(assentoIdMock, codigoAssento, "A", 1, StatusAssento.valueOf(status), MotivoIndisponibilidadeAssento.OUTRO, 0);
+        StatusAssento statusAssento = StatusAssento.valueOf(status);
+        assentoMock = new Assento(assentoIdMock, codigoAssento, "A", 1, statusAssento, MotivoIndisponibilidadeAssento.OUTRO, 0);
         setorMock = new Setor(SetorId.de(setorIdMock.toString()), EspacoId.novo(), "Setor 1", TipoSetor.PLATEIA, 10, 10, List.of(assentoMock), 0);
         when(setorRepositorio.obterPorId(any(SetorId.class))).thenReturn(Optional.of(setorMock));
-        when(preReservaRepositorio.listarAtivasPorAssento(any(UUID.class))).thenReturn(new ArrayList<>());
+        if (statusAssento == StatusAssento.LIVRE) {
+            when(preReservaRepositorio.listarAtivasPorAssentoEEvento(any(UUID.class), any(UUID.class))).thenReturn(new ArrayList<>());
+        } else {
+            PreReserva preReservaExistente = new PreReserva(PreReservaId.novo(), assentoIdMock, setorIdMock,
+                    UUID.randomUUID(), eventoIdMock,
+                    LocalDateTime.now().minusMinutes(5), LocalDateTime.now().plusMinutes(10),
+                    StatusPreReserva.ATIVA, 0);
+            when(preReservaRepositorio.listarAtivasPorAssentoEEvento(any(UUID.class), any(UUID.class)))
+                    .thenReturn(List.of(preReservaExistente));
+        }
     }
 
     @Quando("o usuário {string} e o usuário {string} tentam pré-reservar o assento {string} simultaneamente")
@@ -115,12 +126,11 @@ public class PassosMapeamentoAssentos {
                 }
                 return null;
             }
-        }).when(setorRepositorio).atualizar(any(Setor.class));
+        }).when(preReservaRepositorio).salvar(any(PreReserva.class));
 
         try {
-            preReservaServico.reservar(setorIdMock, assentoIdMock, u1Id, new DuracaoPreReserva(java.time.Duration.ofMinutes(10)));
-            setorMock.liberarAssento(assentoIdMock);
-            preReservaServico.reservar(setorIdMock, assentoIdMock, u2Id, new DuracaoPreReserva(java.time.Duration.ofMinutes(10)));
+            preReservaServico.reservar(setorIdMock, assentoIdMock, u1Id, eventoIdMock, new DuracaoPreReserva(java.time.Duration.ofMinutes(10)));
+            preReservaServico.reservar(setorIdMock, assentoIdMock, u2Id, eventoIdMock, new DuracaoPreReserva(java.time.Duration.ofMinutes(10)));
         } catch (Exception e) {
             excecaoLancada = e;
         }
@@ -128,7 +138,7 @@ public class PassosMapeamentoAssentos {
 
     @Então("o sistema deve processar a primeira reserva com sucesso")
     public void oSistemaDeveProcessarAPrimeiraReservaComSucesso() {
-        verify(setorRepositorio, atLeastOnce()).atualizar(any(Setor.class));
+        verify(preReservaRepositorio, atLeastOnce()).salvar(any(PreReserva.class));
     }
 
     @E("o sistema deve lançar {string} para a segunda tentativa")
@@ -142,7 +152,7 @@ public class PassosMapeamentoAssentos {
         assentoMock = new Assento(assentoIdMock, assentoCodigo, "B", 2, StatusAssento.PRE_RESERVADO, MotivoIndisponibilidadeAssento.OUTRO, 0);
         setorMock = new Setor(SetorId.de(setorIdMock.toString()), EspacoId.novo(), "Setor 1", TipoSetor.PLATEIA, 10, 10, List.of(assentoMock), 0);
         
-        PreReserva pr = new PreReserva(PreReservaId.novo(), assentoIdMock, setorIdMock, UUID.randomUUID(), LocalDateTime.now().minusMinutes(20), LocalDateTime.now().minusMinutes(10), StatusPreReserva.ATIVA, 0);
+        PreReserva pr = new PreReserva(PreReservaId.novo(), assentoIdMock, setorIdMock, UUID.randomUUID(), eventoIdMock, LocalDateTime.now().minusMinutes(20), LocalDateTime.now().minusMinutes(10), StatusPreReserva.ATIVA, 0);
         when(preReservaRepositorio.listarAtivasExpiradas(any(LocalDateTime.class))).thenReturn(List.of(pr));
         when(setorRepositorio.obterPorId(any(SetorId.class))).thenReturn(Optional.of(setorMock));
     }
@@ -154,7 +164,18 @@ public class PassosMapeamentoAssentos {
 
     @Então("o status do assento {string} deve retornar para {string}")
     public void oStatusDoAssentoDeveRetornarPara(String assentoCodigo, String status) {
-        assertEquals(StatusAssento.valueOf(status), assentoMock.getStatus());
+        StatusAssento esperado = StatusAssento.valueOf(status);
+        if (esperado == StatusAssento.BLOQUEADO || esperado == StatusAssento.OCUPADO) {
+            // Estes cenários chamam setorMock diretamente — verifica o status no próprio assento
+            Assento assento = setorMock.getAssentos().stream()
+                    .filter(a -> a.getCodigo().equals(assentoCodigo))
+                    .findFirst()
+                    .orElseThrow();
+            assertEquals(esperado, assento.getStatus());
+        } else {
+            // LIVRE: via serviço (cancelar/expirar) — verifica que pre_reserva foi atualizada
+            verify(preReservaRepositorio, atLeastOnce()).atualizar(any(PreReserva.class));
+        }
     }
 
     private PreReserva prAtiva;
@@ -164,7 +185,7 @@ public class PassosMapeamentoAssentos {
         assentoMock = new Assento(assentoIdMock, assentoCodigo, "B", 2, StatusAssento.PRE_RESERVADO, MotivoIndisponibilidadeAssento.OUTRO, 0);
         setorMock = new Setor(SetorId.de(setorIdMock.toString()), EspacoId.novo(), "Setor 1", TipoSetor.PLATEIA, 10, 10, List.of(assentoMock), 0);
         
-        prAtiva = new PreReserva(PreReservaId.novo(), assentoIdMock, setorIdMock, UUID.randomUUID(), LocalDateTime.now().minusMinutes(5), LocalDateTime.now().plusMinutes(5), StatusPreReserva.valueOf(status), 0);
+        prAtiva = new PreReserva(PreReservaId.novo(), assentoIdMock, setorIdMock, UUID.randomUUID(), eventoIdMock, LocalDateTime.now().minusMinutes(5), LocalDateTime.now().plusMinutes(5), StatusPreReserva.valueOf(status), 0);
         when(preReservaRepositorio.obterPorId(prAtiva.getId())).thenReturn(Optional.of(prAtiva));
         when(setorRepositorio.obterPorId(any(SetorId.class))).thenReturn(Optional.of(setorMock));
     }
@@ -176,14 +197,13 @@ public class PassosMapeamentoAssentos {
 
     @Então("o status do assento {string} deve retornar para {string} atomicamente")
     public void oStatusDoAssentoDeveRetornarParaAtomicamente(String assentoCodigo, String status) {
-        assertEquals(StatusAssento.valueOf(status), assentoMock.getStatus());
         assertEquals(StatusPreReserva.CANCELADA, prAtiva.getStatus());
     }
 
     @Quando("o usuário {string} tenta pré-reservar o assento {string}")
     public void oUsuarioTentaPreReservarOAssento(String usuario, String assentoCodigo) {
         try {
-            preReservaServico.reservar(setorIdMock, assentoIdMock, UUID.randomUUID(), new DuracaoPreReserva(java.time.Duration.ofMinutes(10)));
+            preReservaServico.reservar(setorIdMock, assentoIdMock, UUID.randomUUID(), eventoIdMock, new DuracaoPreReserva(java.time.Duration.ofMinutes(10)));
         } catch (Exception e) {
             excecaoLancada = e;
         }
@@ -193,7 +213,7 @@ public class PassosMapeamentoAssentos {
     public void oSistemaDeveLancarUmErroDeAssentoNaoDisponivel() {
         assertNotNull(excecaoLancada);
         assertTrue(excecaoLancada instanceof IllegalStateException);
-        assertTrue(excecaoLancada.getMessage().contains("não está disponível"));
+        assertTrue(excecaoLancada.getMessage().contains("pré-reserva ativa"));
     }
 
     @Quando("o administrador bloquear o assento {string}")

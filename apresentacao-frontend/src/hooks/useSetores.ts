@@ -10,16 +10,17 @@ import {
 import type { UUID } from "@/types/dominio";
 
 const queryKeys = {
-  porEspaco: (espacoId: UUID) => ["setores", "espaco", espacoId] as const,
+  porEspaco: (espacoId: UUID, eventoId?: UUID) =>
+    ["setores", "espaco", espacoId, ...(eventoId ? [eventoId] : [])] as const,
   capacidade: (espacoId: UUID) => ["setores", "capacidade", espacoId] as const,
 };
 
-export function useSetoresPorEspaco(espacoId: UUID | undefined) {
+export function useSetoresPorEspaco(espacoId: UUID | undefined, eventoId?: UUID) {
   return useQuery({
     queryKey: espacoId
-      ? queryKeys.porEspaco(espacoId)
+      ? queryKeys.porEspaco(espacoId, eventoId)
       : (["setores", "espaco", "vazio"] as const),
-    queryFn: () => setoresService.listarPorEspaco(espacoId as UUID),
+    queryFn: () => setoresService.listarPorEspaco(espacoId as UUID, eventoId),
     enabled: Boolean(espacoId),
   });
 }

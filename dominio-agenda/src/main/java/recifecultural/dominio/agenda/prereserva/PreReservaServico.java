@@ -1,8 +1,6 @@
 package recifecultural.dominio.agenda.prereserva;
 
 import recifecultural.dominio.espaco.setor.ISetorRepositorio;
-import recifecultural.dominio.espaco.setor.Setor;
-import recifecultural.dominio.espaco.setor.SetorId;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -21,22 +19,16 @@ public class PreReservaServico {
     }
 
 
-    public PreReservaId reservar(UUID setorId, UUID assentoId, UUID usuarioId,
+    public PreReservaId reservar(UUID setorId, UUID assentoId, UUID usuarioId, UUID eventoId,
                                  DuracaoPreReserva duracao) {
         LocalDateTime agora = LocalDateTime.now();
 
-        List<PreReserva> ativas = preReservaRepositorio.listarAtivasPorAssento(assentoId);
+        List<PreReserva> ativas = preReservaRepositorio.listarAtivasPorAssentoEEvento(assentoId, eventoId);
         boolean haPreReservaAtiva = ativas.stream().anyMatch(pr -> !pr.estaExpirada(agora));
         if (haPreReservaAtiva)
             throw new IllegalStateException("Assento já possui pré-reserva ativa.");
 
-        Setor setor = setorRepositorio.obterPorId(SetorId.de(setorId.toString()))
-                .orElseThrow(() -> new IllegalArgumentException("Setor não encontrado."));
-
-        setor.preReservar(assentoId);
-        setorRepositorio.atualizar(setor);
-
-        PreReserva preReserva = new PreReserva(assentoId, setorId, usuarioId, duracao, agora);
+        PreReserva preReserva = new PreReserva(assentoId, setorId, usuarioId, eventoId, duracao, agora);
         preReservaRepositorio.salvar(preReserva);
         return preReserva.getId();
     }
@@ -47,11 +39,6 @@ public class PreReservaServico {
 
         preReserva.cancelar();
         preReservaRepositorio.atualizar(preReserva);
-
-        Setor setor = setorRepositorio.obterPorId(SetorId.de(preReserva.getSetorId().toString()))
-                .orElseThrow(() -> new IllegalArgumentException("Setor não encontrado."));
-        setor.liberarAssento(preReserva.getAssentoId());
-        setorRepositorio.atualizar(setor);
     }
 
     public void confirmar(PreReservaId preReservaId) {
@@ -60,11 +47,10 @@ public class PreReservaServico {
 
         preReserva.confirmar();
         preReservaRepositorio.atualizar(preReserva);
+    }
 
-        Setor setor = setorRepositorio.obterPorId(SetorId.de(preReserva.getSetorId().toString()))
-                .orElseThrow(() -> new IllegalArgumentException("Setor não encontrado."));
-        setor.ocuparAssento(preReserva.getAssentoId());
-        setorRepositorio.atualizar(setor);
+    public List<PreReserva> listarAtivasPorEvento(UUID eventoId) {
+        return preReservaRepositorio.listarAtivasPorEvento(eventoId);
     }
 
     public void expirarVencidas() {
@@ -73,12 +59,6 @@ public class PreReservaServico {
         for (PreReserva pr : vencidas) {
             pr.expirar(agora);
             preReservaRepositorio.atualizar(pr);
-
-            setorRepositorio.obterPorId(SetorId.de(pr.getSetorId().toString()))
-                    .ifPresent(setor -> {
-                        setor.liberarAssento(pr.getAssentoId());
-                        setorRepositorio.atualizar(setor);
-                    });
         }
     }
 }

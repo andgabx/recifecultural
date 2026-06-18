@@ -174,7 +174,7 @@ export default function InteligenciaDashboardPage() {
                   <YAxis dataKey="name" type="category" tick={{ ...TICK, fontSize: 10, fill: '#065f46' }} width={100} axisLine={false} tickLine={false} />
                   <RechartsTooltip 
                     cursor={{fill: 'transparent'}}
-                    formatter={(value: number) => [`R$ ${value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`, 'Valor']}
+                    formatter={(value: any) => [`R$ ${Number(value).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`, 'Valor']}
                     {...TOOLTIP_STYLE}
                   />
                   <Bar dataKey="valor" radius={[0, 4, 4, 0]} barSize={24}>
@@ -229,7 +229,7 @@ export default function InteligenciaDashboardPage() {
                       className="font-black text-2xl" fill="#1e293b" 
                     />
                   </Pie>
-                  <RechartsTooltip formatter={(value: number) => [`${value.toFixed(1)}%`, 'Probabilidade']} {...TOOLTIP_STYLE} />
+                  <RechartsTooltip formatter={(value: any) => [`${Number(value).toFixed(1)}%`, 'Probabilidade']} {...TOOLTIP_STYLE} />
                 </PieChart>
               </ResponsiveContainer>
             </div>
@@ -319,7 +319,7 @@ export default function InteligenciaDashboardPage() {
                     <YAxis dataKey="name" type="category" tick={{ ...TICK, fontSize: 10 }} axisLine={false} tickLine={false} />
                     <RechartsTooltip 
                       cursor={{fill: '#f8fafc'}}
-                      formatter={(value: number) => [`${value}%`, 'Afinidade']}
+                      formatter={(value: any) => [`${Number(value).toFixed(1)}%`, 'Afinidade']}
                       {...TOOLTIP_STYLE}
                     />
                     <Bar dataKey="percent" fill="#6366f1" radius={[0, 4, 4, 0]} barSize={16}>

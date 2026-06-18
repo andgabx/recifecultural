@@ -1,94 +1,94 @@
 "use client";
 
 import { useState } from "react";
-import { PageLayout } from "../../../components/layout/PageLayout";
-import { DataTable } from "../../../components/shared/DataTable";
-import { Button } from "../../../components/ui/button";
-import { Input } from "../../../components/ui/input";
-import { Modal } from "../../../components/shared/Modal";
-import { Badge } from "../../../components/ui/badge";
-import { useArtistas, Artista } from "../../../hooks/useArtistas";
-import { Edit, Trash2, Power, PowerOff, Plus } from "lucide-react";
+import { useParams } from "next/navigation";
+import { PageLayout } from "@/components/layout/PageLayout";
+import { DataTable } from "@/components/shared/DataTable";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Modal } from "@/components/shared/Modal";
+import { Badge } from "@/components/ui/badge";
+import { useArtistas, Artista } from "@/hooks/useArtistas";
+import { Ban, Plus, Power } from "lucide-react";
 
+// ---------------------------------------------------------------------------
+// Page: /produtor/[produtorId]/artistas
+// produtorId vem da URL — sem dependência de sessão ou contexto global.
+// ---------------------------------------------------------------------------
 export default function ArtistasProdutorPage() {
-  const { artistas, isLoading, createArtista, updateArtista, toggleStatus, deleteArtista } = useArtistas();
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  
-  const [formData, setFormData] = useState({
-    nome: "",
-    biografia: "",
-    cpfCnpj: "",
-  });
+  const params = useParams();
+  const produtorId = params?.produtorId as string;
 
-  const handleOpenNew = () => {
-    setEditingId(null);
-    setFormData({ nome: "", biografia: "", cpfCnpj: "" });
-    setIsModalOpen(true);
-  };
+  const { artistas, isLoading, createArtista, inativarArtista, reativarArtista } =
+    useArtistas(produtorId);
 
-  const handleOpenEdit = (artista: Artista) => {
-    setEditingId(artista.id);
-    setFormData({
-      nome: artista.nome,
-      biografia: artista.biografia,
-      cpfCnpj: artista.cpfCnpj,
-    });
-    setIsModalOpen(true);
-  };
+  const [isCadastroOpen, setIsCadastroOpen] = useState(false);
+  const [loadingForm, setLoadingForm] = useState(false);
+  const [formData, setFormData] = useState({ nome: "", riderItens: "" });
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleCadastro = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoadingForm(true);
     try {
-      if (editingId) {
-        await updateArtista({ id: editingId, ...formData });
-      } else {
-        await createArtista(formData);
-      }
-      setIsModalOpen(false);
-    } catch (error) {
-      console.error("Erro ao salvar artista:", error);
-      alert("Ocorreu um erro ao salvar o artista.");
+      await createArtista({
+        produtorId,
+        nome: formData.nome,
+        riderItens: formData.riderItens
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean),
+      });
+      setFormData({ nome: "", riderItens: "" });
+      setIsCadastroOpen(false);
+    } catch {
+      alert("Erro ao cadastrar artista. Tente novamente.");
+    } finally {
+      setLoadingForm(false);
     }
   };
 
-  const handleToggleStatus = async (id: string, currentStatus: string) => {
-    if (confirm(`Deseja realmente ${currentStatus === 'ATIVO' ? 'desativar' : 'reativar'} este artista?`)) {
+  const handleInativar = async (artista: Artista) => {
+    if (
+      confirm(
+        `Confirma a inativação de "${artista.nome}"? O artista não poderá ser vinculado a novos eventos.`
+      )
+    ) {
       try {
-        const newStatus = currentStatus === 'ATIVO' ? 'INATIVO' : 'ATIVO';
-        await toggleStatus({ id, status: newStatus });
-      } catch (error) {
-        console.error("Erro ao alterar status:", error);
+        await inativarArtista(artista.id);
+      } catch {
+        alert("Erro ao inativar artista. Tente novamente.");
       }
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (confirm("Atenção: Deseja realmente excluir este artista permanentemente?")) {
+  const handleReativar = async (artista: Artista) => {
+    if (confirm(`Confirma a reativação de "${artista.nome}"?`)) {
       try {
-        await deleteArtista(id);
-      } catch (error) {
-        console.error("Erro ao excluir artista:", error);
+        await reativarArtista(artista.id);
+      } catch {
+        alert("Erro ao reativar artista. Tente novamente.");
       }
     }
   };
 
   const columns = [
-    { 
-      header: "Nome", 
+    {
+      header: "Nome",
       accessor: "nome" as keyof Artista,
-      cell: (row: Artista) => <span>{row.nome}</span> 
+      cell: (row: Artista) => <span className="font-medium">{row.nome}</span>,
     },
-    { 
-      header: "CPF/CNPJ", 
+    {
+      header: "CPF / CNPJ",
       accessor: "cpfCnpj" as keyof Artista,
-      cell: (row: Artista) => <span>{row.cpfCnpj}</span>
+      cell: (row: Artista) => (
+        <span className="font-mono text-sm">{row.cpfCnpj}</span>
+      ),
     },
     {
       header: "Status",
       accessor: "status" as keyof Artista,
       cell: (row: Artista) => (
-        <Badge variant={row.status === "ATIVO" ? "default" : "destructive"}>
+        <Badge variant={row.status === "ATIVO" ? "default" : "secondary"}>
           {row.status}
         </Badge>
       ),
@@ -97,21 +97,27 @@ export default function ArtistasProdutorPage() {
       header: "Ações",
       accessor: "id" as keyof Artista,
       cell: (row: Artista) => (
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={() => handleOpenEdit(row)} title="Editar">
-            <Edit className="w-4 h-4" />
-          </Button>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={() => handleToggleStatus(row.id, row.status)}
-            title={row.status === 'ATIVO' ? "Desativar" : "Reativar"}
-          >
-            {row.status === 'ATIVO' ? <PowerOff className="w-4 h-4 text-orange-500" /> : <Power className="w-4 h-4 text-green-500" />}
-          </Button>
-          <Button variant="destructive" size="sm" onClick={() => handleDelete(row.id)} title="Excluir">
-            <Trash2 className="w-4 h-4" />
-          </Button>
+        <div className="flex gap-2 items-center">
+          {row.status === "ATIVO" && (
+            <Button
+              variant="destructive"
+              size="sm"
+              title="Inativar artista"
+              onClick={() => handleInativar(row)}
+            >
+              <Ban className="w-4 h-4" />
+            </Button>
+          )}
+          {row.status === "INATIVO" && (
+            <Button
+              variant="outline"
+              size="sm"
+              title="Reativar artista"
+              onClick={() => handleReativar(row)}
+            >
+              <Power className="w-4 h-4 text-green-500" />
+            </Button>
+          )}
         </div>
       ),
     },
@@ -120,9 +126,9 @@ export default function ArtistasProdutorPage() {
   return (
     <PageLayout
       titulo="Meus Artistas"
-      subtitulo="Gerencie os artistas vinculados aos seus eventos"
+      subtitulo="Gerencie os artistas vinculados ao seu perfil de produtor."
       acoes={
-        <Button onClick={handleOpenNew}>
+        <Button onClick={() => setIsCadastroOpen(true)} disabled={!produtorId}>
           <Plus className="w-4 h-4 mr-2" />
           Novo Artista
         </Button>
@@ -131,16 +137,16 @@ export default function ArtistasProdutorPage() {
       <DataTable
         columns={columns}
         rowKey={(row) => row.id}
-        data={artistas || []}
-        empty="Nenhum artista cadastrado."
+        data={artistas ?? []}
+        empty="Nenhum artista cadastrado. Clique em 'Novo Artista' para começar."
       />
 
       <Modal
-        open={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        title={editingId ? "Editar Artista" : "Novo Artista"}
+        open={isCadastroOpen}
+        onClose={() => setIsCadastroOpen(false)}
+        title="Novo Artista"
       >
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleCadastro} className="space-y-4">
           <div>
             <label className="block text-sm font-medium mb-1">Nome</label>
             <Input
@@ -151,30 +157,31 @@ export default function ArtistasProdutorPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">CPF ou CNPJ</label>
+            <label className="block text-sm font-medium mb-1">
+              Itens do Rider{" "}
+              <span className="text-muted-foreground font-normal">
+                (separados por vírgula)
+              </span>
+            </label>
             <Input
-              required
-              value={formData.cpfCnpj}
-              onChange={(e) => setFormData({ ...formData, cpfCnpj: e.target.value })}
-              placeholder="Apenas números"
+              value={formData.riderItens}
+              onChange={(e) =>
+                setFormData({ ...formData, riderItens: e.target.value })
+              }
+              placeholder="Ex: Microfone, Amplificador, Água mineral"
             />
           </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">Biografia</label>
-            <textarea
-              className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-              rows={4}
-              required
-              value={formData.biografia}
-              onChange={(e) => setFormData({ ...formData, biografia: e.target.value })}
-              placeholder="Breve descrição do artista..."
-            />
-          </div>
-          <div className="flex justify-end gap-2 pt-4">
-            <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)}>
+          <div className="flex justify-end gap-2 pt-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setIsCadastroOpen(false)}
+            >
               Cancelar
             </Button>
-            <Button type="submit">Salvar</Button>
+            <Button type="submit" disabled={loadingForm}>
+              {loadingForm ? "Salvando..." : "Cadastrar"}
+            </Button>
           </div>
         </form>
       </Modal>

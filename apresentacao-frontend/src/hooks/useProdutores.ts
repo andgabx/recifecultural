@@ -3,10 +3,23 @@ import { api } from '../lib/api';
 
 export interface Produtor {
   id: string;
-  nome: string;
+  nomeFantasia: string;
   cnpj: string;
   email: string;
+  telefone: string;
   status: 'ATIVO' | 'INATIVO' | 'PENDENTE' | 'BLOQUEADO';
+}
+
+export interface CadastrarProdutorPayload {
+  nomeFantasia: string;
+  cnpj: string;
+  email: string;
+  telefone: string;
+}
+
+export interface AcaoAdministrativaPayload {
+  responsavel: string;
+  motivo: string;
 }
 
 export function useProdutores() {
@@ -17,47 +30,51 @@ export function useProdutores() {
     queryFn: async () => {
       const { data } = await api.get('/produtores');
       return data as Produtor[];
-    }
+    },
   });
 
+  // POST /produtores
   const createMutation = useMutation({
-    mutationFn: async (novoProdutor: Partial<Produtor>) => {
-      const { data } = await api.post('/produtores', novoProdutor);
+    mutationFn: async (payload: CadastrarProdutorPayload) => {
+      const { data } = await api.post('/produtores', payload);
       return data;
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['produtores'] })
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['produtores'] }),
   });
 
-  const updateMutation = useMutation({
-    mutationFn: async ({ id, ...dados }: Partial<Produtor> & { id: string }) => {
-      const { data } = await api.put(`/produtores/${id}`, dados);
+  // POST /produtores/{id}/suspender
+  const suspenderMutation = useMutation({
+    mutationFn: async ({ id, ...payload }: AcaoAdministrativaPayload & { id: string }) => {
+      const { data } = await api.post(`/produtores/${id}/suspender`, payload);
       return data;
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['produtores'] })
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['produtores'] }),
   });
 
-  // Alterado para utilizar o método PUT enviando o objeto completo
-  const toggleStatusMutation = useMutation({
-    mutationFn: async ({ produtor, status }: { produtor: Produtor, status: string }) => {
-      const { data } = await api.put(`/produtores/${produtor.id}`, { ...produtor, status });
+  // POST /produtores/{id}/reativar
+  const reativarMutation = useMutation({
+    mutationFn: async ({ id, ...payload }: AcaoAdministrativaPayload & { id: string }) => {
+      const { data } = await api.post(`/produtores/${id}/reativar`, payload);
       return data;
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['produtores'] })
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['produtores'] }),
   });
 
-  const deleteMutation = useMutation({
-    mutationFn: async (id: string) => {
-      await api.delete(`/produtores/${id}`);
+  // POST /produtores/{id}/inativar
+  const inativarMutation = useMutation({
+    mutationFn: async ({ id, ...payload }: AcaoAdministrativaPayload & { id: string }) => {
+      const { data } = await api.post(`/produtores/${id}/inativar`, payload);
+      return data;
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['produtores'] })
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['produtores'] }),
   });
 
   return {
     produtores,
     isLoading,
     createProdutor: createMutation.mutateAsync,
-    updateProdutor: updateMutation.mutateAsync,
-    toggleStatus: toggleStatusMutation.mutateAsync,
-    deleteProdutor: deleteMutation.mutateAsync
+    suspenderProdutor: suspenderMutation.mutateAsync,
+    reativarProdutor: reativarMutation.mutateAsync,
+    inativarProdutor: inativarMutation.mutateAsync,
   };
 }

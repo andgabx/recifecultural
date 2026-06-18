@@ -11,6 +11,7 @@ import {
   Gift,
   Handshake,
   LayoutDashboard,
+  Mic,
   Megaphone,
   ScrollText,
   Speaker,
@@ -49,6 +50,7 @@ export const navItens: Record<Papel, GrupoNav[]> = {
       itens: [
         { href: "/produtor", label: "Dashboard", icon: LayoutDashboard },
         { href: "/produtor/eventos", label: "Eventos", icon: Drama },
+        { href: "/produtor/artistas", label: "Artistas", icon: Drama },
         { href: "/produtor/financeiro", label: "Financeiro", icon: Wallet },
         { href: "/produtor/patrocinios", label: "Patrocínios", icon: Handshake },
         { href: "/produtor/sorteios", label: "Sorteios", icon: Gift },
@@ -69,7 +71,6 @@ export const navItens: Record<Papel, GrupoNav[]> = {
         { href: "/gestor/espacos", label: "Espaços", icon: Building2 },
         { href: "/gestor/setores", label: "Setores", icon: Armchair },
         { href: "/gestor/equipamentos", label: "Equipamentos", icon: Speaker },
-        { href: "/gestor/artistas", label: "Artistas", icon: Drama },
         { href: "/gestor/produtores", label: "Produtores", icon: UserCog },
       ],
     },

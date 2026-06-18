@@ -1,37 +1,62 @@
-"use client";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { api } from '@/lib/api';
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-
-import {
-  artistasService,
-  type CriarArtistaRequisicao,
-} from "@/services/bff/artistas";
-import type { UUID } from "@/types/dominio";
-
-const queryKeys = {
-  todos: ["artistas"] as const,
-};
+export interface Artista {
+  id: string;
+  nome: string;
+  biografia: string;
+  cpfCnpj: string;
+  status: 'ATIVO' | 'INATIVO';
+}
 
 export function useArtistas() {
-  return useQuery({
-    queryKey: queryKeys.todos,
-    queryFn: () => artistasService.listar(),
-  });
-}
-
-export function useCadastrarArtista() {
   const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (payload: CriarArtistaRequisicao) =>
-      artistasService.cadastrar(payload),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.todos }),
-  });
-}
 
-export function useInativarArtista() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (id: UUID) => artistasService.inativar(id),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.todos }),
+  const { data: artistas, isLoading } = useQuery({
+    queryKey: ['artistas'],
+    queryFn: async () => {
+      const { data } = await api.get('/artistas');
+      return data as Artista[];
+    }
   });
+
+  const createMutation = useMutation({
+    mutationFn: async (novoArtista: Partial<Artista>) => {
+      const { data } = await api.post('/artistas', novoArtista);
+      return data;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['artistas'] })
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: async ({ id, ...dados }: Partial<Artista> & { id: string }) => {
+      const { data } = await api.put(`/artistas/${id}`, dados);
+      return data;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['artistas'] })
+  });
+
+  const toggleStatusMutation = useMutation({
+    mutationFn: async ({ id, status }: { id: string, status: 'ATIVO' | 'INATIVO' }) => {
+      const { data } = await api.patch(`/artistas/${id}/status`, { status });
+      return data;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['artistas'] })
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      await api.delete(`/artistas/${id}`);
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['artistas'] })
+  });
+
+  return {
+    artistas,
+    isLoading,
+    createArtista: createMutation.mutateAsync,
+    updateArtista: updateMutation.mutateAsync,
+    toggleStatus: toggleStatusMutation.mutateAsync,
+    deleteArtista: deleteMutation.mutateAsync
+  };
 }

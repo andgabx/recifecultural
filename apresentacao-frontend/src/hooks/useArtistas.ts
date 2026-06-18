@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { api } from '@/lib/api';
+import { api } from '../lib/api';
 
 export interface Artista {
   id: string;
@@ -36,9 +36,10 @@ export function useArtistas() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['artistas'] })
   });
 
+  // Alterado para utilizar o método PUT enviando o objeto completo
   const toggleStatusMutation = useMutation({
-    mutationFn: async ({ id, status }: { id: string, status: 'ATIVO' | 'INATIVO' }) => {
-      const { data } = await api.patch(`/artistas/${id}/status`, { status });
+    mutationFn: async ({ artista, status }: { artista: Artista, status: 'ATIVO' | 'INATIVO' }) => {
+      const { data } = await api.put(`/artistas/${artista.id}`, { ...artista, status });
       return data;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['artistas'] })

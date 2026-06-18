@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { api } from '@/lib/api';
+import { api } from '../lib/api';
 
 export interface Produtor {
   id: string;
@@ -28,9 +28,18 @@ export function useProdutores() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['produtores'] })
   });
 
+  const updateMutation = useMutation({
+    mutationFn: async ({ id, ...dados }: Partial<Produtor> & { id: string }) => {
+      const { data } = await api.put(`/produtores/${id}`, dados);
+      return data;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['produtores'] })
+  });
+
+  // Alterado para utilizar o método PUT enviando o objeto completo
   const toggleStatusMutation = useMutation({
-    mutationFn: async ({ id, status }: { id: string, status: string }) => {
-      const { data } = await api.patch(`/produtores/${id}/status`, { status });
+    mutationFn: async ({ produtor, status }: { produtor: Produtor, status: string }) => {
+      const { data } = await api.put(`/produtores/${produtor.id}`, { ...produtor, status });
       return data;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['produtores'] })
@@ -47,6 +56,7 @@ export function useProdutores() {
     produtores,
     isLoading,
     createProdutor: createMutation.mutateAsync,
+    updateProdutor: updateMutation.mutateAsync,
     toggleStatus: toggleStatusMutation.mutateAsync,
     deleteProdutor: deleteMutation.mutateAsync
   };

@@ -13,23 +13,25 @@ import { Power, PowerOff, Trash2, CheckCircle, XCircle } from "lucide-react";
 export default function ProdutoresGestorPage() {
   const { produtores, isLoading, toggleStatus, deleteProdutor } = useProdutores();
 
-  const handleToggleStatus = async (id: string, currentStatus: string) => {
+  const handleToggleStatus = async (produtor: Produtor) => {
     if (confirm(`Deseja realmente alterar o status deste produtor?`)) {
       try {
-        const newStatus = currentStatus === 'ATIVO' ? 'INATIVO' : 'ATIVO';
-        await toggleStatus({ id, status: newStatus });
+        const newStatus = produtor.status === 'ATIVO' ? 'INATIVO' : 'ATIVO';
+        await toggleStatus({ produtor, status: newStatus });
       } catch (error) {
         console.error("Erro ao alterar status:", error);
+        alert("Falha ao atualizar o status do produtor.");
       }
     }
   };
-
-  const handleApprove = async (id: string, approve: boolean) => {
+  
+  const handleApprove = async (produtor: Produtor, approve: boolean) => {
     const newStatus = approve ? 'ATIVO' : 'BLOQUEADO';
     try {
-      await toggleStatus({ id, status: newStatus });
+      await toggleStatus({ produtor, status: newStatus });
     } catch (error) {
       console.error("Erro ao avaliar produtor:", error);
+      alert("Falha ao avaliar o produtor.");
     }
   }
 
@@ -44,9 +46,21 @@ export default function ProdutoresGestorPage() {
   };
 
   const columns = [
-    { header: "Nome", accessor: "nome" as keyof Produtor },
-    { header: "CNPJ", accessor: "cnpj" as keyof Produtor },
-    { header: "Email", accessor: "email" as keyof Produtor },
+    { 
+      header: "Nome", 
+      accessor: "nome" as keyof Produtor,
+      cell: (row: Produtor) => <span>{row.nome}</span>
+    },
+    { 
+      header: "CNPJ", 
+      accessor: "cnpj" as keyof Produtor,
+      cell: (row: Produtor) => <span>{row.cnpj}</span>
+    },
+    { 
+      header: "Email", 
+      accessor: "email" as keyof Produtor,
+      cell: (row: Produtor) => <span>{row.email}</span>
+    },
     {
       header: "Status",
       accessor: "status" as keyof Produtor,
@@ -67,20 +81,20 @@ export default function ProdutoresGestorPage() {
         <div className="flex gap-2">
           {row.status === 'PENDENTE' && (
             <>
-              <Button variant="outline" size="sm" onClick={() => handleApprove(row.id, true)} title="Aprovar">
+              <Button variant="outline" size="sm" onClick={() => handleApprove(row, true)} title="Aprovar">
                 <CheckCircle className="w-4 h-4 text-green-500" />
               </Button>
-              <Button variant="outline" size="sm" onClick={() => handleApprove(row.id, false)} title="Rejeitar">
+              <Button variant="outline" size="sm" onClick={() => handleApprove(row, false)} title="Rejeitar">
                 <XCircle className="w-4 h-4 text-red-500" />
               </Button>
             </>
           )}
 
           {row.status !== 'PENDENTE' && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handleToggleStatus(row.id, row.status)}
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => handleToggleStatus(row)}
               title={row.status === 'ATIVO' ? "Desativar" : "Reativar"}
             >
               {row.status === 'ATIVO' ? <PowerOff className="w-4 h-4 text-orange-500" /> : <Power className="w-4 h-4 text-green-500" />}
@@ -97,14 +111,14 @@ export default function ProdutoresGestorPage() {
 
   return (
     <PageLayout
-      title="Gestão de Produtores"
-      description="Aprove, bloqueie e gerencie os produtores culturais da plataforma."
+      titulo="Gestão de Produtores"
+      subtitulo="Aprove, bloqueie e gerencie os produtores culturais da plataforma."
     >
       <DataTable
         columns={columns}
+        rowKey={(row) => row.id}
         data={produtores || []}
-        isLoading={isLoading}
-        emptyMessage="Nenhum produtor encontrado."
+        empty="Nenhum produtor encontrado."
       />
     </PageLayout>
   );

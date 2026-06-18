@@ -32,15 +32,15 @@ export interface AnaliseEventoResposta {
 
 export const inteligenciaService = {
   preverReceita: async (data: PrevisaoReceitaReq): Promise<PrevisaoReceitaRes> => {
-    const response = await api.post('/api/inteligencia/prever-receita', data);
+    const response = await api.post('/inteligencia/prever-receita', data);
     return response.data;
   },
   preverNoShow: async (data: PrevisaoNoShowReq): Promise<PrevisaoNoShowRes> => {
-    const response = await api.post('/api/inteligencia/prever-noshow', data);
+    const response = await api.post('/inteligencia/prever-noshow', data);
     return response.data;
   },
   analisarEvento: async (eventoId: string): Promise<AnaliseEventoResposta> => {
-    const response = await api.get(`/api/inteligencia/analisar-evento/${eventoId}`);
+    const response = await api.get(`/inteligencia/analisar-evento/${eventoId}`);
     return response.data;
   }
 };

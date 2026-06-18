@@ -3,6 +3,7 @@ import {
   Accessibility,
   Armchair,
   Building2,
+  BrainCircuit,
   CalendarOff,
   ClipboardCheck,
   DoorOpen,
@@ -72,6 +73,7 @@ export const navItens: Record<Papel, GrupoNav[]> = {
         { href: "/gestor/setores", label: "Setores", icon: Armchair },
         { href: "/gestor/equipamentos", label: "Equipamentos", icon: Speaker },
         { href: "/gestor/produtores", label: "Produtores", icon: UserCog },
+        { href: "/gestor/inteligencia", label: "Inteligência", icon: BrainCircuit }
       ],
     },
     {

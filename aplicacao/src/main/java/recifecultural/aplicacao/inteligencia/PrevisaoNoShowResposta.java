@@ -1,18 +1,20 @@
 package recifecultural.aplicacao.inteligencia;
 
+import java.util.UUID;
+
 public class PrevisaoNoShowResposta {
-    private String ingressoId;
-    private double probabilidadeFalta;
+    private UUID eventoId;
+    private double probabilidadeNoShow;
     private boolean alertaAltoRisco;
 
-    public PrevisaoNoShowResposta(String ingressoId, double probabilidadeFalta, boolean alertaAltoRisco) {
-        this.ingressoId = ingressoId;
-        this.probabilidadeFalta = probabilidadeFalta;
+    public PrevisaoNoShowResposta(UUID eventoId, double probabilidadeNoShow, boolean alertaAltoRisco) {
+        this.eventoId = eventoId;
+        this.probabilidadeNoShow = probabilidadeNoShow;
         this.alertaAltoRisco = alertaAltoRisco;
     }
 
     // Getters
-    public String getIngressoId() { return ingressoId; }
-    public double getProbabilidadeFalta() { return probabilidadeFalta; }
+    public UUID getEventoId() { return eventoId; }
+    public double getProbabilidadeNoShow() { return probabilidadeNoShow; }
     public boolean isAlertaAltoRisco() { return alertaAltoRisco; }
 }

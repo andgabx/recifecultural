@@ -5,6 +5,7 @@ import recifecultural.dominio.agenda.evento.IEventoRepositorio;
 import recifecultural.dominio.patrocinio.EventoId;
 import recifecultural.dominio.patrocinio.IEventoParaSubsidio;
 import recifecultural.dominio.patrocinio.ModalidadeContribuicao;
+import recifecultural.dominio.patrocinio.Patrocinio;
 import recifecultural.dominio.patrocinio.PatrocinioId;
 import recifecultural.dominio.patrocinio.PatrocinioServico;
 import recifecultural.dominio.patrocinio.ResultadoCancelamento;
@@ -48,17 +49,27 @@ public class PatrocinioServicoAplicacao {
 
     /**
      * Ativa o patrocínio. Se a modalidade for SUBSIDIO_INGRESSO_SOCIAL,
+     * valida que a contribuição não excede (precoInteira - R$1,00) e
      * aplica o desconto no preço social do evento automaticamente.
      */
     public ResultadoSubsidio ativar(PatrocinioId id) {
-        UUID eventoUuid = servico.obterPorId(id).getEventoId().getValor();
+        Patrocinio patrocinio = servico.obterPorId(id);
+        UUID eventoUuid = patrocinio.getEventoId().getValor();
         Evento evento = eventoRepositorio.obter(eventoUuid)
                 .orElseThrow(() -> new IllegalStateException("Evento do patrocínio não encontrado: " + eventoUuid));
+
+        BigDecimal precoInteira = evento.getPreco() != null ? evento.getPreco().getInteira() : null;
+        if (precoInteira != null) {
+            BigDecimal maximo = precoInteira.subtract(new BigDecimal("1.00"));
+            if (patrocinio.getValorContribuicao().compareTo(maximo) > 0) {
+                throw new IllegalStateException("A contribuição do patrocínio não pode ser maior que o preço do ingresso menos o piso mínimo de R$1,00.");
+            }
+        }
 
         IEventoParaSubsidio eventoAdaptado = new IEventoParaSubsidio() {
             @Override
             public BigDecimal getPrecoInteiro() {
-                return evento.getPreco() != null ? evento.getPreco().getInteira() : null;
+                return precoInteira;
             }
 
             @Override
@@ -68,7 +79,6 @@ public class PatrocinioServicoAplicacao {
         };
 
         ResultadoSubsidio subsidio = servico.ativarComSubsidio(id, eventoAdaptado);
-
         if (subsidio != null) {
             eventoRepositorio.atualizar(evento);
         }

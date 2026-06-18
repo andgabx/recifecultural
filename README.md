@@ -12,6 +12,12 @@ Requisito: Docker (inclui Docker Compose). API em http://localhost:8080
 
 ---
 
+## Deploy
+
+A aplicação está com deploy e pode ser acessada em: https://recifecultural-frontend.onrender.com/
+
+---
+
 ## Padrões de Projeto
 
 O projeto distribui os 6 padrões GoF entre 7 pares de features (um padrão é reutilizado). Cada par é de responsabilidade de um integrante.

@@ -10,7 +10,9 @@ import recifecultural.dominio.ingressos.IngressoId;
 import recifecultural.infraestrutura.persistencia.jpa.JpaMapeador;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Repository
@@ -51,6 +53,12 @@ public class IngressoRepositorioImpl implements IIngressoRepositorio, IngressoRe
     public List<Ingresso> buscarPorPeriodo(LocalDateTime inicio, LocalDateTime fim) {
         return jpa.findByPeriodo(inicio, fim)
                 .stream().map(i -> mapeador.map(i, Ingresso.class)).toList();
+    }
+
+    @Override
+    public Set<UUID> buscarAssentosOcupadosPorEvento(UUID eventoId) {
+        List<UUID> result = jpa.findAssentosOcupadosByEventoId(eventoId);
+        return new HashSet<>(result);
     }
 
     @Override

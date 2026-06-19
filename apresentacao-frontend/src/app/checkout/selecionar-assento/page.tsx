@@ -113,6 +113,7 @@ function SelecionarAssentoContent() {
   const { data: evento } = useEvento(eventoId || undefined);
   const { data: setores, isLoading } = useSetoresPorEspaco(
     evento?.localId || undefined,
+    eventoId || undefined,
   );
 
   const precoInteira = evento?.precoInteira ? Number(evento.precoInteira) : 100;

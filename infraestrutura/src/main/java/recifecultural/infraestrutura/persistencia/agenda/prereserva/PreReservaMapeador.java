@@ -14,7 +14,7 @@ public class PreReservaMapeador {
             protected PreReserva convert(PreReservaJpa s) {
                 return new PreReserva(
                         new PreReservaId(s.id), s.assentoId, s.setorId,
-                        s.usuarioId, s.criadaEm, s.expiraEm, s.status, s.versao
+                        s.usuarioId, s.eventoId, s.criadaEm, s.expiraEm, s.status, s.versao
                 );
             }
         });
@@ -27,6 +27,7 @@ public class PreReservaMapeador {
                 jpa.assentoId = s.getAssentoId();
                 jpa.setorId = s.getSetorId();
                 jpa.usuarioId = s.getUsuarioId();
+                jpa.eventoId = s.getEventoId();
                 jpa.criadaEm = s.getCriadaEm();
                 jpa.expiraEm = s.getExpiraEm();
                 jpa.status = s.getStatus();

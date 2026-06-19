@@ -18,6 +18,7 @@ import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.apache.commons.lang3.Validate.notNull;
@@ -61,6 +62,10 @@ public class IngressoServicoAplicacao {
 
     public List<IngressoResumo> listarTodos() {
         return repositorio.listarTodos();
+    }
+
+    public Set<UUID> buscarAssentosOcupadosPorEvento(UUID eventoId) {
+        return repositorio.buscarAssentosOcupadosPorEvento(eventoId);
     }
 
     public IngressoId comprar(UUID eventoId, LocalDateTime dataHora, TipoIngresso tipo,

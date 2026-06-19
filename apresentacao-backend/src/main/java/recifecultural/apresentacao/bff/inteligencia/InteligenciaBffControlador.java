@@ -52,7 +52,8 @@ public class InteligenciaBffControlador extends AbstractBffControlador {
     @GetMapping("/visitacao")
     public ResponseEntity<JsonNode> visitacao() {
         var dados = inteligenciaServico.listarVisitacao();
-        if (dados.isEmpty()) {
+        long teatrosDistintos = dados.stream().map(d -> d.teatro()).distinct().count();
+        if (teatrosDistintos < 2) {
             return ResponseEntity.ok(carregarJson("inteligencia/visitacao.json"));
         }
         return ResponseEntity.ok(OBJECT_MAPPER.valueToTree(dados));

@@ -1,0 +1,997 @@
+teatro,mes,preco_inteira,dia_da_semana,is_fim_de_semana,antecedencia_compra_dias,tipo_cod,categoria_cod,probabilidade_noshow,alto_risco
+Tearro Apolo,1,43.05,2.0,0.0,5.0,1.0,4.0,19.57,0
+Tearro Apolo,1,36.84,7.0,1.0,11.0,2.0,4.0,19.33,0
+Tearro Apolo,1,51.27,7.0,1.0,3.0,2.0,4.0,15.83,0
+Tearro Apolo,1,38.15,6.0,1.0,41.0,2.0,4.0,21.45,1
+Tearro Apolo,1,45.32,7.0,1.0,45.0,1.0,4.0,16.97,0
+Tearro Apolo,1,31.86,7.0,1.0,41.0,1.0,4.0,16.3,0
+Teatro Barreto Júnior,1,41.51,4.0,0.0,49.0,2.0,0.0,33.13,1
+Teatro Barreto Júnior,1,43.71,3.0,0.0,48.0,2.0,0.0,34.73,1
+Teatro Barreto Júnior,1,20.43,1.0,0.0,8.0,0.0,0.0,16.59,0
+Teatro Barreto Júnior,1,44.68,1.0,0.0,34.0,1.0,0.0,28.41,1
+Teatro Barreto Júnior,1,42.93,2.0,0.0,24.0,2.0,0.0,22.13,1
+Teatro Barreto Júnior,1,25.81,6.0,1.0,7.0,1.0,0.0,19.49,0
+Teatro Barreto Júnior,1,41.26,3.0,0.0,1.0,0.0,0.0,12.02,0
+Teatro Barreto Júnior,1,39.87,1.0,0.0,30.0,2.0,0.0,32.5,1
+Teatro Barreto Júnior,1,34.02,7.0,1.0,5.0,1.0,0.0,12.49,0
+Teatro Barreto Júnior,1,39.0,1.0,0.0,16.0,2.0,0.0,30.71,1
+Teatro de Santa Isabel,1,30.66,1.0,0.0,27.0,2.0,4.0,29.11,1
+Teatro de Santa Isabel,1,42.38,2.0,0.0,30.0,2.0,4.0,27.12,1
+Teatro de Santa Isabel,1,40.22,6.0,1.0,25.0,2.0,4.0,27.42,1
+Teatro de Santa Isabel,1,48.35,1.0,0.0,48.0,0.0,4.0,16.0,0
+Teatro de Santa Isabel,1,36.1,2.0,0.0,58.0,1.0,4.0,27.8,1
+Teatro de Santa Isabel,1,48.38,4.0,0.0,9.0,1.0,4.0,8.22,0
+Teatro do Parque,1,67.68,2.0,0.0,1.0,1.0,2.0,14.03,0
+Teatro do Parque,1,63.41,6.0,1.0,7.0,0.0,2.0,10.78,0
+Teatro do Parque,1,82.68,7.0,1.0,14.0,0.0,2.0,4.93,0
+Teatro do Parque,1,86.28,1.0,0.0,12.0,2.0,2.0,16.92,0
+Teatro do Parque,1,63.43,4.0,0.0,2.0,0.0,2.0,5.53,0
+Teatro do Parque,1,66.73,4.0,0.0,7.0,1.0,2.0,20.47,1
+Teatro do Parque,1,67.19,6.0,1.0,45.0,1.0,2.0,8.26,0
+Teatro do Parque,1,51.32,2.0,0.0,45.0,0.0,2.0,24.01,1
+Teatro do Parque,1,53.93,4.0,0.0,30.0,1.0,2.0,19.12,0
+Teatro do Parque,1,79.07,2.0,0.0,18.0,1.0,2.0,9.8,0
+Teatro do Parque,1,52.81,1.0,0.0,45.0,2.0,2.0,19.97,0
+Teatro do Parque,1,61.72,1.0,0.0,31.0,0.0,2.0,11.18,0
+Teatro do Parque,1,62.76,6.0,1.0,8.0,2.0,2.0,25.43,1
+Teatro Hermilo Borba Filho,1,58.77,3.0,0.0,38.0,2.0,4.0,26.71,1
+Teatro Hermilo Borba Filho,1,52.06,3.0,0.0,32.0,2.0,4.0,22.42,1
+Teatro Hermilo Borba Filho,1,31.23,5.0,0.0,32.0,0.0,4.0,14.01,0
+Teatro Hermilo Borba Filho,1,29.03,4.0,0.0,36.0,1.0,4.0,32.88,1
+Teatro Hermilo Borba Filho,1,30.13,2.0,0.0,9.0,0.0,4.0,17.39,0
+Teatro Hermilo Borba Filho,1,26.25,6.0,1.0,3.0,1.0,4.0,21.35,1
+Teatro Hermilo Borba Filho,1,41.55,5.0,0.0,48.0,2.0,4.0,30.26,1
+Teatro Luiz Mendonça,1,64.03,2.0,0.0,3.0,0.0,2.0,13.27,0
+Tearro Apolo,2,28.88,3.0,0.0,42.0,0.0,4.0,26.37,1
+Teatro Barreto Júnior,2,39.54,5.0,0.0,39.0,1.0,0.0,25.62,1
+Teatro Barreto Júnior,2,32.48,6.0,1.0,47.0,1.0,0.0,24.33,1
+Teatro Barreto Júnior,2,37.96,5.0,0.0,14.0,1.0,0.0,27.19,1
+Teatro Barreto Júnior,2,31.71,3.0,0.0,48.0,2.0,0.0,36.11,1
+Teatro Barreto Júnior,2,52.32,4.0,0.0,39.0,0.0,0.0,19.96,0
+Teatro de Santa Isabel,2,40.67,6.0,1.0,36.0,2.0,4.0,21.22,1
+Teatro do Parque,2,76.71,4.0,0.0,57.0,2.0,2.0,15.57,0
+Teatro do Parque,2,59.82,1.0,0.0,56.0,2.0,2.0,23.19,1
+Teatro do Parque,2,52.83,1.0,0.0,34.0,1.0,2.0,19.46,0
+Teatro do Parque,2,65.72,4.0,0.0,8.0,2.0,2.0,19.55,0
+Teatro do Parque,2,49.18,7.0,1.0,47.0,0.0,2.0,19.38,0
+Teatro do Parque,2,67.33,5.0,0.0,32.0,0.0,2.0,13.57,0
+Teatro do Parque,2,68.83,1.0,0.0,44.0,0.0,2.0,11.19,0
+Teatro Hermilo Borba Filho,2,42.02,4.0,0.0,0.0,2.0,4.0,25.83,1
+Teatro Hermilo Borba Filho,2,45.54,4.0,0.0,35.0,0.0,4.0,20.02,1
+Teatro Luiz Mendonça,2,78.1,5.0,0.0,19.0,1.0,2.0,16.4,0
+Teatro Luiz Mendonça,2,70.24,1.0,0.0,53.0,2.0,2.0,23.9,1
+Teatro Luiz Mendonça,2,72.02,2.0,0.0,38.0,0.0,2.0,15.66,0
+Tearro Apolo,3,45.3,6.0,1.0,12.0,0.0,4.0,16.02,0
+Tearro Apolo,3,37.34,7.0,1.0,59.0,2.0,4.0,18.52,0
+Teatro Barreto Júnior,3,11.66,1.0,0.0,47.0,2.0,0.0,42.38,1
+Teatro Barreto Júnior,3,34.31,5.0,0.0,33.0,1.0,0.0,21.72,1
+Teatro Barreto Júnior,3,29.06,1.0,0.0,43.0,1.0,0.0,20.98,1
+Teatro Barreto Júnior,3,38.93,7.0,1.0,27.0,2.0,0.0,28.06,1
+Teatro Barreto Júnior,3,28.95,4.0,0.0,47.0,0.0,0.0,26.39,1
+Teatro Barreto Júnior,3,38.62,5.0,0.0,32.0,2.0,0.0,28.01,1
+Teatro Barreto Júnior,3,46.15,7.0,1.0,28.0,0.0,0.0,17.09,0
+Teatro Barreto Júnior,3,36.6,1.0,0.0,24.0,1.0,0.0,25.97,1
+Teatro Barreto Júnior,3,26.67,7.0,1.0,2.0,0.0,0.0,25.26,1
+Teatro Barreto Júnior,3,46.06,3.0,0.0,33.0,1.0,0.0,25.48,1
+Teatro Barreto Júnior,3,41.19,4.0,0.0,38.0,1.0,0.0,26.92,1
+Teatro Barreto Júnior,3,49.33,3.0,0.0,44.0,1.0,0.0,21.8,1
+Teatro Barreto Júnior,3,39.3,6.0,1.0,3.0,0.0,0.0,16.7,0
+Teatro Barreto Júnior,3,31.91,2.0,0.0,26.0,2.0,0.0,22.13,1
+Teatro Barreto Júnior,3,48.64,4.0,0.0,22.0,1.0,0.0,34.84,1
+Teatro Barreto Júnior,3,39.35,7.0,1.0,45.0,1.0,0.0,22.88,1
+Teatro Barreto Júnior,3,34.14,5.0,0.0,10.0,1.0,0.0,30.9,1
+Teatro Barreto Júnior,3,25.3,6.0,1.0,30.0,1.0,0.0,19.72,0
+Teatro de Santa Isabel,3,54.55,7.0,1.0,9.0,0.0,4.0,10.02,0
+Teatro de Santa Isabel,3,44.52,2.0,0.0,60.0,1.0,4.0,13.64,0
+Teatro de Santa Isabel,3,32.13,4.0,0.0,39.0,1.0,4.0,23.49,1
+Teatro de Santa Isabel,3,42.03,5.0,0.0,56.0,2.0,4.0,32.57,1
+Teatro de Santa Isabel,3,42.96,3.0,0.0,35.0,0.0,4.0,13.49,0
+Teatro de Santa Isabel,3,31.11,6.0,1.0,23.0,0.0,4.0,20.38,1
+Teatro de Santa Isabel,3,47.39,3.0,0.0,18.0,0.0,4.0,17.14,0
+Teatro de Santa Isabel,3,42.62,5.0,0.0,48.0,1.0,4.0,30.56,1
+Teatro de Santa Isabel,3,37.47,5.0,0.0,47.0,1.0,4.0,28.3,1
+Teatro de Santa Isabel,3,59.97,7.0,1.0,25.0,2.0,4.0,12.12,0
+Teatro de Santa Isabel,3,42.49,4.0,0.0,47.0,2.0,4.0,32.48,1
+Teatro de Santa Isabel,3,42.42,4.0,0.0,39.0,0.0,4.0,17.06,0
+Teatro do Parque,3,58.63,1.0,0.0,22.0,2.0,2.0,13.84,0
+Teatro do Parque,3,67.35,1.0,0.0,45.0,2.0,2.0,24.49,1
+Teatro do Parque,3,67.42,4.0,0.0,0.0,2.0,2.0,12.35,0
+Teatro do Parque,3,69.71,4.0,0.0,15.0,0.0,2.0,2.0,0
+Teatro do Parque,3,81.11,4.0,0.0,24.0,0.0,2.0,11.63,0
+Teatro do Parque,3,53.87,2.0,0.0,25.0,2.0,2.0,30.12,1
+Teatro do Parque,3,66.72,2.0,0.0,60.0,2.0,2.0,14.16,0
+Teatro do Parque,3,66.64,5.0,0.0,6.0,1.0,2.0,8.33,0
+Teatro do Parque,3,70.87,7.0,1.0,20.0,1.0,2.0,3.02,0
+Teatro do Parque,3,64.82,3.0,0.0,23.0,0.0,2.0,5.63,0
+Teatro do Parque,3,69.82,5.0,0.0,39.0,0.0,2.0,8.19,0
+Teatro do Parque,3,73.36,3.0,0.0,15.0,2.0,2.0,15.84,0
+Teatro do Parque,3,73.17,2.0,0.0,49.0,2.0,2.0,18.64,0
+Teatro do Parque,3,60.21,7.0,1.0,19.0,2.0,2.0,16.01,0
+Teatro do Parque,3,62.54,3.0,0.0,2.0,0.0,2.0,7.17,0
+Teatro do Parque,3,55.85,2.0,0.0,51.0,0.0,2.0,16.62,0
+Teatro do Parque,3,75.49,4.0,0.0,24.0,0.0,2.0,12.93,0
+Teatro do Parque,3,72.02,3.0,0.0,16.0,1.0,2.0,6.6,0
+Teatro do Parque,3,71.86,2.0,0.0,19.0,1.0,2.0,7.26,0
+Teatro do Parque,3,55.77,2.0,0.0,29.0,0.0,2.0,9.33,0
+Teatro do Parque,3,69.48,1.0,0.0,56.0,0.0,2.0,20.22,1
+Teatro do Parque,3,73.07,1.0,0.0,5.0,1.0,2.0,8.09,0
+Teatro do Parque,3,46.4,4.0,0.0,9.0,2.0,2.0,14.2,0
+Teatro do Parque,3,65.11,6.0,1.0,55.0,2.0,2.0,23.99,1
+Teatro do Parque,3,55.79,3.0,0.0,13.0,1.0,2.0,19.21,0
+Teatro Hermilo Borba Filho,3,46.37,3.0,0.0,42.0,0.0,4.0,13.76,0
+Teatro Hermilo Borba Filho,3,56.82,2.0,0.0,36.0,0.0,4.0,19.59,0
+Teatro Hermilo Borba Filho,3,29.07,1.0,0.0,16.0,0.0,4.0,18.51,0
+Teatro Hermilo Borba Filho,3,57.98,1.0,0.0,53.0,1.0,4.0,17.94,0
+Teatro Hermilo Borba Filho,3,38.49,4.0,0.0,20.0,1.0,4.0,12.34,0
+Teatro Hermilo Borba Filho,3,38.77,6.0,1.0,15.0,1.0,4.0,11.06,0
+Teatro Hermilo Borba Filho,3,43.45,5.0,0.0,16.0,2.0,4.0,17.56,0
+Teatro Hermilo Borba Filho,3,36.81,3.0,0.0,31.0,1.0,4.0,19.67,0
+Teatro Hermilo Borba Filho,3,43.11,3.0,0.0,21.0,2.0,4.0,22.15,1
+Teatro Hermilo Borba Filho,3,54.38,3.0,0.0,28.0,2.0,4.0,24.35,1
+Tearro Apolo,4,40.31,6.0,1.0,32.0,2.0,4.0,29.45,1
+Tearro Apolo,4,28.72,4.0,0.0,6.0,0.0,4.0,27.05,1
+Tearro Apolo,4,36.64,2.0,0.0,56.0,2.0,4.0,31.1,1
+Tearro Apolo,4,43.65,1.0,0.0,36.0,1.0,4.0,20.27,1
+Tearro Apolo,4,49.09,7.0,1.0,20.0,0.0,4.0,16.07,0
+Tearro Apolo,4,20.63,4.0,0.0,45.0,1.0,4.0,22.76,1
+Teatro Barreto Júnior,4,43.31,7.0,1.0,27.0,0.0,0.0,18.3,0
+Teatro Barreto Júnior,4,24.92,7.0,1.0,6.0,0.0,0.0,15.12,0
+Teatro Barreto Júnior,4,33.97,2.0,0.0,37.0,2.0,0.0,25.25,1
+Teatro Barreto Júnior,4,24.07,3.0,0.0,5.0,2.0,0.0,23.1,1
+Teatro Barreto Júnior,4,29.42,6.0,1.0,6.0,2.0,0.0,17.92,0
+Teatro Barreto Júnior,4,26.38,1.0,0.0,46.0,0.0,0.0,32.82,1
+Teatro Barreto Júnior,4,28.78,6.0,1.0,23.0,0.0,0.0,12.5,0
+Teatro Barreto Júnior,4,27.48,7.0,1.0,43.0,0.0,0.0,27.59,1
+Teatro Barreto Júnior,4,40.29,6.0,1.0,2.0,2.0,0.0,19.78,0
+Teatro Barreto Júnior,4,29.29,3.0,0.0,32.0,2.0,0.0,31.31,1
+Teatro Barreto Júnior,4,35.06,4.0,0.0,8.0,0.0,0.0,22.4,1
+Teatro Barreto Júnior,4,23.49,2.0,0.0,55.0,0.0,0.0,28.7,1
+Teatro de Santa Isabel,4,52.0,3.0,0.0,51.0,2.0,4.0,29.76,1
+Teatro de Santa Isabel,4,10.0,5.0,0.0,20.0,1.0,4.0,31.07,1
+Teatro de Santa Isabel,4,35.16,1.0,0.0,50.0,0.0,4.0,22.69,1
+Teatro de Santa Isabel,4,29.98,2.0,0.0,17.0,2.0,4.0,30.19,1
+Teatro de Santa Isabel,4,40.35,1.0,0.0,9.0,2.0,4.0,18.14,0
+Teatro de Santa Isabel,4,29.58,1.0,0.0,28.0,1.0,4.0,15.53,0
+Teatro de Santa Isabel,4,42.29,7.0,1.0,60.0,1.0,4.0,23.36,1
+Teatro de Santa Isabel,4,36.97,6.0,1.0,22.0,2.0,4.0,20.04,1
+Teatro de Santa Isabel,4,43.53,6.0,1.0,20.0,1.0,4.0,16.31,0
+Teatro do Parque,4,57.71,6.0,1.0,5.0,0.0,2.0,7.75,0
+Teatro do Parque,4,72.56,5.0,0.0,9.0,2.0,2.0,7.75,0
+Teatro do Parque,4,54.55,6.0,1.0,8.0,0.0,2.0,11.83,0
+Teatro do Parque,4,68.16,2.0,0.0,46.0,2.0,2.0,10.06,0
+Teatro do Parque,4,65.36,4.0,0.0,24.0,1.0,2.0,18.25,0
+Teatro do Parque,4,59.72,5.0,0.0,10.0,2.0,2.0,20.83,1
+Teatro do Parque,4,55.45,6.0,1.0,20.0,2.0,2.0,12.35,0
+Teatro do Parque,4,70.43,2.0,0.0,60.0,2.0,2.0,22.98,1
+Teatro do Parque,4,89.45,5.0,0.0,17.0,0.0,2.0,13.54,0
+Teatro do Parque,4,63.46,2.0,0.0,34.0,0.0,2.0,14.5,0
+Teatro do Parque,4,54.28,5.0,0.0,47.0,1.0,2.0,18.01,0
+Teatro do Parque,4,49.07,1.0,0.0,24.0,1.0,2.0,14.29,0
+Teatro do Parque,4,79.35,2.0,0.0,16.0,1.0,2.0,11.75,0
+Teatro do Parque,4,51.02,7.0,1.0,30.0,1.0,2.0,14.27,0
+Teatro do Parque,4,72.95,1.0,0.0,31.0,0.0,2.0,16.29,0
+Teatro do Parque,4,74.74,1.0,0.0,12.0,0.0,2.0,14.57,0
+Teatro Hermilo Borba Filho,4,29.03,7.0,1.0,25.0,1.0,4.0,26.17,1
+Teatro Hermilo Borba Filho,4,37.28,3.0,0.0,34.0,2.0,4.0,32.83,1
+Teatro Hermilo Borba Filho,4,36.39,2.0,0.0,0.0,0.0,4.0,15.35,0
+Teatro Luiz Mendonça,4,63.16,4.0,0.0,1.0,0.0,2.0,2.0,0
+Teatro Luiz Mendonça,4,56.06,3.0,0.0,24.0,1.0,2.0,16.93,0
+Teatro Luiz Mendonça,4,65.37,6.0,1.0,18.0,1.0,2.0,2.0,0
+Teatro Luiz Mendonça,4,59.57,3.0,0.0,10.0,0.0,2.0,18.08,0
+Teatro Luiz Mendonça,4,66.84,2.0,0.0,10.0,1.0,2.0,14.8,0
+Teatro Luiz Mendonça,4,65.01,5.0,0.0,13.0,1.0,2.0,13.44,0
+Teatro Luiz Mendonça,4,49.93,5.0,0.0,22.0,2.0,2.0,17.83,0
+Teatro Luiz Mendonça,4,61.36,3.0,0.0,25.0,0.0,2.0,6.15,0
+Tearro Apolo,5,32.38,6.0,1.0,9.0,0.0,4.0,18.53,0
+Tearro Apolo,5,32.0,5.0,0.0,54.0,2.0,4.0,33.78,1
+Tearro Apolo,5,38.59,5.0,0.0,28.0,0.0,4.0,29.02,1
+Tearro Apolo,5,59.6,7.0,1.0,6.0,1.0,4.0,10.78,0
+Tearro Apolo,5,44.2,2.0,0.0,20.0,1.0,4.0,16.28,0
+Tearro Apolo,5,62.82,6.0,1.0,54.0,0.0,4.0,3.12,0
+Teatro Barreto Júnior,5,21.22,7.0,1.0,12.0,2.0,0.0,23.16,1
+Teatro Barreto Júnior,5,47.91,2.0,0.0,24.0,0.0,0.0,17.21,0
+Teatro Barreto Júnior,5,40.6,3.0,0.0,19.0,1.0,0.0,23.69,1
+Teatro Barreto Júnior,5,38.27,2.0,0.0,11.0,2.0,0.0,32.7,1
+Teatro Barreto Júnior,5,24.99,1.0,0.0,48.0,1.0,0.0,26.99,1
+Teatro Barreto Júnior,5,16.92,7.0,1.0,34.0,1.0,0.0,24.96,1
+Teatro Barreto Júnior,5,27.75,4.0,0.0,32.0,0.0,0.0,20.65,1
+Teatro Barreto Júnior,5,44.99,6.0,1.0,46.0,1.0,0.0,17.69,0
+Teatro Barreto Júnior,5,41.62,2.0,0.0,40.0,2.0,0.0,28.69,1
+Teatro Barreto Júnior,5,38.73,7.0,1.0,41.0,2.0,0.0,24.62,1
+Teatro Barreto Júnior,5,46.94,4.0,0.0,27.0,0.0,0.0,21.8,1
+Teatro Barreto Júnior,5,21.74,1.0,0.0,16.0,2.0,0.0,27.38,1
+Teatro Barreto Júnior,5,13.71,2.0,0.0,48.0,2.0,0.0,29.84,1
+Teatro Barreto Júnior,5,25.35,4.0,0.0,29.0,0.0,0.0,10.54,0
+Teatro Barreto Júnior,5,25.04,4.0,0.0,7.0,0.0,0.0,24.36,1
+Teatro Barreto Júnior,5,28.25,1.0,0.0,1.0,2.0,0.0,18.62,0
+Teatro Barreto Júnior,5,46.9,4.0,0.0,48.0,1.0,0.0,27.67,1
+Teatro Barreto Júnior,5,44.67,5.0,0.0,11.0,1.0,0.0,16.31,0
+Teatro Barreto Júnior,5,43.77,3.0,0.0,14.0,0.0,0.0,22.59,1
+Teatro Barreto Júnior,5,62.11,3.0,0.0,2.0,0.0,0.0,10.87,0
+Teatro Barreto Júnior,5,58.1,4.0,0.0,31.0,2.0,0.0,25.61,1
+Teatro Barreto Júnior,5,40.62,7.0,1.0,9.0,2.0,0.0,17.74,0
+Teatro Barreto Júnior,5,30.9,4.0,0.0,10.0,2.0,0.0,31.46,1
+Teatro de Santa Isabel,5,36.2,5.0,0.0,52.0,0.0,4.0,14.58,0
+Teatro de Santa Isabel,5,48.29,5.0,0.0,56.0,2.0,4.0,31.81,1
+Teatro de Santa Isabel,5,41.77,6.0,1.0,29.0,1.0,4.0,17.09,0
+Teatro de Santa Isabel,5,22.48,4.0,0.0,34.0,2.0,4.0,24.38,1
+Teatro de Santa Isabel,5,33.28,7.0,1.0,12.0,0.0,4.0,17.51,0
+Teatro de Santa Isabel,5,38.18,7.0,1.0,34.0,0.0,4.0,15.42,0
+Teatro de Santa Isabel,5,35.08,2.0,0.0,32.0,1.0,4.0,25.68,1
+Teatro de Santa Isabel,5,35.81,5.0,0.0,7.0,1.0,4.0,15.67,0
+Teatro de Santa Isabel,5,62.29,3.0,0.0,47.0,0.0,4.0,21.22,1
+Teatro de Santa Isabel,5,54.01,4.0,0.0,49.0,0.0,4.0,23.5,1
+Teatro de Santa Isabel,5,47.45,5.0,0.0,30.0,1.0,4.0,21.17,1
+Teatro de Santa Isabel,5,35.6,4.0,0.0,56.0,1.0,4.0,27.84,1
+Teatro de Santa Isabel,5,26.09,5.0,0.0,59.0,0.0,4.0,22.29,1
+Teatro de Santa Isabel,5,34.07,4.0,0.0,45.0,2.0,4.0,36.49,1
+Teatro do Parque,5,63.86,4.0,0.0,40.0,2.0,2.0,17.05,0
+Teatro do Parque,5,56.46,5.0,0.0,2.0,2.0,2.0,10.0,0
+Teatro do Parque,5,50.73,3.0,0.0,38.0,0.0,2.0,15.16,0
+Teatro do Parque,5,63.37,6.0,1.0,17.0,0.0,2.0,12.53,0
+Teatro do Parque,5,70.63,6.0,1.0,10.0,2.0,2.0,5.42,0
+Teatro do Parque,5,68.28,3.0,0.0,43.0,1.0,2.0,12.18,0
+Teatro do Parque,5,61.46,1.0,0.0,49.0,0.0,2.0,13.47,0
+Teatro do Parque,5,58.75,4.0,0.0,20.0,1.0,2.0,5.44,0
+Teatro do Parque,5,64.57,1.0,0.0,26.0,2.0,2.0,8.91,0
+Teatro do Parque,5,48.18,3.0,0.0,38.0,1.0,2.0,9.08,0
+Teatro do Parque,5,52.32,4.0,0.0,48.0,1.0,2.0,25.42,1
+Teatro do Parque,5,63.3,4.0,0.0,27.0,1.0,2.0,21.22,1
+Teatro do Parque,5,53.35,1.0,0.0,51.0,2.0,2.0,30.65,1
+Teatro do Parque,5,62.39,7.0,1.0,50.0,1.0,2.0,14.14,0
+Teatro Hermilo Borba Filho,5,22.19,2.0,0.0,11.0,2.0,4.0,22.73,1
+Teatro Hermilo Borba Filho,5,36.35,1.0,0.0,45.0,0.0,4.0,25.43,1
+Teatro Hermilo Borba Filho,5,38.54,7.0,1.0,49.0,1.0,4.0,17.55,0
+Teatro Hermilo Borba Filho,5,28.37,2.0,0.0,42.0,0.0,4.0,20.68,1
+Teatro Hermilo Borba Filho,5,43.42,5.0,0.0,0.0,1.0,4.0,7.21,0
+Teatro Luiz Mendonça,5,68.46,4.0,0.0,46.0,0.0,2.0,14.91,0
+Teatro Luiz Mendonça,5,48.79,4.0,0.0,25.0,1.0,2.0,10.3,0
+Teatro Luiz Mendonça,5,63.26,4.0,0.0,39.0,1.0,2.0,18.75,0
+Teatro Luiz Mendonça,5,80.78,3.0,0.0,28.0,0.0,2.0,11.4,0
+Teatro Luiz Mendonça,5,78.58,2.0,0.0,32.0,2.0,2.0,19.65,0
+Teatro Luiz Mendonça,5,62.48,4.0,0.0,24.0,2.0,2.0,9.98,0
+Teatro Luiz Mendonça,5,68.24,2.0,0.0,26.0,2.0,2.0,24.4,1
+Teatro Luiz Mendonça,5,66.92,4.0,0.0,3.0,2.0,2.0,9.76,0
+Teatro Luiz Mendonça,5,56.69,7.0,1.0,9.0,2.0,2.0,4.75,0
+Teatro Luiz Mendonça,5,74.74,1.0,0.0,50.0,0.0,2.0,13.09,0
+Teatro Luiz Mendonça,5,71.48,6.0,1.0,30.0,1.0,2.0,11.57,0
+Teatro Luiz Mendonça,5,58.06,3.0,0.0,41.0,0.0,2.0,8.0,0
+Teatro Luiz Mendonça,5,68.88,4.0,0.0,9.0,2.0,2.0,10.89,0
+Teatro Luiz Mendonça,5,63.97,5.0,0.0,25.0,1.0,2.0,17.45,0
+Teatro Luiz Mendonça,5,58.01,7.0,1.0,47.0,0.0,2.0,12.24,0
+Teatro Luiz Mendonça,5,48.85,7.0,1.0,1.0,1.0,2.0,6.29,0
+Teatro Luiz Mendonça,5,59.62,2.0,0.0,49.0,2.0,2.0,23.43,1
+Teatro Luiz Mendonça,5,63.59,4.0,0.0,15.0,1.0,2.0,12.38,0
+Teatro Luiz Mendonça,5,52.51,7.0,1.0,48.0,0.0,2.0,14.9,0
+Teatro Luiz Mendonça,5,53.72,7.0,1.0,32.0,0.0,2.0,10.08,0
+Teatro Luiz Mendonça,5,67.6,4.0,0.0,3.0,1.0,2.0,16.66,0
+Teatro Luiz Mendonça,5,63.87,6.0,1.0,20.0,2.0,2.0,7.5,0
+Teatro Luiz Mendonça,5,75.47,2.0,0.0,5.0,0.0,2.0,11.78,0
+Teatro Luiz Mendonça,5,55.59,3.0,0.0,53.0,0.0,2.0,16.03,0
+Teatro Luiz Mendonça,5,50.58,5.0,0.0,4.0,0.0,2.0,8.97,0
+Teatro Luiz Mendonça,5,66.11,5.0,0.0,20.0,2.0,2.0,14.14,0
+Teatro Luiz Mendonça,5,59.23,5.0,0.0,27.0,2.0,2.0,16.46,0
+Teatro Luiz Mendonça,5,58.44,2.0,0.0,37.0,1.0,2.0,12.61,0
+Teatro Luiz Mendonça,5,65.7,5.0,0.0,37.0,0.0,2.0,9.64,0
+Teatro Luiz Mendonça,5,63.56,6.0,1.0,45.0,2.0,2.0,15.7,0
+Teatro Luiz Mendonça,5,60.49,2.0,0.0,5.0,1.0,2.0,15.76,0
+Teatro Luiz Mendonça,5,51.53,1.0,0.0,4.0,1.0,2.0,2.76,0
+Teatro Luiz Mendonça,5,55.17,4.0,0.0,31.0,1.0,2.0,18.93,0
+Tearro Apolo,6,50.16,3.0,0.0,46.0,1.0,4.0,21.66,1
+Tearro Apolo,6,36.73,6.0,1.0,24.0,1.0,4.0,20.02,1
+Tearro Apolo,6,36.96,2.0,0.0,55.0,2.0,4.0,30.46,1
+Teatro Barreto Júnior,6,44.61,4.0,0.0,21.0,0.0,0.0,20.91,1
+Teatro Barreto Júnior,6,30.38,3.0,0.0,38.0,2.0,0.0,35.6,1
+Teatro Barreto Júnior,6,47.22,7.0,1.0,57.0,1.0,0.0,30.93,1
+Teatro Barreto Júnior,6,26.24,1.0,0.0,19.0,1.0,0.0,27.8,1
+Teatro Barreto Júnior,6,35.88,4.0,0.0,49.0,1.0,0.0,25.0,1
+Teatro Barreto Júnior,6,35.11,1.0,0.0,13.0,0.0,0.0,14.46,0
+Teatro Barreto Júnior,6,31.15,6.0,1.0,54.0,0.0,0.0,24.73,1
+Teatro Barreto Júnior,6,39.75,1.0,0.0,9.0,1.0,0.0,25.25,1
+Teatro Barreto Júnior,6,24.15,5.0,0.0,7.0,0.0,0.0,19.38,0
+Teatro Barreto Júnior,6,41.79,6.0,1.0,40.0,0.0,0.0,12.65,0
+Teatro Barreto Júnior,6,24.36,6.0,1.0,47.0,1.0,0.0,16.25,0
+Teatro Barreto Júnior,6,42.25,3.0,0.0,26.0,1.0,0.0,18.71,0
+Teatro Barreto Júnior,6,37.0,5.0,0.0,52.0,1.0,0.0,22.54,1
+Teatro Barreto Júnior,6,13.44,2.0,0.0,25.0,0.0,0.0,18.28,0
+Teatro Barreto Júnior,6,29.45,2.0,0.0,18.0,2.0,0.0,22.84,1
+Teatro de Santa Isabel,6,40.32,2.0,0.0,59.0,0.0,4.0,25.3,1
+Teatro de Santa Isabel,6,10.83,4.0,0.0,38.0,1.0,4.0,24.78,1
+Teatro de Santa Isabel,6,25.34,4.0,0.0,28.0,2.0,4.0,21.77,1
+Teatro de Santa Isabel,6,34.17,4.0,0.0,22.0,0.0,4.0,17.08,0
+Teatro de Santa Isabel,6,31.37,5.0,0.0,23.0,0.0,4.0,16.07,0
+Teatro de Santa Isabel,6,31.98,6.0,1.0,39.0,2.0,4.0,21.77,1
+Teatro de Santa Isabel,6,21.97,3.0,0.0,28.0,2.0,4.0,29.37,1
+Teatro de Santa Isabel,6,22.24,6.0,1.0,2.0,1.0,4.0,10.56,0
+Teatro do Parque,6,62.14,2.0,0.0,8.0,0.0,2.0,8.89,0
+Teatro do Parque,6,69.85,2.0,0.0,42.0,1.0,2.0,16.12,0
+Teatro do Parque,6,61.93,3.0,0.0,39.0,2.0,2.0,21.83,1
+Teatro do Parque,6,80.75,1.0,0.0,0.0,1.0,2.0,10.75,0
+Teatro do Parque,6,57.14,6.0,1.0,25.0,2.0,2.0,17.43,0
+Teatro do Parque,6,70.45,1.0,0.0,55.0,0.0,2.0,17.69,0
+Teatro do Parque,6,64.08,3.0,0.0,27.0,2.0,2.0,20.33,1
+Teatro do Parque,6,50.95,4.0,0.0,6.0,2.0,2.0,20.97,1
+Teatro do Parque,6,52.35,2.0,0.0,3.0,2.0,2.0,18.14,0
+Teatro do Parque,6,64.72,7.0,1.0,44.0,1.0,2.0,10.55,0
+Teatro do Parque,6,66.3,1.0,0.0,17.0,1.0,2.0,16.04,0
+Teatro do Parque,6,60.22,6.0,1.0,12.0,0.0,2.0,10.63,0
+Teatro do Parque,6,72.37,3.0,0.0,16.0,1.0,2.0,17.69,0
+Teatro do Parque,6,84.16,3.0,0.0,3.0,1.0,2.0,14.52,0
+Teatro Hermilo Borba Filho,6,41.02,4.0,0.0,7.0,2.0,4.0,24.6,1
+Teatro Hermilo Borba Filho,6,45.83,2.0,0.0,25.0,2.0,4.0,17.57,0
+Teatro Hermilo Borba Filho,6,57.22,6.0,1.0,10.0,1.0,4.0,13.79,0
+Teatro Hermilo Borba Filho,6,45.31,5.0,0.0,46.0,0.0,4.0,19.38,0
+Teatro Hermilo Borba Filho,6,40.56,7.0,1.0,20.0,1.0,4.0,18.95,0
+Teatro Hermilo Borba Filho,6,43.87,3.0,0.0,21.0,2.0,4.0,23.99,1
+Teatro Luiz Mendonça,6,60.32,6.0,1.0,51.0,1.0,2.0,19.69,0
+Teatro Luiz Mendonça,6,65.95,7.0,1.0,30.0,0.0,2.0,18.97,0
+Teatro Luiz Mendonça,6,67.57,5.0,0.0,46.0,2.0,2.0,28.03,1
+Teatro Luiz Mendonça,6,54.53,6.0,1.0,51.0,0.0,2.0,18.56,0
+Teatro Luiz Mendonça,6,66.99,2.0,0.0,16.0,2.0,2.0,21.3,1
+Teatro Luiz Mendonça,6,70.55,7.0,1.0,22.0,1.0,2.0,12.68,0
+Teatro Luiz Mendonça,6,87.07,7.0,1.0,15.0,2.0,2.0,9.34,0
+Teatro Luiz Mendonça,6,68.24,7.0,1.0,34.0,0.0,2.0,13.04,0
+Teatro Luiz Mendonça,6,77.59,3.0,0.0,34.0,1.0,2.0,12.33,0
+Teatro Luiz Mendonça,6,55.57,6.0,1.0,17.0,0.0,2.0,14.52,0
+Teatro Luiz Mendonça,6,56.53,2.0,0.0,19.0,0.0,2.0,17.36,0
+Teatro Luiz Mendonça,6,57.56,5.0,0.0,46.0,1.0,2.0,25.28,1
+Teatro Luiz Mendonça,6,71.33,5.0,0.0,56.0,1.0,2.0,15.54,0
+Teatro Luiz Mendonça,6,56.49,7.0,1.0,33.0,2.0,2.0,16.77,0
+Teatro Luiz Mendonça,6,69.81,1.0,0.0,20.0,1.0,2.0,5.71,0
+Teatro Luiz Mendonça,6,54.98,5.0,0.0,51.0,0.0,2.0,27.02,1
+Teatro Luiz Mendonça,6,70.49,4.0,0.0,15.0,1.0,2.0,5.17,0
+Teatro Luiz Mendonça,6,63.2,3.0,0.0,42.0,1.0,2.0,16.99,0
+Teatro Luiz Mendonça,6,65.91,1.0,0.0,55.0,2.0,2.0,25.34,1
+Teatro Luiz Mendonça,6,60.66,6.0,1.0,1.0,0.0,2.0,4.71,0
+Teatro Luiz Mendonça,6,65.14,6.0,1.0,53.0,1.0,2.0,11.55,0
+Teatro Luiz Mendonça,6,65.86,5.0,0.0,6.0,1.0,2.0,16.81,0
+Teatro Luiz Mendonça,6,86.86,7.0,1.0,20.0,2.0,2.0,7.24,0
+Teatro Luiz Mendonça,6,54.56,5.0,0.0,16.0,0.0,2.0,19.99,0
+Teatro Luiz Mendonça,6,56.94,5.0,0.0,2.0,0.0,2.0,8.69,0
+Teatro Luiz Mendonça,6,64.45,6.0,1.0,12.0,1.0,2.0,2.0,0
+Teatro Luiz Mendonça,6,75.34,3.0,0.0,36.0,1.0,2.0,4.32,0
+Teatro Luiz Mendonça,6,57.15,7.0,1.0,9.0,0.0,2.0,13.07,0
+Teatro Luiz Mendonça,6,62.86,7.0,1.0,4.0,0.0,2.0,13.69,0
+Teatro Luiz Mendonça,6,66.27,3.0,0.0,8.0,1.0,2.0,4.17,0
+Teatro Luiz Mendonça,6,77.35,6.0,1.0,26.0,0.0,2.0,13.53,0
+Teatro Luiz Mendonça,6,87.77,5.0,0.0,42.0,0.0,2.0,19.71,0
+Teatro Luiz Mendonça,6,60.73,5.0,0.0,50.0,0.0,2.0,14.91,0
+Teatro Luiz Mendonça,6,60.1,1.0,0.0,46.0,1.0,2.0,16.09,0
+Teatro Luiz Mendonça,6,84.35,5.0,0.0,50.0,2.0,2.0,26.65,1
+Teatro Luiz Mendonça,6,65.56,1.0,0.0,50.0,1.0,2.0,29.67,1
+Teatro Luiz Mendonça,6,62.3,6.0,1.0,15.0,2.0,2.0,16.32,0
+Teatro Luiz Mendonça,6,42.81,3.0,0.0,58.0,2.0,2.0,17.23,0
+Teatro Luiz Mendonça,6,67.61,2.0,0.0,60.0,0.0,2.0,22.08,1
+Teatro Luiz Mendonça,6,73.44,1.0,0.0,34.0,0.0,2.0,18.11,0
+Tearro Apolo,7,30.3,3.0,0.0,33.0,1.0,4.0,26.84,1
+Tearro Apolo,7,39.63,5.0,0.0,32.0,1.0,4.0,24.26,1
+Teatro Barreto Júnior,7,47.09,4.0,0.0,25.0,0.0,0.0,32.95,1
+Teatro Barreto Júnior,7,49.8,4.0,0.0,51.0,2.0,0.0,25.74,1
+Teatro Barreto Júnior,7,32.62,7.0,1.0,44.0,0.0,0.0,16.52,0
+Teatro Barreto Júnior,7,35.43,1.0,0.0,53.0,1.0,0.0,25.95,1
+Teatro Barreto Júnior,7,41.84,3.0,0.0,26.0,2.0,0.0,18.46,0
+Teatro Barreto Júnior,7,42.06,6.0,1.0,51.0,1.0,0.0,20.69,1
+Teatro Barreto Júnior,7,33.17,5.0,0.0,43.0,0.0,0.0,20.36,1
+Teatro Barreto Júnior,7,26.34,5.0,0.0,59.0,2.0,0.0,33.02,1
+Teatro Barreto Júnior,7,25.99,7.0,1.0,50.0,1.0,0.0,20.89,1
+Teatro Barreto Júnior,7,28.68,5.0,0.0,22.0,1.0,0.0,32.79,1
+Teatro Barreto Júnior,7,30.64,7.0,1.0,57.0,1.0,0.0,34.15,1
+Teatro Barreto Júnior,7,19.78,4.0,0.0,51.0,2.0,0.0,30.5,1
+Teatro Barreto Júnior,7,25.17,7.0,1.0,53.0,1.0,0.0,20.26,1
+Teatro de Santa Isabel,7,47.4,4.0,0.0,38.0,2.0,4.0,30.36,1
+Teatro de Santa Isabel,7,48.19,5.0,0.0,57.0,0.0,4.0,22.07,1
+Teatro de Santa Isabel,7,49.96,4.0,0.0,42.0,0.0,4.0,13.27,0
+Teatro de Santa Isabel,7,38.45,3.0,0.0,9.0,1.0,4.0,23.22,1
+Teatro de Santa Isabel,7,40.16,4.0,0.0,3.0,2.0,4.0,17.75,0
+Teatro de Santa Isabel,7,40.36,4.0,0.0,1.0,0.0,4.0,11.87,0
+Teatro de Santa Isabel,7,42.17,7.0,1.0,19.0,1.0,4.0,20.86,1
+Teatro de Santa Isabel,7,53.78,1.0,0.0,59.0,1.0,4.0,28.36,1
+Teatro de Santa Isabel,7,32.38,2.0,0.0,46.0,2.0,4.0,26.76,1
+Teatro de Santa Isabel,7,52.32,7.0,1.0,1.0,2.0,4.0,20.26,1
+Teatro de Santa Isabel,7,55.22,5.0,0.0,29.0,0.0,4.0,26.5,1
+Teatro de Santa Isabel,7,42.16,5.0,0.0,45.0,1.0,4.0,26.77,1
+Teatro de Santa Isabel,7,22.89,6.0,1.0,8.0,2.0,4.0,19.19,0
+Teatro do Parque,7,47.0,5.0,0.0,27.0,2.0,2.0,18.09,0
+Teatro do Parque,7,76.48,3.0,0.0,47.0,1.0,2.0,22.47,1
+Teatro do Parque,7,56.35,4.0,0.0,57.0,1.0,2.0,18.41,0
+Teatro do Parque,7,72.87,3.0,0.0,28.0,1.0,2.0,6.91,0
+Teatro do Parque,7,70.0,4.0,0.0,30.0,0.0,2.0,12.05,0
+Teatro do Parque,7,44.01,6.0,1.0,55.0,2.0,2.0,20.68,1
+Teatro do Parque,7,78.28,2.0,0.0,25.0,2.0,2.0,8.34,0
+Teatro do Parque,7,69.69,4.0,0.0,50.0,2.0,2.0,20.93,1
+Teatro do Parque,7,68.81,2.0,0.0,50.0,1.0,2.0,23.05,1
+Teatro do Parque,7,64.13,2.0,0.0,50.0,2.0,2.0,28.91,1
+Teatro do Parque,7,68.09,2.0,0.0,25.0,0.0,2.0,5.6,0
+Teatro do Parque,7,56.77,6.0,1.0,32.0,0.0,2.0,9.4,0
+Teatro do Parque,7,79.11,2.0,0.0,29.0,1.0,2.0,14.17,0
+Teatro do Parque,7,73.27,6.0,1.0,34.0,1.0,2.0,10.76,0
+Teatro do Parque,7,46.43,6.0,1.0,49.0,2.0,2.0,16.05,0
+Teatro Hermilo Borba Filho,7,33.17,6.0,1.0,40.0,0.0,4.0,24.3,1
+Teatro Hermilo Borba Filho,7,54.66,2.0,0.0,57.0,1.0,4.0,24.22,1
+Teatro Hermilo Borba Filho,7,51.4,3.0,0.0,33.0,0.0,4.0,17.67,0
+Teatro Hermilo Borba Filho,7,46.64,6.0,1.0,49.0,1.0,4.0,27.12,1
+Teatro Hermilo Borba Filho,7,38.44,5.0,0.0,48.0,2.0,4.0,23.77,1
+Teatro Hermilo Borba Filho,7,21.02,4.0,0.0,60.0,1.0,4.0,23.29,1
+Teatro Hermilo Borba Filho,7,38.2,1.0,0.0,26.0,0.0,4.0,12.03,0
+Teatro Luiz Mendonça,7,60.77,7.0,1.0,0.0,2.0,2.0,15.53,0
+Teatro Luiz Mendonça,7,79.36,3.0,0.0,3.0,1.0,2.0,20.27,1
+Teatro Luiz Mendonça,7,70.09,2.0,0.0,46.0,2.0,2.0,17.32,0
+Teatro Luiz Mendonça,7,50.14,3.0,0.0,57.0,0.0,2.0,8.32,0
+Teatro Luiz Mendonça,7,52.21,7.0,1.0,53.0,1.0,2.0,18.98,0
+Teatro Luiz Mendonça,7,66.46,5.0,0.0,35.0,0.0,2.0,18.84,0
+Teatro Luiz Mendonça,7,76.86,6.0,1.0,60.0,0.0,2.0,12.57,0
+Teatro Luiz Mendonça,7,64.49,2.0,0.0,40.0,1.0,2.0,17.89,0
+Teatro Luiz Mendonça,7,66.15,1.0,0.0,38.0,0.0,2.0,6.29,0
+Teatro Luiz Mendonça,7,66.8,3.0,0.0,27.0,1.0,2.0,25.21,1
+Teatro Luiz Mendonça,7,52.36,1.0,0.0,35.0,1.0,2.0,16.07,0
+Teatro Luiz Mendonça,7,55.56,5.0,0.0,37.0,0.0,2.0,18.9,0
+Teatro Luiz Mendonça,7,56.68,6.0,1.0,11.0,2.0,2.0,12.99,0
+Teatro Luiz Mendonça,7,72.5,2.0,0.0,31.0,0.0,2.0,19.25,0
+Teatro Luiz Mendonça,7,53.02,5.0,0.0,3.0,2.0,2.0,9.19,0
+Teatro Luiz Mendonça,7,59.66,7.0,1.0,31.0,2.0,2.0,24.71,1
+Teatro Luiz Mendonça,7,73.26,3.0,0.0,39.0,2.0,2.0,17.46,0
+Teatro Luiz Mendonça,7,91.35,5.0,0.0,33.0,1.0,2.0,22.03,1
+Teatro Luiz Mendonça,7,58.39,1.0,0.0,46.0,2.0,2.0,21.67,1
+Teatro Luiz Mendonça,7,59.23,3.0,0.0,16.0,2.0,2.0,15.64,0
+Teatro Luiz Mendonça,7,76.0,5.0,0.0,32.0,0.0,2.0,10.46,0
+Teatro Luiz Mendonça,7,62.4,3.0,0.0,18.0,2.0,2.0,18.69,0
+Teatro Luiz Mendonça,7,82.26,7.0,1.0,7.0,2.0,2.0,8.92,0
+Teatro Luiz Mendonça,7,60.79,2.0,0.0,11.0,0.0,2.0,16.83,0
+Teatro Luiz Mendonça,7,72.53,4.0,0.0,57.0,1.0,2.0,18.66,0
+Teatro Luiz Mendonça,7,63.84,1.0,0.0,33.0,2.0,2.0,15.24,0
+Teatro Luiz Mendonça,7,74.81,1.0,0.0,23.0,1.0,2.0,16.06,0
+Teatro Luiz Mendonça,7,76.96,7.0,1.0,36.0,0.0,2.0,14.63,0
+Teatro Luiz Mendonça,7,58.35,2.0,0.0,41.0,0.0,2.0,15.04,0
+Teatro Luiz Mendonça,7,79.31,4.0,0.0,47.0,2.0,2.0,19.65,0
+Teatro Luiz Mendonça,7,66.26,2.0,0.0,41.0,1.0,2.0,32.8,1
+Tearro Apolo,8,29.14,5.0,0.0,43.0,2.0,4.0,32.32,1
+Tearro Apolo,8,21.56,5.0,0.0,0.0,0.0,4.0,11.25,0
+Tearro Apolo,8,34.63,7.0,1.0,7.0,0.0,4.0,17.6,0
+Tearro Apolo,8,51.41,2.0,0.0,9.0,1.0,4.0,16.9,0
+Teatro Barreto Júnior,8,26.82,7.0,1.0,41.0,2.0,0.0,24.0,1
+Teatro Barreto Júnior,8,28.38,7.0,1.0,33.0,1.0,0.0,19.19,0
+Teatro Barreto Júnior,8,20.93,3.0,0.0,15.0,0.0,0.0,27.42,1
+Teatro Barreto Júnior,8,35.2,2.0,0.0,43.0,1.0,0.0,16.01,0
+Teatro Barreto Júnior,8,38.57,7.0,1.0,45.0,0.0,0.0,24.1,1
+Teatro Barreto Júnior,8,27.78,7.0,1.0,50.0,0.0,0.0,25.23,1
+Teatro Barreto Júnior,8,37.77,3.0,0.0,52.0,2.0,0.0,38.92,1
+Teatro Barreto Júnior,8,45.56,1.0,0.0,5.0,1.0,0.0,17.0,0
+Teatro Barreto Júnior,8,51.43,6.0,1.0,19.0,2.0,0.0,21.57,1
+Teatro Barreto Júnior,8,51.0,2.0,0.0,5.0,1.0,0.0,18.65,0
+Teatro Barreto Júnior,8,10.0,3.0,0.0,25.0,0.0,0.0,24.92,1
+Teatro Barreto Júnior,8,54.51,3.0,0.0,3.0,1.0,0.0,11.45,0
+Teatro Barreto Júnior,8,49.1,2.0,0.0,18.0,0.0,0.0,18.98,0
+Teatro Barreto Júnior,8,34.69,3.0,0.0,45.0,0.0,0.0,20.01,1
+Teatro Barreto Júnior,8,33.75,7.0,1.0,29.0,0.0,0.0,17.13,0
+Teatro Barreto Júnior,8,37.59,6.0,1.0,13.0,1.0,0.0,25.09,1
+Teatro Barreto Júnior,8,41.41,2.0,0.0,4.0,1.0,0.0,17.26,0
+Teatro de Santa Isabel,8,27.9,4.0,0.0,58.0,0.0,4.0,33.38,1
+Teatro de Santa Isabel,8,24.52,6.0,1.0,5.0,1.0,4.0,15.36,0
+Teatro de Santa Isabel,8,47.4,6.0,1.0,46.0,1.0,4.0,16.6,0
+Teatro de Santa Isabel,8,33.69,3.0,0.0,10.0,2.0,4.0,13.87,0
+Teatro de Santa Isabel,8,27.75,3.0,0.0,23.0,1.0,4.0,20.03,1
+Teatro de Santa Isabel,8,47.36,2.0,0.0,17.0,1.0,4.0,22.84,1
+Teatro de Santa Isabel,8,27.7,2.0,0.0,18.0,2.0,4.0,21.81,1
+Teatro de Santa Isabel,8,39.28,2.0,0.0,46.0,2.0,4.0,29.67,1
+Teatro de Santa Isabel,8,36.26,6.0,1.0,27.0,0.0,4.0,11.18,0
+Teatro de Santa Isabel,8,30.96,2.0,0.0,7.0,1.0,4.0,18.06,0
+Teatro de Santa Isabel,8,33.28,4.0,0.0,51.0,1.0,4.0,24.21,1
+Teatro de Santa Isabel,8,40.04,1.0,0.0,4.0,0.0,4.0,20.92,1
+Teatro de Santa Isabel,8,42.08,3.0,0.0,11.0,1.0,4.0,11.15,0
+Teatro de Santa Isabel,8,27.41,1.0,0.0,2.0,0.0,4.0,14.94,0
+Teatro do Parque,8,60.29,7.0,1.0,8.0,0.0,2.0,15.89,0
+Teatro do Parque,8,58.35,6.0,1.0,48.0,1.0,2.0,22.1,1
+Teatro do Parque,8,58.44,3.0,0.0,2.0,0.0,2.0,17.56,0
+Teatro do Parque,8,64.29,7.0,1.0,49.0,1.0,2.0,10.99,0
+Teatro do Parque,8,67.35,2.0,0.0,8.0,1.0,2.0,10.66,0
+Teatro do Parque,8,63.47,3.0,0.0,46.0,1.0,2.0,21.7,1
+Teatro do Parque,8,70.46,3.0,0.0,56.0,2.0,2.0,23.79,1
+Teatro do Parque,8,71.68,7.0,1.0,12.0,0.0,2.0,3.58,0
+Teatro do Parque,8,77.66,5.0,0.0,8.0,2.0,2.0,11.42,0
+Teatro do Parque,8,62.72,6.0,1.0,32.0,2.0,2.0,15.19,0
+Teatro do Parque,8,82.77,4.0,0.0,11.0,0.0,2.0,8.24,0
+Teatro do Parque,8,57.24,5.0,0.0,31.0,0.0,2.0,14.74,0
+Teatro do Parque,8,70.47,5.0,0.0,54.0,2.0,2.0,18.6,0
+Teatro do Parque,8,55.82,4.0,0.0,17.0,2.0,2.0,18.88,0
+Teatro do Parque,8,72.77,7.0,1.0,29.0,2.0,2.0,9.45,0
+Teatro do Parque,8,50.02,1.0,0.0,0.0,0.0,2.0,7.84,0
+Teatro do Parque,8,57.77,4.0,0.0,11.0,2.0,2.0,11.86,0
+Teatro do Parque,8,63.84,6.0,1.0,42.0,2.0,2.0,14.77,0
+Teatro do Parque,8,59.26,7.0,1.0,6.0,1.0,2.0,13.43,0
+Teatro do Parque,8,68.2,5.0,0.0,1.0,1.0,2.0,16.72,0
+Teatro do Parque,8,54.75,6.0,1.0,35.0,1.0,2.0,19.43,0
+Teatro do Parque,8,79.27,4.0,0.0,8.0,0.0,2.0,8.31,0
+Teatro do Parque,8,55.85,2.0,0.0,1.0,1.0,2.0,8.88,0
+Teatro do Parque,8,73.7,5.0,0.0,26.0,0.0,2.0,17.86,0
+Teatro do Parque,8,53.48,3.0,0.0,0.0,2.0,2.0,18.54,0
+Teatro do Parque,8,56.56,4.0,0.0,5.0,2.0,2.0,16.93,0
+Teatro do Parque,8,50.95,1.0,0.0,14.0,1.0,2.0,11.65,0
+Teatro do Parque,8,61.63,3.0,0.0,11.0,1.0,2.0,12.35,0
+Teatro do Parque,8,68.95,6.0,1.0,48.0,0.0,2.0,11.02,0
+Teatro do Parque,8,63.23,5.0,0.0,1.0,0.0,2.0,2.0,0
+Teatro do Parque,8,57.34,2.0,0.0,40.0,2.0,2.0,17.63,0
+Teatro Luiz Mendonça,8,75.09,3.0,0.0,35.0,2.0,2.0,17.84,0
+Teatro Luiz Mendonça,8,67.77,7.0,1.0,52.0,0.0,2.0,12.79,0
+Teatro Luiz Mendonça,8,60.59,2.0,0.0,18.0,2.0,2.0,23.21,1
+Teatro Luiz Mendonça,8,95.89,4.0,0.0,41.0,2.0,2.0,15.02,0
+Teatro Luiz Mendonça,8,71.48,4.0,0.0,14.0,2.0,2.0,15.93,0
+Teatro Luiz Mendonça,8,58.3,1.0,0.0,42.0,1.0,2.0,22.19,1
+Teatro Luiz Mendonça,8,74.1,5.0,0.0,49.0,2.0,2.0,19.42,0
+Teatro Luiz Mendonça,8,65.19,7.0,1.0,8.0,1.0,2.0,9.5,0
+Teatro Luiz Mendonça,8,69.88,4.0,0.0,43.0,0.0,2.0,23.57,1
+Teatro Luiz Mendonça,8,72.82,3.0,0.0,9.0,1.0,2.0,9.04,0
+Teatro Luiz Mendonça,8,65.65,4.0,0.0,10.0,1.0,2.0,2.0,0
+Teatro Luiz Mendonça,8,58.79,4.0,0.0,0.0,1.0,2.0,14.98,0
+Teatro Luiz Mendonça,8,55.72,5.0,0.0,9.0,1.0,2.0,16.62,0
+Teatro Luiz Mendonça,8,66.25,6.0,1.0,34.0,1.0,2.0,10.29,0
+Teatro Luiz Mendonça,8,71.25,1.0,0.0,1.0,0.0,2.0,12.87,0
+Teatro Luiz Mendonça,8,83.78,6.0,1.0,45.0,0.0,2.0,3.52,0
+Teatro Luiz Mendonça,8,59.89,6.0,1.0,30.0,1.0,2.0,16.38,0
+Teatro Luiz Mendonça,8,71.01,4.0,0.0,55.0,0.0,2.0,20.25,1
+Teatro Luiz Mendonça,8,57.87,7.0,1.0,33.0,2.0,2.0,24.73,1
+Teatro Luiz Mendonça,8,69.93,7.0,1.0,52.0,1.0,2.0,15.52,0
+Teatro Luiz Mendonça,8,61.42,5.0,0.0,25.0,2.0,2.0,19.78,0
+Teatro Luiz Mendonça,8,77.28,1.0,0.0,34.0,2.0,2.0,20.46,1
+Teatro Luiz Mendonça,8,68.81,4.0,0.0,7.0,2.0,2.0,23.18,1
+Teatro Luiz Mendonça,8,61.59,1.0,0.0,33.0,2.0,2.0,18.63,0
+Teatro Luiz Mendonça,8,84.25,6.0,1.0,60.0,1.0,2.0,20.0,0
+Teatro Luiz Mendonça,8,61.71,7.0,1.0,1.0,0.0,2.0,12.48,0
+Teatro Luiz Mendonça,8,84.41,4.0,0.0,49.0,0.0,2.0,9.86,0
+Teatro Luiz Mendonça,8,62.72,1.0,0.0,20.0,1.0,2.0,18.09,0
+Teatro Luiz Mendonça,8,85.64,4.0,0.0,39.0,1.0,2.0,7.9,0
+Teatro Luiz Mendonça,8,61.97,4.0,0.0,56.0,1.0,2.0,18.31,0
+Teatro Luiz Mendonça,8,76.38,5.0,0.0,17.0,2.0,2.0,23.16,1
+Teatro Luiz Mendonça,8,73.74,2.0,0.0,46.0,2.0,2.0,14.34,0
+Teatro Luiz Mendonça,8,55.45,1.0,0.0,25.0,0.0,2.0,19.61,0
+Teatro Luiz Mendonça,8,75.79,5.0,0.0,44.0,1.0,2.0,11.04,0
+Teatro Luiz Mendonça,8,66.62,7.0,1.0,27.0,2.0,2.0,9.58,0
+Tearro Apolo,9,45.11,4.0,0.0,53.0,2.0,4.0,30.76,1
+Tearro Apolo,9,36.96,7.0,1.0,60.0,0.0,4.0,15.72,0
+Tearro Apolo,9,40.4,2.0,0.0,13.0,1.0,4.0,13.58,0
+Tearro Apolo,9,24.6,5.0,0.0,26.0,1.0,4.0,25.21,1
+Tearro Apolo,9,44.71,6.0,1.0,27.0,0.0,4.0,15.98,0
+Tearro Apolo,9,43.52,6.0,1.0,8.0,0.0,4.0,21.17,1
+Tearro Apolo,9,50.49,3.0,0.0,3.0,1.0,4.0,9.4,0
+Tearro Apolo,9,49.27,6.0,1.0,6.0,2.0,4.0,12.63,0
+Tearro Apolo,9,47.18,2.0,0.0,15.0,1.0,4.0,23.34,1
+Tearro Apolo,9,28.1,7.0,1.0,53.0,0.0,4.0,21.21,1
+Teatro Barreto Júnior,9,34.28,4.0,0.0,54.0,0.0,0.0,18.36,0
+Teatro Barreto Júnior,9,41.45,5.0,0.0,6.0,1.0,0.0,31.52,1
+Teatro Barreto Júnior,9,24.76,6.0,1.0,53.0,1.0,0.0,34.17,1
+Teatro Barreto Júnior,9,39.48,3.0,0.0,60.0,1.0,0.0,20.16,1
+Teatro Barreto Júnior,9,48.96,5.0,0.0,37.0,1.0,0.0,28.81,1
+Teatro Barreto Júnior,9,18.52,3.0,0.0,60.0,1.0,0.0,27.62,1
+Teatro Barreto Júnior,9,29.21,7.0,1.0,41.0,1.0,0.0,24.74,1
+Teatro Barreto Júnior,9,32.34,1.0,0.0,43.0,2.0,0.0,31.98,1
+Teatro Barreto Júnior,9,55.22,3.0,0.0,44.0,1.0,0.0,30.97,1
+Teatro Barreto Júnior,9,28.47,6.0,1.0,9.0,1.0,0.0,25.35,1
+Teatro Barreto Júnior,9,37.37,1.0,0.0,46.0,1.0,0.0,25.98,1
+Teatro de Santa Isabel,9,25.23,7.0,1.0,13.0,0.0,4.0,22.48,1
+Teatro de Santa Isabel,9,42.57,1.0,0.0,52.0,2.0,4.0,38.72,1
+Teatro de Santa Isabel,9,30.93,4.0,0.0,35.0,0.0,4.0,22.37,1
+Teatro de Santa Isabel,9,38.31,3.0,0.0,20.0,1.0,4.0,23.73,1
+Teatro de Santa Isabel,9,45.27,2.0,0.0,24.0,0.0,4.0,13.08,0
+Teatro de Santa Isabel,9,46.11,2.0,0.0,40.0,0.0,4.0,17.73,0
+Teatro de Santa Isabel,9,29.5,5.0,0.0,21.0,1.0,4.0,29.08,1
+Teatro de Santa Isabel,9,47.18,4.0,0.0,51.0,0.0,4.0,17.57,0
+Teatro de Santa Isabel,9,38.34,7.0,1.0,56.0,1.0,4.0,17.91,0
+Teatro de Santa Isabel,9,32.19,1.0,0.0,34.0,0.0,4.0,19.18,0
+Teatro de Santa Isabel,9,44.7,5.0,0.0,16.0,0.0,4.0,13.2,0
+Teatro de Santa Isabel,9,47.69,6.0,1.0,38.0,1.0,4.0,23.09,1
+Teatro do Parque,9,74.11,7.0,1.0,43.0,1.0,2.0,14.99,0
+Teatro do Parque,9,67.47,5.0,0.0,46.0,1.0,2.0,15.69,0
+Teatro do Parque,9,60.12,5.0,0.0,7.0,0.0,2.0,8.83,0
+Teatro do Parque,9,47.92,4.0,0.0,28.0,0.0,2.0,11.79,0
+Teatro do Parque,9,77.99,3.0,0.0,21.0,2.0,2.0,15.79,0
+Teatro do Parque,9,60.03,5.0,0.0,43.0,1.0,2.0,16.03,0
+Teatro do Parque,9,72.59,2.0,0.0,27.0,1.0,2.0,20.13,1
+Teatro do Parque,9,69.46,1.0,0.0,28.0,2.0,2.0,21.37,1
+Teatro do Parque,9,75.9,1.0,0.0,0.0,0.0,2.0,2.0,0
+Teatro do Parque,9,68.75,6.0,1.0,7.0,1.0,2.0,8.67,0
+Teatro do Parque,9,65.43,7.0,1.0,21.0,2.0,2.0,12.28,0
+Teatro do Parque,9,72.22,1.0,0.0,51.0,2.0,2.0,20.91,1
+Teatro do Parque,9,61.81,7.0,1.0,51.0,2.0,2.0,5.04,0
+Teatro do Parque,9,56.68,4.0,0.0,8.0,2.0,2.0,14.87,0
+Teatro do Parque,9,62.54,6.0,1.0,27.0,2.0,2.0,16.09,0
+Teatro do Parque,9,80.6,2.0,0.0,23.0,1.0,2.0,12.76,0
+Teatro do Parque,9,62.44,3.0,0.0,29.0,0.0,2.0,9.59,0
+Teatro do Parque,9,86.43,2.0,0.0,32.0,2.0,2.0,16.72,0
+Teatro do Parque,9,61.81,6.0,1.0,42.0,0.0,2.0,21.9,1
+Teatro do Parque,9,65.86,6.0,1.0,5.0,1.0,2.0,13.32,0
+Teatro do Parque,9,57.58,1.0,0.0,19.0,0.0,2.0,8.15,0
+Teatro do Parque,9,65.1,5.0,0.0,57.0,2.0,2.0,30.82,1
+Teatro do Parque,9,47.84,6.0,1.0,3.0,1.0,2.0,14.52,0
+Teatro do Parque,9,65.18,3.0,0.0,5.0,1.0,2.0,11.85,0
+Teatro do Parque,9,53.77,4.0,0.0,60.0,1.0,2.0,27.58,1
+Teatro do Parque,9,68.24,5.0,0.0,30.0,2.0,2.0,17.7,0
+Teatro do Parque,9,57.74,5.0,0.0,13.0,0.0,2.0,16.48,0
+Teatro do Parque,9,49.02,4.0,0.0,25.0,2.0,2.0,23.66,1
+Teatro do Parque,9,49.78,1.0,0.0,43.0,1.0,2.0,13.89,0
+Teatro do Parque,9,54.59,3.0,0.0,32.0,1.0,2.0,6.39,0
+Teatro do Parque,9,62.56,2.0,0.0,60.0,0.0,2.0,18.82,0
+Teatro do Parque,9,61.84,6.0,1.0,27.0,2.0,2.0,8.14,0
+Teatro do Parque,9,50.66,1.0,0.0,44.0,2.0,2.0,27.99,1
+Teatro Luiz Mendonça,9,68.96,3.0,0.0,31.0,0.0,2.0,14.69,0
+Teatro Luiz Mendonça,9,61.96,3.0,0.0,50.0,2.0,2.0,21.82,1
+Teatro Luiz Mendonça,9,78.08,5.0,0.0,56.0,2.0,2.0,20.84,1
+Teatro Luiz Mendonça,9,60.92,4.0,0.0,26.0,2.0,2.0,24.18,1
+Teatro Luiz Mendonça,9,58.71,2.0,0.0,17.0,0.0,2.0,12.43,0
+Teatro Luiz Mendonça,9,56.96,7.0,1.0,27.0,1.0,2.0,5.59,0
+Teatro Luiz Mendonça,9,67.19,7.0,1.0,11.0,2.0,2.0,11.49,0
+Teatro Luiz Mendonça,9,72.44,3.0,0.0,26.0,1.0,2.0,8.58,0
+Teatro Luiz Mendonça,9,56.94,3.0,0.0,44.0,0.0,2.0,17.61,0
+Teatro Luiz Mendonça,9,54.66,3.0,0.0,40.0,0.0,2.0,21.06,1
+Teatro Luiz Mendonça,9,62.54,2.0,0.0,19.0,0.0,2.0,24.71,1
+Teatro Luiz Mendonça,9,79.3,5.0,0.0,26.0,1.0,2.0,20.66,1
+Teatro Luiz Mendonça,9,68.62,5.0,0.0,55.0,1.0,2.0,26.29,1
+Teatro Luiz Mendonça,9,74.68,4.0,0.0,19.0,0.0,2.0,5.83,0
+Teatro Luiz Mendonça,9,49.58,4.0,0.0,48.0,1.0,2.0,20.65,1
+Teatro Luiz Mendonça,9,52.76,7.0,1.0,34.0,2.0,2.0,17.82,0
+Teatro Luiz Mendonça,9,86.99,2.0,0.0,31.0,1.0,2.0,14.52,0
+Teatro Luiz Mendonça,9,50.57,1.0,0.0,0.0,1.0,2.0,13.73,0
+Teatro Luiz Mendonça,9,65.61,1.0,0.0,42.0,2.0,2.0,22.61,1
+Teatro Luiz Mendonça,9,73.66,4.0,0.0,25.0,2.0,2.0,23.17,1
+Teatro Luiz Mendonça,9,58.48,4.0,0.0,52.0,0.0,2.0,16.32,0
+Teatro Luiz Mendonça,9,42.85,3.0,0.0,38.0,1.0,2.0,13.13,0
+Teatro Luiz Mendonça,9,56.75,1.0,0.0,33.0,1.0,2.0,21.8,1
+Teatro Luiz Mendonça,9,65.78,5.0,0.0,53.0,2.0,2.0,13.47,0
+Teatro Luiz Mendonça,9,60.59,2.0,0.0,4.0,2.0,2.0,19.39,0
+Teatro Luiz Mendonça,9,47.35,4.0,0.0,60.0,1.0,2.0,23.93,1
+Teatro Luiz Mendonça,9,66.71,1.0,0.0,49.0,2.0,2.0,27.86,1
+Teatro Luiz Mendonça,9,79.69,1.0,0.0,32.0,1.0,2.0,18.15,0
+Teatro Luiz Mendonça,9,56.91,4.0,0.0,34.0,0.0,2.0,12.06,0
+Teatro Luiz Mendonça,9,72.33,2.0,0.0,18.0,0.0,2.0,17.75,0
+Teatro Luiz Mendonça,9,61.96,7.0,1.0,10.0,2.0,2.0,12.81,0
+Teatro Luiz Mendonça,9,54.47,4.0,0.0,43.0,0.0,2.0,17.81,0
+Tearro Apolo,10,38.54,5.0,0.0,47.0,2.0,4.0,19.69,0
+Tearro Apolo,10,40.94,6.0,1.0,18.0,0.0,4.0,21.73,1
+Tearro Apolo,10,43.76,4.0,0.0,32.0,0.0,4.0,24.58,1
+Tearro Apolo,10,44.56,6.0,1.0,35.0,2.0,4.0,20.43,1
+Tearro Apolo,10,43.04,3.0,0.0,25.0,1.0,4.0,24.46,1
+Tearro Apolo,10,40.74,6.0,1.0,42.0,2.0,4.0,20.49,1
+Tearro Apolo,10,44.1,5.0,0.0,42.0,2.0,4.0,20.41,1
+Tearro Apolo,10,63.56,1.0,0.0,55.0,2.0,4.0,23.39,1
+Tearro Apolo,10,61.22,2.0,0.0,4.0,2.0,4.0,15.66,0
+Tearro Apolo,10,42.83,5.0,0.0,18.0,2.0,4.0,14.2,0
+Tearro Apolo,10,45.41,2.0,0.0,7.0,1.0,4.0,24.55,1
+Tearro Apolo,10,36.56,4.0,0.0,14.0,0.0,4.0,17.42,0
+Tearro Apolo,10,53.8,6.0,1.0,24.0,1.0,4.0,18.76,0
+Tearro Apolo,10,72.71,6.0,1.0,19.0,0.0,4.0,21.46,1
+Teatro Barreto Júnior,10,28.32,3.0,0.0,4.0,2.0,0.0,32.67,1
+Teatro Barreto Júnior,10,41.0,4.0,0.0,35.0,2.0,0.0,29.99,1
+Teatro Barreto Júnior,10,26.51,4.0,0.0,53.0,2.0,0.0,37.21,1
+Teatro Barreto Júnior,10,28.73,4.0,0.0,30.0,2.0,0.0,21.5,1
+Teatro Barreto Júnior,10,27.09,5.0,0.0,14.0,2.0,0.0,29.77,1
+Teatro Barreto Júnior,10,46.19,4.0,0.0,47.0,1.0,0.0,24.09,1
+Teatro Barreto Júnior,10,27.01,1.0,0.0,10.0,2.0,0.0,29.65,1
+Teatro Barreto Júnior,10,53.44,5.0,0.0,58.0,1.0,0.0,25.27,1
+Teatro Barreto Júnior,10,25.42,4.0,0.0,18.0,1.0,0.0,33.32,1
+Teatro Barreto Júnior,10,27.86,2.0,0.0,15.0,1.0,0.0,16.3,0
+Teatro Barreto Júnior,10,26.34,6.0,1.0,47.0,2.0,0.0,36.75,1
+Teatro Barreto Júnior,10,33.12,6.0,1.0,33.0,2.0,0.0,25.23,1
+Teatro de Santa Isabel,10,40.0,5.0,0.0,45.0,0.0,4.0,21.25,1
+Teatro de Santa Isabel,10,40.43,2.0,0.0,17.0,0.0,4.0,15.29,0
+Teatro de Santa Isabel,10,30.52,4.0,0.0,11.0,1.0,4.0,16.31,0
+Teatro de Santa Isabel,10,35.58,1.0,0.0,6.0,1.0,4.0,29.02,1
+Teatro de Santa Isabel,10,28.08,3.0,0.0,18.0,1.0,4.0,19.74,0
+Teatro de Santa Isabel,10,40.29,1.0,0.0,41.0,1.0,4.0,21.27,1
+Teatro de Santa Isabel,10,34.4,5.0,0.0,39.0,2.0,4.0,27.24,1
+Teatro de Santa Isabel,10,28.52,5.0,0.0,42.0,2.0,4.0,33.61,1
+Teatro de Santa Isabel,10,36.37,7.0,1.0,9.0,1.0,4.0,13.0,0
+Teatro de Santa Isabel,10,18.14,2.0,0.0,1.0,1.0,4.0,24.7,1
+Teatro de Santa Isabel,10,24.45,5.0,0.0,50.0,1.0,4.0,18.88,0
+Teatro de Santa Isabel,10,38.68,7.0,1.0,37.0,0.0,4.0,19.09,0
+Teatro do Parque,10,58.08,7.0,1.0,51.0,0.0,2.0,21.72,1
+Teatro do Parque,10,66.82,7.0,1.0,13.0,2.0,2.0,14.29,0
+Teatro do Parque,10,65.66,1.0,0.0,7.0,1.0,2.0,10.61,0
+Teatro do Parque,10,80.47,3.0,0.0,47.0,1.0,2.0,16.62,0
+Teatro do Parque,10,48.02,7.0,1.0,18.0,1.0,2.0,8.91,0
+Teatro do Parque,10,77.36,6.0,1.0,25.0,2.0,2.0,17.26,0
+Teatro do Parque,10,50.78,5.0,0.0,47.0,1.0,2.0,18.52,0
+Teatro do Parque,10,50.06,3.0,0.0,25.0,2.0,2.0,21.15,1
+Teatro do Parque,10,84.08,5.0,0.0,30.0,0.0,2.0,14.56,0
+Teatro do Parque,10,43.42,3.0,0.0,13.0,0.0,2.0,16.53,0
+Teatro do Parque,10,65.19,7.0,1.0,46.0,1.0,2.0,16.69,0
+Teatro do Parque,10,70.9,6.0,1.0,53.0,2.0,2.0,18.55,0
+Teatro do Parque,10,68.82,7.0,1.0,35.0,1.0,2.0,13.15,0
+Teatro do Parque,10,61.85,3.0,0.0,18.0,2.0,2.0,27.13,1
+Teatro do Parque,10,73.87,7.0,1.0,51.0,2.0,2.0,18.89,0
+Teatro do Parque,10,67.16,7.0,1.0,11.0,2.0,2.0,9.56,0
+Teatro do Parque,10,81.94,1.0,0.0,59.0,2.0,2.0,17.47,0
+Teatro do Parque,10,55.3,4.0,0.0,39.0,2.0,2.0,22.62,1
+Teatro do Parque,10,60.0,6.0,1.0,6.0,0.0,2.0,17.55,0
+Teatro do Parque,10,72.5,7.0,1.0,33.0,0.0,2.0,10.19,0
+Teatro do Parque,10,77.72,5.0,0.0,57.0,2.0,2.0,19.89,0
+Teatro do Parque,10,47.61,5.0,0.0,29.0,0.0,2.0,14.85,0
+Teatro do Parque,10,65.75,5.0,0.0,39.0,2.0,2.0,27.51,1
+Teatro do Parque,10,74.09,1.0,0.0,7.0,0.0,2.0,13.41,0
+Teatro do Parque,10,55.85,2.0,0.0,13.0,2.0,2.0,8.94,0
+Teatro Hermilo Borba Filho,10,30.33,3.0,0.0,40.0,1.0,4.0,30.81,1
+Teatro Hermilo Borba Filho,10,41.37,3.0,0.0,41.0,2.0,4.0,36.59,1
+Teatro Hermilo Borba Filho,10,56.24,7.0,1.0,57.0,1.0,4.0,23.11,1
+Teatro Hermilo Borba Filho,10,32.66,5.0,0.0,8.0,0.0,4.0,18.62,0
+Teatro Hermilo Borba Filho,10,46.42,1.0,0.0,20.0,2.0,4.0,32.22,1
+Teatro Hermilo Borba Filho,10,43.11,1.0,0.0,28.0,2.0,4.0,23.19,1
+Teatro Hermilo Borba Filho,10,47.61,2.0,0.0,10.0,1.0,4.0,17.61,0
+Teatro Hermilo Borba Filho,10,44.68,7.0,1.0,22.0,0.0,4.0,18.8,0
+Teatro Hermilo Borba Filho,10,55.46,1.0,0.0,28.0,2.0,4.0,27.86,1
+Teatro Hermilo Borba Filho,10,48.69,6.0,1.0,21.0,1.0,4.0,16.42,0
+Teatro Hermilo Borba Filho,10,39.46,5.0,0.0,58.0,1.0,4.0,32.37,1
+Teatro Hermilo Borba Filho,10,28.6,6.0,1.0,25.0,0.0,4.0,13.57,0
+Teatro Hermilo Borba Filho,10,56.59,3.0,0.0,46.0,2.0,4.0,21.03,1
+Teatro Hermilo Borba Filho,10,39.58,4.0,0.0,47.0,1.0,4.0,28.45,1
+Teatro Hermilo Borba Filho,10,33.02,3.0,0.0,56.0,0.0,4.0,16.99,0
+Teatro Hermilo Borba Filho,10,43.13,2.0,0.0,33.0,1.0,4.0,30.0,1
+Teatro Hermilo Borba Filho,10,33.86,3.0,0.0,29.0,2.0,4.0,26.55,1
+Teatro Hermilo Borba Filho,10,32.35,6.0,1.0,13.0,1.0,4.0,14.66,0
+Teatro Hermilo Borba Filho,10,41.45,5.0,0.0,48.0,0.0,4.0,16.53,0
+Teatro Hermilo Borba Filho,10,23.77,5.0,0.0,60.0,2.0,4.0,39.11,1
+Teatro Hermilo Borba Filho,10,47.95,7.0,1.0,21.0,0.0,4.0,11.92,0
+Teatro Hermilo Borba Filho,10,45.58,4.0,0.0,19.0,0.0,4.0,13.05,0
+Teatro Hermilo Borba Filho,10,29.05,2.0,0.0,9.0,0.0,4.0,14.91,0
+Teatro Hermilo Borba Filho,10,32.91,6.0,1.0,36.0,1.0,4.0,21.16,1
+Teatro Hermilo Borba Filho,10,42.65,4.0,0.0,40.0,1.0,4.0,22.85,1
+Teatro Luiz Mendonça,10,75.79,3.0,0.0,43.0,1.0,2.0,20.52,1
+Teatro Luiz Mendonça,10,70.75,2.0,0.0,59.0,1.0,2.0,21.11,1
+Teatro Luiz Mendonça,10,59.39,5.0,0.0,45.0,0.0,2.0,14.31,0
+Teatro Luiz Mendonça,10,67.87,3.0,0.0,0.0,2.0,2.0,13.62,0
+Teatro Luiz Mendonça,10,67.47,5.0,0.0,8.0,0.0,2.0,11.38,0
+Teatro Luiz Mendonça,10,62.08,5.0,0.0,19.0,0.0,2.0,9.65,0
+Teatro Luiz Mendonça,10,74.0,4.0,0.0,17.0,2.0,2.0,16.46,0
+Teatro Luiz Mendonça,10,63.12,4.0,0.0,36.0,0.0,2.0,6.26,0
+Teatro Luiz Mendonça,10,73.66,4.0,0.0,42.0,0.0,2.0,15.6,0
+Teatro Luiz Mendonça,10,73.54,5.0,0.0,54.0,1.0,2.0,19.73,0
+Teatro Luiz Mendonça,10,81.06,1.0,0.0,51.0,2.0,2.0,28.27,1
+Teatro Luiz Mendonça,10,67.0,1.0,0.0,28.0,1.0,2.0,14.91,0
+Teatro Luiz Mendonça,10,72.15,5.0,0.0,54.0,2.0,2.0,27.67,1
+Teatro Luiz Mendonça,10,56.5,6.0,1.0,60.0,1.0,2.0,16.92,0
+Teatro Luiz Mendonça,10,84.81,2.0,0.0,28.0,0.0,2.0,18.37,0
+Teatro Luiz Mendonça,10,56.19,3.0,0.0,6.0,1.0,2.0,14.88,0
+Teatro Luiz Mendonça,10,70.43,6.0,1.0,13.0,1.0,2.0,7.77,0
+Teatro Luiz Mendonça,10,59.32,4.0,0.0,16.0,0.0,2.0,13.29,0
+Teatro Luiz Mendonça,10,66.75,4.0,0.0,11.0,1.0,2.0,12.0,0
+Teatro Luiz Mendonça,10,58.28,7.0,1.0,2.0,1.0,2.0,8.44,0
+Teatro Luiz Mendonça,10,62.54,5.0,0.0,14.0,2.0,2.0,13.59,0
+Tearro Apolo,11,23.86,7.0,1.0,40.0,2.0,4.0,26.82,1
+Tearro Apolo,11,41.87,3.0,0.0,0.0,0.0,4.0,20.54,1
+Tearro Apolo,11,46.31,3.0,0.0,10.0,0.0,4.0,26.9,1
+Tearro Apolo,11,22.38,6.0,1.0,49.0,0.0,4.0,18.36,0
+Tearro Apolo,11,24.04,7.0,1.0,12.0,0.0,4.0,15.76,0
+Tearro Apolo,11,31.01,3.0,0.0,52.0,0.0,4.0,15.87,0
+Tearro Apolo,11,28.01,5.0,0.0,60.0,1.0,4.0,29.94,1
+Teatro Barreto Júnior,11,24.01,7.0,1.0,2.0,1.0,0.0,16.47,0
+Teatro Barreto Júnior,11,37.26,4.0,0.0,37.0,1.0,0.0,18.78,0
+Teatro Barreto Júnior,11,23.98,6.0,1.0,29.0,1.0,0.0,23.49,1
+Teatro Barreto Júnior,11,30.54,5.0,0.0,19.0,1.0,0.0,34.94,1
+Teatro Barreto Júnior,11,47.41,1.0,0.0,0.0,2.0,0.0,25.8,1
+Teatro Barreto Júnior,11,38.57,6.0,1.0,46.0,0.0,0.0,19.41,0
+Teatro Barreto Júnior,11,37.81,4.0,0.0,24.0,1.0,0.0,17.19,0
+Teatro Barreto Júnior,11,46.23,2.0,0.0,49.0,0.0,0.0,26.68,1
+Teatro Barreto Júnior,11,25.89,1.0,0.0,33.0,2.0,0.0,23.2,1
+Teatro Barreto Júnior,11,42.0,4.0,0.0,26.0,0.0,0.0,17.14,0
+Teatro Barreto Júnior,11,33.39,2.0,0.0,30.0,1.0,0.0,31.25,1
+Teatro Barreto Júnior,11,26.7,3.0,0.0,24.0,1.0,0.0,25.94,1
+Teatro Barreto Júnior,11,13.75,4.0,0.0,25.0,1.0,0.0,24.73,1
+Teatro de Santa Isabel,11,33.5,1.0,0.0,50.0,0.0,4.0,23.88,1
+Teatro de Santa Isabel,11,38.22,1.0,0.0,33.0,0.0,4.0,20.67,1
+Teatro de Santa Isabel,11,45.62,5.0,0.0,41.0,0.0,4.0,11.56,0
+Teatro de Santa Isabel,11,59.01,5.0,0.0,31.0,2.0,4.0,28.22,1
+Teatro de Santa Isabel,11,24.4,6.0,1.0,1.0,2.0,4.0,24.44,1
+Teatro de Santa Isabel,11,36.57,4.0,0.0,18.0,0.0,4.0,14.97,0
+Teatro de Santa Isabel,11,44.28,4.0,0.0,47.0,2.0,4.0,24.13,1
+Teatro de Santa Isabel,11,43.02,3.0,0.0,53.0,2.0,4.0,30.99,1
+Teatro de Santa Isabel,11,35.81,4.0,0.0,2.0,1.0,4.0,15.43,0
+Teatro de Santa Isabel,11,50.94,6.0,1.0,29.0,1.0,4.0,16.11,0
+Teatro de Santa Isabel,11,48.25,7.0,1.0,6.0,0.0,4.0,12.24,0
+Teatro de Santa Isabel,11,50.14,7.0,1.0,60.0,1.0,4.0,20.92,1
+Teatro de Santa Isabel,11,31.76,7.0,1.0,18.0,2.0,4.0,25.15,1
+Teatro de Santa Isabel,11,29.51,6.0,1.0,10.0,2.0,4.0,16.09,0
+Teatro do Parque,11,65.31,1.0,0.0,33.0,1.0,2.0,16.93,0
+Teatro do Parque,11,54.52,6.0,1.0,32.0,1.0,2.0,3.54,0
+Teatro do Parque,11,73.91,7.0,1.0,7.0,2.0,2.0,21.16,1
+Teatro do Parque,11,62.23,7.0,1.0,15.0,2.0,2.0,10.32,0
+Teatro do Parque,11,55.16,2.0,0.0,20.0,2.0,2.0,25.64,1
+Teatro do Parque,11,55.24,6.0,1.0,55.0,0.0,2.0,7.61,0
+Teatro do Parque,11,64.99,3.0,0.0,30.0,0.0,2.0,9.59,0
+Teatro do Parque,11,54.78,7.0,1.0,8.0,0.0,2.0,6.03,0
+Teatro do Parque,11,73.9,1.0,0.0,19.0,1.0,2.0,13.39,0
+Teatro do Parque,11,65.11,5.0,0.0,34.0,0.0,2.0,11.14,0
+Teatro do Parque,11,71.54,1.0,0.0,2.0,1.0,2.0,10.46,0
+Teatro do Parque,11,79.82,3.0,0.0,15.0,0.0,2.0,11.92,0
+Teatro do Parque,11,65.13,6.0,1.0,31.0,0.0,2.0,13.71,0
+Teatro do Parque,11,59.19,2.0,0.0,3.0,2.0,2.0,8.24,0
+Teatro do Parque,11,66.13,3.0,0.0,36.0,2.0,2.0,28.09,1
+Teatro do Parque,11,64.17,6.0,1.0,10.0,1.0,2.0,13.5,0
+Teatro do Parque,11,58.76,6.0,1.0,47.0,0.0,2.0,14.21,0
+Teatro do Parque,11,55.95,5.0,0.0,27.0,1.0,2.0,20.58,1
+Teatro do Parque,11,64.08,7.0,1.0,19.0,0.0,2.0,20.98,1
+Teatro do Parque,11,78.94,2.0,0.0,0.0,1.0,2.0,27.15,1
+Teatro do Parque,11,54.23,5.0,0.0,59.0,1.0,2.0,20.96,1
+Teatro do Parque,11,54.55,1.0,0.0,24.0,2.0,2.0,24.35,1
+Teatro do Parque,11,65.71,3.0,0.0,32.0,0.0,2.0,12.06,0
+Teatro do Parque,11,55.64,2.0,0.0,45.0,0.0,2.0,14.41,0
+Teatro Hermilo Borba Filho,11,26.64,2.0,0.0,16.0,2.0,4.0,28.51,1
+Teatro Hermilo Borba Filho,11,32.86,6.0,1.0,18.0,1.0,4.0,7.58,0
+Teatro Hermilo Borba Filho,11,53.54,1.0,0.0,25.0,2.0,4.0,22.49,1
+Teatro Hermilo Borba Filho,11,43.67,3.0,0.0,25.0,1.0,4.0,18.22,0
+Teatro Hermilo Borba Filho,11,37.61,3.0,0.0,29.0,2.0,4.0,30.63,1
+Teatro Hermilo Borba Filho,11,33.01,5.0,0.0,8.0,1.0,4.0,19.19,0
+Teatro Luiz Mendonça,11,75.55,7.0,1.0,44.0,2.0,2.0,24.47,1
+Teatro Luiz Mendonça,11,79.78,7.0,1.0,11.0,0.0,2.0,9.7,0
+Teatro Luiz Mendonça,11,70.23,2.0,0.0,12.0,1.0,2.0,13.63,0
+Teatro Luiz Mendonça,11,49.93,3.0,0.0,19.0,0.0,2.0,11.37,0
+Teatro Luiz Mendonça,11,70.9,3.0,0.0,44.0,0.0,2.0,12.94,0
+Teatro Luiz Mendonça,11,84.75,4.0,0.0,49.0,2.0,2.0,21.54,1
+Teatro Luiz Mendonça,11,55.55,2.0,0.0,20.0,0.0,2.0,9.65,0
+Teatro Luiz Mendonça,11,68.39,6.0,1.0,47.0,0.0,2.0,15.7,0
+Teatro Luiz Mendonça,11,68.97,1.0,0.0,8.0,1.0,2.0,21.41,1
+Teatro Luiz Mendonça,11,83.04,2.0,0.0,5.0,1.0,2.0,7.16,0
+Teatro Luiz Mendonça,11,69.92,6.0,1.0,9.0,2.0,2.0,18.89,0
+Teatro Luiz Mendonça,11,45.68,6.0,1.0,32.0,1.0,2.0,15.01,0
+Teatro Luiz Mendonça,11,81.28,4.0,0.0,37.0,1.0,2.0,17.73,0
+Teatro Luiz Mendonça,11,68.99,5.0,0.0,6.0,0.0,2.0,16.33,0
+Teatro Luiz Mendonça,11,68.15,1.0,0.0,56.0,1.0,2.0,8.8,0
+Teatro Luiz Mendonça,11,64.2,7.0,1.0,41.0,0.0,2.0,9.55,0
+Teatro Luiz Mendonça,11,67.96,1.0,0.0,24.0,1.0,2.0,5.92,0
+Teatro Luiz Mendonça,11,64.42,5.0,0.0,25.0,1.0,2.0,14.39,0
+Teatro Luiz Mendonça,11,67.92,6.0,1.0,21.0,0.0,2.0,19.21,0
+Teatro Luiz Mendonça,11,72.5,5.0,0.0,30.0,1.0,2.0,15.76,0
+Teatro Luiz Mendonça,11,61.83,1.0,0.0,27.0,0.0,2.0,10.95,0
+Teatro Luiz Mendonça,11,68.79,5.0,0.0,10.0,1.0,2.0,12.74,0
+Teatro Luiz Mendonça,11,81.04,2.0,0.0,3.0,0.0,2.0,13.8,0
+Teatro Luiz Mendonça,11,69.37,6.0,1.0,20.0,1.0,2.0,10.05,0
+Teatro Luiz Mendonça,11,72.31,6.0,1.0,13.0,1.0,2.0,2.71,0
+Teatro Luiz Mendonça,11,65.31,4.0,0.0,36.0,0.0,2.0,19.48,0
+Teatro Luiz Mendonça,11,78.61,4.0,0.0,54.0,0.0,2.0,9.41,0
+Teatro Luiz Mendonça,11,74.43,7.0,1.0,18.0,1.0,2.0,7.55,0
+Teatro Luiz Mendonça,11,65.99,3.0,0.0,16.0,0.0,2.0,7.56,0
+Teatro Luiz Mendonça,11,75.19,4.0,0.0,53.0,0.0,2.0,18.05,0
+Teatro Luiz Mendonça,11,64.94,2.0,0.0,6.0,2.0,2.0,12.89,0
+Teatro Luiz Mendonça,11,48.98,5.0,0.0,19.0,2.0,2.0,28.41,1
+Teatro Luiz Mendonça,11,54.7,6.0,1.0,57.0,1.0,2.0,19.83,0
+Teatro Luiz Mendonça,11,73.99,2.0,0.0,38.0,2.0,2.0,21.83,1
+Teatro Luiz Mendonça,11,73.07,7.0,1.0,17.0,2.0,2.0,10.5,0
+Teatro Luiz Mendonça,11,69.74,4.0,0.0,26.0,0.0,2.0,18.04,0
+Teatro Luiz Mendonça,11,55.14,5.0,0.0,53.0,0.0,2.0,21.17,1
+Teatro Luiz Mendonça,11,72.96,2.0,0.0,19.0,1.0,2.0,2.88,0
+Teatro Luiz Mendonça,11,62.93,5.0,0.0,4.0,0.0,2.0,15.09,0
+Teatro Luiz Mendonça,11,72.23,7.0,1.0,6.0,1.0,2.0,10.29,0
+Teatro Luiz Mendonça,11,55.55,5.0,0.0,7.0,2.0,2.0,19.51,0
+Teatro Luiz Mendonça,11,65.12,6.0,1.0,4.0,2.0,2.0,10.1,0
+Teatro Luiz Mendonça,11,65.75,4.0,0.0,22.0,0.0,2.0,16.75,0
+Teatro Luiz Mendonça,11,56.94,6.0,1.0,25.0,1.0,2.0,12.06,0
+Teatro Luiz Mendonça,11,64.63,1.0,0.0,36.0,2.0,2.0,21.89,1
+Teatro Luiz Mendonça,11,53.45,5.0,0.0,33.0,0.0,2.0,17.32,0
+Teatro Luiz Mendonça,11,71.02,4.0,0.0,51.0,2.0,2.0,26.22,1
+Teatro Luiz Mendonça,11,68.37,6.0,1.0,4.0,1.0,2.0,9.18,0
+Teatro Luiz Mendonça,11,66.64,2.0,0.0,33.0,2.0,2.0,27.66,1
+Teatro Luiz Mendonça,11,89.89,3.0,0.0,50.0,0.0,2.0,8.19,0
+Teatro Luiz Mendonça,11,63.76,1.0,0.0,27.0,2.0,2.0,22.21,1
+Teatro Luiz Mendonça,11,76.25,7.0,1.0,41.0,1.0,2.0,15.13,0
+Teatro Luiz Mendonça,11,69.9,1.0,0.0,44.0,2.0,2.0,17.72,0
+Teatro Luiz Mendonça,11,72.83,6.0,1.0,39.0,2.0,2.0,17.56,0
+Teatro Luiz Mendonça,11,69.61,3.0,0.0,46.0,2.0,2.0,19.15,0
+Teatro Luiz Mendonça,11,81.9,2.0,0.0,23.0,0.0,2.0,11.35,0
+Teatro Luiz Mendonça,11,66.01,6.0,1.0,0.0,0.0,2.0,5.13,0
+Teatro Luiz Mendonça,11,79.51,3.0,0.0,46.0,0.0,2.0,17.04,0
+Tearro Apolo,12,65.35,6.0,1.0,1.0,0.0,4.0,16.57,0
+Tearro Apolo,12,44.02,5.0,0.0,25.0,2.0,4.0,15.05,0
+Tearro Apolo,12,55.19,3.0,0.0,51.0,0.0,4.0,22.57,1
+Tearro Apolo,12,51.51,3.0,0.0,44.0,2.0,4.0,35.64,1
+Tearro Apolo,12,51.3,1.0,0.0,5.0,2.0,4.0,21.45,1
+Tearro Apolo,12,43.93,1.0,0.0,42.0,1.0,4.0,13.69,0
+Tearro Apolo,12,36.68,1.0,0.0,31.0,1.0,4.0,21.5,1
+Tearro Apolo,12,42.86,5.0,0.0,31.0,1.0,4.0,24.8,1
+Tearro Apolo,12,34.45,6.0,1.0,47.0,0.0,4.0,15.64,0
+Teatro Barreto Júnior,12,18.54,3.0,0.0,12.0,1.0,0.0,22.92,1
+Teatro Barreto Júnior,12,26.25,3.0,0.0,27.0,1.0,0.0,29.01,1
+Teatro Barreto Júnior,12,26.04,3.0,0.0,40.0,2.0,0.0,43.67,1
+Teatro Barreto Júnior,12,37.49,3.0,0.0,54.0,1.0,0.0,34.16,1
+Teatro Barreto Júnior,12,40.99,5.0,0.0,34.0,0.0,0.0,22.81,1
+Teatro Barreto Júnior,12,27.03,4.0,0.0,41.0,2.0,0.0,25.15,1
+Teatro Barreto Júnior,12,32.59,6.0,1.0,35.0,1.0,0.0,25.77,1
+Teatro Barreto Júnior,12,35.17,4.0,0.0,42.0,2.0,0.0,29.04,1
+Teatro Barreto Júnior,12,46.47,2.0,0.0,11.0,1.0,0.0,19.79,0
+Teatro Barreto Júnior,12,16.42,5.0,0.0,33.0,1.0,0.0,31.79,1
+Teatro Barreto Júnior,12,46.32,4.0,0.0,47.0,2.0,0.0,23.56,1
+Teatro Barreto Júnior,12,27.64,7.0,1.0,58.0,0.0,0.0,27.94,1
+Teatro Barreto Júnior,12,26.28,5.0,0.0,47.0,0.0,0.0,37.07,1
+Teatro Barreto Júnior,12,40.66,1.0,0.0,42.0,0.0,0.0,20.54,1
+Teatro Barreto Júnior,12,51.52,5.0,0.0,17.0,2.0,0.0,31.05,1
+Teatro Barreto Júnior,12,60.38,1.0,0.0,34.0,1.0,0.0,20.05,1
+Teatro Barreto Júnior,12,32.22,5.0,0.0,0.0,0.0,0.0,21.46,1
+Teatro Barreto Júnior,12,25.88,6.0,1.0,39.0,2.0,0.0,24.91,1
+Teatro Barreto Júnior,12,46.25,1.0,0.0,16.0,0.0,0.0,15.42,0
+Teatro Barreto Júnior,12,39.1,4.0,0.0,38.0,1.0,0.0,24.49,1
+Teatro Barreto Júnior,12,31.23,4.0,0.0,40.0,1.0,0.0,29.56,1
+Teatro Barreto Júnior,12,40.72,3.0,0.0,32.0,1.0,0.0,23.69,1
+Teatro Barreto Júnior,12,39.38,7.0,1.0,0.0,0.0,0.0,4.61,0
+Teatro Barreto Júnior,12,40.08,2.0,0.0,8.0,0.0,0.0,13.41,0
+Teatro de Santa Isabel,12,42.09,4.0,0.0,60.0,0.0,4.0,18.64,0
+Teatro de Santa Isabel,12,39.65,7.0,1.0,55.0,1.0,4.0,23.76,1
+Teatro de Santa Isabel,12,54.39,4.0,0.0,2.0,1.0,4.0,22.43,1
+Teatro de Santa Isabel,12,50.73,3.0,0.0,28.0,2.0,4.0,28.55,1
+Teatro de Santa Isabel,12,39.79,3.0,0.0,49.0,1.0,4.0,27.15,1
+Teatro de Santa Isabel,12,33.92,4.0,0.0,23.0,2.0,4.0,36.05,1
+Teatro de Santa Isabel,12,41.77,4.0,0.0,7.0,2.0,4.0,20.16,1
+Teatro de Santa Isabel,12,33.53,1.0,0.0,31.0,2.0,4.0,26.92,1
+Teatro do Parque,12,64.4,6.0,1.0,7.0,1.0,2.0,9.52,0
+Teatro do Parque,12,73.29,7.0,1.0,22.0,2.0,2.0,12.39,0
+Teatro do Parque,12,70.76,6.0,1.0,0.0,2.0,2.0,10.25,0
+Teatro do Parque,12,66.35,6.0,1.0,43.0,1.0,2.0,17.84,0
+Teatro do Parque,12,78.67,7.0,1.0,8.0,1.0,2.0,11.14,0
+Teatro do Parque,12,65.58,4.0,0.0,56.0,1.0,2.0,27.65,1
+Teatro do Parque,12,92.11,5.0,0.0,8.0,1.0,2.0,14.82,0
+Teatro do Parque,12,66.72,7.0,1.0,43.0,1.0,2.0,6.3,0
+Teatro do Parque,12,53.39,1.0,0.0,34.0,1.0,2.0,10.47,0
+Teatro do Parque,12,71.63,1.0,0.0,2.0,2.0,2.0,10.82,0
+Teatro do Parque,12,75.49,6.0,1.0,22.0,1.0,2.0,13.42,0
+Teatro do Parque,12,62.93,1.0,0.0,33.0,2.0,2.0,26.12,1
+Teatro do Parque,12,60.91,1.0,0.0,22.0,2.0,2.0,14.79,0
+Teatro do Parque,12,64.15,5.0,0.0,4.0,2.0,2.0,15.27,0
+Teatro do Parque,12,64.49,4.0,0.0,22.0,0.0,2.0,6.63,0
+Teatro do Parque,12,57.5,5.0,0.0,2.0,0.0,2.0,15.21,0
+Teatro do Parque,12,63.39,6.0,1.0,15.0,0.0,2.0,11.31,0
+Teatro do Parque,12,61.86,7.0,1.0,47.0,0.0,2.0,14.11,0
+Teatro do Parque,12,51.17,6.0,1.0,56.0,2.0,2.0,22.57,1
+Teatro do Parque,12,54.97,6.0,1.0,12.0,0.0,2.0,13.98,0
+Teatro do Parque,12,72.63,1.0,0.0,34.0,2.0,2.0,24.37,1
+Teatro do Parque,12,63.35,3.0,0.0,59.0,1.0,2.0,22.69,1
+Teatro Hermilo Borba Filho,12,26.64,6.0,1.0,25.0,0.0,4.0,18.24,0
+Teatro Hermilo Borba Filho,12,56.19,7.0,1.0,59.0,1.0,4.0,18.63,0
+Teatro Luiz Mendonça,12,70.44,1.0,0.0,16.0,2.0,2.0,10.36,0
+Teatro Luiz Mendonça,12,72.77,5.0,0.0,46.0,0.0,2.0,14.39,0
+Teatro Luiz Mendonça,12,57.67,1.0,0.0,30.0,1.0,2.0,20.21,1
+Teatro Luiz Mendonça,12,71.45,4.0,0.0,4.0,0.0,2.0,8.9,0
+Teatro Luiz Mendonça,12,56.29,2.0,0.0,9.0,1.0,2.0,18.65,0
+Teatro Luiz Mendonça,12,53.47,4.0,0.0,16.0,1.0,2.0,17.47,0
+Teatro Luiz Mendonça,12,65.79,2.0,0.0,27.0,1.0,2.0,12.03,0
+Teatro Luiz Mendonça,12,42.97,4.0,0.0,5.0,0.0,2.0,17.61,0
+Teatro Luiz Mendonça,12,72.11,1.0,0.0,10.0,1.0,2.0,11.2,0
+Teatro Luiz Mendonça,12,69.64,1.0,0.0,21.0,1.0,2.0,14.92,0
+Teatro Luiz Mendonça,12,61.75,3.0,0.0,55.0,1.0,2.0,18.03,0
+Teatro Luiz Mendonça,12,89.46,7.0,1.0,27.0,0.0,2.0,9.95,0
+Teatro Luiz Mendonça,12,57.99,2.0,0.0,48.0,1.0,2.0,16.76,0
+Teatro Luiz Mendonça,12,84.98,1.0,0.0,4.0,0.0,2.0,3.23,0
+Teatro Luiz Mendonça,12,72.82,5.0,0.0,16.0,2.0,2.0,21.31,1
+Teatro Luiz Mendonça,12,50.3,3.0,0.0,16.0,1.0,2.0,15.61,0
+Teatro Luiz Mendonça,12,79.48,5.0,0.0,8.0,0.0,2.0,9.0,0
+Teatro Luiz Mendonça,12,59.85,6.0,1.0,57.0,1.0,2.0,14.77,0
+Teatro Luiz Mendonça,12,58.58,4.0,0.0,51.0,0.0,2.0,8.39,0
+Teatro Luiz Mendonça,12,61.46,3.0,0.0,8.0,2.0,2.0,17.39,0
+Teatro Luiz Mendonça,12,60.23,7.0,1.0,14.0,0.0,2.0,20.66,1
+Teatro Luiz Mendonça,12,78.26,3.0,0.0,45.0,1.0,2.0,18.1,0
+Teatro Luiz Mendonça,12,57.32,7.0,1.0,23.0,0.0,2.0,2.0,0
+Teatro Luiz Mendonça,12,61.19,3.0,0.0,5.0,2.0,2.0,25.26,1
+Teatro Luiz Mendonça,12,62.7,4.0,0.0,30.0,2.0,2.0,18.47,0
+Teatro Luiz Mendonça,12,60.44,5.0,0.0,53.0,1.0,2.0,14.32,0
+Teatro Luiz Mendonça,12,57.51,1.0,0.0,39.0,2.0,2.0,20.88,1
+Teatro Luiz Mendonça,12,48.69,4.0,0.0,23.0,1.0,2.0,14.03,0
+Teatro Luiz Mendonça,12,77.13,3.0,0.0,18.0,2.0,2.0,13.34,0
+Teatro Luiz Mendonça,12,74.04,7.0,1.0,26.0,2.0,2.0,17.68,0
+Teatro Luiz Mendonça,12,65.24,3.0,0.0,12.0,1.0,2.0,14.64,0
+Teatro Luiz Mendonça,12,73.65,1.0,0.0,28.0,2.0,2.0,17.37,0
+Teatro Luiz Mendonça,12,51.83,1.0,0.0,0.0,0.0,2.0,18.75,0
+Teatro Luiz Mendonça,12,80.51,4.0,0.0,7.0,0.0,2.0,12.3,0
+Teatro Luiz Mendonça,12,62.32,7.0,1.0,9.0,0.0,2.0,3.83,0
+Teatro Luiz Mendonça,12,65.12,4.0,0.0,42.0,2.0,2.0,19.17,0
+Teatro Luiz Mendonça,12,58.52,1.0,0.0,28.0,2.0,2.0,18.74,0
+Teatro Luiz Mendonça,12,68.73,1.0,0.0,39.0,1.0,2.0,16.49,0
+Teatro Luiz Mendonça,12,72.44,5.0,0.0,55.0,1.0,2.0,21.53,1
+Teatro Luiz Mendonça,12,53.45,6.0,1.0,0.0,2.0,2.0,13.18,0
+Teatro Luiz Mendonça,12,56.42,2.0,0.0,40.0,2.0,2.0,12.06,0
+Teatro Luiz Mendonça,12,52.49,6.0,1.0,9.0,2.0,2.0,10.42,0
+Teatro Luiz Mendonça,12,62.62,7.0,1.0,44.0,1.0,2.0,5.87,0
+Teatro Luiz Mendonça,12,61.54,7.0,1.0,35.0,0.0,2.0,12.43,0
+Teatro Luiz Mendonça,12,70.5,1.0,0.0,28.0,2.0,2.0,23.42,1
+Teatro Luiz Mendonça,12,51.28,7.0,1.0,27.0,0.0,2.0,24.91,1
+Teatro Luiz Mendonça,12,63.78,3.0,0.0,51.0,0.0,2.0,15.06,0
+Teatro Luiz Mendonça,12,47.16,1.0,0.0,4.0,0.0,2.0,19.6,0
+Teatro Luiz Mendonça,12,65.3,2.0,0.0,2.0,2.0,2.0,21.85,1
+Teatro Luiz Mendonça,12,68.55,5.0,0.0,12.0,0.0,2.0,8.35,0
+Teatro Luiz Mendonça,12,85.7,1.0,0.0,59.0,0.0,2.0,21.12,1
+Teatro Luiz Mendonça,12,56.59,4.0,0.0,0.0,1.0,2.0,11.48,0
+Teatro Luiz Mendonça,12,61.54,4.0,0.0,27.0,1.0,2.0,27.06,1
+Teatro Luiz Mendonça,12,60.5,2.0,0.0,11.0,0.0,2.0,16.38,0
+Teatro Luiz Mendonça,12,68.23,1.0,0.0,34.0,0.0,2.0,17.0,0
+Teatro Luiz Mendonça,12,85.74,6.0,1.0,48.0,0.0,2.0,11.04,0

@@ -8,7 +8,8 @@ import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import org.springframework.stereotype.Service;
 
-import java.net.URL;
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Map;
@@ -32,23 +33,31 @@ public class InteligenciaServicoAplicacao {
     }
 
     /**
-     * Inicializa o ambiente ONNX e carrega os modelos em memória 
+     * Inicializa o ambiente ONNX e carrega os modelos em memória
      * logo após o Spring Boot instanciar este serviço.
+     *
+     * Carrega via byte[] (não path) porque o JAR fat-packaged do Spring Boot
+     * resolve recursos via URL nested:/...!/models/*.onnx — o ONNX Runtime
+     * nativo não entende esse esquema e falha com ORT_NO_SUCHFILE.
      */
     @PostConstruct
-    public void init() throws OrtException {
+    public void init() throws OrtException, IOException {
         this.env = OrtEnvironment.getEnvironment();
-        
-        // Carrega os modelos embarcados na pasta resources/models/ do módulo 'aplicacao'
-        URL receitaUrl = getClass().getResource("/models/receita_model.onnx");
-        URL noShowUrl = getClass().getResource("/models/noshow_model.onnx");
 
-        if (receitaUrl == null || noShowUrl == null) {
-            throw new IllegalStateException("Modelos ONNX não encontrados na pasta /models/");
+        byte[] receitaBytes = lerRecurso("/models/receita_model.onnx");
+        byte[] noShowBytes = lerRecurso("/models/noshow_model.onnx");
+
+        this.receitaSession = env.createSession(receitaBytes, new OrtSession.SessionOptions());
+        this.noShowSession = env.createSession(noShowBytes, new OrtSession.SessionOptions());
+    }
+
+    private byte[] lerRecurso(String caminho) throws IOException {
+        try (InputStream in = getClass().getResourceAsStream(caminho)) {
+            if (in == null) {
+                throw new IllegalStateException("Modelo ONNX não encontrado: " + caminho);
+            }
+            return in.readAllBytes();
         }
-
-        this.receitaSession = env.createSession(receitaUrl.getPath(), new OrtSession.SessionOptions());
-        this.noShowSession = env.createSession(noShowUrl.getPath(), new OrtSession.SessionOptions());
     }
 
     /**

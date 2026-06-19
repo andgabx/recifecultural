@@ -47,10 +47,14 @@ public class InteligenciaBffControlador extends AbstractBffControlador {
         return responder(inteligenciaServico.analisarEvento(eventoId));
     }
 
-    @Operation(summary = "Retorna série mensal de visitação por teatro (dados 2023)")
+    @Operation(summary = "Retorna série mensal de visitação por teatro (dados do banco; fallback no CSV 2023 se vazio)")
     @GetMapping("/visitacao")
     public ResponseEntity<JsonNode> visitacao() {
-        return ResponseEntity.ok(carregarJson("inteligencia/visitacao.json"));
+        var dados = inteligenciaServico.listarVisitacao();
+        if (dados.isEmpty()) {
+            return ResponseEntity.ok(carregarJson("inteligencia/visitacao.json"));
+        }
+        return ResponseEntity.ok(OBJECT_MAPPER.valueToTree(dados));
     }
 
     @Operation(summary = "Retorna métricas de no-show agregadas por tipo de ingresso, faixa de preço e categoria")

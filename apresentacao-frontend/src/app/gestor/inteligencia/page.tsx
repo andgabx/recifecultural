@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -149,9 +149,20 @@ export default function InteligenciaDashboardPage() {
 
   const teatrosUnicos = useMemo(() => {
     const set = new Set<string>();
-    visitacaoData.forEach((p) => set.add(p.teatro));
+    visitacaoData.forEach((p) => {
+      if (p && typeof p.teatro === 'string' && p.teatro.trim()) {
+        set.add(p.teatro);
+      }
+    });
     return Array.from(set).sort();
   }, [visitacaoData]);
+
+  // Seleciona o primeiro teatro automaticamente quando os dados carregam.
+  useEffect(() => {
+    if (!teatroSelecionado && teatrosUnicos.length > 0) {
+      setTeatroSelecionado(teatrosUnicos[0]);
+    }
+  }, [teatrosUnicos, teatroSelecionado]);
 
   const totalPorTeatro = useMemo(() => {
     const map = new Map<string, number>();

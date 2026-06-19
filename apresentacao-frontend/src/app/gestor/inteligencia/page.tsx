@@ -112,15 +112,7 @@ export default function InteligenciaDashboardPage() {
 
   const { data: eventosData, isLoading: isLoadingEventos } = useQuery({
     queryKey: ['eventos-inteligencia-dropdown'],
-    queryFn: async () => {
-      const endpoints = ['/eventos', '/bff/eventos', '/api/eventos', '/bff/gestor/eventos'];
-      let lastError;
-      for (const endpoint of endpoints) {
-        try { return (await api.get(`${endpoint}?size=100&sort=data,desc`)).data; } 
-        catch (err) { lastError = err; }
-      }
-      throw lastError;
-    },
+    queryFn: async () => (await api.get('/api/bff/eventos')).data,
     staleTime: 60000,
   });
 

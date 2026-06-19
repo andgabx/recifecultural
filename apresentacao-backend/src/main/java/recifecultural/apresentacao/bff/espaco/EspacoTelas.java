@@ -5,5 +5,5 @@ import java.util.UUID;
 
 public class EspacoTelas {
     public record CadastrarEspacoRequisicao(String nome, int capacidadeMaxima, List<String> riderTecnico) {}
-    public record AtualizarCapacidadeRequisicao(int novaCapacidade, int ingressosVendidosFuturos) {}
+    public record AtualizarCapacidadeRequisicao(int novaCapacidade) {}
 }

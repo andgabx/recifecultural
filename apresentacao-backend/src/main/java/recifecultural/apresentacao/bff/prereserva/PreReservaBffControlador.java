@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 import recifecultural.apresentacao.bff.AbstractBffControlador;
 import recifecultural.dominio.agenda.prereserva.DuracaoPreReserva;
 import recifecultural.dominio.agenda.prereserva.PreReservaId;
@@ -25,7 +26,7 @@ public class PreReservaBffControlador extends AbstractBffControlador {
 
     @Operation(summary = "Reserva assento por 10 min — bloqueia até o pagamento confirmar")
     @PostMapping
-    public ResponseEntity<Map<String, String>> reservar(@RequestBody ReservarRequisicao req) {
+    public ResponseEntity<Map<String, String>> reservar(@Valid @RequestBody ReservarRequisicao req) {
         PreReservaId id = servico.reservar(
                 req.setorId(),
                 req.assentoId(),

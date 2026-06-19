@@ -62,6 +62,11 @@ public class IngressoRepositorioImpl implements IIngressoRepositorio, IngressoRe
     }
 
     @Override
+    public int maiorCargaAtivosPorEspaco(UUID espacoId, LocalDateTime agora) {
+        return jpa.findMaiorCargaAtivosPorEspaco(espacoId, agora);
+    }
+
+    @Override
     public List<IngressoResumo> pesquisarPorEvento(UUID eventoId) {
         return jpa.findByEventoId(eventoId).stream()
                 .<IngressoResumo>map(this::toResumo)

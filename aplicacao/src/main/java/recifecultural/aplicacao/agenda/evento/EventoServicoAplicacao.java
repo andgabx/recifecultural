@@ -21,6 +21,7 @@ import java.util.UUID;
 import static org.apache.commons.lang3.Validate.notBlank;
 import static org.apache.commons.lang3.Validate.notNull;
 
+@Transactional(readOnly = true)
 public class EventoServicoAplicacao {
 
     private final EventoServico servico;
@@ -55,6 +56,7 @@ public class EventoServicoAplicacao {
         return repositorio.buscarResumoExpandido(id);
     }
 
+    @Transactional
     public UUID criar(CriarEventoComando cmd) {
         notNull(cmd, "Comando obrigatório.");
         notNull(cmd.promotorId(), "promotorId obrigatório.");
@@ -152,10 +154,12 @@ public class EventoServicoAplicacao {
         return new Periodo(inicio, fim);
     }
 
+    @Transactional
     public void submeterParaAnalise(UUID id) {
         servico.submeterParaAnalise(id);
     }
 
+    @Transactional
     public void aprovar(UUID id) {
         servico.aprovar(id);
 
@@ -178,10 +182,12 @@ public class EventoServicoAplicacao {
         });
     }
 
+    @Transactional
     public void reprovar(UUID id, FeedbackReprovacao feedback) {
         servico.reprovar(id, feedback);
     }
 
+    @Transactional
     public void cancelar(UUID id) {
         alocacaoRiderServico.desmobilizarEquipamentosDoEvento(id);
         servico.cancelar(id, "Cancelado via aplicação.");

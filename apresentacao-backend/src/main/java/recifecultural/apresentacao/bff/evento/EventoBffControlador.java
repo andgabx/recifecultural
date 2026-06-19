@@ -3,6 +3,7 @@ package recifecultural.apresentacao.bff.evento;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 import recifecultural.dominio.agenda.evento.FeedbackReprovacao;
 import recifecultural.aplicacao.agenda.evento.EventoResumo;
 import recifecultural.aplicacao.agenda.evento.EventoResumoExpandido;
@@ -50,7 +51,7 @@ public class EventoBffControlador extends AbstractBffControlador {
 
     @Operation(summary = "Cria evento em rascunho")
     @PostMapping
-    public ResponseEntity<Map<String, String>> criar(@RequestBody CriarEventoRequisicao req) {
+    public ResponseEntity<Map<String, String>> criar(@Valid @RequestBody CriarEventoRequisicao req) {
         UUID id = servico.criar(new CriarEventoComando(
                 req.promotorId(),
                 req.localId(),
@@ -76,7 +77,7 @@ public class EventoBffControlador extends AbstractBffControlador {
     @PutMapping("/{id}")
     public ResponseEntity<Map<String, String>> editar(
             @PathVariable UUID id,
-            @RequestBody EditarEventoRequisicao req) {
+            @Valid @RequestBody EditarEventoRequisicao req) {
         servico.editar(id, new EditarEventoComando(
                 req.localId(),
                 req.titulo(),
@@ -114,7 +115,7 @@ public class EventoBffControlador extends AbstractBffControlador {
     @Operation(summary = "Reprova evento com feedback")
     @PostMapping("/{id}/reprovar")
     public ResponseEntity<Map<String, String>> reprovar(@PathVariable UUID id,
-                                                         @RequestBody ReprovarEventoRequisicao req) {
+                                                         @Valid @RequestBody ReprovarEventoRequisicao req) {
         servico.reprovar(id, new FeedbackReprovacao(req.feedback()));
         return responderSemConteudo();
     }

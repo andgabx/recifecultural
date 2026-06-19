@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 import recifecultural.aplicacao.ingressos.IngressoServicoAplicacao;
 import recifecultural.aplicacao.ingressos.IngressoServicoAplicacao.ItemCompraMultipla;
 import recifecultural.apresentacao.bff.AbstractBffControlador;
@@ -34,7 +35,7 @@ public class CheckoutControlador extends AbstractBffControlador {
 
     @Operation(summary = "Compra ingresso simples")
     @PostMapping("/comprar")
-    public ResponseEntity<Map<String, String>> comprar(@RequestBody CompraRequisicao req) {
+    public ResponseEntity<Map<String, String>> comprar(@Valid @RequestBody CompraRequisicao req) {
         IngressoId id = servico.comprar(
                 req.eventoId(), req.dataHoraApresentacao(),
                 TipoIngresso.valueOf(req.tipo()),
@@ -45,7 +46,7 @@ public class CheckoutControlador extends AbstractBffControlador {
 
     @Operation(summary = "Compra ingresso com cupom de desconto")
     @PostMapping("/comprar-com-cupom")
-    public ResponseEntity<Map<String, String>> comprarComCupom(@RequestBody CompraComCupomRequisicao req) {
+    public ResponseEntity<Map<String, String>> comprarComCupom(@Valid @RequestBody CompraComCupomRequisicao req) {
         IngressoId id = servico.comprarComCupom(
                 req.eventoId(), req.dataHoraApresentacao(),
                 TipoIngresso.valueOf(req.tipo()),
@@ -58,7 +59,7 @@ public class CheckoutControlador extends AbstractBffControlador {
     @Operation(summary = "Compra um ingresso confirmando pré-reserva de assento")
     @PostMapping("/comprar-com-prereserva")
     public ResponseEntity<Map<String, String>> comprarComPreReserva(
-            @RequestBody CompraComPreReservaRequisicao req) {
+            @Valid @RequestBody CompraComPreReservaRequisicao req) {
         IngressoId id = servico.comprarComPreReserva(
                 req.eventoId(), req.dataHoraApresentacao(),
                 req.preReservaId(), req.assentoId(),
@@ -72,7 +73,7 @@ public class CheckoutControlador extends AbstractBffControlador {
     @Operation(summary = "Compra múltiplos ingressos com assentos pré-reservados")
     @PostMapping("/comprar-multiplos")
     public ResponseEntity<Map<String, Object>> comprarMultiplos(
-            @RequestBody CompraMultiplaRequisicao req) {
+            @Valid @RequestBody CompraMultiplaRequisicao req) {
 
         List<ItemCompraMultipla> itens = req.itens().stream()
                 .map(i -> new ItemCompraMultipla(

@@ -6,8 +6,11 @@ import recifecultural.dominio.compartilhado.auditoria.RegistroAuditoria;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import static org.apache.commons.lang3.Validate.notNull;
 
+@Transactional(readOnly = true)
 public class AuditoriaServicoAplicacao {
 
     private final IAuditoriaRepositorio repositorio;

@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 import recifecultural.aplicacao.artista.artista.ArtistaResumo;
 import recifecultural.aplicacao.artista.artista.ArtistaServicoAplicacao;
 import recifecultural.dominio.artista.artista.ArtistaId;
@@ -33,7 +34,7 @@ public class ArtistaBffControlador extends AbstractBffControlador {
 
     @Operation(summary = "Cadastra artista")
     @PostMapping
-    public ResponseEntity<Map<String, String>> cadastrar(@RequestBody ArtistaTelas.CadastrarArtistaRequisicao req) {
+    public ResponseEntity<Map<String, String>> cadastrar(@Valid @RequestBody ArtistaTelas.CadastrarArtistaRequisicao req) {
         ArtistaId id = servico.cadastrar(new ProdutorId(req.produtorId()), req.nome(),
                 ArtistaServicoAplicacao.construirRider(req.riderItens()));
         return responderCriado(id.valor().toString());

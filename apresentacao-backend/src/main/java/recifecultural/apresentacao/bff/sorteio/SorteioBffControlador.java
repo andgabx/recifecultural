@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 import recifecultural.aplicacao.agenda.sorteio.SorteioInscritoResumo;
 import recifecultural.aplicacao.agenda.sorteio.SorteioResumo;
 import recifecultural.aplicacao.agenda.sorteio.SorteioServicoAplicacao;
@@ -46,7 +47,7 @@ public class SorteioBffControlador extends AbstractBffControlador {
 
     @Operation(summary = "Cria sorteio")
     @PostMapping
-    public ResponseEntity<Map<String, String>> criar(@RequestBody CriarSorteioRequisicao req) {
+    public ResponseEntity<Map<String, String>> criar(@Valid @RequestBody CriarSorteioRequisicao req) {
         servico.criar(req.apresentacaoId(), req.eventoId(), req.vagas(),
                 req.prazoInscricao(), req.dataApresentacao());
         return ResponseEntity.status(201).body(Map.of("status", "criado"));

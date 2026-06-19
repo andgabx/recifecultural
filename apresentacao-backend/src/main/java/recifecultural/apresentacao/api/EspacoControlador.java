@@ -6,8 +6,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import recifecultural.dominio.espaco.espaco.EspacoId;
 import recifecultural.dominio.espaco.espaco.EspacoServico;
+import recifecultural.dominio.ingressos.IIngressoRepositorio;
 import recifecultural.apresentacao.bff.AbstractBffControlador;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -18,9 +20,11 @@ import java.util.UUID;
 public class EspacoControlador extends AbstractBffControlador {
 
     private final EspacoServico servico;
+    private final IIngressoRepositorio ingressoRepositorio;
 
-    public EspacoControlador(EspacoServico servico) {
+    public EspacoControlador(EspacoServico servico, IIngressoRepositorio ingressoRepositorio) {
         this.servico = servico;
+        this.ingressoRepositorio = ingressoRepositorio;
     }
 
     @Operation(summary = "Cadastra espaço")
@@ -35,7 +39,9 @@ public class EspacoControlador extends AbstractBffControlador {
     public ResponseEntity<Map<String, String>> atualizarCapacidade(
             @PathVariable UUID id,
             @RequestBody AtualizarCapacidadeRequisicao req) {
-        servico.atualizarCapacidade(new EspacoId(id), req.novaCapacidade(), req.ingressosVendidosFuturos());
+        // ingressosVendidosFuturos é computado server-side; nunca confiamos no valor do cliente.
+        int ingressosVendidosFuturos = ingressoRepositorio.maiorCargaAtivosPorEspaco(id, LocalDateTime.now());
+        servico.atualizarCapacidade(new EspacoId(id), req.novaCapacidade(), ingressosVendidosFuturos);
         return responderSemConteudo();
     }
 
@@ -54,5 +60,5 @@ public class EspacoControlador extends AbstractBffControlador {
     }
 
     record CadastrarEspacoRequisicao(String nome, int capacidadeMaxima, List<String> riderTecnico) {}
-    record AtualizarCapacidadeRequisicao(int novaCapacidade, int ingressosVendidosFuturos) {}
+    record AtualizarCapacidadeRequisicao(int novaCapacidade) {}
 }

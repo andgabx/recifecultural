@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 import recifecultural.aplicacao.ingressos.IngressoServicoAplicacao;
 import recifecultural.dominio.agenda.prereserva.PreReserva;
 import recifecultural.dominio.agenda.prereserva.PreReservaServico;
@@ -71,7 +72,7 @@ public class SetorBffControlador extends AbstractBffControlador {
 
     @Operation(summary = "Configura setor + gera assentos")
     @PostMapping
-    public ResponseEntity<Map<String, String>> configurar(@RequestBody SetorTelas.ConfigurarSetorRequisicao req) {
+    public ResponseEntity<Map<String, String>> configurar(@Valid @RequestBody SetorTelas.ConfigurarSetorRequisicao req) {
         Setor setor = servico.configurarGestaoAmbiente(
                 new EspacoId(req.espacoId()),
                 req.nome(),
@@ -85,7 +86,7 @@ public class SetorBffControlador extends AbstractBffControlador {
     @PutMapping("/{id}")
     public ResponseEntity<Map<String, String>> editar(
             @PathVariable UUID id,
-            @RequestBody SetorTelas.EditarSetorRequisicao req) {
+            @Valid @RequestBody SetorTelas.EditarSetorRequisicao req) {
         servico.editarSetor(
                 new recifecultural.dominio.espaco.setor.SetorId(id),
                 req.nome(),

@@ -8,6 +8,12 @@ Na raiz do repositório:
 docker compose up --build
 ```
 
+Para rodar os testes:
+
+```bash
+./mvnw test
+```
+
 Requisito: Docker (inclui Docker Compose). API em http://localhost:8080
 
 ---
@@ -94,7 +100,7 @@ O projeto distribui os 6 padrões GoF entre 7 pares de features (um padrão é r
 | [`EstrategiaCancelamentoPorPatrocinador.java`](dominio-patrocinio/src/main/java/recifecultural/dominio/patrocinio/EstrategiaCancelamentoPorPatrocinador.java) | ConcreteStrategy — >15d: 100% · ≤15d: 80% + 20% multa |
 | [`Patrocinio.java`](dominio-patrocinio/src/main/java/recifecultural/dominio/patrocinio/Patrocinio.java) | Context — delega cálculo de cancelamento à estratégia |
 
-**Testes:** [`reembolsar_ingresso.feature`](dominio-ingressos/src/test/resources/features/reembolsar_ingresso.feature) · [`cancelar_patrocinio.feature`](dominio-patrocinio/src/test/resources/features/cancelar_patrocinio.feature) · [`PatrocinioTest.java`](dominio-patrocinio/src/test/java/recifecultural/dominio/patrocinio/PatrocinioTest.java)
+**Testes:** [`reembolsar_ingresso.feature`](dominio-ingressos/src/test/resources/features/reembolsar_ingresso.feature) · [`cancelar_patrocinio.feature`](dominio-patrocinio/src/test/resources/features/cancelar_patrocinio.feature) · [`PatrocinioTest.java`](dominio-patrocinio/src/test/java/recifecultural/dominio/patrocinio/PatrocinioTest.java) · [`AtivarPatrocinioFuncionalidade.java`](dominio-patrocinio/src/test/java/recifecultural/dominio/patrocinio/AtivarPatrocinioFuncionalidade.java) · [`EstrategiaReembolsoTest.java`](dominio-ingressos/src/test/java/recifecultural/dominio/ingressos/EstrategiaReembolsoTest.java)
 
 ---
 
@@ -107,6 +113,8 @@ O projeto distribui os 6 padrões GoF entre 7 pares de features (um padrão é r
 | [`EspacoRepositorioProxyCache.java`](infraestrutura/src/main/java/recifecultural/infraestrutura/padroes/EspacoRepositorioProxyCache.java) | Proxy — cache em memória sobre `IEspacoRepositorio` |
 | [`IEquipamentoRepositorio.java`](dominio-agenda/src/main/java/recifecultural/dominio/agenda/equipamento/IEquipamentoRepositorio.java) | Subject (interface) |
 | [`EquipamentoRepositorioProxyCache.java`](infraestrutura/src/main/java/recifecultural/infraestrutura/padroes/EquipamentoRepositorioProxyCache.java) | Proxy — cache em memória sobre `IEquipamentoRepositorio` |
+
+**Testes:** [`EspacoRepositorioProxyCacheTest.java`](infraestrutura/src/test/java/recifecultural/infraestrutura/padroes/EspacoRepositorioProxyCacheTest.java) · [`EquipamentoRepositorioProxyCacheTest.java`](infraestrutura/src/test/java/recifecultural/infraestrutura/padroes/EquipamentoRepositorioProxyCacheTest.java)
 
 ---
 
@@ -121,7 +129,7 @@ O projeto distribui os 6 padrões GoF entre 7 pares de features (um padrão é r
 | [`BloqueioNotificacaoObservador.java`](aplicacao/src/main/java/recifecultural/aplicacao/agenda/bloqueioadministrativo/BloqueioNotificacaoObservador.java) | ConcreteObserver — dispara notificações ao produtor |
 | [`IngressoNotificacaoObservador.java`](aplicacao/src/main/java/recifecultural/aplicacao/agenda/bloqueioadministrativo/IngressoNotificacaoObservador.java) | ConcreteObserver — invalida ingressos ao reembolsar |
 
-**Testes:** [`BloqueioAdministrativo.feature`](dominio-agenda/src/test/resources/features/BloqueioAdministrativo.feature)
+**Testes:** [`BloqueioAdministrativo.feature`](dominio-agenda/src/test/resources/features/BloqueioAdministrativo.feature) · [`ObserverBloqueioTest.java`](aplicacao/src/test/java/recifecultural/aplicacao/agenda/bloqueioadministrativo/ObserverBloqueioTest.java)
 
 ---
 
@@ -135,20 +143,20 @@ O projeto distribui os 6 padrões GoF entre 7 pares de features (um padrão é r
 | [`ComentarioRepositorio.java`](dominio-agenda/src/main/java/recifecultural/dominio/agenda/comentario/ComentarioRepositorio.java) | Componente (interface decorada) |
 | [`ComentarioRepositorioComModeracao.java`](dominio-agenda/src/main/java/recifecultural/dominio/agenda/comentario/ComentarioRepositorioComModeracao.java) | Decorator — filtra palavras vetadas antes de persistir |
 
-**Testes:** [`aprovar_reprovar_evento.feature`](dominio-agenda/src/test/resources/features/aprovar_reprovar_evento.feature) · [`discutir_eventos.feature`](dominio-agenda/src/test/resources/features/discutir_eventos.feature)
+**Testes:** [`aprovar_reprovar_evento.feature`](dominio-agenda/src/test/resources/features/aprovar_reprovar_evento.feature) · [`discutir_eventos.feature`](dominio-agenda/src/test/resources/features/discutir_eventos.feature) · [`EventoRepositorioComAuditoriaTest.java`](dominio-agenda/src/test/java/recifecultural/dominio/agenda/evento/EventoRepositorioComAuditoriaTest.java) · [`ComentarioRepositorioComModeracaoTest.java`](dominio-agenda/src/test/java/recifecultural/dominio/agenda/comentario/ComentarioRepositorioComModeracaoTest.java)
 
 ---
 
-### Par 5 — Artistas · Setores
+### Par 5 — Artistas
 **Padrão:** Iterator · **Responsável:** Rafael Peixoto
 
 | Arquivo | Papel |
 |---|---|
 | [`Iterador.java`](dominio-artista/src/main/java/recifecultural/dominio/artista/artista/Iterador.java) | Interface do Iterator (`temProximo()` + `proximo()`) |
-| [`IArtistaRepositorio.java`](dominio-artista/src/main/java/recifecultural/dominio/artista/artista/IArtistaRepositorio.java) | Aggregate — fábrica de iteradores (`iterarTodos()`) |
-| [`IteradorPaginadoArtistas.java`](infraestrutura/src/main/java/recifecultural/infraestrutura/persistencia/artista/artista/IteradorPaginadoArtistas.java) | ConcreteIterator — percorre o repositório em páginas via JPA |
+| [`IArtistaRepositorio.java`](dominio-artista/src/main/java/recifecultural/dominio/artista/artista/IArtistaRepositorio.java) | Aggregate — expõe `iterarTodos()` como fábrica de iteradores |
+| [`IteradorPaginadoArtistas.java`](infraestrutura/src/main/java/recifecultural/infraestrutura/persistencia/artista/artista/IteradorPaginadoArtistas.java) | ConcreteIterator — percorre artistas em páginas via JPA sem materializar a tabela inteira |
 
-**Testes:** [`cadastro_artista.feature`](dominio-artista/src/test/resources/features/cadastro_artista.feature) · [`cadastro_produtor.feature`](dominio-artista/src/test/resources/features/cadastro_produtor.feature)
+**Testes:** [`IteradorPaginadoArtistasTest.java`](infraestrutura/src/test/java/recifecultural/infraestrutura/persistencia/artista/artista/IteradorPaginadoArtistasTest.java) · [`cadastro_artista.feature`](dominio-artista/src/test/resources/features/cadastro_artista.feature)
 
 ---
 

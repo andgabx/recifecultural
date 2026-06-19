@@ -17,8 +17,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import static org.apache.commons.lang3.Validate.notNull;
 
+@Transactional(readOnly = true)
 public class PatrocinioServicoAplicacao {
 
     private final PatrocinioServico servico;
@@ -40,6 +43,7 @@ public class PatrocinioServicoAplicacao {
         return repositorio.pesquisarPorEvento(eventoId);
     }
 
+    @Transactional
     public PatrocinioId criar(EventoId eventoId, String patrocinadorNome, String categoriaPatrocinio,
                               TipoPatrocinio tipo, ModalidadeContribuicao modalidade,
                               BigDecimal valorContribuicao, LocalDateTime dataEvento, boolean eventoAprovado) {
@@ -52,6 +56,7 @@ public class PatrocinioServicoAplicacao {
      * valida que a contribuição não excede (precoInteira - R$1,00) e
      * aplica o desconto no preço social do evento automaticamente.
      */
+    @Transactional
     public ResultadoSubsidio ativar(PatrocinioId id) {
         Patrocinio patrocinio = servico.obterPorId(id);
         UUID eventoUuid = patrocinio.getEventoId().getValor();
@@ -86,12 +91,14 @@ public class PatrocinioServicoAplicacao {
         return subsidio;
     }
 
+    @Transactional
     public ResultadoCancelamento cancelarPorEvento(PatrocinioId id, LocalDateTime agora) {
         ResultadoCancelamento resultado = servico.cancelarPorEvento(id, agora);
         removerSubsidioSeAplicavel(id);
         return resultado;
     }
 
+    @Transactional
     public ResultadoCancelamento cancelarPorPatrocinador(PatrocinioId id, LocalDateTime agora) {
         ResultadoCancelamento resultado = servico.cancelarPorPatrocinador(id, agora);
         removerSubsidioSeAplicavel(id);

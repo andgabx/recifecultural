@@ -70,11 +70,12 @@ public class DesempenhoTeatroServico {
 
         int ingressosVendidos = (int) ingressosPeriodo.stream()
                 .filter(i -> i.getStatus() == StatusIngresso.ATIVO
-                        || i.getStatus() == StatusIngresso.REEMBOLSADO
                         || i.getStatus() == StatusIngresso.UTILIZADO)
                 .count();
 
         BigDecimal receitaBruta = ingressosPeriodo.stream()
+                .filter(i -> i.getStatus() == StatusIngresso.ATIVO
+                        || i.getStatus() == StatusIngresso.UTILIZADO)
                 .map(Ingresso::getValorPago)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 

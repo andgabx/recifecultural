@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 import recifecultural.aplicacao.catraca.CatracaServicoAplicacao;
 import recifecultural.apresentacao.bff.AbstractBffControlador;
 
@@ -23,7 +24,7 @@ public class CatracaBffControlador extends AbstractBffControlador {
 
     @Operation(summary = "Valida acesso com QR code e portão")
     @PostMapping("/validar")
-    public ResponseEntity<Map<String, Object>> validarAcesso(@RequestBody ValidarAcessoRequisicao req) {
+    public ResponseEntity<Map<String, Object>> validarAcesso(@Valid @RequestBody ValidarAcessoRequisicao req) {
         try {
             String mensagem = servico.validarAcesso(req.codigoQr(), LocalDateTime.now(), req.portaoAcesso());
             return responder(Map.of("liberado", true, "motivo", mensagem));

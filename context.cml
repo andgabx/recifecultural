@@ -31,6 +31,15 @@
  * BC sem dependencia cross-context: Artista (apenas intra-BC entre modulos Artista e Produtor).
  * Patrocinio expoe dependencia OHS para AgendaContext via port IEventoParaSubsidio
  * (PatrocinioServico.ativarComSubsidio aplica desconto no Evento sem importar IEventoRepositorio).
+ *
+ * Cross-cutting (Spring Boot) — não modelado por BoundedContext:
+ *   - Todas as classes *ServicoAplicacao têm @Transactional(readOnly=true) no nível
+ *     da classe; métodos de escrita (criar/atualizar/cancelar/comprar/etc.) são
+ *     anotados individualmente com @Transactional (read-write).
+ *   - Todos os @RequestBody em POST/PUT dos BFF controllers têm @Valid (Bean Validation),
+ *     garantindo que as requisições rejeitem 400 antes de chegar ao domínio.
+ *   - render.yaml: SPRING_JPA_HIBERNATE_DDL_AUTO=validate (somente valida o schema
+ *     em produção; migrações devem ser deliberadas, não automáticas via Hibernate).
  */
 ContextMap RecifeCulturalMap {
     type = SYSTEM_LANDSCAPE
@@ -56,6 +65,7 @@ ContextMap RecifeCulturalMap {
     // ── Subdomínios genéricos / suporte ────────────────────────────────
     contains NotificacaoContext
     contains AuditoriaContext
+    contains InteligenciaContext
 
     // ════════════════════════════════════════════════════════════════════
     //  Integrações via barramento de eventos (Observer + PUBLISHED_LANGUAGE)
@@ -183,6 +193,13 @@ ContextMap RecifeCulturalMap {
         implementationTechnology = "Port IEventoParaSubsidio — adaptador na camada de aplicação"
         exposedAggregates = PatrocinioAggregate
     }
+
+    // Inteligência → Agenda: InteligenciaServicoAplicacao chama IEventoRepositorio
+    // para buscar dados reais do Evento ao executar inferência de no-show.
+    AgendaContext [U, OHS] -> [D, ACL] InteligenciaContext {
+        implementationTechnology = "Chamada de Serviço (Java in-process via IEventoRepositorio)"
+        exposedAggregates = EventoAggregate
+    }
 }
 
 Domain RecifeCultural {
@@ -225,18 +242,31 @@ BoundedContext AgendaContext implements RecifeCultural {
                 LocalDateTime dataReprovacao
                 boolean requerRevisaoAdicional
                 String motivoCancelamento
+                /* Rider técnico — lista de RiderItem (equipamentoId + qtd) adicionados via EquipamentoContext */
+                List<RiderItem> riderItems
 
                 void marcarComoRequerRevisaoAdicional();
                 void adicionarArtista(UUID artistaId);
                 void definirCategoria(String categoria);
                 void editarInformacoes(String titulo, String descricaoCurta, String descricaoLonga, @Periodo periodo, @Preco preco, String categoria, UUID localId, List<UUID> artistas, List<LocalDateTime> datasApresentacao);
                 void submeterParaAnalise();
-                void aprovar();
-                void reprovar(@FeedbackReprovacao feedback);
-                void cancelar(String motivo);
+                /* Retorna AprovadoEvento (domain event) */
+                AprovadoEvento aprovar();
+                /* Retorna ReprovadoEvento (domain event) */
+                ReprovadoEvento reprovar(@FeedbackReprovacao feedback);
+                /* Retorna CanceladoEvento (domain event) */
+                CanceladoEvento cancelar(String motivo);
+                /* Restaura evento CANCELADO para APROVADO — reverte cancelamento */
+                void restaurar();
                 void programarApresentacao(LocalDateTime dataHora);
                 /* Atualiza preço social com resultado de subsídio de patrocínio (sem exigir RASCUNHO) */
                 void aplicarSubsidioNoPreco(BigDecimal novoPrecoSocial);
+                /* Remove o preço social (zera social para null) */
+                void removerSubsidioDoPreco();
+                /* Rider de equipamentos do evento */
+                void adicionarRiderItem(UUID equipamentoId, int qtd);
+                void substituirRiderItems(List<RiderItem> novosItens);
+                List<RiderItem> getRiderItems();
             }
 
             ValueObject Periodo {
@@ -277,8 +307,10 @@ BoundedContext AgendaContext implements RecifeCultural {
                 void submeterParaAnalise(UUID id);
                 void aprovar(UUID id);
                 void reprovar(UUID id, @FeedbackReprovacao feedback);
+                void cancelar(UUID id, String motivo);
                 void deletar(UUID id);
                 void editar(UUID id, String titulo, String descricaoCurta, String descricaoLonga, @Periodo periodo, @Preco preco, String categoria, UUID localId, List<UUID> artistas, List<LocalDateTime> datasApresentacao);
+                void editarRider(UUID id, List<@RiderItem> novosItens);
             }
         }
     }
@@ -292,6 +324,8 @@ BoundedContext AgendaContext implements RecifeCultural {
                 UUID assentoId
                 UUID setorId
                 UUID usuarioId
+                /* Escopo da reserva — toda pré-reserva pertence a um evento específico */
+                UUID eventoId
                 LocalDateTime criadaEm
                 LocalDateTime expiraEm
                 StatusPreReserva status
@@ -319,14 +353,33 @@ BoundedContext AgendaContext implements RecifeCultural {
                 void salvar(@PreReserva preReserva);
                 void atualizar(@PreReserva preReserva);
                 Optional<@PreReserva> obterPorId(@PreReservaId id);
-                List<@PreReserva> listarAtivasPorAssento(UUID assentoId);
+                /* Substitui listarAtivasPorAssento — filtra por assento e evento para evitar colisão entre eventos distintos no mesmo assento */
+                List<@PreReserva> listarAtivasPorAssentoEEvento(UUID assentoId, UUID eventoId);
+                List<@PreReserva> listarAtivasPorEvento(UUID eventoId);
                 List<@PreReserva> listarAtivasExpiradas(LocalDateTime agora);
             }
 
+            /*
+             * Template Method — OperacaoPreReservaTemplate define o esqueleto:
+             *   buscar → aplicarTransicao → persistir → notificar
+             * Subclasses concretas:
+             *   ConfirmarPreReservaOperacao  — chama preReserva.confirmar()
+             *   CancelarPreReservaOperacao   — chama preReserva.cancelar()
+             *   ExpirarPreReservaOperacao    — chama preReserva.expirar(agora)
+             * PreReservaServico instancia as três operações e delega a elas;
+             * não muta Setor diretamente.
+             *
+             * Infraestrutura — Optimistic Locking:
+             *   PreReservaJpa.versao usa @Version (jakarta.persistence) — o Hibernate
+             *   incrementa automaticamente em cada atualização e lança
+             *   OptimisticLockException se duas transações concorrentes
+             *   tentarem alterar a mesma pré-reserva.
+             */
             DomainService PreReservaServico {
-                @PreReservaId reservar(UUID setorId, UUID assentoId, UUID usuarioId, @DuracaoPreReserva duracao);
+                @PreReservaId reservar(UUID setorId, UUID assentoId, UUID usuarioId, UUID eventoId, @DuracaoPreReserva duracao);
                 void cancelar(@PreReservaId preReservaId);
                 void confirmar(@PreReservaId preReservaId);
+                List<@PreReserva> listarAtivasPorEvento(UUID eventoId);
                 void expirarVencidas();
             }
         }
@@ -488,6 +541,7 @@ BoundedContext BloqueioAdministrativoContext implements RecifeCultural {
                 @EspacoId espacoId
                 LocalDate dataInicio
                 LocalDate dataFim
+                /* Mínimo 10 caracteres — validação no construtor e em atualizarInformacoes */
                 String justificativa
                 boolean ativo
                 /* Rastreia quais eventos foram cancelados por este bloqueio */
@@ -497,11 +551,19 @@ BoundedContext BloqueioAdministrativoContext implements RecifeCultural {
                 void desativar();
                 /* Registra um eventoCancelado na lista interna — chamado durante cancelarEventosConflitantes */
                 void registrarEventoCancelado(UUID eventoId);
+                /* Domain event emitido na criação; transporta referência ao próprio agregado */
+                CriadoEvento eventoCriacao();
             }
 
             ValueObject BloqueioAdministrativoId {
                 UUID valor
             }
+
+            /*
+             * Hierarquia de domain events (classes internas estáticas):
+             *   BloqueioEvento (base)  — wraps BloqueioAdministrativo
+             *   CriadoEvento           — emitido logo após construção
+             */
 
             Repository IBloqueioAdministrativoRepositorio {
                 void salvar(@BloqueioAdministrativo bloqueio);
@@ -513,6 +575,13 @@ BoundedContext BloqueioAdministrativoContext implements RecifeCultural {
             }
 
             DomainService BloqueioAdministrativoServico {
+                /*
+                 * criarBloqueio:
+                 *   1. Rejeita se já existe bloqueio ATIVO com sobreposição de datas para o mesmo EspacoId
+                 *   2. Interdita o Espaco (espaco.interditar())
+                 *   3. Cancela eventos APROVADOS conflitantes e publica EventoCanceladoPorBloqueioEvento
+                 *      para cada um no EventoBarramento
+                 */
                 @BloqueioAdministrativo criarBloqueio(@EspacoId espacoId, LocalDate inicio, LocalDate fim, String justificativa);
                 /* boolean reativarEventos — controla se eventos cancelados são reativados ao desbloquear */
                 void desativarBloqueio(@BloqueioAdministrativoId id, boolean reativarEventos);
@@ -527,6 +596,20 @@ BoundedContext BloqueioAdministrativoContext implements RecifeCultural {
             }
         }
     }
+
+    /*
+     * Observadores de EventoCanceladoPorBloqueioEvento (pacote aplicacao/agenda/bloqueioadministrativo/):
+     *
+     *   BloqueioNotificacaoObservador  implements EventoObservador<EventoCanceladoPorBloqueioEvento>
+     *     — notifica o promotor: tipo "EVENTO_CANCELADO"
+     *     — notifica cada artista do evento: tipo "APRESENTACAO_CANCELADA_ARTISTA"
+     *     — broadcast para participantes: tipo "PARTICIPANTES_EVENTO_CANCELADO"
+     *
+     *   IngressoNotificacaoObservador  implements EventoObservador<EventoCanceladoPorBloqueioEvento>
+     *     — broadcast para titulares de ingressos: tipo "TITULARES_INGRESSOS_EVENTO"
+     *
+     * Ambos os observadores se auto-registram no EventoBarramento via construtor.
+     */
 }
 
 // ════════════════════════════════════════════════════════════════════════
@@ -534,7 +617,7 @@ BoundedContext BloqueioAdministrativoContext implements RecifeCultural {
 //  Pacote Java: dominio-agenda/agenda/comentario
 // ════════════════════════════════════════════════════════════════════════
 BoundedContext ComentarioContext implements RecifeCultural {
-    domainVisionStatement = "Permite que espectadores discutam e avaliem eventos: comentários com curtidas, respostas em árvore (comentarioPaiId), notas (1-5) restritas a quem comprou ingresso. Moderação automática via Decorator que substitui palavras vetadas antes de persistir."
+    domainVisionStatement = "Permite que espectadores discutam e avaliem eventos: comentários com curtidas, respostas em árvore (comentarioPaiId), notas (1-5) restritas a quem comprou ingresso. Moderação automática via Decorator (ComentarioRepositorioComModeracao) que substitui palavras vetadas (spam, fraude, golpe, scam) por asteriscos em salvar() e atualizar() antes de delegar ao repositório real."
     type = FEATURE
 
     Module ComentarioModule {
@@ -547,13 +630,21 @@ BoundedContext ComentarioContext implements RecifeCultural {
                 UUID eventoId
                 UUID comentarioPaiId
                 LocalDateTime criadoEm
+                /* Mínimo 10, máximo 500 caracteres — validado no construtor e em editar() */
                 String texto
                 @Nota nota
                 StatusComentario status
                 Set<UUID> curtidas
 
+                /*
+                 * Lança IllegalArgumentException se espectadorId == this.espectadorId
+                 * (autor não pode curtir o próprio comentário).
+                 * Lança IllegalStateException se o espectador já curtiu.
+                 */
                 void curtir(UUID espectadorId);
+                /* Só permitido quando status == ATIVO */
                 void editar(String novoTexto);
+                /* Marca status = DELETADO; só permitido quando status == ATIVO */
                 void deletar();
             }
 
@@ -592,6 +683,19 @@ BoundedContext ComentarioContext implements RecifeCultural {
             }
         }
     }
+
+    /*
+     * Padrão Decorator — moderação automática de conteúdo:
+     *   ComentarioRepositorioComModeracao implements ComentarioRepositorio
+     *     — intercepta salvar() e atualizar() (somente comentários ATIVOS)
+     *     — substitui palavras vetadas por sequência de asteriscos do mesmo comprimento:
+     *         spam (4) → ****  |  fraude (6) → ******  |  golpe (5) → *****  |  scam (4) → ****
+     *         (case-insensitive, Pattern.quote() garante tratamento literal da palavra)
+     *     — se o delegate lançar RuntimeException após a moderação, restaura o texto
+     *       original em memória antes de propagar a exceção
+     *     — obter(), deletar(), listarPorEvento() e existeNotaPorEspectador() são
+     *       delegados diretamente sem qualquer transformação
+     */
 }
 
 // ════════════════════════════════════════════════════════════════════════
@@ -615,7 +719,7 @@ BoundedContext AcessibilidadeContext implements RecifeCultural {
                 String justificativaRemocao
 
                 /* Retorna RemovidoEvento (domain event) — emite para acionar broadcast de notificação */
-                void remover(String justificativa);
+                RemovidoEvento remover(String justificativa);
             }
 
             enum TipoRecursoAcessibilidade {
@@ -704,6 +808,7 @@ BoundedContext EquipamentoContext implements RecifeCultural {
                 Optional<@Equipamento> obterPorId(@EquipamentoId id);
                 List<@Equipamento> listarPorEspaco(@EspacoId espacoId);
                 List<@Equipamento> buscarDisponiveisPorEspacoENome(@EspacoId espacoId, String nome, int quantidade);
+                /* Sobrecarga com janela de datas: buscarDisponiveisPorEspacoENome(espacoId, nome, quantidade, LocalDate inicio, LocalDate fim) */
                 List<@Equipamento> buscarAlocadosPorEvento(UUID eventoId);
             }
 
@@ -719,6 +824,15 @@ BoundedContext EquipamentoContext implements RecifeCultural {
                 void registrarManutencao(@EquipamentoId id);
                 void desmobilizarEquipamentosDoEvento(UUID eventoId);
             }
+
+            /*
+             * Infraestrutura — Padrão Proxy (cache em memória):
+             *   EquipamentoRepositorioProxyCache implements IEquipamentoRepositorio
+             *     — cacheia obterPorId em ConcurrentHashMap<EquipamentoId, Equipamento>
+             *     — invalida cache em atualizar() e deletar(); salvar() popula o cache
+             *     — buscarDisponiveisPorEspacoENome, listarPorEspaco e buscarAlocadosPorEvento
+             *       sempre delegam ao repositório real (resultado variável, não cacheável)
+             */
         }
     }
 }
@@ -779,8 +893,18 @@ BoundedContext EspacoContext implements RecifeCultural {
                 List<@Espaco> listarTodos();
                 void atualizarCapacidade(@EspacoId id, int novaCapacidade, int ingressosVendidosFuturos);
                 void interditarEspaco(@EspacoId id);
+                /* Reverte status para ATIVO — par simétrico de interditarEspaco */
+                void reativarEspaco(@EspacoId id);
                 void agendarEvento(@EspacoId id, @Ocupacao novaOcupacao);
             }
+
+            /*
+             * Infraestrutura — Padrão Proxy (cache em memória):
+             *   EspacoRepositorioProxyCache implements IEspacoRepositorio
+             *     — cacheia obterPorId em ConcurrentHashMap<EspacoId, Espaco>
+             *     — invalida cache em atualizar(); salvar() popula o cache
+             *     — listarTodos() e buscarOcupacoesPorPeriodo() sempre delegam ao repositório real
+             */
         }
     }
 
@@ -847,11 +971,43 @@ BoundedContext EspacoContext implements RecifeCultural {
             }
 
             DomainService GestaoAmbienteInternoServico {
+                /*
+                 * Pré-condições de configurarGestaoAmbiente:
+                 *   1. Espaco.status == ATIVO
+                 *   2. (totalAssentosJáCadastrados + fileiras×assentosPorFileira) ≤ Espaco.capacidadeMaxima
+                 * Gera automaticamente os Assento com códigos "A1"…"ZN".
+                 */
                 @Setor configurarGestaoAmbiente(@EspacoId espacoId, String nome, TipoSetor tipoSetor, int fileirasHorizontais, int assentosPorFileiraVertical);
+                /*
+                 * Pré-condições de editarSetor:
+                 *   1. (totalOutrosSetores + fileiras×assentosPorFileira) ≤ Espaco.capacidadeMaxima
+                 *   2. Se as dimensões mudarem: nenhum Assento pode estar OCUPADO ou PRE_RESERVADO
+                 *      (mudança de dimensão regenera todos os assentos e perderia reservas)
+                 * Retorna true quando dimensões mudaram (assentos foram regenerados).
+                 */
                 @Setor editarSetor(@SetorId id, String nome, TipoSetor tipoSetor, int fileirasHorizontais, int assentosPorFileiraVertical);
                 long contarAssentosDisponiveisPorEspaco(@EspacoId espacoId);
                 List<@Setor> listarPorEspaco(@EspacoId espacoId);
             }
+
+            /*
+             * BFF — Endpoint de mapa de assentos:
+             *   GET /api/bff/setores/espaco/{espacoId}?eventoId={uuid} (eventoId opcional)
+             *
+             *   Sem eventoId: retorna status persistido de cada assento (Assento.status).
+             *   Com eventoId: status calculado dinamicamente por sobreposição de conjuntos —
+             *     BLOQUEADO     — assento.status == BLOQUEADO (decisão administrativa, tem precedência)
+             *     PRE_RESERVADO — assentoId em PreReservas ativas do evento
+             *                     (preReservaServico.listarAtivasPorEvento(eventoId))
+             *     OCUPADO       — assentoId em Ingressos comprados para o evento
+             *                     (ingressoServico.buscarAssentosOcupadosPorEvento(eventoId))
+             *     LIVRE         — nenhum dos anteriores
+             *
+             * Infraestrutura — Optimistic Locking:
+             *   SetorJpa.versao usa @Version (jakarta.persistence) — protege contra
+             *   atualizações concorrentes ao mapa de assentos (edição de setor /
+             *   transições de status de assentos individuais).
+             */
         }
     }
 
@@ -905,20 +1061,38 @@ BoundedContext BilheteriaContext implements RecifeCultural {
 
                 @IngressoId id
                 UUID eventoId
-                UUID assentoId
+                UUID assentoId             /* null para compras sem pré-reserva */
                 LocalDateTime dataHoraApresentacao
                 TipoIngresso tipo
                 StatusIngresso status
                 BigDecimal valorPago
-                String codigoQr
+                String codigoQr            /* sempre igual a id.valor().toString() */
                 String codigoTransacao
                 MetodoPagamento metodoPagamento
                 LocalDateTime dataCompra
                 BigDecimal valorReembolsado
 
+                /*
+                 * Dois construtores:
+                 *   - Criação  (sem dataCompra/status/valorReembolsado) — dataCompra = now, status = ATIVO
+                 *   - Restauração (com dataCompra, status, valorReembolsado) — usado pelo mapper ao carregar do banco
+                 * Existe também variante sem assentoId que delega ao construtor de criação com assentoId = null.
+                 */
                 BigDecimal calcularReembolso(LocalDateTime agora);
-                void reembolsar(BigDecimal valor);
+                /* Retorna ReembolsadoEvento (inner domain event) para publicação no barramento */
+                @ReembolsadoEvento reembolsar(BigDecimal valor);
                 void marcarComoUtilizado();
+                /* Retorna CompradoEvento (inner domain event) para publicação no barramento */
+                @CompradoEvento eventoCompra();
+            }
+
+            /* Inner domain events publicados pelo Ingresso e capturados pelo barramento */
+            DomainEvent CompradoEvento {
+                @Ingresso ingresso
+            }
+
+            DomainEvent ReembolsadoEvento {
+                @Ingresso ingresso
             }
 
             ValueObject IngressoId {
@@ -954,6 +1128,9 @@ BoundedContext BilheteriaContext implements RecifeCultural {
                 @Ingresso buscarPorCodigoQr(String codigoQr);
                 int contarAtivosPorApresentacao(UUID eventoId, LocalDateTime dataHora);
                 List<@Ingresso> buscarPorPeriodo(LocalDateTime inicio, LocalDateTime fim);
+                Set<UUID> buscarAssentosOcupadosPorEvento(UUID eventoId);
+                /* Maior contagem de ingressos ATIVO por apresentação futura em qualquer evento do espaço — usado para validar redução de capacidade */
+                int maiorCargaAtivosPorEspaco(UUID espacoId, LocalDateTime agora);
             }
 
             DomainService IngressoServico {
@@ -978,6 +1155,17 @@ BoundedContext BilheteriaContext implements RecifeCultural {
          *   EstrategiaReembolsoBancario       — Cartão: até 2 dias úteis
          *   SeletorEstrategiaReembolso        — Context: seleciona por MetodoPagamento
          * Consumidas por MeusIngressosControlador (BFF) para exibir a política antes de confirmar.
+         *
+         * Integração com CatracaContext (camada de aplicação — IngressoServicoAplicacao):
+         *   Após cada compra bem-sucedida (comprar/comprarComCupom/comprarComPreReserva/
+         *   comprarComPreReservaComCupom/comprarMultiplosComCupom),
+         *   registrarNaCatraca() cria um IngressoCatraca em ICatracaRepositorio.
+         *   ID do IngressoCatraca = ingresso.getCodigoQr() (String, não UUID).
+         *   horarioInicioEvento definido como now+1h (portões abertos, janela de 75 min).
+         *   TipoIngresso catraca = MEIA_ENTRADA se ingresso.tipo == MEIA_ENTRADA, senão COMUM.
+         *   portaoAcesso = null (sem restrição de portão no momento da compra).
+         *   IngressoServicoAplicacao tem @Transactional(readOnly=true) na classe;
+         *   métodos de escrita (comprar*/solicitarReembolso) são @Transactional individualmente.
          */
     }
 }
@@ -1001,17 +1189,22 @@ BoundedContext CupomContext implements RecifeCultural {
                 BigDecimal valorDesconto
                 BigDecimal valorMinimoPedido
                 int limiteGlobal
-                int usosGlobais
+                int usosGlobais          /* mutável; incrementado em registrarUso */
                 int limitePorCpf
                 LocalDateTime dataInicio
                 LocalDateTime dataFim
                 String categoriaPermitida
-                Set<String> cpfsQueJaUsaram
+                Set<String> cpfsQueJaUsaram   /* mutável; CPFs que já utilizaram o cupom */
 
+                /*
+                 * Dois construtores:
+                 *   - Criação  (sem usosGlobais/cpfsQueJaUsaram) — defaults 0 / vazio
+                 *   - Restauração (com usosGlobais e cpfsQueJaUsaram) — usado pelo mapper ao carregar do banco
+                 */
                 BigDecimal calcularDesconto(BigDecimal valorOriginal);
                 /* Parâmetro validador recebe a cadeia de Decorators montada em AplicarCupomServico */
                 void validarElegibilidade(String cpfUsuario, BigDecimal valorPedido, String categoriaEvento, LocalDateTime dataAtual, ValidadorCupom validador);
-                void registrarUso(String cpfUsuario);
+                void registrarUso(String cpfUsuario);   /* incrementa usosGlobais e adiciona cpf a cpfsQueJaUsaram */
             }
 
             /*
@@ -1071,7 +1264,7 @@ BoundedContext CatracaContext implements RecifeCultural {
                 StatusIngressoCatraca status
                 LocalDateTime horarioInicioEvento
                 TipoIngresso tipoIngresso
-                String portaoAcesso
+                String portaoAcesso     /* nullable — null = sem restrição de portão; ValidarPortaoDecorator ignora se null */
 
                 void registrarEntrada(LocalDateTime horarioLeituraCatraca, String portaoDaCatracaFisica);
                 void cancelarAcesso();
@@ -1095,6 +1288,7 @@ BoundedContext CatracaContext implements RecifeCultural {
             }
 
             DomainService CatracaServico {
+                /* Lança IllegalArgumentException se idIngresso for nulo/em branco ou ingresso não encontrado */
                 String validarAcesso(String idIngresso, LocalDateTime horarioAtual, String identificacaoPortao);
                 void inativarIngresso(String idIngresso);
             }
@@ -1107,7 +1301,8 @@ BoundedContext CatracaContext implements RecifeCultural {
              *   ValidadorAcessoDecorator (abstrato)  — delega ao interno
              *   ValidarEstornoDecorator              — rejeita se CANCELADO_OU_REEMBOLSADO
              *   ValidarDuplaEntradaDecorator         — rejeita se UTILIZADO
-             *   ValidarPortaoDecorator               — rejeita se portão errado
+             *   ValidarPortaoDecorator               — se portaoAcesso != null, rejeita portão errado;
+             *                                          se portaoAcesso == null, permite passagem (sem restrição de portão)
              *   ValidarToleranciaAtrasoDecorator     — rejeita COMUM com mais de 15 min de atraso após horarioInicioEvento
              * Pipeline montado no construtor de CatracaServico (fora→dentro).
              */
@@ -1188,6 +1383,7 @@ BoundedContext PatrocinioContext implements RecifeCultural {
             }
 
             enum ModalidadeContribuicao {
+                /* FINANCEIRO mantido no domínio mas removido da UI — apenas SUBSIDIO_INGRESSO_SOCIAL é criável pela interface */
                 FINANCEIRO, SUBSIDIO_INGRESSO_SOCIAL
             }
 
@@ -1217,9 +1413,18 @@ BoundedContext PatrocinioContext implements RecifeCultural {
                 @Patrocinio criar(@EventoId eventoId, String patrocinadorNome, String categoriaPatrocinio, TipoPatrocinio tipo, ModalidadeContribuicao modalidade, BigDecimal valorContribuicao, LocalDateTime dataEvento, boolean eventoAprovado);
                 /* Transição simples PROPOSTA → ATIVO sem subsídio */
                 void ativar(@PatrocinioId id);
-                /* Ativa E aplica subsídio no evento via IEventoParaSubsidio (retorna null se modalidade FINANCEIRO) */
+                /*
+                 * Ativa E aplica subsídio no evento via IEventoParaSubsidio (retorna null se modalidade FINANCEIRO).
+                 * Pré-condição de negócio (validada na camada de aplicação antes de chamar este método):
+                 *   valorContribuicao <= precoInteira - R$1,00 (piso mínimo de R$1,00 para o ingresso social).
+                 */
                 @ResultadoSubsidio ativarComSubsidio(@PatrocinioId id, IEventoParaSubsidio evento);
                 void encerrar(@PatrocinioId id);
+                /*
+                 * Após cancelar, a camada de aplicação chama evento.removerSubsidioDoPreco()
+                 * + eventoRepositorio.atualizar(evento) quando modalidade == SUBSIDIO_INGRESSO_SOCIAL,
+                 * revertendo o desconto no preço social do evento.
+                 */
                 @ResultadoCancelamento cancelarPorEvento(@PatrocinioId id, LocalDateTime agora);
                 @ResultadoCancelamento cancelarPorPatrocinador(@PatrocinioId id, LocalDateTime agora);
                 @ResultadoSubsidio calcularSubsidio(@PatrocinioId id, BigDecimal precoSocialAtual);
@@ -1234,7 +1439,7 @@ BoundedContext PatrocinioContext implements RecifeCultural {
 //  Pacote Java: dominio-financeiro/financeiro
 // ════════════════════════════════════════════════════════════════════════
 BoundedContext FinanceiroContext implements RecifeCultural {
-    domainVisionStatement = "Controle orçamentário por período, registro de despesas operacionais com alerta de 80% do orçamento e cálculo de indicadores de desempenho (receita bruta/líquida, ocupação, crescimento de público) — esses indicadores leem ingressos para apurar a receita."
+    domainVisionStatement = "Controle orçamentário por período, registro de despesas operacionais com alerta de 80% do orçamento e cálculo de indicadores de desempenho (receita bruta/líquida, ocupação, crescimento de público). Receita bruta soma apenas ingressos com status ATIVO ou UTILIZADO (REEMBOLSADO é excluído); receita líquida = receita bruta − despesas − valores reembolsados. Mesma regra aplicada em DesempenhoTeatroServico (domínio) e em FinanceiroRepositorioImpl (infra, query JPA)."
     type = APPLICATION
 
     Module FinanceiroModule {
@@ -1339,7 +1544,7 @@ BoundedContext FinanceiroContext implements RecifeCultural {
 //  Pacotes Java: dominio-artista/artista, dominio-artista/produtor
 // ════════════════════════════════════════════════════════════════════════
 BoundedContext ArtistaContext implements RecifeCultural {
-    domainVisionStatement = "Cadastro e ciclo de vida de produtores culturais (PJ com CNPJ) e artistas vinculados a eles. Produtor tem trilha de mudanças de status (histórico) e regras de inativação que percorrem artistas ativos via Iterator próprio do domínio. Artista carrega rider técnico iterável item a item."
+    domainVisionStatement = "Cadastro e ciclo de vida de produtores culturais (PJ com CNPJ) e artistas vinculados a eles. Produtor tem trilha de mudanças de status (histórico) e regras de inativação que percorrem artistas ativos via Iterator próprio do domínio. Artista carrega rider técnico (conjunto de ItemRider)."
     type = APPLICATION
 
     Module ProdutorModule {
@@ -1405,9 +1610,9 @@ BoundedContext ArtistaContext implements RecifeCultural {
                 void suspender(@ProdutorId produtorId, String responsavel, String motivo);
                 void reativar(@ProdutorId produtorId, String responsavel, String motivo);
                 /*
-                 * Usa Iterador<Artista> (criarIteradorPorProdutor) para percorrer
+                 * Usa artistaRepositorio.existeAtivoPorProdutor() para verificar se há
                  * artistas ativos do produtor antes de permitir a inativação.
-                 * Se encontrar algum ATIVO, lança IllegalStateException.
+                 * Se houver algum ATIVO, lança IllegalStateException.
                  */
                 void inativar(@ProdutorId produtorId, String responsavel, String motivo);
             }
@@ -1419,22 +1624,17 @@ BoundedContext ArtistaContext implements RecifeCultural {
         /*
          * Padrão Iterator — Par 5 · F5.1
          *
-         * O grupo implementou um Iterator customizado (sem usar java.util.Iterator)
-         * com interface própria do domínio:
+         * Interface única do domínio (sem usar java.util.Iterator):
          *   Iterador<T>   — boolean temProximo() + T proximo()
-         *   Iteravel<T>   — Iterador<T> criarIterador()
          *
-         * Duas implementações concretas:
-         *   IteradorDeArtistas    — percorre List<Artista>
-         *   IteradorDeItensRider  — percorre Set<ItemRider> (converte para array)
+         * Implementação concreta na infraestrutura (ConcreteIterator):
+         *   IteradorPaginadoArtistas — percorre todos os artistas do banco em
+         *   páginas de 50 via JPA; nunca materializa o conjunto inteiro.
+         *   É retornado por IArtistaRepositorio.iterarTodos().
          *
-         * Expostos via métodos default em IArtistaRepositorio:
-         *   criarIteradorPorProdutor(ProdutorId) → Iterador<Artista>
-         *   criarIteradorDeItensRider(ArtistaId) → Iterador<ItemRider>
-         *
-         * Consumidos em:
-         *   ProdutorServico.inativar()    → itera artistas para bloquear inativação
-         *   ArtistaServico.iterarItensRider() → itera itens do rider
+         * Disponível para uso genérico por qualquer consumer que precise
+         * percorrer todos os artistas de forma lazy (paginada).
+         * ProdutorServico.inativar() usa existeAtivoPorProdutor() como atalho.
          */
 
         Aggregate ArtistaAggregate {
@@ -1463,33 +1663,11 @@ BoundedContext ArtistaContext implements RecifeCultural {
              * Iterador<T> — interface do domínio (sem java.util.Iterator):
              *   boolean temProximo()
              *   T proximo()
+             * Único contrato de iteração no domínio. Implementação concreta
+             * (IteradorPaginadoArtistas) vive na infraestrutura.
              */
             ValueObject Iterador {
                 /* type parameter T — boolean temProximo(); T proximo() */
-            }
-
-            /*
-             * Iteravel<T> — interface do domínio:
-             *   Iterador<T> criarIterador()
-             */
-            ValueObject Iteravel {
-                /* type parameter T — Iterador<T> criarIterador() */
-            }
-
-            /*
-             * IteradorDeArtistas — implementação concreta de Iterador<Artista>
-             *   Recebe List<Artista>; percorre com índice inteiro.
-             */
-            ValueObject IteradorDeArtistas {
-                /* implements Iterador<Artista> — boolean temProximo(); Artista proximo() */
-            }
-
-            /*
-             * IteradorDeItensRider — implementação concreta de Iterador<ItemRider>
-             *   Recebe Set<ItemRider>; converte para Object[] para permitir índice.
-             */
-            ValueObject IteradorDeItensRider {
-                /* implements Iterador<ItemRider> — boolean temProximo(); ItemRider proximo() */
             }
 
             enum StatusArtista {
@@ -1507,21 +1685,20 @@ BoundedContext ArtistaContext implements RecifeCultural {
                 Optional<@Artista> obterPorId(@ArtistaId id);
                 List<@Artista> listarPorProdutor(@ProdutorId produtorId);
                 boolean existePorNomeEProdutor(String nome, @ProdutorId produtorId);
+                boolean existeAtivoPorProdutor(@ProdutorId produtorId);
                 /*
-                 * Métodos default — encapsulam a criação dos iteradores concretos:
-                 *   criarIteradorPorProdutor  → new IteradorDeArtistas(listarPorProdutor(produtorId))
-                 *   criarIteradorDeItensRider → new IteradorDeItensRider(artista.getRiderTecnico().itens())
+                 * Método factory do Iterator — retorna um Iterador<Artista> que percorre
+                 * todos os artistas. A implementação concreta na infra é IteradorPaginadoArtistas
+                 * (ConcreteIterator), que carrega artistas do banco em páginas de 50 via JPA.
                  */
-                @Iterador criarIteradorPorProdutor(@ProdutorId produtorId);
-                @Iterador criarIteradorDeItensRider(@ArtistaId artistaId);
+                @Iterador iterarTodos();
             }
 
             DomainService ArtistaServico {
                 @ArtistaId cadastrar(@ProdutorId produtorId, String nome, @RiderTecnico riderTecnico);
                 void atualizarRider(@ArtistaId artistaId, @RiderTecnico novoRider);
                 void inativar(@ArtistaId artistaId);
-                /* Retorna Iterador<ItemRider> via IArtistaRepositorio.criarIteradorDeItensRider */
-                @Iterador iterarItensRider(@ArtistaId artistaId);
+                void reativar(@ArtistaId artistaId);
             }
         }
     }
@@ -1619,6 +1796,57 @@ BoundedContext AuditoriaContext implements RecifeCultural {
                 void registrar(@RegistroAuditoria registro);
                 List<@RegistroAuditoria> listarRecentes(int limite);
                 List<@RegistroAuditoria> listarPorEntidade(String entidade, int limite);
+            }
+        }
+    }
+}
+
+// ════════════════════════════════════════════════════════════════════════
+//  InteligenciaContext
+//  Pacote Java: aplicacao/inteligencia  |  apresentacao-backend/bff/inteligencia
+// ════════════════════════════════════════════════════════════════════════
+BoundedContext InteligenciaContext implements RecifeCultural {
+    domainVisionStatement = "Modelos de ML (ONNX Runtime) para suporte à decisão estratégica. Oferece três capacidades: (1) preverReceita — regressão linear que estima receita a partir de orçamento de marketing e patrocínio; (2) preverNoShow — Random Forest que classifica risco de ausência de um evento; (3) analisarEvento — análise integrada combinando noShow real com métricas de ocupação e público-alvo. Modelos carregados via @PostConstruct em byte[] para compatibilidade com JAR fat-packaged do Spring Boot. Lê dados reais de Evento via IEventoRepositorio (AgendaContext)."
+    type = FEATURE
+
+    Module InteligenciaModule {
+        Aggregate InteligenciaAggregate {
+
+            /*
+             * InteligenciaServicoAplicacao (@Service):
+             *   - @PostConstruct init()        — inicializa OrtEnvironment e carrega
+             *                                    receita_model.onnx e noshow_model.onnx em memória
+             *   - @PreDestroy  close()         — libera recursos nativos C++ do ONNX Runtime
+             *   - preverReceita(orcamentoMarketing, patrocinio) → PrevisaoReceitaResposta
+             *       features: [orcamentoMarketing, patrocinio]  (float[1][2])
+             *   - preverNoShow(eventoId) → PrevisaoNoShowResposta
+             *       busca Evento em IEventoRepositorio; features: [precoInteira, diaDaSemana, isFimDeSemana]
+             *       alertaAltoRisco = probabilidade > 20 %
+             *   - analisarEvento(eventoId) → AnaliseEventoResposta
+             *       delega preverNoShow para risco real; simula receitaProjetada e taxaOcupacaoEsperada
+             *   - listarVisitacao() → List<VisitacaoMensal>
+             *       delega a VisitacaoConsulta.agregarPorEspacoEMes()
+             *
+             * Endpoints BFF (InteligenciaBffControlador — /api/bff/inteligencia):
+             *   POST /prever-receita            — preverReceita
+             *   POST /prever-noshow             — preverNoShow
+             *   GET  /analisar-evento/{id}      — analisarEvento
+             *   GET  /visitacao                 — série mensal de visitação (JSON estático: inteligencia/visitacao.json)
+             *   GET  /noshow-por-grupo          — métricas agregadas de no-show (JSON estático)
+             *   GET  /metricas-classificador    — acurácia, ROC, PR, importâncias (JSON estático)
+             *   GET  /receita-scatter           — scatter preço × receita por categoria (JSON estático)
+             */
+
+            DomainService InteligenciaServico {
+                PrevisaoReceitaResposta preverReceita(double orcamentoMarketing, double patrocinio);
+                PrevisaoNoShowResposta  preverNoShow(UUID eventoId);
+                AnaliseEventoResposta   analisarEvento(UUID eventoId);
+                List<VisitacaoMensal>   listarVisitacao();
+            }
+
+            /* Query port — implementado na infraestrutura sobre IIngressoRepositorio */
+            DomainService VisitacaoConsulta {
+                List<VisitacaoMensal> agregarPorEspacoEMes();
             }
         }
     }

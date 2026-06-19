@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 import recifecultural.aplicacao.agenda.acessibilidade.RecursoAcessibilidadeServicoAplicacao;
 import recifecultural.aplicacao.agenda.acessibilidade.RecursoAcessibilidadeServicoAplicacao.RecursoResumo;
 import recifecultural.apresentacao.bff.AbstractBffControlador;
@@ -44,7 +45,7 @@ public class AcessibilidadeBffControlador extends AbstractBffControlador {
 
     @Operation(summary = "Marca recurso em uma apresentação")
     @PostMapping
-    public ResponseEntity<Map<String, String>> marcar(@RequestBody MarcarRecursoRequisicao req) {
+    public ResponseEntity<Map<String, String>> marcar(@Valid @RequestBody MarcarRecursoRequisicao req) {
         RecursoResumo r = servico.marcar(
                 UUID.fromString(req.apresentacaoId()),
                 UUID.fromString(req.eventoId()),
@@ -55,7 +56,7 @@ public class AcessibilidadeBffControlador extends AbstractBffControlador {
     @Operation(summary = "Remove recurso anunciado, registrando justificativa e notificando público")
     @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, String>> remover(@PathVariable UUID id,
-                                                       @RequestBody RemoverRecursoRequisicao req) {
+                                                       @Valid @RequestBody RemoverRecursoRequisicao req) {
         servico.remover(id, req.justificativa());
         return responderSemConteudo();
     }

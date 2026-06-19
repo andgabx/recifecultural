@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 import recifecultural.aplicacao.financeiro.FinanceiroServicoAplicacao;
 import recifecultural.aplicacao.financeiro.IndicadoresResumo;
 import recifecultural.dominio.financeiro.CategoriaDespesa;
@@ -38,7 +39,7 @@ public class FinanceiroBffControlador extends AbstractBffControlador {
 
     @Operation(summary = "Registra despesa + flag de alerta de orçamento")
     @PostMapping("/despesas")
-    public ResponseEntity<Map<String, Object>> registrarDespesa(@RequestBody FinanceiroTelas.RegistrarDespesaRequisicao req) {
+    public ResponseEntity<Map<String, Object>> registrarDespesa(@Valid @RequestBody FinanceiroTelas.RegistrarDespesaRequisicao req) {
         ResultadoRegistroDespesa resultado = servico.registrarDespesa(
                 new OrcamentoId(req.orcamentoId()),
                 req.descricao(),

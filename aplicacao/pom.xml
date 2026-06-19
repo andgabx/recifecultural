@@ -18,6 +18,11 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>br.com.cesar</groupId>
             <artifactId>recifecultural-dominio-compartilhado</artifactId>
             <version>0.0.1-SNAPSHOT</version>

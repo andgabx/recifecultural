@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 import recifecultural.aplicacao.agenda.equipamento.EquipamentoServicoAplicacao;
 import recifecultural.aplicacao.agenda.equipamento.EquipamentoServicoAplicacao.EquipamentoResumo;
 import recifecultural.aplicacao.agenda.equipamento.EquipamentoServicoAplicacao.DisponibilidadeEquipamento;
@@ -33,7 +34,7 @@ public class EquipamentoBffControlador extends AbstractBffControlador {
 
     @Operation(summary = "Adquire novo equipamento para um espaço")
     @PostMapping
-    public ResponseEntity<Map<String, String>> adquirir(@RequestBody AdquirirRequisicao req) {
+    public ResponseEntity<Map<String, String>> adquirir(@Valid @RequestBody AdquirirRequisicao req) {
         String id = servico.adquirir(UUID.fromString(req.espacoId()), req.nome());
         return responderCriado(id);
     }

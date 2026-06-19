@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 import recifecultural.aplicacao.patrocinio.PatrocinioResumo;
 import recifecultural.aplicacao.patrocinio.PatrocinioServicoAplicacao;
 import recifecultural.apresentacao.bff.AbstractBffControlador;
@@ -39,7 +40,7 @@ public class PatrocinioBffControlador extends AbstractBffControlador {
 
     @Operation(summary = "Cria patrocínio")
     @PostMapping
-    public ResponseEntity<Map<String, String>> criar(@RequestBody CriarPatrocinioRequisicao req) {
+    public ResponseEntity<Map<String, String>> criar(@Valid @RequestBody CriarPatrocinioRequisicao req) {
         PatrocinioId id = servico.criar(
                 new EventoId(req.eventoId()),
                 req.patrocinadorNome(), req.categoriaPatrocinio(),

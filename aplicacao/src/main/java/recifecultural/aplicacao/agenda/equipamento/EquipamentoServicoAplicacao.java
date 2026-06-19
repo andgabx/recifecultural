@@ -11,8 +11,11 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import static org.apache.commons.lang3.Validate.notNull;
 
+@Transactional(readOnly = true)
 public class EquipamentoServicoAplicacao {
 
     private final EquipamentoServico servico;
@@ -36,18 +39,22 @@ public class EquipamentoServicoAplicacao {
                 .toList();
     }
 
+    @Transactional
     public String adquirir(UUID espacoId, String nome) {
         return servico.adquirirEquipamento(new EspacoId(espacoId), nome).valor().toString();
     }
 
+    @Transactional
     public void marcarManutencao(UUID id) {
         servico.reportarManutencao(new EquipamentoId(id));
     }
 
+    @Transactional
     public void liberar(UUID id) {
         servico.liberar(new EquipamentoId(id));
     }
 
+    @Transactional
     public void remover(UUID id) {
         servico.removerEquipamento(new EquipamentoId(id));
     }

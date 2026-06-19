@@ -4,11 +4,14 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 import recifecultural.aplicacao.agenda.bloqueioadministrativo.BloqueioAdministrativoServicoAplicacao;
 import recifecultural.dominio.espaco.espaco.EspacoId;
 import recifecultural.dominio.espaco.espaco.EspacoServico;
+import recifecultural.dominio.ingressos.IIngressoRepositorio;
 import recifecultural.apresentacao.bff.AbstractBffControlador;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -20,11 +23,14 @@ public class EspacoBffControlador extends AbstractBffControlador {
 
     private final EspacoServico servico;
     private final BloqueioAdministrativoServicoAplicacao bloqueioServico;
+    private final IIngressoRepositorio ingressoRepositorio;
 
     public EspacoBffControlador(EspacoServico servico,
-                                 BloqueioAdministrativoServicoAplicacao bloqueioServico) {
+                                 BloqueioAdministrativoServicoAplicacao bloqueioServico,
+                                 IIngressoRepositorio ingressoRepositorio) {
         this.servico = servico;
         this.bloqueioServico = bloqueioServico;
+        this.ingressoRepositorio = ingressoRepositorio;
     }
 
     @Operation(summary = "Lista todos os espaços (resumo)")
@@ -42,7 +48,7 @@ public class EspacoBffControlador extends AbstractBffControlador {
 
     @Operation(summary = "Cadastra espaço")
     @PostMapping
-    public ResponseEntity<Map<String, String>> cadastrar(@RequestBody EspacoTelas.CadastrarEspacoRequisicao req) {
+    public ResponseEntity<Map<String, String>> cadastrar(@Valid @RequestBody EspacoTelas.CadastrarEspacoRequisicao req) {
         EspacoId id = servico.cadastrarEspaco(req.nome(), req.capacidadeMaxima(), req.riderTecnico());
         return responderCriado(id.valor().toString());
     }
@@ -51,8 +57,10 @@ public class EspacoBffControlador extends AbstractBffControlador {
     @PutMapping("/{id}/capacidade")
     public ResponseEntity<Map<String, String>> atualizarCapacidade(
             @PathVariable UUID id,
-            @RequestBody EspacoTelas.AtualizarCapacidadeRequisicao req) {
-        servico.atualizarCapacidade(new EspacoId(id), req.novaCapacidade(), req.ingressosVendidosFuturos());
+            @Valid @RequestBody EspacoTelas.AtualizarCapacidadeRequisicao req) {
+        // ingressosVendidosFuturos é computado server-side; nunca confiamos no valor do cliente.
+        int ingressosVendidosFuturos = ingressoRepositorio.maiorCargaAtivosPorEspaco(id, LocalDateTime.now());
+        servico.atualizarCapacidade(new EspacoId(id), req.novaCapacidade(), ingressosVendidosFuturos);
         return responderSemConteudo();
     }
 

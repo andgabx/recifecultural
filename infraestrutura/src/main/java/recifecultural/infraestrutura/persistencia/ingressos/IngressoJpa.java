@@ -30,6 +30,7 @@ public class IngressoJpa {
     BigDecimal valorReembolsado;
 
     public BigDecimal getValorPago() { return valorPago; }
+    public StatusIngresso getStatus() { return status; }
     public BigDecimal getValorReembolsado() { return valorReembolsado; }
 }
 

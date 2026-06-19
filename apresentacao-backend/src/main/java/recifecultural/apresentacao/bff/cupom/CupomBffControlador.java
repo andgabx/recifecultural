@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 import recifecultural.aplicacao.ingressos.CupomServicoAplicacao;
 import recifecultural.aplicacao.ingressos.CupomServicoAplicacao.CriarCupomComando;
 import recifecultural.aplicacao.ingressos.CupomServicoAplicacao.CupomResumo;
@@ -31,7 +32,7 @@ public class CupomBffControlador extends AbstractBffControlador {
 
     @Operation(summary = "Valida cupom e calcula desconto SEM consumir (use antes de finalizar)")
     @PostMapping("/preview")
-    public ResponseEntity<Map<String, Object>> preview(@RequestBody AplicarCupomRequisicao req) {
+    public ResponseEntity<Map<String, Object>> preview(@Valid @RequestBody AplicarCupomRequisicao req) {
         var preview = aplicarServico.previewDesconto(req.codigo(), req.cpf(), req.valor(), req.categoria());
         return responder(Map.of(
                 "tipoDesconto",          preview.tipoDesconto(),
@@ -43,7 +44,7 @@ public class CupomBffControlador extends AbstractBffControlador {
 
     @Operation(summary = "Aplica cupom e retorna valor final")
     @PostMapping("/aplicar")
-    public ResponseEntity<Map<String, Object>> aplicar(@RequestBody AplicarCupomRequisicao req) {
+    public ResponseEntity<Map<String, Object>> aplicar(@Valid @RequestBody AplicarCupomRequisicao req) {
         BigDecimal valorFinal = aplicarServico.aplicarDesconto(req.codigo(), req.cpf(), req.valor(), req.categoria());
         BigDecimal descontoAplicado = req.valor().subtract(valorFinal);
         return responder(Map.of(
@@ -60,7 +61,7 @@ public class CupomBffControlador extends AbstractBffControlador {
 
     @Operation(summary = "Cria novo cupom (gestão)")
     @PostMapping
-    public ResponseEntity<Map<String, String>> criar(@RequestBody CriarCupomRequisicao req) {
+    public ResponseEntity<Map<String, String>> criar(@Valid @RequestBody CriarCupomRequisicao req) {
         CupomResumo criado = gestaoServico.criar(new CriarCupomComando(
                 req.codigo(),
                 TipoDesconto.valueOf(req.tipoDesconto()),

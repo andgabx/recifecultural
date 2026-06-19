@@ -21,8 +21,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import static org.apache.commons.lang3.Validate.notNull;
 
+@Transactional(readOnly = true)
 public class IngressoServicoAplicacao {
 
     /** Representa um item em uma compra múltipla com pré-reserva. */
@@ -68,6 +71,7 @@ public class IngressoServicoAplicacao {
         return repositorio.buscarAssentosOcupadosPorEvento(eventoId);
     }
 
+    @Transactional
     public IngressoId comprar(UUID eventoId, LocalDateTime dataHora, TipoIngresso tipo,
                               BigDecimal valor, MetodoPagamento metodo, int capacidadeMaxima) {
         Ingresso ingresso = servico.comprar(eventoId, dataHora, tipo, valor, metodo, capacidadeMaxima);
@@ -75,6 +79,7 @@ public class IngressoServicoAplicacao {
         return ingresso.getId();
     }
 
+    @Transactional
     public IngressoId comprarComCupom(UUID eventoId, LocalDateTime dataHora, TipoIngresso tipo,
                                       BigDecimal valor, MetodoPagamento metodo, int capacidadeMaxima,
                                       String codigoCupom, String cpfComprador, String categoriaEvento) {
@@ -84,6 +89,7 @@ public class IngressoServicoAplicacao {
         return ingresso.getId();
     }
 
+    @Transactional
     public IngressoId comprarComPreReserva(UUID eventoId, LocalDateTime dataHora,
                                             UUID preReservaId, UUID assentoId,
                                             TipoIngresso tipo, BigDecimal valor,
@@ -95,6 +101,7 @@ public class IngressoServicoAplicacao {
         return ingresso.getId();
     }
 
+    @Transactional
     public IngressoId comprarComPreReservaComCupom(UUID eventoId, LocalDateTime dataHora,
                                                     UUID preReservaId, UUID assentoId,
                                                     TipoIngresso tipo, BigDecimal valor,
@@ -102,10 +109,12 @@ public class IngressoServicoAplicacao {
                                                     String codigoCupom, String cpfComprador,
                                                     String categoriaEvento,
                                                     recifecultural.dominio.ingressos.IConfirmacaoReserva confirmacaoReserva) {
-        return servico.comprarComPreReservaComCupom(eventoId, dataHora, preReservaId, assentoId,
+        Ingresso ingresso = servico.comprarComPreReservaComCupom(eventoId, dataHora, preReservaId, assentoId,
                 tipo, valor, metodo, capacidadeMaxima,
                 codigoCupom, cpfComprador, categoriaEvento,
-                confirmacaoReserva).getId();
+                confirmacaoReserva);
+        registrarNaCatraca(ingresso, dataHora);
+        return ingresso.getId();
     }
 
     /**
@@ -124,6 +133,7 @@ public class IngressoServicoAplicacao {
      * @param confirmacaoReserva  callback para confirmar ou cancelar pré-reservas
      * @return lista de IDs dos ingressos criados
      */
+    @Transactional
     public List<IngressoId> comprarMultiplosComCupom(
             UUID eventoId,
             LocalDateTime dataHora,
@@ -176,6 +186,7 @@ public class IngressoServicoAplicacao {
         return ids;
     }
 
+    @Transactional
     public ResultadoReembolso solicitarReembolso(IngressoId id, LocalDateTime agora) {
         return servico.solicitarReembolso(id, agora);
     }

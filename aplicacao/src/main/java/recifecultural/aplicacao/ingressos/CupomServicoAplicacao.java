@@ -10,8 +10,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import static org.apache.commons.lang3.Validate.notNull;
 
+@Transactional(readOnly = true)
 public class CupomServicoAplicacao {
 
     private final ICupomRepositorio repositorio;
@@ -25,6 +28,7 @@ public class CupomServicoAplicacao {
         return repositorio.listarTodos().stream().map(this::toResumo).toList();
     }
 
+    @Transactional
     public CupomResumo criar(CriarCupomComando cmd) {
         notNull(cmd, "Comando é obrigatório.");
         CupomId id = new CupomId(UUID.randomUUID().toString());
@@ -44,6 +48,7 @@ public class CupomServicoAplicacao {
         return toResumo(cupom);
     }
 
+    @Transactional
     public void deletar(String id) {
         repositorio.deletar(new CupomId(id));
     }

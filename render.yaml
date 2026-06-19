@@ -34,7 +34,7 @@ services:
           name: recifecultural-db
           property: password
       - key: SPRING_JPA_HIBERNATE_DDL_AUTO
-        value: update
+        value: validate
       - key: JAVA_TOOL_OPTIONS
         value: -XX:MaxRAMPercentage=75
       - key: CORS_ALLOWED_ORIGINS

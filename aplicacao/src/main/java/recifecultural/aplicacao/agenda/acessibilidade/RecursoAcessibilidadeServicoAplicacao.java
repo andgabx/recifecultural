@@ -8,8 +8,11 @@ import recifecultural.dominio.agenda.acessibilidade.TipoRecursoAcessibilidade;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import static org.apache.commons.lang3.Validate.notNull;
 
+@Transactional(readOnly = true)
 public class RecursoAcessibilidadeServicoAplicacao {
 
     private final RecursoAcessibilidadeServico servico;
@@ -35,11 +38,13 @@ public class RecursoAcessibilidadeServicoAplicacao {
         return repositorio.listarPorEvento(eventoId).stream().map(this::toResumo).toList();
     }
 
+    @Transactional
     public RecursoResumo marcar(UUID apresentacaoId, UUID eventoId, TipoRecursoAcessibilidade tipo) {
         RecursoAcessibilidade recurso = servico.marcar(apresentacaoId, eventoId, tipo);
         return toResumo(recurso);
     }
 
+    @Transactional
     public void remover(UUID recursoId, String justificativa) {
         servico.remover(recursoId, justificativa);
     }

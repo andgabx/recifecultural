@@ -10,8 +10,11 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import static org.apache.commons.lang3.Validate.notNull;
 
+@Transactional(readOnly = true)
 public class SorteioServicoAplicacao {
 
     private final SorteioServico servico;
@@ -36,23 +39,28 @@ public class SorteioServicoAplicacao {
         return repositorio.pesquisarAbertos();
     }
 
+    @Transactional
     public void criar(UUID apresentacaoId, UUID eventoId, int vagas,
                       LocalDateTime prazoInscricao, LocalDateTime dataApresentacao) {
         servico.criar(apresentacaoId, eventoId, vagas, prazoInscricao, dataApresentacao);
     }
 
+    @Transactional
     public void inscrever(UUID sorteioId, UUID espectadorId) {
         servico.inscrever(sorteioId, espectadorId);
     }
 
+    @Transactional
     public void apurar(UUID sorteioId) {
         servico.apurar(sorteioId);
     }
 
+    @Transactional
     public void desistir(UUID sorteioId, UUID espectadorId) {
         servico.desistir(sorteioId, espectadorId);
     }
 
+    @Transactional
     public void cancelar(UUID sorteioId) {
         servico.cancelar(sorteioId);
     }

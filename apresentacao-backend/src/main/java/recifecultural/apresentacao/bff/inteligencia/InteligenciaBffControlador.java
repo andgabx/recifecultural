@@ -5,6 +5,7 @@ import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.json.JsonMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,13 +33,13 @@ public class InteligenciaBffControlador extends AbstractBffControlador {
 
     @Operation(summary = "Projeta receita estimada a partir de orçamento de marketing e patrocínio")
     @PostMapping("/prever-receita")
-    public ResponseEntity<PrevisaoReceitaResposta> preverReceita(@RequestBody PrevisaoReceitaRequisicao req) {
+    public ResponseEntity<PrevisaoReceitaResposta> preverReceita(@Valid @RequestBody PrevisaoReceitaRequisicao req) {
         return responder(inteligenciaServico.preverReceita(req.getOrcamentoMarketing(), req.getPatrocinio()));
     }
 
     @Operation(summary = "Calcula risco de ausência (no-show) geral de um evento")
     @PostMapping("/prever-noshow")
-    public ResponseEntity<PrevisaoNoShowResposta> preverNoShow(@RequestBody PrevisaoNoShowRequisicao req) {
+    public ResponseEntity<PrevisaoNoShowResposta> preverNoShow(@Valid @RequestBody PrevisaoNoShowRequisicao req) {
         return responder(inteligenciaServico.preverNoShow(req.getEventoId()));
     }
 

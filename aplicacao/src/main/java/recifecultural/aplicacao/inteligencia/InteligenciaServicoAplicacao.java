@@ -7,6 +7,7 @@ import ai.onnxruntime.OrtSession;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,6 +22,7 @@ import recifecultural.dominio.agenda.evento.Evento;
 import recifecultural.dominio.agenda.evento.IEventoRepositorio;
 
 @Service
+@Transactional(readOnly = true)
 public class InteligenciaServicoAplicacao {
 
     private final IEventoRepositorio eventoRepositorio;

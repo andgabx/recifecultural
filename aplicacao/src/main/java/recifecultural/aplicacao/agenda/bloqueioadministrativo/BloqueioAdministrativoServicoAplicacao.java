@@ -11,8 +11,11 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import static org.apache.commons.lang3.Validate.notNull;
 
+@Transactional(readOnly = true)
 public class BloqueioAdministrativoServicoAplicacao {
 
     private final BloqueioAdministrativoServico servico;
@@ -38,10 +41,12 @@ public class BloqueioAdministrativoServicoAplicacao {
         return repositorio.pesquisarTodos();
     }
 
+    @Transactional
     public void criar(EspacoId espacoId, LocalDate inicio, LocalDate fim, String justificativa) {
         servico.criarBloqueio(espacoId, inicio, fim, justificativa);
     }
 
+    @Transactional
     public void desativar(BloqueioAdministrativoId id, boolean reativarEventos) {
         servico.desativarBloqueio(id, reativarEventos);
     }
@@ -70,6 +75,7 @@ public class BloqueioAdministrativoServicoAplicacao {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
+    @Transactional
     public void desativarBloqueiosAtivosDoEspaco(EspacoId espacoId) {
         servico.desativarBloqueiosAtivosDoEspaco(espacoId);
     }

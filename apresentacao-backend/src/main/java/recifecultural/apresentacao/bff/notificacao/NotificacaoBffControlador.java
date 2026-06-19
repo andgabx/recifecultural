@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 import recifecultural.apresentacao.bff.AbstractBffControlador;
 import recifecultural.dominio.compartilhado.notificacao.Notificacao;
 import recifecultural.dominio.compartilhado.notificacao.NotificacaoId;
@@ -55,7 +56,7 @@ public class NotificacaoBffControlador extends AbstractBffControlador {
 
     @Operation(summary = "Envia broadcast — uso exclusivo do gestor")
     @PostMapping("/broadcast")
-    public ResponseEntity<Map<String, String>> broadcast(@RequestBody BroadcastRequisicao req) {
+    public ResponseEntity<Map<String, String>> broadcast(@Valid @RequestBody BroadcastRequisicao req) {
         servico.enviarBroadcast(req.mensagem(), req.contexto(), req.idReferencia());
         return responderSemConteudo();
     }

@@ -10,8 +10,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import static org.apache.commons.lang3.Validate.notNull;
 
+@Transactional(readOnly = true)
 public class ArtistaServicoAplicacao {
 
     private final ArtistaServico servico;
@@ -33,14 +36,17 @@ public class ArtistaServicoAplicacao {
         return repositorio.pesquisarResumosPorProdutor(produtorId);
     }
 
+    @Transactional
     public ArtistaId cadastrar(ProdutorId produtorId, String nome, RiderTecnico riderTecnico) {
         return servico.cadastrar(produtorId, nome, riderTecnico);
     }
 
+    @Transactional
     public void inativar(ArtistaId artistaId) {
         servico.inativar(artistaId);
     }
 
+    @Transactional
     public void reativar(ArtistaId artistaId) {
         servico.reativar(artistaId);
     }

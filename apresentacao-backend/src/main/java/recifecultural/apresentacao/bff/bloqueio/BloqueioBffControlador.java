@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 import recifecultural.aplicacao.agenda.bloqueioadministrativo.BloqueioAdministrativoResumo;
 import recifecultural.aplicacao.agenda.bloqueioadministrativo.BloqueioAdministrativoServicoAplicacao;
 import recifecultural.aplicacao.agenda.bloqueioadministrativo.EventoConflitanteResumo;
@@ -44,7 +45,7 @@ public class BloqueioBffControlador extends AbstractBffControlador {
 
     @Operation(summary = "Cria bloqueio administrativo")
     @PostMapping
-    public ResponseEntity<Map<String, String>> criar(@RequestBody CriarBloqueioRequisicao req) {
+    public ResponseEntity<Map<String, String>> criar(@Valid @RequestBody CriarBloqueioRequisicao req) {
         servico.criar(new EspacoId(req.espacoId()), req.inicio(), req.fim(), req.justificativa());
         return ResponseEntity.status(201).body(Map.of("status", "criado"));
     }
@@ -53,7 +54,7 @@ public class BloqueioBffControlador extends AbstractBffControlador {
     @PostMapping("/{id}/desativar")
     public ResponseEntity<Map<String, String>> desativar(
             @PathVariable UUID id,
-            @RequestBody DesativarBloqueioRequisicao req) {
+            @Valid @RequestBody DesativarBloqueioRequisicao req) {
         servico.desativar(BloqueioAdministrativoId.de(id.toString()), req.reativarEventos());
         return responderSemConteudo();
     }

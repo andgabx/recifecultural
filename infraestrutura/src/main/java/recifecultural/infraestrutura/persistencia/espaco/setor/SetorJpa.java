@@ -22,6 +22,7 @@ public class SetorJpa {
     TipoSetor tipoSetor;
     int fileirasHorizontais;
     int assentosPorFileiraVertical;
+    @Version
     int versao;
 
     @ElementCollection(fetch = FetchType.EAGER)

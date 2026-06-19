@@ -50,6 +50,11 @@ public class IngressoRepositorioEmMemoria implements IIngressoRepositorio {
     }
 
     @Override
+    public int maiorCargaAtivosPorEspaco(UUID espacoId, LocalDateTime agora) {
+        return 0;
+    }
+
+    @Override
     public List<Ingresso> buscarPorPeriodo(LocalDateTime inicio, LocalDateTime fim) {
         return ingressos.values().stream()
                 .filter(i -> !i.getDataCompra().isBefore(inicio)

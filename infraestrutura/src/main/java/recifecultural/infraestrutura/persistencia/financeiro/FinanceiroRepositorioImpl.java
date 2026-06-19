@@ -4,6 +4,7 @@ import org.springframework.stereotype.Repository;
 
 import recifecultural.aplicacao.financeiro.FinanceiroRepositorioAplicacao;
 import recifecultural.aplicacao.financeiro.IndicadoresResumo;
+import recifecultural.dominio.ingressos.StatusIngresso;
 import recifecultural.infraestrutura.persistencia.ingressos.IngressoJpaRepository;
 
 import java.math.BigDecimal;
@@ -34,10 +35,13 @@ public class FinanceiroRepositorioImpl implements FinanceiroRepositorioAplicacao
         var ingressos = ingressoJpa.findByPeriodo(dtInicio, dtFim);
 
         BigDecimal receitaBruta = ingressos.stream()
+                .filter(i -> i.getStatus() == StatusIngresso.ATIVO
+                        || i.getStatus() == StatusIngresso.UTILIZADO)
                 .map(i -> i.getValorPago() != null ? i.getValorPago() : BigDecimal.ZERO)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         BigDecimal totalReembolsos = ingressos.stream()
+                .filter(i -> i.getStatus() == StatusIngresso.REEMBOLSADO)
                 .map(i -> i.getValorReembolsado() != null ? i.getValorReembolsado() : BigDecimal.ZERO)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
@@ -49,7 +53,10 @@ public class FinanceiroRepositorioImpl implements FinanceiroRepositorioAplicacao
 
         BigDecimal receitaLiquida = receitaBruta.subtract(totalDespesas).subtract(totalReembolsos);
 
-        int vendidos = ingressos.size();
+        int vendidos = (int) ingressos.stream()
+                .filter(i -> i.getStatus() == StatusIngresso.ATIVO
+                        || i.getStatus() == StatusIngresso.UTILIZADO)
+                .count();
         BigDecimal taxaOcupacao = capacidadeTotal > 0
                 ? new BigDecimal(vendidos).divide(new BigDecimal(capacidadeTotal), 4, RoundingMode.HALF_UP)
                 : BigDecimal.ZERO;

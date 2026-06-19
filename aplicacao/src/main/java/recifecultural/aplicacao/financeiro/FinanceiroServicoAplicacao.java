@@ -8,8 +8,11 @@ import recifecultural.dominio.financeiro.ResultadoRegistroDespesa;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import static org.apache.commons.lang3.Validate.notNull;
 
+@Transactional(readOnly = true)
 public class FinanceiroServicoAplicacao {
 
     private final DesempenhoTeatroServico servico;
@@ -26,6 +29,7 @@ public class FinanceiroServicoAplicacao {
         return repositorio.buscarIndicadores(inicio, fim, capacidadeTotal);
     }
 
+    @Transactional
     public ResultadoRegistroDespesa registrarDespesa(OrcamentoId orcamentoId, String descricao,
                                                       BigDecimal valor, CategoriaDespesa categoria) {
         return servico.registrarDespesa(orcamentoId, descricao, valor, categoria);

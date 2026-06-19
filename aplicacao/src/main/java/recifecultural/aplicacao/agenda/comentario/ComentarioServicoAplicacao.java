@@ -8,9 +8,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import static org.apache.commons.lang3.Validate.notBlank;
 import static org.apache.commons.lang3.Validate.notNull;
 
+@Transactional(readOnly = true)
 public class ComentarioServicoAplicacao {
 
     private final ComentarioService servico;
@@ -27,6 +30,7 @@ public class ComentarioServicoAplicacao {
                 .toList();
     }
 
+    @Transactional
     public UUID postar(UUID eventoId, UUID espectadorId, String texto, UUID comentarioPaiId) {
         notNull(eventoId, "eventoId é obrigatório.");
         notNull(espectadorId, "espectadorId é obrigatório.");
@@ -41,12 +45,14 @@ public class ComentarioServicoAplicacao {
         return c.getId();
     }
 
+    @Transactional
     public void curtir(UUID comentarioId, UUID espectadorId) {
         notNull(comentarioId, "comentarioId é obrigatório.");
         notNull(espectadorId, "espectadorId é obrigatório.");
         servico.curtir(comentarioId, espectadorId);
     }
 
+    @Transactional
     public void deletar(UUID comentarioId) {
         notNull(comentarioId, "comentarioId é obrigatório.");
         servico.deletar(comentarioId);

@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 import recifecultural.aplicacao.agenda.comentario.ComentarioServicoAplicacao;
 import recifecultural.aplicacao.agenda.comentario.ComentarioServicoAplicacao.ComentarioResumo;
 import recifecultural.apresentacao.bff.AbstractBffControlador;
@@ -31,7 +32,7 @@ public class ComentarioBffControlador extends AbstractBffControlador {
 
     @Operation(summary = "Posta um comentário (Decorator de moderação atua aqui)")
     @PostMapping
-    public ResponseEntity<Map<String, String>> postar(@RequestBody PostarRequisicao req) {
+    public ResponseEntity<Map<String, String>> postar(@Valid @RequestBody PostarRequisicao req) {
         UUID id = servico.postar(
                 req.eventoId(), req.espectadorId(),
                 req.texto(), req.comentarioPaiId());
@@ -42,7 +43,7 @@ public class ComentarioBffControlador extends AbstractBffControlador {
     @PostMapping("/{id}/curtir")
     public ResponseEntity<Map<String, String>> curtir(
             @PathVariable UUID id,
-            @RequestBody CurtirRequisicao req) {
+            @Valid @RequestBody CurtirRequisicao req) {
         servico.curtir(id, req.espectadorId());
         return responderSemConteudo();
     }

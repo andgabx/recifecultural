@@ -24,6 +24,7 @@ public class PreReservaJpa {
     public LocalDateTime expiraEm;
     @Enumerated(EnumType.STRING)
     public StatusPreReserva status;
+    @Version
     public int versao;
 }
 

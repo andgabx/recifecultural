@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 import recifecultural.aplicacao.artista.produtor.ProdutorResumo;
 import recifecultural.aplicacao.artista.produtor.ProdutorServicoAplicacao;
 import recifecultural.dominio.artista.produtor.Cnpj;
@@ -33,7 +34,7 @@ public class ProdutorBffControlador extends AbstractBffControlador {
 
     @Operation(summary = "Cadastra produtor")
     @PostMapping
-    public ResponseEntity<Map<String, String>> cadastrar(@RequestBody ProdutorTelas.CadastrarProdutorRequisicao req) {
+    public ResponseEntity<Map<String, String>> cadastrar(@Valid @RequestBody ProdutorTelas.CadastrarProdutorRequisicao req) {
         ProdutorId id = servico.cadastrar(req.nomeFantasia(), new Cnpj(req.cnpj()), req.email(), req.telefone());
         return responderCriado(id.valor().toString());
     }
@@ -42,7 +43,7 @@ public class ProdutorBffControlador extends AbstractBffControlador {
     @PostMapping("/{id}/suspender")
     public ResponseEntity<Map<String, String>> suspender(
             @PathVariable UUID id,
-            @RequestBody ProdutorTelas.AcaoAdministrativaRequisicao req) {
+            @Valid @RequestBody ProdutorTelas.AcaoAdministrativaRequisicao req) {
         servico.suspender(new ProdutorId(id), req.responsavel(), req.motivo());
         return responderSemConteudo();
     }
@@ -51,7 +52,7 @@ public class ProdutorBffControlador extends AbstractBffControlador {
     @PostMapping("/{id}/reativar")
     public ResponseEntity<Map<String, String>> reativar(
             @PathVariable UUID id,
-            @RequestBody ProdutorTelas.AcaoAdministrativaRequisicao req) {
+            @Valid @RequestBody ProdutorTelas.AcaoAdministrativaRequisicao req) {
         servico.reativar(new ProdutorId(id), req.responsavel(), req.motivo());
         return responderSemConteudo();
     }
@@ -60,7 +61,7 @@ public class ProdutorBffControlador extends AbstractBffControlador {
     @PostMapping("/{id}/inativar")
     public ResponseEntity<Map<String, String>> inativar(
             @PathVariable UUID id,
-            @RequestBody ProdutorTelas.AcaoAdministrativaRequisicao req) {
+            @Valid @RequestBody ProdutorTelas.AcaoAdministrativaRequisicao req) {
         servico.inativar(new ProdutorId(id), req.responsavel(), req.motivo());
         return responderSemConteudo();
     }

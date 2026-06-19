@@ -40,9 +40,11 @@ export type CapacidadeEspaco = {
 };
 
 export const setoresService = {
-  listarPorEspaco: (espacoId: UUID) =>
+  listarPorEspaco: (espacoId: UUID, eventoId?: UUID) =>
     api
-      .get<SetorComAssentos[]>(`/setores/espaco/${espacoId}`)
+      .get<SetorComAssentos[]>(`/setores/espaco/${espacoId}`, {
+        params: { ...(eventoId && { eventoId }) },
+      })
       .then((r) => r.data),
 
   configurar: (payload: ConfigurarSetorRequisicao) =>

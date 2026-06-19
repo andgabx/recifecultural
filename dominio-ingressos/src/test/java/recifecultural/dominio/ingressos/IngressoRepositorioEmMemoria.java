@@ -4,7 +4,9 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class IngressoRepositorioEmMemoria implements IIngressoRepositorio {
 
@@ -35,6 +37,16 @@ public class IngressoRepositorioEmMemoria implements IIngressoRepositorio {
                         && i.getDataHoraApresentacao().equals(dataHora)
                         && i.getStatus() == StatusIngresso.ATIVO)
                 .count();
+    }
+
+    @Override
+    public Set<UUID> buscarAssentosOcupadosPorEvento(UUID eventoId) {
+        return ingressos.values().stream()
+                .filter(i -> i.getEventoId().equals(eventoId)
+                        && i.getAssentoId() != null
+                        && (i.getStatus() == StatusIngresso.ATIVO || i.getStatus() == StatusIngresso.UTILIZADO))
+                .map(Ingresso::getAssentoId)
+                .collect(Collectors.toSet());
     }
 
     @Override

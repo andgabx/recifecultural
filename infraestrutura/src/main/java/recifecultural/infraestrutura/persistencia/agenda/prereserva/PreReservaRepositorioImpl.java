@@ -39,8 +39,15 @@ public class PreReservaRepositorioImpl implements IPreReservaRepositorio {
     }
 
     @Override
-    public List<PreReserva> listarAtivasPorAssento(UUID assentoId) {
-        return jpa.findAtivasPorAssento(assentoId).stream()
+    public List<PreReserva> listarAtivasPorAssentoEEvento(UUID assentoId, UUID eventoId) {
+        return jpa.findAtivasPorAssentoEEvento(assentoId, eventoId).stream()
+                .map(p -> mapeador.map(p, PreReserva.class))
+                .toList();
+    }
+
+    @Override
+    public List<PreReserva> listarAtivasPorEvento(UUID eventoId) {
+        return jpa.findAtivasPorEvento(eventoId).stream()
                 .map(p -> mapeador.map(p, PreReserva.class))
                 .toList();
     }

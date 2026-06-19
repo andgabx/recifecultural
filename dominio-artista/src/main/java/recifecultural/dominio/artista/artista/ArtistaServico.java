@@ -44,4 +44,12 @@ public class ArtistaServico {
         artista.inativar();
         artistaRepositorio.atualizar(artista);
     }
+
+    public void reativar(ArtistaId artistaId) {
+        Artista artista = artistaRepositorio.obterPorId(artistaId)
+                .orElseThrow(() -> new IllegalArgumentException("Artista não encontrado."));
+
+        artista.reativar();
+        artistaRepositorio.atualizar(artista);
+    }
 }

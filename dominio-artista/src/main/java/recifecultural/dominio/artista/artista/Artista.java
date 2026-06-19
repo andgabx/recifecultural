@@ -43,6 +43,12 @@ public class Artista {
         this.status = StatusArtista.INATIVO;
     }
 
+    public void reativar() {
+        if (this.status == StatusArtista.ATIVO)
+            throw new IllegalStateException("Artista já está ativo.");
+        this.status = StatusArtista.ATIVO;
+    }
+
     public ArtistaId getId() { return id; }
     public ProdutorId getProdutorId() { return produtorId; }
     public String getNome() { return nome; }

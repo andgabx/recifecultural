@@ -4,6 +4,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import recifecultural.aplicacao.ingressos.IngressoServicoAplicacao;
+import recifecultural.dominio.agenda.prereserva.PreReserva;
+import recifecultural.dominio.agenda.prereserva.PreReservaServico;
 import recifecultural.dominio.espaco.espaco.EspacoId;
 import recifecultural.dominio.espaco.setor.Assento;
 import recifecultural.dominio.espaco.setor.GestaoAmbienteInternoServico;
@@ -15,6 +18,7 @@ import recifecultural.apresentacao.bff.AbstractBffControlador;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 @Tag(name = "BFF — Setores")
@@ -23,15 +27,34 @@ import java.util.UUID;
 public class SetorBffControlador extends AbstractBffControlador {
 
     private final GestaoAmbienteInternoServico servico;
+    private final IngressoServicoAplicacao ingressoServico;
+    private final PreReservaServico preReservaServico;
 
-    public SetorBffControlador(GestaoAmbienteInternoServico servico) {
+    public SetorBffControlador(GestaoAmbienteInternoServico servico,
+                               IngressoServicoAplicacao ingressoServico,
+                               PreReservaServico preReservaServico) {
         this.servico = servico;
+        this.ingressoServico = ingressoServico;
+        this.preReservaServico = preReservaServico;
     }
 
     @Operation(summary = "Lista setores do espaço com seus assentos (mapa de cadeiras)")
     @GetMapping("/espaco/{espacoId}")
-    public ResponseEntity<List<SetorComAssentos>> listarPorEspaco(@PathVariable UUID espacoId) {
+    public ResponseEntity<List<SetorComAssentos>> listarPorEspaco(
+            @PathVariable UUID espacoId,
+            @RequestParam(required = false) UUID eventoId) {
         List<Setor> setores = servico.listarPorEspaco(new EspacoId(espacoId));
+
+        Set<UUID> ocupados = eventoId != null
+                ? ingressoServico.buscarAssentosOcupadosPorEvento(eventoId)
+                : null;
+
+        Set<UUID> preReservados = eventoId != null
+                ? preReservaServico.listarAtivasPorEvento(eventoId).stream()
+                        .map(PreReserva::getAssentoId)
+                        .collect(java.util.stream.Collectors.toSet())
+                : null;
+
         List<SetorComAssentos> resumos = setores.stream().map(s -> new SetorComAssentos(
                 s.getId().valor(),
                 s.getEspacoId().valor(),
@@ -39,7 +62,9 @@ public class SetorBffControlador extends AbstractBffControlador {
                 s.getTipoSetor().name(),
                 s.getFileirasHorizontais(),
                 s.getAssentosPorFileiraVertical(),
-                s.getAssentos().stream().map(SetorBffControlador::assentoResumo).toList()
+                s.getAssentos().stream()
+                        .map(a -> assentoResumo(a, ocupados, preReservados))
+                        .toList()
         )).toList();
         return responder(resumos);
     }
@@ -84,6 +109,30 @@ public class SetorBffControlador extends AbstractBffControlador {
                 a.getFileira(),
                 a.getNumero(),
                 a.getStatus(),
+                a.getMotivoIndisponibilidade()
+        );
+    }
+
+    private static AssentoResumo assentoResumo(Assento a, Set<UUID> ocupados, Set<UUID> preReservados) {
+        if (ocupados == null) {
+            return assentoResumo(a);
+        }
+        StatusAssento status;
+        if (a.getStatus() == StatusAssento.BLOQUEADO) {
+            status = StatusAssento.BLOQUEADO;
+        } else if (preReservados != null && preReservados.contains(a.getId())) {
+            status = StatusAssento.PRE_RESERVADO;
+        } else if (ocupados.contains(a.getId())) {
+            status = StatusAssento.OCUPADO;
+        } else {
+            status = StatusAssento.LIVRE;
+        }
+        return new AssentoResumo(
+                a.getId(),
+                a.getCodigo(),
+                a.getFileira(),
+                a.getNumero(),
+                status,
                 a.getMotivoIndisponibilidade()
         );
     }

@@ -1,0 +1,62 @@
+{
+  "porTipo": [
+    {
+      "tipo": "INTEIRA",
+      "mediaNoShow": 15.67,
+      "pctAltoRisco": 21.94,
+      "n": 319
+    },
+    {
+      "tipo": "MEIA_ENTRADA",
+      "mediaNoShow": 18.15,
+      "pctAltoRisco": 38.78,
+      "n": 361
+    },
+    {
+      "tipo": "SOCIAL",
+      "mediaNoShow": 21.55,
+      "pctAltoRisco": 56.65,
+      "n": 316
+    }
+  ],
+  "porFaixaPreco": [
+    {
+      "faixa": "Até R$30",
+      "mediaNoShow": 24.5,
+      "pctAltoRisco": 73.64,
+      "n": 110
+    },
+    {
+      "faixa": "R$31-55",
+      "mediaNoShow": 20.92,
+      "pctAltoRisco": 52.21,
+      "n": 385
+    },
+    {
+      "faixa": "Acima R$55",
+      "mediaNoShow": 15.2,
+      "pctAltoRisco": 21.36,
+      "n": 501
+    }
+  ],
+  "porCategoria": [
+    {
+      "categoria": "DANCA",
+      "mediaNoShow": 24.37,
+      "pctAltoRisco": 72.83,
+      "n": 173
+    },
+    {
+      "categoria": "MUSICA",
+      "mediaNoShow": 15.22,
+      "pctAltoRisco": 20.29,
+      "n": 557
+    },
+    {
+      "categoria": "TEATRO",
+      "mediaNoShow": 21.31,
+      "pctAltoRisco": 56.39,
+      "n": 266
+    }
+  ]
+}

@@ -74,6 +74,17 @@ public class ArtistaRepositorioImpl implements IArtistaRepositorio, ArtistaRepos
                 .toList();
     }
 
+    @Override
+    public List<ArtistaResumo> pesquisarResumosPorProdutor(ProdutorId produtorId) {
+        return jpa.findByProdutorId(produtorId.valor()).stream()
+                .<ArtistaResumo>map(a -> new ArtistaResumoJpa(
+                        a.id.toString(),
+                        a.produtorId != null ? a.produtorId.toString() : null,
+                        a.nome,
+                        a.status != null ? a.status.name() : null))
+                .toList();
+    }
+
     record ArtistaResumoJpa(String id, String produtorId, String nome, String status) implements ArtistaResumo {
         public String getId() { return id; }
         public String getProdutorId() { return produtorId; }

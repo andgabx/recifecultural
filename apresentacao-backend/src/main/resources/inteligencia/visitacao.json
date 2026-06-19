@@ -1,0 +1,362 @@
+[
+  {
+    "teatro": "Teatro Apolo",
+    "mes": 1,
+    "visitantes": 1473
+  },
+  {
+    "teatro": "Teatro Barreto Júnior",
+    "mes": 1,
+    "visitantes": 2714
+  },
+  {
+    "teatro": "Teatro de Santa Isabel",
+    "mes": 1,
+    "visitantes": 3039
+  },
+  {
+    "teatro": "Teatro do Parque",
+    "mes": 1,
+    "visitantes": 4265
+  },
+  {
+    "teatro": "Teatro Hermilo Borba Filho",
+    "mes": 1,
+    "visitantes": 949
+  },
+  {
+    "teatro": "Teatro Luiz Mendonça",
+    "mes": 1,
+    "visitantes": 251
+  },
+  {
+    "teatro": "Teatro Apolo",
+    "mes": 2,
+    "visitantes": 104
+  },
+  {
+    "teatro": "Teatro Barreto Júnior",
+    "mes": 2,
+    "visitantes": 1288
+  },
+  {
+    "teatro": "Teatro de Santa Isabel",
+    "mes": 2,
+    "visitantes": 467
+  },
+  {
+    "teatro": "Teatro do Parque",
+    "mes": 2,
+    "visitantes": 2217
+  },
+  {
+    "teatro": "Teatro Hermilo Borba Filho",
+    "mes": 2,
+    "visitantes": 208
+  },
+  {
+    "teatro": "Teatro Luiz Mendonça",
+    "mes": 2,
+    "visitantes": 576
+  },
+  {
+    "teatro": "Teatro Apolo",
+    "mes": 3,
+    "visitantes": 514
+  },
+  {
+    "teatro": "Teatro Barreto Júnior",
+    "mes": 3,
+    "visitantes": 4789
+  },
+  {
+    "teatro": "Teatro de Santa Isabel",
+    "mes": 3,
+    "visitantes": 6005
+  },
+  {
+    "teatro": "Teatro do Parque",
+    "mes": 3,
+    "visitantes": 8027
+  },
+  {
+    "teatro": "Teatro Hermilo Borba Filho",
+    "mes": 3,
+    "visitantes": 1351
+  },
+  {
+    "teatro": "Teatro Luiz Mendonça",
+    "mes": 3,
+    "visitantes": 0
+  },
+  {
+    "teatro": "Teatro Apolo",
+    "mes": 4,
+    "visitantes": 1372
+  },
+  {
+    "teatro": "Teatro Barreto Júnior",
+    "mes": 4,
+    "visitantes": 3099
+  },
+  {
+    "teatro": "Teatro de Santa Isabel",
+    "mes": 4,
+    "visitantes": 4453
+  },
+  {
+    "teatro": "Teatro do Parque",
+    "mes": 4,
+    "visitantes": 5142
+  },
+  {
+    "teatro": "Teatro Hermilo Borba Filho",
+    "mes": 4,
+    "visitantes": 430
+  },
+  {
+    "teatro": "Teatro Luiz Mendonça",
+    "mes": 4,
+    "visitantes": 1553
+  },
+  {
+    "teatro": "Teatro Apolo",
+    "mes": 5,
+    "visitantes": 1361
+  },
+  {
+    "teatro": "Teatro Barreto Júnior",
+    "mes": 5,
+    "visitantes": 6069
+  },
+  {
+    "teatro": "Teatro de Santa Isabel",
+    "mes": 5,
+    "visitantes": 6842
+  },
+  {
+    "teatro": "Teatro do Parque",
+    "mes": 5,
+    "visitantes": 4628
+  },
+  {
+    "teatro": "Teatro Hermilo Borba Filho",
+    "mes": 5,
+    "visitantes": 696
+  },
+  {
+    "teatro": "Teatro Luiz Mendonça",
+    "mes": 5,
+    "visitantes": 6352
+  },
+  {
+    "teatro": "Teatro Apolo",
+    "mes": 6,
+    "visitantes": 706
+  },
+  {
+    "teatro": "Teatro Barreto Júnior",
+    "mes": 6,
+    "visitantes": 3801
+  },
+  {
+    "teatro": "Teatro de Santa Isabel",
+    "mes": 6,
+    "visitantes": 3810
+  },
+  {
+    "teatro": "Teatro do Parque",
+    "mes": 6,
+    "visitantes": 4552
+  },
+  {
+    "teatro": "Teatro Hermilo Borba Filho",
+    "mes": 6,
+    "visitantes": 792
+  },
+  {
+    "teatro": "Teatro Luiz Mendonça",
+    "mes": 6,
+    "visitantes": 7855
+  },
+  {
+    "teatro": "Teatro Apolo",
+    "mes": 7,
+    "visitantes": 416
+  },
+  {
+    "teatro": "Teatro Barreto Júnior",
+    "mes": 7,
+    "visitantes": 3282
+  },
+  {
+    "teatro": "Teatro de Santa Isabel",
+    "mes": 7,
+    "visitantes": 6113
+  },
+  {
+    "teatro": "Teatro do Parque",
+    "mes": 7,
+    "visitantes": 4915
+  },
+  {
+    "teatro": "Teatro Hermilo Borba Filho",
+    "mes": 7,
+    "visitantes": 853
+  },
+  {
+    "teatro": "Teatro Luiz Mendonça",
+    "mes": 7,
+    "visitantes": 6101
+  },
+  {
+    "teatro": "Teatro Apolo",
+    "mes": 8,
+    "visitantes": 862
+  },
+  {
+    "teatro": "Teatro Barreto Júnior",
+    "mes": 8,
+    "visitantes": 4292
+  },
+  {
+    "teatro": "Teatro de Santa Isabel",
+    "mes": 8,
+    "visitantes": 6934
+  },
+  {
+    "teatro": "Teatro do Parque",
+    "mes": 8,
+    "visitantes": 10190
+  },
+  {
+    "teatro": "Teatro Hermilo Borba Filho",
+    "mes": 8,
+    "visitantes": 0
+  },
+  {
+    "teatro": "Teatro Luiz Mendonça",
+    "mes": 8,
+    "visitantes": 6813
+  },
+  {
+    "teatro": "Teatro Apolo",
+    "mes": 9,
+    "visitantes": 2361
+  },
+  {
+    "teatro": "Teatro Barreto Júnior",
+    "mes": 9,
+    "visitantes": 2950
+  },
+  {
+    "teatro": "Teatro de Santa Isabel",
+    "mes": 9,
+    "visitantes": 5654
+  },
+  {
+    "teatro": "Teatro do Parque",
+    "mes": 9,
+    "visitantes": 10753
+  },
+  {
+    "teatro": "Teatro Hermilo Borba Filho",
+    "mes": 9,
+    "visitantes": 0
+  },
+  {
+    "teatro": "Teatro Luiz Mendonça",
+    "mes": 9,
+    "visitantes": 6154
+  },
+  {
+    "teatro": "Teatro Apolo",
+    "mes": 10,
+    "visitantes": 3203
+  },
+  {
+    "teatro": "Teatro Barreto Júnior",
+    "mes": 10,
+    "visitantes": 3172
+  },
+  {
+    "teatro": "Teatro de Santa Isabel",
+    "mes": 10,
+    "visitantes": 5918
+  },
+  {
+    "teatro": "Teatro do Parque",
+    "mes": 10,
+    "visitantes": 7969
+  },
+  {
+    "teatro": "Teatro Hermilo Borba Filho",
+    "mes": 10,
+    "visitantes": 3300
+  },
+  {
+    "teatro": "Teatro Luiz Mendonça",
+    "mes": 10,
+    "visitantes": 4075
+  },
+  {
+    "teatro": "Teatro Apolo",
+    "mes": 11,
+    "visitantes": 1624
+  },
+  {
+    "teatro": "Teatro Barreto Júnior",
+    "mes": 11,
+    "visitantes": 3457
+  },
+  {
+    "teatro": "Teatro de Santa Isabel",
+    "mes": 11,
+    "visitantes": 6622
+  },
+  {
+    "teatro": "Teatro do Parque",
+    "mes": 11,
+    "visitantes": 7647
+  },
+  {
+    "teatro": "Teatro Hermilo Borba Filho",
+    "mes": 11,
+    "visitantes": 761
+  },
+  {
+    "teatro": "Teatro Luiz Mendonça",
+    "mes": 11,
+    "visitantes": 11318
+  },
+  {
+    "teatro": "Teatro Apolo",
+    "mes": 12,
+    "visitantes": 2131
+  },
+  {
+    "teatro": "Teatro Barreto Júnior",
+    "mes": 12,
+    "visitantes": 6240
+  },
+  {
+    "teatro": "Teatro de Santa Isabel",
+    "mes": 12,
+    "visitantes": 3889
+  },
+  {
+    "teatro": "Teatro do Parque",
+    "mes": 12,
+    "visitantes": 7067
+  },
+  {
+    "teatro": "Teatro Hermilo Borba Filho",
+    "mes": 12,
+    "visitantes": 287
+  },
+  {
+    "teatro": "Teatro Luiz Mendonça",
+    "mes": 12,
+    "visitantes": 10952
+  }
+]

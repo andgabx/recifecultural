@@ -9,6 +9,7 @@ public interface IPreReservaRepositorio {
     void salvar(PreReserva preReserva);
     void atualizar(PreReserva preReserva);
     Optional<PreReserva> obterPorId(PreReservaId id);
-    List<PreReserva> listarAtivasPorAssento(UUID assentoId);
+    List<PreReserva> listarAtivasPorAssentoEEvento(UUID assentoId, UUID eventoId);
+    List<PreReserva> listarAtivasPorEvento(UUID eventoId);
     List<PreReserva> listarAtivasExpiradas(LocalDateTime agora);
 }

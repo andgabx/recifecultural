@@ -1,5 +1,7 @@
+"use client";
+
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { api } from '../lib/api';
+import { api } from '@/lib/api';
 
 export interface Artista {
   id: string;
@@ -20,7 +22,7 @@ export interface CadastrarArtistaPayload {
 export function useArtistas(produtorIdFiltro?: string) {
   const queryClient = useQueryClient();
 
-  const { data: artistas, isLoading } = useQuery({
+  const { data: artistas } = useQuery({
     queryKey: ['artistas', produtorIdFiltro ?? 'todos'],
     queryFn: async () => {
       const url = produtorIdFiltro
@@ -60,9 +62,35 @@ export function useArtistas(produtorIdFiltro?: string) {
 
   return {
     artistas,
-    isLoading,
     createArtista: createMutation.mutateAsync,
     inativarArtista: inativarMutation.mutateAsync,
     reativarArtista: reativarMutation.mutateAsync,
   };
+}
+
+export default function ArtistasPage() {
+  const { artistas } = useArtistas();
+
+  return (
+    <div className="p-6 flex flex-col gap-4">
+      <h1 className="text-2xl font-bold">Gestão de Artistas</h1>
+      
+      { (
+        <div className="bg-white p-4 rounded-lg shadow border border-gray-200">
+          {artistas && artistas.length > 0 ? (
+            <ul className="space-y-2">
+              {artistas.map((artista) => (
+                <li key={artista.id} className="p-3 bg-gray-50 rounded-md border">
+                  <p className="font-semibold">{artista.nome}</p>
+                  <p className="text-sm text-gray-600">Status: {artista.status}</p>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-sm text-gray-500">Nenhum artista encontrado.</p>
+          )}
+        </div>
+      )}
+    </div>
+  );
 }

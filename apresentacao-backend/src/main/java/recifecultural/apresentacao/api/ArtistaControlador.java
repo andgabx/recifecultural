@@ -27,14 +27,20 @@ public class ArtistaControlador extends AbstractBffControlador {
 
     @Operation(summary = "Lista artistas")
     @GetMapping
-    public ResponseEntity<List<ArtistaResumo>> listar() {
+    public ResponseEntity<List<ArtistaResumo>> listar(
+            @RequestParam(required = false) UUID produtorId) {
+        if (produtorId != null) {
+            return responder(servico.pesquisarResumosPorProdutor(new ProdutorId(produtorId)));
+        }
         return responder(servico.pesquisarResumos());
     }
 
     @Operation(summary = "Cadastra artista")
     @PostMapping
     public ResponseEntity<Map<String, String>> cadastrar(@RequestBody CadastrarArtistaRequisicao req) {
-        ArtistaId id = servico.cadastrar(new ProdutorId(req.produtorId()), req.nome(),
+        ArtistaId id = servico.cadastrar(
+                new ProdutorId(req.produtorId()),
+                req.nome(),
                 ArtistaServicoAplicacao.construirRider(req.riderItens()));
         return responderCriado(id.valor().toString());
     }
@@ -43,6 +49,13 @@ public class ArtistaControlador extends AbstractBffControlador {
     @PostMapping("/{id}/inativar")
     public ResponseEntity<Map<String, String>> inativar(@PathVariable UUID id) {
         servico.inativar(ArtistaId.de(id.toString()));
+        return responderSemConteudo();
+    }
+
+    @Operation(summary = "Reativa artista")
+    @PostMapping("/{id}/reativar")
+    public ResponseEntity<Map<String, String>> reativar(@PathVariable UUID id) {
+        servico.reativar(ArtistaId.de(id.toString()));
         return responderSemConteudo();
     }
 

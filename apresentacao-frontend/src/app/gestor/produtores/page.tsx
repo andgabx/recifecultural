@@ -1,287 +1,324 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { Pause, Play, Plus, Trash2, UserPlus } from "lucide-react";
-import { toast } from "sonner";
-
-import { Badge } from "@/components/ui/badge";
+import { PageLayout } from "@/components/layout/PageLayout";
+import { DataTable } from "@/components/shared/DataTable";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Skeleton } from "@/components/ui/skeleton";
-import { FormField } from "@/components/form/FormField";
-import { DataTable, type Coluna } from "@/components/shared/DataTable";
-import { EmptyState } from "@/components/shared/EmptyState";
-import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { Modal } from "@/components/shared/Modal";
-import { PageLayout } from "@/components/layout/PageLayout";
+import { Badge } from "@/components/ui/badge";
 import {
-  useCadastrarProdutor,
-  useInativarProdutor,
   useProdutores,
-  useReativarProdutor,
-  useSuspenderProdutor,
+  Produtor,
+  AcaoAdministrativaPayload,
 } from "@/hooks/useProdutores";
-import type { ApiError } from "@/lib/api";
-import type { ProdutorResumo } from "@/services/bff/produtores";
-import type { StatusProdutor } from "@/types/dominio";
+import { Ban, CheckCircle, Mic, Plus, Power, PowerOff, XCircle } from "lucide-react";
+import Link from "next/link";
 
-const cadastroSchema = z.object({
-  nomeFantasia: z.string().min(2, "Informe o nome fantasia"),
-  cnpj: z
-    .string()
-    .regex(/^\d{14}$/, "CNPJ deve ter 14 dígitos sem formatação"),
-  email: z.string().email("E-mail inválido"),
-  telefone: z.string().optional().or(z.literal("")),
-});
-type CadastroForm = z.infer<typeof cadastroSchema>;
+// ---------------------------------------------------------------------------
+// Sub-componente: Modal de ação administrativa (suspender / reativar / inativar)
+// ---------------------------------------------------------------------------
+type TipoAcao = "suspender" | "reativar" | "inativar";
 
-const statusVariant: Record<StatusProdutor, "success" | "violeta" | "destructive"> = {
-  ATIVO: "success",
-  SUSPENSO: "violeta",
-  INATIVO: "destructive",
+interface AcaoModalProps {
+  open: boolean;
+  tipo: TipoAcao | null;
+  produtor: Produtor | null;
+  onClose: () => void;
+  onConfirm: (payload: AcaoAdministrativaPayload) => Promise<void>;
+}
+
+const TITULO_ACAO: Record<TipoAcao, string> = {
+  suspender: "Suspender Produtor",
+  reativar:  "Reativar Produtor",
+  inativar:  "Inativar Produtor",
 };
 
-export default function ProdutoresPage() {
-  const { data, isLoading, isError } = useProdutores();
-  const [cadastroAberto, setCadastroAberto] = useState(false);
+function AcaoAdministrativaModal({ open, tipo, produtor, onClose, onConfirm }: AcaoModalProps) {
+  const [responsavel, setResponsavel] = useState("");
+  const [motivo, setMotivo] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const cadastrar = useCadastrarProdutor();
-  const suspender = useSuspenderProdutor();
-  const reativar = useReativarProdutor();
-  const inativar = useInativarProdutor();
+  if (!open || !tipo || !produtor) return null;
 
-  const form = useForm<CadastroForm>({
-    resolver: zodResolver(cadastroSchema),
-    defaultValues: { nomeFantasia: "", cnpj: "", email: "", telefone: "" },
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await onConfirm({ responsavel, motivo });
+      setResponsavel("");
+      setMotivo("");
+      onClose();
+    } catch {
+      alert("Erro ao executar a ação. Tente novamente.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const isDestructive = tipo === "suspender" || tipo === "inativar";
+
+  return (
+    <Modal open={open} onClose={onClose} title={TITULO_ACAO[tipo]}>
+      <p className="text-sm text-muted-foreground mb-4">
+        Produtor: <strong>{produtor.nomeFantasia}</strong>
+      </p>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium mb-1">Responsável</label>
+          <Input
+            required
+            value={responsavel}
+            onChange={(e) => setResponsavel(e.target.value)}
+            placeholder="Nome de quem está executando a ação"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium mb-1">Motivo</label>
+          <textarea
+            className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            rows={3}
+            required
+            value={motivo}
+            onChange={(e) => setMotivo(e.target.value)}
+            placeholder="Descreva o motivo da ação..."
+          />
+        </div>
+        <div className="flex justify-end gap-2 pt-2">
+          <Button type="button" variant="outline" onClick={onClose}>
+            Cancelar
+          </Button>
+          <Button type="submit" disabled={loading} variant={isDestructive ? "destructive" : "default"}>
+            {loading ? "Salvando..." : "Confirmar"}
+          </Button>
+        </div>
+      </form>
+    </Modal>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Page principal
+// ---------------------------------------------------------------------------
+const STATUS_VARIANT: Record<Produtor["status"], "default" | "secondary" | "outline" | "destructive"> = {
+  ATIVO:     "default",
+  INATIVO:   "secondary",
+  PENDENTE:  "outline",
+  BLOQUEADO: "destructive",
+};
+
+export default function ProdutoresGestorPage() {
+  const { produtores, isLoading, createProdutor, suspenderProdutor, reativarProdutor, inativarProdutor } =
+    useProdutores();
+
+  const [isCadastroOpen, setIsCadastroOpen] = useState(false);
+  const [acaoModal, setAcaoModal] = useState<{ tipo: TipoAcao; produtor: Produtor } | null>(null);
+  const [loadingForm, setLoadingForm] = useState(false);
+
+  const [formData, setFormData] = useState({
+    nomeFantasia: "",
+    cnpj: "",
+    email: "",
+    telefone: "",
   });
 
-  async function onSubmit(values: CadastroForm) {
+  const handleCadastro = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoadingForm(true);
     try {
-      await cadastrar.mutateAsync({
-        nomeFantasia: values.nomeFantasia,
-        cnpj: values.cnpj,
-        email: values.email,
-        telefone: values.telefone || undefined,
-      });
-      toast.success("Produtor cadastrado");
-      form.reset();
-      setCadastroAberto(false);
-    } catch (error) {
-      toast.error((error as ApiError).message);
+      await createProdutor(formData);
+      setFormData({ nomeFantasia: "", cnpj: "", email: "", telefone: "" });
+      setIsCadastroOpen(false);
+    } catch {
+      alert("Erro ao cadastrar produtor. Verifique os dados e tente novamente.");
+    } finally {
+      setLoadingForm(false);
     }
-  }
+  };
 
-  const colunas: Coluna<ProdutorResumo>[] = [
+  const handleAcaoConfirm = async (payload: AcaoAdministrativaPayload) => {
+    if (!acaoModal) return;
+    const { tipo, produtor } = acaoModal;
+    if (tipo === "suspender") await suspenderProdutor({ id: produtor.id, ...payload });
+    if (tipo === "reativar")  await reativarProdutor({ id: produtor.id, ...payload });
+    if (tipo === "inativar")  await inativarProdutor({ id: produtor.id, ...payload });
+    setAcaoModal(null);
+  };
+
+  const columns = [
     {
-      header: "Nome fantasia",
-      cell: (p) => <span className="font-medium">{p.nomeFantasia}</span>,
+      header: "Nome Fantasia",
+      accessor: "nomeFantasia" as keyof Produtor,
+      cell: (row: Produtor) => <span className="font-medium">{row.nomeFantasia}</span>,
     },
     {
       header: "CNPJ",
-      cell: (p) => (
-        <span className="font-mono text-xs">{p.cnpj ?? "—"}</span>
+      accessor: "cnpj" as keyof Produtor,
+      cell: (row: Produtor) => <span className="font-mono text-sm">{row.cnpj}</span>,
+    },
+    {
+      header: "Email",
+      accessor: "email" as keyof Produtor,
+      cell: (row: Produtor) => <span>{row.email}</span>,
+    },
+    {
+      header: "Status",
+      accessor: "status" as keyof Produtor,
+      cell: (row: Produtor) => (
+        <Badge variant={STATUS_VARIANT[row.status]}>{row.status}</Badge>
       ),
     },
     {
-      header: "Contato",
-      cell: (p) => (
-        <div className="text-xs">
-          <p>{p.email}</p>
-          {p.telefone && (
-            <p className="text-muted-foreground">{p.telefone}</p>
+      header: "Ações",
+      accessor: "id" as keyof Produtor,
+      cell: (row: Produtor) => (
+        <div className="flex gap-2 flex-wrap items-center">
+          {/* Drill-down: artistas deste produtor */}
+          <Link href={`/gestor/produtores/${row.id}/artistas`}>
+            <Button variant="outline" size="sm" title="Ver artistas">
+              <Mic className="w-4 h-4" />
+            </Button>
+          </Link>
+
+          {/* PENDENTE: aprovar ou rejeitar */}
+          {row.status === "PENDENTE" && (
+            <>
+              <Button
+                variant="outline"
+                size="sm"
+                title="Aprovar"
+                onClick={() => setAcaoModal({ tipo: "reativar", produtor: row })}
+              >
+                <CheckCircle className="w-4 h-4 text-green-500" />
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                title="Rejeitar"
+                onClick={() => setAcaoModal({ tipo: "suspender", produtor: row })}
+              >
+                <XCircle className="w-4 h-4 text-red-500" />
+              </Button>
+            </>
+          )}
+
+          {/* ATIVO: suspender */}
+          {row.status === "ATIVO" && (
+            <Button
+              variant="outline"
+              size="sm"
+              title="Suspender"
+              onClick={() => setAcaoModal({ tipo: "suspender", produtor: row })}
+            >
+              <PowerOff className="w-4 h-4 text-orange-500" />
+            </Button>
+          )}
+
+          {/* BLOQUEADO ou INATIVO: reativar */}
+          {(row.status === "BLOQUEADO" || row.status === "INATIVO") && (
+            <Button
+              variant="outline"
+              size="sm"
+              title="Reativar"
+              onClick={() => setAcaoModal({ tipo: "reativar", produtor: row })}
+            >
+              <Power className="w-4 h-4 text-green-500" />
+            </Button>
+          )}
+
+          {/* Inativar permanentemente (exceto quem já está INATIVO) */}
+          {row.status !== "INATIVO" && (
+            <Button
+              variant="destructive"
+              size="sm"
+              title="Inativar permanentemente"
+              onClick={() => setAcaoModal({ tipo: "inativar", produtor: row })}
+            >
+              <Ban className="w-4 h-4" />
+            </Button>
           )}
         </div>
       ),
     },
-    {
-      header: "Status",
-      cell: (p) => (
-        <Badge variant={statusVariant[p.status]}>{p.status}</Badge>
-      ),
-    },
-    {
-      header: "",
-      width: "1%",
-      cell: (p) => <AcoesLinha produtor={p} />,
-    },
   ];
-
-  function AcoesLinha({ produtor }: { produtor: ProdutorResumo }) {
-    async function handle(
-      acao: "suspender" | "reativar" | "inativar",
-    ) {
-      const map = { suspender, reativar, inativar };
-      try {
-        await map[acao].mutateAsync(produtor.id);
-        toast.success(`Produtor ${acao}do`);
-      } catch (error) {
-        toast.error((error as ApiError).message);
-      }
-    }
-    return (
-      <div className="flex items-center gap-1">
-        {produtor.status === "ATIVO" && (
-          <Button
-            size="icon-sm"
-            variant="ghost"
-            onClick={() => handle("suspender")}
-            aria-label="Suspender"
-          >
-            <Pause className="h-3.5 w-3.5" />
-          </Button>
-        )}
-        {produtor.status === "SUSPENSO" && (
-          <Button
-            size="icon-sm"
-            variant="ghost"
-            onClick={() => handle("reativar")}
-            aria-label="Reativar"
-          >
-            <Play className="h-3.5 w-3.5" />
-          </Button>
-        )}
-        {produtor.status !== "INATIVO" && (
-          <Button
-            size="icon-sm"
-            variant="ghost"
-            onClick={() => handle("inativar")}
-            aria-label="Inativar"
-            className="text-destructive hover:bg-destructive/10"
-          >
-            <Trash2 className="h-3.5 w-3.5" />
-          </Button>
-        )}
-      </div>
-    );
-  }
 
   return (
     <PageLayout
-      titulo="Produtores"
-      subtitulo="Cadastro, suspensão e inativação de produtores culturais."
+      titulo="Gestão de Produtores"
+      subtitulo="Aprove, suspenda e gerencie os produtores culturais da plataforma."
       acoes={
-        <Button
-          onClick={() => setCadastroAberto(true)}
-          className="bg-azul hover:bg-azul-light text-nevoa"
-        >
-          <Plus className="mr-1 h-4 w-4" />
-          Novo produtor
+        <Button onClick={() => setIsCadastroOpen(true)}>
+          <Plus className="w-4 h-4 mr-2" />
+          Novo Produtor
         </Button>
       }
     >
-      {isLoading && (
-        <div className="space-y-2">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <Skeleton key={i} className="h-12 w-full" />
-          ))}
-        </div>
-      )}
+      <DataTable
+        columns={columns}
+        rowKey={(row) => row.id}
+        data={produtores ?? []}
+        empty="Nenhum produtor encontrado."
+      />
 
-      {isError && (
-        <EmptyState
-          icon={UserPlus}
-          title="Falha ao carregar produtores"
-          description="Verifique se o backend está rodando."
-        />
-      )}
-
-      {data && (
-        <DataTable
-          data={data}
-          rowKey={(p) => p.id}
-          columns={colunas}
-          empty={
-            <EmptyState
-              icon={UserPlus}
-              title="Nenhum produtor cadastrado"
-              description="Cadastre o primeiro produtor para liberar a criação de eventos."
-              action={
-                <Button
-                  onClick={() => setCadastroAberto(true)}
-                  variant="outline"
-                >
-                  Novo produtor
-                </Button>
-              }
+      {/* Modal: Cadastro */}
+      <Modal open={isCadastroOpen} onClose={() => setIsCadastroOpen(false)} title="Novo Produtor">
+        <form onSubmit={handleCadastro} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium mb-1">Nome Fantasia</label>
+            <Input
+              required
+              value={formData.nomeFantasia}
+              onChange={(e) => setFormData({ ...formData, nomeFantasia: e.target.value })}
+              placeholder="Nome do produtor cultural"
             />
-          }
-        />
-      )}
-
-      <Modal
-        open={cadastroAberto}
-        onClose={() => {
-          form.reset();
-          setCadastroAberto(false);
-        }}
-        title="Novo produtor"
-        description="O CNPJ é validado pelos dígitos verificadores."
-        footer={
-          <>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => {
-                form.reset();
-                setCadastroAberto(false);
-              }}
-              disabled={cadastrar.isPending}
-            >
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">CNPJ</label>
+            <Input
+              required
+              value={formData.cnpj}
+              onChange={(e) => setFormData({ ...formData, cnpj: e.target.value })}
+              placeholder="Apenas números"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">Email</label>
+            <Input
+              type="email"
+              required
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              placeholder="contato@produtor.com"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1">Telefone</label>
+            <Input
+              required
+              value={formData.telefone}
+              onChange={(e) => setFormData({ ...formData, telefone: e.target.value })}
+              placeholder="(81) 99999-9999"
+            />
+          </div>
+          <div className="flex justify-end gap-2 pt-2">
+            <Button type="button" variant="outline" onClick={() => setIsCadastroOpen(false)}>
               Cancelar
             </Button>
-            <Button
-              type="button"
-              onClick={form.handleSubmit(onSubmit)}
-              disabled={cadastrar.isPending}
-              className="bg-azul hover:bg-azul-light text-nevoa"
-            >
-              {cadastrar.isPending && <LoadingSpinner className="mr-2 text-nevoa" />}
-              Cadastrar
+            <Button type="submit" disabled={loadingForm}>
+              {loadingForm ? "Salvando..." : "Cadastrar"}
             </Button>
-          </>
-        }
-      >
-        <form className="space-y-4">
-          <FormField
-            label="Nome fantasia"
-            htmlFor="nomeFantasia"
-            error={form.formState.errors.nomeFantasia?.message}
-            required
-          >
-            <Input id="nomeFantasia" {...form.register("nomeFantasia")} />
-          </FormField>
-          <FormField
-            label="CNPJ (somente dígitos)"
-            htmlFor="cnpj"
-            error={form.formState.errors.cnpj?.message}
-            required
-          >
-            <Input
-              id="cnpj"
-              placeholder="00000000000000"
-              {...form.register("cnpj")}
-            />
-          </FormField>
-          <FormField
-            label="E-mail"
-            htmlFor="email"
-            error={form.formState.errors.email?.message}
-            required
-          >
-            <Input id="email" type="email" {...form.register("email")} />
-          </FormField>
-          <FormField label="Telefone" htmlFor="telefone">
-            <Input
-              id="telefone"
-              placeholder="(81) 99999-9999"
-              {...form.register("telefone")}
-            />
-          </FormField>
+          </div>
         </form>
       </Modal>
+
+      {/* Modal: Ação Administrativa */}
+      <AcaoAdministrativaModal
+        open={!!acaoModal}
+        tipo={acaoModal?.tipo ?? null}
+        produtor={acaoModal?.produtor ?? null}
+        onClose={() => setAcaoModal(null)}
+        onConfirm={handleAcaoConfirm}
+      />
     </PageLayout>
   );
 }

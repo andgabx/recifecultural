@@ -12,9 +12,21 @@ Requisito: Docker (inclui Docker Compose). API em http://localhost:8080
 
 ---
 
+## 📄 Relatório Final — Análise e Visualização de Dados
+
+[**📥 RelatorioFinalAVD-Projetos5-G2.pdf**](RelatorioFinalAVD-Projetos5-G2.pdf)
+
+Relatório completo cobrindo EDA, modelo de regressão (R² = 0,761), classificador de no-show (AUC = 0,795) e dashboard interativo.
+
+**Notebook Colab:** [Análise Completa — EDA + Regressão + Classificador](https://colab.research.google.com/drive/1Jrbrqh22-oAtNh0A3owDQqqaH_Jqh6W_?usp=sharing)
+
+---
+
 ## Deploy
 
 Aplicação publicada em: https://recifecultural-frontend.onrender.com/
+
+> ⚠️ **Plano gratuito do Render:** o backend pode demorar até 2 minutos para responder na primeira requisição após um período de inatividade (*cold start*). Aguarde o carregamento completo antes de navegar.
 
 Configuração declarativa em `render.yaml`: PostgreSQL gerenciado + backend Spring Boot (Docker) + frontend Next.js. Healthcheck via `/actuator/health`.
 

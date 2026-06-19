@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -23,13 +24,25 @@ import recifecultural.dominio.agenda.evento.IEventoRepositorio;
 public class InteligenciaServicoAplicacao {
 
     private final IEventoRepositorio eventoRepositorio;
+    private final VisitacaoConsulta visitacaoConsulta;
 
     private OrtEnvironment env;
     private OrtSession receitaSession;
     private OrtSession noShowSession;
 
-    public InteligenciaServicoAplicacao(IEventoRepositorio eventoRepositorio) {
+    public InteligenciaServicoAplicacao(IEventoRepositorio eventoRepositorio,
+                                        VisitacaoConsulta visitacaoConsulta) {
         this.eventoRepositorio = eventoRepositorio;
+        this.visitacaoConsulta = visitacaoConsulta;
+    }
+
+    /**
+     * Visitação histórica agregada por espaço (teatro) e mês.
+     * Soma ingressos ATIVO ou UTILIZADO de todos os anos disponíveis no banco.
+     * Retorna lista vazia se não houver ingressos — controlador decide fallback.
+     */
+    public List<VisitacaoMensal> listarVisitacao() {
+        return visitacaoConsulta.agregarPorEspacoEMes();
     }
 
     /**

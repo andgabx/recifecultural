@@ -28,12 +28,21 @@ public class ArtistaServicoAplicacao {
         return repositorio.pesquisarResumos();
     }
 
+    public List<ArtistaResumo> pesquisarResumosPorProdutor(ProdutorId produtorId) {
+        notNull(produtorId, "ProdutorId não pode ser nulo.");
+        return repositorio.pesquisarResumosPorProdutor(produtorId);
+    }
+
     public ArtistaId cadastrar(ProdutorId produtorId, String nome, RiderTecnico riderTecnico) {
         return servico.cadastrar(produtorId, nome, riderTecnico);
     }
 
     public void inativar(ArtistaId artistaId) {
         servico.inativar(artistaId);
+    }
+
+    public void reativar(ArtistaId artistaId) {
+        servico.reativar(artistaId);
     }
 
     public static RiderTecnico construirRider(List<String> itens) {

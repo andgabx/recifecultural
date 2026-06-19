@@ -1,0 +1,57 @@
+# Render Blueprint — Recife Cultural
+# Deploy via "New > Blueprint" no dashboard do Render.
+#
+# Provisiona:
+#   1. PostgreSQL gerenciado (recifecultural-db)
+#   2. Backend Spring Boot (Docker, repo root)
+#   3. Frontend Next.js (Node, apresentacao-frontend/)
+
+databases:
+  - name: recifecultural-db
+    plan: free
+    databaseName: recifecultural
+    user: recifecultural
+
+services:
+  - type: web
+    name: recifecultural-backend
+    runtime: docker
+    plan: free
+    region: oregon
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: SPRING_DATASOURCE_URL
+        fromDatabase:
+          name: recifecultural-db
+          property: connectionString
+      - key: SPRING_DATASOURCE_USERNAME
+        fromDatabase:
+          name: recifecultural-db
+          property: user
+      - key: SPRING_DATASOURCE_PASSWORD
+        fromDatabase:
+          name: recifecultural-db
+          property: password
+      - key: SPRING_JPA_HIBERNATE_DDL_AUTO
+        value: update
+      - key: JAVA_TOOL_OPTIONS
+        value: -XX:MaxRAMPercentage=75
+
+  - type: web
+    name: recifecultural-frontend
+    runtime: node
+    plan: free
+    region: oregon
+    rootDir: apresentacao-frontend
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_VERSION
+        value: 22
+      - key: NEXT_TELEMETRY_DISABLED
+        value: "1"
+      - key: NEXT_PUBLIC_API_URL
+        sync: false
+        # Após o primeiro deploy do backend, preencha com a URL pública:
+        # https://recifecultural-backend.onrender.com

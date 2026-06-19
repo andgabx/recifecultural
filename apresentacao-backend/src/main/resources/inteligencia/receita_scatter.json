@@ -1,0 +1,1202 @@
+[
+  {
+    "precoEfetivo": 62.98,
+    "receitaReal": 11961.85,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 59.84,
+    "receitaReal": 15683.84,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 62.67,
+    "receitaReal": 21557.67,
+    "capacidade": 500.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 54.29,
+    "receitaReal": 27988.92,
+    "capacidade": 500.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 27.52,
+    "receitaReal": 6753.22,
+    "capacidade": 400.0,
+    "categoria": "DANCA"
+  },
+  {
+    "precoEfetivo": 45.24,
+    "receitaReal": 12750.37,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 34.9,
+    "receitaReal": 7033.1,
+    "capacidade": 400.0,
+    "categoria": "DANCA"
+  },
+  {
+    "precoEfetivo": 43.62,
+    "receitaReal": 15896.82,
+    "capacidade": 500.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 24.92,
+    "receitaReal": 4527.67,
+    "capacidade": 400.0,
+    "categoria": "DANCA"
+  },
+  {
+    "precoEfetivo": 35.18,
+    "receitaReal": 21276.77,
+    "capacidade": 750.0,
+    "categoria": "TEATRO"
+  },
+  {
+    "precoEfetivo": 44.09,
+    "receitaReal": 7516.77,
+    "capacidade": 400.0,
+    "categoria": "DANCA"
+  },
+  {
+    "precoEfetivo": 30.42,
+    "receitaReal": 8055.63,
+    "capacidade": 400.0,
+    "categoria": "DANCA"
+  },
+  {
+    "precoEfetivo": 29.43,
+    "receitaReal": 8005.23,
+    "capacidade": 400.0,
+    "categoria": "DANCA"
+  },
+  {
+    "precoEfetivo": 51.63,
+    "receitaReal": 14063.9,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 19.84,
+    "receitaReal": 8424.14,
+    "capacidade": 750.0,
+    "categoria": "TEATRO"
+  },
+  {
+    "precoEfetivo": 39.8,
+    "receitaReal": 14184.87,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 26.39,
+    "receitaReal": 12961.36,
+    "capacidade": 750.0,
+    "categoria": "TEATRO"
+  },
+  {
+    "precoEfetivo": 53.03,
+    "receitaReal": 12329.59,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 41.42,
+    "receitaReal": 11531.9,
+    "capacidade": 350.0,
+    "categoria": "TEATRO"
+  },
+  {
+    "precoEfetivo": 56.26,
+    "receitaReal": 17568.08,
+    "capacidade": 500.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 27.14,
+    "receitaReal": 8190.76,
+    "capacidade": 400.0,
+    "categoria": "DANCA"
+  },
+  {
+    "precoEfetivo": 50.16,
+    "receitaReal": 11324.77,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 43.43,
+    "receitaReal": 18117.13,
+    "capacidade": 750.0,
+    "categoria": "TEATRO"
+  },
+  {
+    "precoEfetivo": 41.07,
+    "receitaReal": 20782.51,
+    "capacidade": 500.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 41.71,
+    "receitaReal": 3712.23,
+    "capacidade": 200.0,
+    "categoria": "TEATRO"
+  },
+  {
+    "precoEfetivo": 72.82,
+    "receitaReal": 11018.93,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 47.08,
+    "receitaReal": 21797.24,
+    "capacidade": 500.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 37.78,
+    "receitaReal": 6347.8,
+    "capacidade": 400.0,
+    "categoria": "DANCA"
+  },
+  {
+    "precoEfetivo": 52.48,
+    "receitaReal": 13529.65,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 58.76,
+    "receitaReal": 11766.93,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 36.93,
+    "receitaReal": 19235.41,
+    "capacidade": 750.0,
+    "categoria": "TEATRO"
+  },
+  {
+    "precoEfetivo": 63.56,
+    "receitaReal": 15426.69,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 77.7,
+    "receitaReal": 21279.88,
+    "capacidade": 500.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 59.09,
+    "receitaReal": 11957.2,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 41.9,
+    "receitaReal": 4914.95,
+    "capacidade": 200.0,
+    "categoria": "TEATRO"
+  },
+  {
+    "precoEfetivo": 54.21,
+    "receitaReal": 15087.63,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 38.49,
+    "receitaReal": 3061.48,
+    "capacidade": 200.0,
+    "categoria": "TEATRO"
+  },
+  {
+    "precoEfetivo": 52.41,
+    "receitaReal": 13315.72,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 29.02,
+    "receitaReal": 5952.4,
+    "capacidade": 350.0,
+    "categoria": "TEATRO"
+  },
+  {
+    "precoEfetivo": 33.78,
+    "receitaReal": 8252.35,
+    "capacidade": 350.0,
+    "categoria": "TEATRO"
+  },
+  {
+    "precoEfetivo": 47.76,
+    "receitaReal": 22345.51,
+    "capacidade": 500.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 41.19,
+    "receitaReal": 19765.06,
+    "capacidade": 500.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 27.25,
+    "receitaReal": 9260.69,
+    "capacidade": 750.0,
+    "categoria": "TEATRO"
+  },
+  {
+    "precoEfetivo": 58.38,
+    "receitaReal": 17064.24,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 51.59,
+    "receitaReal": 23658.29,
+    "capacidade": 500.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 33.23,
+    "receitaReal": 11048.19,
+    "capacidade": 350.0,
+    "categoria": "TEATRO"
+  },
+  {
+    "precoEfetivo": 52.87,
+    "receitaReal": 17604.54,
+    "capacidade": 500.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 48.91,
+    "receitaReal": 18192.05,
+    "capacidade": 500.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 69.98,
+    "receitaReal": 20841.25,
+    "capacidade": 500.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 42.54,
+    "receitaReal": 6593.8,
+    "capacidade": 400.0,
+    "categoria": "DANCA"
+  },
+  {
+    "precoEfetivo": 56.4,
+    "receitaReal": 25825.43,
+    "capacidade": 500.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 42.6,
+    "receitaReal": 10254.38,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 71.46,
+    "receitaReal": 10973.87,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 30.66,
+    "receitaReal": 7909.52,
+    "capacidade": 400.0,
+    "categoria": "DANCA"
+  },
+  {
+    "precoEfetivo": 63.47,
+    "receitaReal": 10942.84,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 63.51,
+    "receitaReal": 11770.47,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 32.0,
+    "receitaReal": 6245.27,
+    "capacidade": 400.0,
+    "categoria": "DANCA"
+  },
+  {
+    "precoEfetivo": 48.88,
+    "receitaReal": 12310.43,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 53.9,
+    "receitaReal": 21189.89,
+    "capacidade": 500.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 51.93,
+    "receitaReal": 17756.35,
+    "capacidade": 750.0,
+    "categoria": "TEATRO"
+  },
+  {
+    "precoEfetivo": 63.07,
+    "receitaReal": 17396.16,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 71.43,
+    "receitaReal": 9704.41,
+    "capacidade": 350.0,
+    "categoria": "TEATRO"
+  },
+  {
+    "precoEfetivo": 58.71,
+    "receitaReal": 15159.71,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 21.7,
+    "receitaReal": 3082.45,
+    "capacidade": 200.0,
+    "categoria": "TEATRO"
+  },
+  {
+    "precoEfetivo": 63.09,
+    "receitaReal": 15202.35,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 37.44,
+    "receitaReal": 8968.32,
+    "capacidade": 400.0,
+    "categoria": "DANCA"
+  },
+  {
+    "precoEfetivo": 23.63,
+    "receitaReal": 5217.44,
+    "capacidade": 400.0,
+    "categoria": "DANCA"
+  },
+  {
+    "precoEfetivo": 30.88,
+    "receitaReal": 6536.67,
+    "capacidade": 400.0,
+    "categoria": "DANCA"
+  },
+  {
+    "precoEfetivo": 43.67,
+    "receitaReal": 14897.25,
+    "capacidade": 750.0,
+    "categoria": "TEATRO"
+  },
+  {
+    "precoEfetivo": 50.45,
+    "receitaReal": 11986.68,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 42.72,
+    "receitaReal": 12119.67,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 59.46,
+    "receitaReal": 13424.71,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 28.83,
+    "receitaReal": 3113.28,
+    "capacidade": 200.0,
+    "categoria": "TEATRO"
+  },
+  {
+    "precoEfetivo": 47.67,
+    "receitaReal": 20763.68,
+    "capacidade": 500.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 28.54,
+    "receitaReal": 7086.46,
+    "capacidade": 350.0,
+    "categoria": "TEATRO"
+  },
+  {
+    "precoEfetivo": 62.5,
+    "receitaReal": 30599.55,
+    "capacidade": 500.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 22.65,
+    "receitaReal": 4807.6,
+    "capacidade": 400.0,
+    "categoria": "DANCA"
+  },
+  {
+    "precoEfetivo": 31.09,
+    "receitaReal": 16050.27,
+    "capacidade": 750.0,
+    "categoria": "TEATRO"
+  },
+  {
+    "precoEfetivo": 31.73,
+    "receitaReal": 7794.67,
+    "capacidade": 400.0,
+    "categoria": "DANCA"
+  },
+  {
+    "precoEfetivo": 37.15,
+    "receitaReal": 14685.1,
+    "capacidade": 500.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 63.09,
+    "receitaReal": 13662.41,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 34.94,
+    "receitaReal": 6861.53,
+    "capacidade": 400.0,
+    "categoria": "DANCA"
+  },
+  {
+    "precoEfetivo": 34.95,
+    "receitaReal": 8505.3,
+    "capacidade": 400.0,
+    "categoria": "DANCA"
+  },
+  {
+    "precoEfetivo": 41.21,
+    "receitaReal": 4690.32,
+    "capacidade": 200.0,
+    "categoria": "TEATRO"
+  },
+  {
+    "precoEfetivo": 49.64,
+    "receitaReal": 20258.16,
+    "capacidade": 500.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 46.22,
+    "receitaReal": 19310.14,
+    "capacidade": 500.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 39.96,
+    "receitaReal": 10024.68,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 45.82,
+    "receitaReal": 11248.06,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 38.04,
+    "receitaReal": 14181.28,
+    "capacidade": 750.0,
+    "categoria": "TEATRO"
+  },
+  {
+    "precoEfetivo": 47.04,
+    "receitaReal": 15809.39,
+    "capacidade": 750.0,
+    "categoria": "TEATRO"
+  },
+  {
+    "precoEfetivo": 37.28,
+    "receitaReal": 6926.73,
+    "capacidade": 350.0,
+    "categoria": "TEATRO"
+  },
+  {
+    "precoEfetivo": 75.74,
+    "receitaReal": 16465.93,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 68.29,
+    "receitaReal": 13608.62,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 59.09,
+    "receitaReal": 24076.61,
+    "capacidade": 500.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 25.48,
+    "receitaReal": 7263.4,
+    "capacidade": 400.0,
+    "categoria": "DANCA"
+  },
+  {
+    "precoEfetivo": 32.39,
+    "receitaReal": 6093.59,
+    "capacidade": 350.0,
+    "categoria": "TEATRO"
+  },
+  {
+    "precoEfetivo": 36.48,
+    "receitaReal": 9367.68,
+    "capacidade": 350.0,
+    "categoria": "TEATRO"
+  },
+  {
+    "precoEfetivo": 41.27,
+    "receitaReal": 22776.46,
+    "capacidade": 750.0,
+    "categoria": "TEATRO"
+  },
+  {
+    "precoEfetivo": 48.75,
+    "receitaReal": 14122.0,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 50.05,
+    "receitaReal": 19719.35,
+    "capacidade": 500.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 44.75,
+    "receitaReal": 12696.24,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 67.76,
+    "receitaReal": 22806.69,
+    "capacidade": 500.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 44.45,
+    "receitaReal": 12401.59,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 34.24,
+    "receitaReal": 3590.15,
+    "capacidade": 200.0,
+    "categoria": "TEATRO"
+  },
+  {
+    "precoEfetivo": 31.98,
+    "receitaReal": 17335.06,
+    "capacidade": 750.0,
+    "categoria": "TEATRO"
+  },
+  {
+    "precoEfetivo": 68.24,
+    "receitaReal": 31501.38,
+    "capacidade": 500.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 17.75,
+    "receitaReal": 4754.18,
+    "capacidade": 400.0,
+    "categoria": "DANCA"
+  },
+  {
+    "precoEfetivo": 63.85,
+    "receitaReal": 18939.68,
+    "capacidade": 500.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 47.07,
+    "receitaReal": 23993.28,
+    "capacidade": 500.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 17.85,
+    "receitaReal": 12778.11,
+    "capacidade": 750.0,
+    "categoria": "TEATRO"
+  },
+  {
+    "precoEfetivo": 48.81,
+    "receitaReal": 10252.68,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 36.09,
+    "receitaReal": 15218.46,
+    "capacidade": 750.0,
+    "categoria": "TEATRO"
+  },
+  {
+    "precoEfetivo": 36.35,
+    "receitaReal": 8338.39,
+    "capacidade": 400.0,
+    "categoria": "DANCA"
+  },
+  {
+    "precoEfetivo": 42.15,
+    "receitaReal": 12333.15,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 58.33,
+    "receitaReal": 9102.0,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 25.25,
+    "receitaReal": 5580.4,
+    "capacidade": 400.0,
+    "categoria": "DANCA"
+  },
+  {
+    "precoEfetivo": 27.96,
+    "receitaReal": 4982.91,
+    "capacidade": 400.0,
+    "categoria": "DANCA"
+  },
+  {
+    "precoEfetivo": 70.23,
+    "receitaReal": 10690.22,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 29.27,
+    "receitaReal": 13885.27,
+    "capacidade": 750.0,
+    "categoria": "TEATRO"
+  },
+  {
+    "precoEfetivo": 49.0,
+    "receitaReal": 13867.14,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 53.98,
+    "receitaReal": 16080.65,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 47.59,
+    "receitaReal": 16079.39,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 50.76,
+    "receitaReal": 9650.36,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 50.78,
+    "receitaReal": 13068.94,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 54.32,
+    "receitaReal": 11907.81,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 51.93,
+    "receitaReal": 19447.81,
+    "capacidade": 500.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 44.18,
+    "receitaReal": 18209.35,
+    "capacidade": 750.0,
+    "categoria": "TEATRO"
+  },
+  {
+    "precoEfetivo": 77.27,
+    "receitaReal": 15972.75,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 44.23,
+    "receitaReal": 6950.71,
+    "capacidade": 200.0,
+    "categoria": "TEATRO"
+  },
+  {
+    "precoEfetivo": 64.41,
+    "receitaReal": 26494.96,
+    "capacidade": 500.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 64.81,
+    "receitaReal": 23723.27,
+    "capacidade": 500.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 24.93,
+    "receitaReal": 3970.23,
+    "capacidade": 400.0,
+    "categoria": "DANCA"
+  },
+  {
+    "precoEfetivo": 27.92,
+    "receitaReal": 7319.03,
+    "capacidade": 400.0,
+    "categoria": "DANCA"
+  },
+  {
+    "precoEfetivo": 61.34,
+    "receitaReal": 18269.82,
+    "capacidade": 500.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 31.41,
+    "receitaReal": 8658.92,
+    "capacidade": 400.0,
+    "categoria": "DANCA"
+  },
+  {
+    "precoEfetivo": 47.0,
+    "receitaReal": 11961.47,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 38.82,
+    "receitaReal": 9135.12,
+    "capacidade": 400.0,
+    "categoria": "DANCA"
+  },
+  {
+    "precoEfetivo": 25.56,
+    "receitaReal": 6032.74,
+    "capacidade": 400.0,
+    "categoria": "DANCA"
+  },
+  {
+    "precoEfetivo": 51.35,
+    "receitaReal": 9589.56,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 29.83,
+    "receitaReal": 6826.52,
+    "capacidade": 400.0,
+    "categoria": "DANCA"
+  },
+  {
+    "precoEfetivo": 47.72,
+    "receitaReal": 20567.4,
+    "capacidade": 500.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 60.81,
+    "receitaReal": 14772.46,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 65.01,
+    "receitaReal": 14078.81,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 71.76,
+    "receitaReal": 13698.83,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 35.08,
+    "receitaReal": 9616.03,
+    "capacidade": 350.0,
+    "categoria": "TEATRO"
+  },
+  {
+    "precoEfetivo": 50.95,
+    "receitaReal": 22557.68,
+    "capacidade": 500.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 31.36,
+    "receitaReal": 5225.87,
+    "capacidade": 350.0,
+    "categoria": "TEATRO"
+  },
+  {
+    "precoEfetivo": 28.63,
+    "receitaReal": 2670.4,
+    "capacidade": 200.0,
+    "categoria": "TEATRO"
+  },
+  {
+    "precoEfetivo": 53.78,
+    "receitaReal": 11941.39,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 37.61,
+    "receitaReal": 13040.52,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 45.04,
+    "receitaReal": 13651.79,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 25.07,
+    "receitaReal": 8278.59,
+    "capacidade": 400.0,
+    "categoria": "DANCA"
+  },
+  {
+    "precoEfetivo": 55.52,
+    "receitaReal": 24572.76,
+    "capacidade": 500.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 62.18,
+    "receitaReal": 28593.35,
+    "capacidade": 500.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 30.56,
+    "receitaReal": 2818.22,
+    "capacidade": 200.0,
+    "categoria": "TEATRO"
+  },
+  {
+    "precoEfetivo": 13.27,
+    "receitaReal": 2466.08,
+    "capacidade": 400.0,
+    "categoria": "DANCA"
+  },
+  {
+    "precoEfetivo": 26.65,
+    "receitaReal": 12548.82,
+    "capacidade": 750.0,
+    "categoria": "TEATRO"
+  },
+  {
+    "precoEfetivo": 52.01,
+    "receitaReal": 21898.61,
+    "capacidade": 500.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 33.03,
+    "receitaReal": 14489.32,
+    "capacidade": 750.0,
+    "categoria": "TEATRO"
+  },
+  {
+    "precoEfetivo": 32.95,
+    "receitaReal": 3501.01,
+    "capacidade": 200.0,
+    "categoria": "TEATRO"
+  },
+  {
+    "precoEfetivo": 62.68,
+    "receitaReal": 16857.76,
+    "capacidade": 500.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 59.68,
+    "receitaReal": 19450.24,
+    "capacidade": 500.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 56.28,
+    "receitaReal": 12883.09,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 56.67,
+    "receitaReal": 19186.71,
+    "capacidade": 500.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 40.64,
+    "receitaReal": 9980.92,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 46.69,
+    "receitaReal": 9766.86,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 37.9,
+    "receitaReal": 12052.02,
+    "capacidade": 400.0,
+    "categoria": "DANCA"
+  },
+  {
+    "precoEfetivo": 51.56,
+    "receitaReal": 27305.23,
+    "capacidade": 500.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 72.92,
+    "receitaReal": 22116.35,
+    "capacidade": 500.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 21.82,
+    "receitaReal": 4174.63,
+    "capacidade": 400.0,
+    "categoria": "DANCA"
+  },
+  {
+    "precoEfetivo": 46.86,
+    "receitaReal": 12746.15,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 29.05,
+    "receitaReal": 14542.62,
+    "capacidade": 750.0,
+    "categoria": "TEATRO"
+  },
+  {
+    "precoEfetivo": 54.53,
+    "receitaReal": 16373.22,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 25.03,
+    "receitaReal": 7005.17,
+    "capacidade": 400.0,
+    "categoria": "DANCA"
+  },
+  {
+    "precoEfetivo": 68.0,
+    "receitaReal": 12343.38,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 60.56,
+    "receitaReal": 13923.0,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 20.44,
+    "receitaReal": 4033.64,
+    "capacidade": 200.0,
+    "categoria": "TEATRO"
+  },
+  {
+    "precoEfetivo": 67.45,
+    "receitaReal": 10675.51,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 25.25,
+    "receitaReal": 4582.02,
+    "capacidade": 200.0,
+    "categoria": "TEATRO"
+  },
+  {
+    "precoEfetivo": 38.5,
+    "receitaReal": 8295.17,
+    "capacidade": 400.0,
+    "categoria": "DANCA"
+  },
+  {
+    "precoEfetivo": 44.14,
+    "receitaReal": 9312.25,
+    "capacidade": 350.0,
+    "categoria": "TEATRO"
+  },
+  {
+    "precoEfetivo": 48.25,
+    "receitaReal": 14365.24,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 67.43,
+    "receitaReal": 11047.03,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 56.97,
+    "receitaReal": 14974.71,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 52.18,
+    "receitaReal": 14369.74,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 58.58,
+    "receitaReal": 18992.69,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 46.4,
+    "receitaReal": 7013.65,
+    "capacidade": 400.0,
+    "categoria": "DANCA"
+  },
+  {
+    "precoEfetivo": 49.43,
+    "receitaReal": 15275.54,
+    "capacidade": 500.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 69.96,
+    "receitaReal": 13492.07,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 50.56,
+    "receitaReal": 9626.58,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 57.39,
+    "receitaReal": 8197.96,
+    "capacidade": 400.0,
+    "categoria": "DANCA"
+  },
+  {
+    "precoEfetivo": 53.45,
+    "receitaReal": 10312.8,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 23.94,
+    "receitaReal": 7124.76,
+    "capacidade": 350.0,
+    "categoria": "TEATRO"
+  },
+  {
+    "precoEfetivo": 59.3,
+    "receitaReal": 18811.31,
+    "capacidade": 500.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 38.85,
+    "receitaReal": 9565.2,
+    "capacidade": 400.0,
+    "categoria": "DANCA"
+  },
+  {
+    "precoEfetivo": 79.32,
+    "receitaReal": 28546.6,
+    "capacidade": 500.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 51.45,
+    "receitaReal": 15979.84,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  },
+  {
+    "precoEfetivo": 33.02,
+    "receitaReal": 6340.99,
+    "capacidade": 400.0,
+    "categoria": "DANCA"
+  },
+  {
+    "precoEfetivo": 27.74,
+    "receitaReal": 4707.35,
+    "capacidade": 400.0,
+    "categoria": "DANCA"
+  },
+  {
+    "precoEfetivo": 66.66,
+    "receitaReal": 15714.17,
+    "capacidade": 300.0,
+    "categoria": "MUSICA"
+  }
+]

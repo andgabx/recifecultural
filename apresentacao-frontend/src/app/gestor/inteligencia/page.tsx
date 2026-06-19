@@ -5,12 +5,16 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { BrainCircuit, TrendingUp, UserX, AlertCircle, CheckCircle2, Loader2, CalendarSearch, BarChart3, ChevronRight, Info, Users, ArrowUpRight } from 'lucide-react';
+import { BrainCircuit, TrendingUp, UserX, AlertCircle, CheckCircle2, Loader2, CalendarSearch, BarChart3, ChevronRight, Info, Users, ArrowUpRight, Activity, Target, Zap, Award } from 'lucide-react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip,
-  ResponsiveContainer, Cell, PieChart, Pie, Label as RechartsLabel
+  ResponsiveContainer, Cell, PieChart, Pie, Label as RechartsLabel,
+  ScatterChart, Scatter, ZAxis, AreaChart, Area, Line, LineChart, ReferenceLine
 } from "recharts";
+import {
+  useVisitacao, useNoshowPorGrupo, useMetricasClassificador, useReceitaScatter
+} from '@/hooks/useInteligencia';
 
 // --- Estilos compartilhados de gráficos baseados no AnalyticsView ---
 const TICK = { fontSize: 11, fill: "#3f3f46" } as const;
@@ -70,7 +74,29 @@ const ErrorDisplay = ({ error }: { error: any }) => {
 };
 
 export default function InteligenciaDashboardPage() {
-  const [activeTab, setActiveTab] = useState<'simuladores' | 'analise-evento'>('simuladores');
+  const [activeTab, setActiveTab] = useState<'simuladores' | 'analise-evento' | 'visualizacoes'>('simuladores');
+
+  // Estados locais para a aba de Visualizações
+  const [teatroSelecionado, setTeatroSelecionado] = useState<string>('');
+  const [categoriaScatter, setCategoriaScatter] = useState<string>('TODAS');
+
+  // Hooks de visualizações analíticas
+  const visitacaoQuery = useVisitacao();
+  const noshowGrupoQuery = useNoshowPorGrupo();
+  const metricasClassificadorQuery = useMetricasClassificador();
+  const receitaScatterQuery = useReceitaScatter();
+
+  // Paleta institucional Recife Cultural
+  const PALETA = {
+    azul: '#173DB7',
+    laranja: '#E94E1B',
+    verde: '#10b981',
+    violeta: '#8b5cf6',
+    ambar: '#f59e0b',
+  } as const;
+  const CATEGORIAS_SCATTER = ['TEATRO', 'MUSICA', 'DANCA', 'INFANTIL', 'OUTROS'] as const;
+  const CORES_SCATTER = [PALETA.azul, PALETA.laranja, PALETA.verde, PALETA.violeta, PALETA.ambar];
+  const MESES_LABEL = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
 
   const [receitaForm, setReceitaForm] = useState({ orcamentoMarketing: 0, patrocinio: 0 });
   const [noShowForm, setNoShowForm] = useState({ eventoId: '' });
@@ -125,6 +151,59 @@ export default function InteligenciaDashboardPage() {
     else dist.unshift({ name: publicoAlvo, percent: Math.floor(Math.random() * 20) + 40 });
     return dist.sort((a, b) => b.percent - a.percent).slice(0, 4);
   }, [analiseData]);
+
+  // ===== Derivações para a aba de Visualizações =====
+  const visitacaoData = visitacaoQuery.data ?? [];
+
+  const teatrosUnicos = useMemo(() => {
+    const set = new Set<string>();
+    visitacaoData.forEach((p) => set.add(p.teatro));
+    return Array.from(set).sort();
+  }, [visitacaoData]);
+
+  const totalPorTeatro = useMemo(() => {
+    const map = new Map<string, number>();
+    visitacaoData.forEach((p) => {
+      map.set(p.teatro, (map.get(p.teatro) || 0) + (p.visitantes || 0));
+    });
+    return Array.from(map.entries())
+      .map(([teatro, total]) => ({ teatro, total }))
+      .sort((a, b) => b.total - a.total);
+  }, [visitacaoData]);
+
+  const visitantesPorMes = useMemo(() => {
+    const acc = new Map<number, number>();
+    const filtrados = teatroSelecionado
+      ? visitacaoData.filter((p) => p.teatro === teatroSelecionado)
+      : visitacaoData;
+    filtrados.forEach((p) => {
+      acc.set(p.mes, (acc.get(p.mes) || 0) + (p.visitantes || 0));
+    });
+    return Array.from({ length: 12 }, (_, i) => {
+      const mes = i + 1;
+      return {
+        mes,
+        nome: MESES_LABEL[i],
+        visitantes: acc.get(mes) || 0,
+      };
+    });
+  }, [visitacaoData, teatroSelecionado]);
+
+  const scatterFiltrado = useMemo(() => {
+    const all = receitaScatterQuery.data ?? [];
+    if (categoriaScatter === 'TODAS') return all;
+    return all.filter((p) => p.categoria === categoriaScatter);
+  }, [receitaScatterQuery.data, categoriaScatter]);
+
+  const scatterPorCategoria = useMemo(() => {
+    const grupos: Record<string, typeof scatterFiltrado> = {};
+    scatterFiltrado.forEach((p) => {
+      const key = p.categoria || 'OUTROS';
+      if (!grupos[key]) grupos[key] = [];
+      grupos[key].push(p);
+    });
+    return grupos;
+  }, [scatterFiltrado]);
 
   // --- RENDERIZADORES COM GRÁFICOS ---
 
@@ -371,6 +450,14 @@ export default function InteligenciaDashboardPage() {
         >
           <div className="flex items-center gap-2"><CalendarSearch className="w-4 h-4" /> Análise de Evento</div>
         </button>
+        <button
+          onClick={() => setActiveTab('visualizacoes')}
+          className={`pb-2 px-1 text-sm font-medium border-b-2 transition-colors ${
+            activeTab === 'visualizacoes' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-foreground'
+          }`}
+        >
+          <div className="flex items-center gap-2"><Activity className="w-4 h-4" /> Visualizações Analíticas</div>
+        </button>
       </div>
 
       <div className="mt-6">
@@ -461,6 +548,440 @@ export default function InteligenciaDashboardPage() {
                 </div>
               </CardContent>
             </Card>
+          </div>
+        )}
+
+        {activeTab === 'visualizacoes' && (
+          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+
+            {/* SEÇÃO 1 — Demanda Real (2023) */}
+            <Card className="border-border/50 shadow-sm bg-white">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <BarChart3 className="w-5 h-5" style={{ color: PALETA.azul }} /> Demanda Real (2023)
+                </CardTitle>
+                <CardDescription>Visitantes por teatro e evolução mensal — base histórica de demanda.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {visitacaoQuery.isLoading ? (
+                  <div className="flex items-center justify-center py-12">
+                    <Loader2 className="w-6 h-6 animate-spin text-zinc-400" />
+                  </div>
+                ) : visitacaoQuery.error ? (
+                  <ErrorDisplay error={visitacaoQuery.error} />
+                ) : (
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <Label className="text-xs whitespace-nowrap">Filtrar por teatro:</Label>
+                      <select
+                        className="flex h-9 w-full max-w-sm rounded-md border border-input bg-background px-3 py-1 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                        value={teatroSelecionado}
+                        onChange={(e) => setTeatroSelecionado(e.target.value)}
+                      >
+                        <option value="">Todos os teatros</option>
+                        {teatrosUnicos.map((t) => <option key={t} value={t}>{t}</option>)}
+                      </select>
+                    </div>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                      <div>
+                        <h4 className="text-sm font-semibold text-zinc-600 mb-2">Total de Visitantes por Teatro</h4>
+                        <div className="h-72 w-full">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={totalPorTeatro} layout="vertical" margin={{ top: 5, right: 20, bottom: 5, left: 10 }}>
+                              <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e2e8f0" />
+                              <XAxis type="number" tick={TICK} />
+                              <YAxis dataKey="teatro" type="category" tick={{ ...TICK, fontSize: 10 }} width={140} />
+                              <RechartsTooltip
+                                formatter={(value: any) => [Number(value).toLocaleString('pt-BR'), 'Visitantes']}
+                                {...TOOLTIP_STYLE}
+                              />
+                              <Bar dataKey="total" fill={PALETA.azul} radius={[0, 4, 4, 0]} />
+                            </BarChart>
+                          </ResponsiveContainer>
+                        </div>
+                      </div>
+
+                      <div>
+                        <h4 className="text-sm font-semibold text-zinc-600 mb-2">
+                          Visitantes por Mês {teatroSelecionado ? `— ${teatroSelecionado}` : '(todos os teatros)'}
+                        </h4>
+                        <div className="h-72 w-full">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <AreaChart data={visitantesPorMes} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+                              <defs>
+                                <linearGradient id="gradVisitantes" x1="0" y1="0" x2="0" y2="1">
+                                  <stop offset="0%" stopColor={PALETA.azul} stopOpacity={0.4} />
+                                  <stop offset="100%" stopColor={PALETA.azul} stopOpacity={0.05} />
+                                </linearGradient>
+                              </defs>
+                              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                              <XAxis dataKey="nome" tick={TICK} />
+                              <YAxis tick={TICK} />
+                              <RechartsTooltip
+                                formatter={(value: any) => [Number(value).toLocaleString('pt-BR'), 'Visitantes']}
+                                {...TOOLTIP_STYLE}
+                              />
+                              <Area type="monotone" dataKey="visitantes" stroke={PALETA.azul} strokeOpacity={0.2} fill="url(#gradVisitantes)" />
+                              <Line type="monotone" dataKey="visitantes" stroke={PALETA.laranja} strokeWidth={2.5} dot={{ r: 3, fill: PALETA.laranja }} />
+                            </AreaChart>
+                          </ResponsiveContainer>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* SEÇÃO 2 — Perfil de No-Show */}
+            <Card className="border-border/50 shadow-sm bg-white">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <UserX className="w-5 h-5" style={{ color: PALETA.laranja }} /> Perfil de No-Show
+                </CardTitle>
+                <CardDescription>Distribuição do percentual de alto risco por tipo, faixa de preço e categoria.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {noshowGrupoQuery.isLoading ? (
+                  <div className="flex items-center justify-center py-12">
+                    <Loader2 className="w-6 h-6 animate-spin text-zinc-400" />
+                  </div>
+                ) : noshowGrupoQuery.error ? (
+                  <ErrorDisplay error={noshowGrupoQuery.error} />
+                ) : noshowGrupoQuery.data ? (
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div>
+                      <h4 className="text-sm font-semibold text-zinc-600 mb-2">Por Tipo de Ingresso</h4>
+                      <div className="h-64 w-full">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <BarChart data={noshowGrupoQuery.data.porTipo} layout="vertical" margin={{ top: 5, right: 20, bottom: 5, left: 10 }}>
+                            <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e2e8f0" />
+                            <XAxis type="number" tick={TICK} unit="%" />
+                            <YAxis dataKey="tipo" type="category" tick={{ ...TICK, fontSize: 10 }} width={100} />
+                            <RechartsTooltip
+                              formatter={(value: any) => [`${Number(value).toFixed(1)}%`, 'Alto Risco']}
+                              {...TOOLTIP_STYLE}
+                            />
+                            <Bar dataKey="pctAltoRisco" fill={PALETA.laranja} radius={[0, 4, 4, 0]} />
+                          </BarChart>
+                        </ResponsiveContainer>
+                      </div>
+                    </div>
+
+                    <div>
+                      <h4 className="text-sm font-semibold text-zinc-600 mb-2">Por Faixa de Preço</h4>
+                      <div className="h-64 w-full">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <BarChart data={noshowGrupoQuery.data.porFaixaPreco} layout="vertical" margin={{ top: 5, right: 20, bottom: 5, left: 10 }}>
+                            <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e2e8f0" />
+                            <XAxis type="number" tick={TICK} unit="%" />
+                            <YAxis dataKey="faixa" type="category" tick={{ ...TICK, fontSize: 10 }} width={100} />
+                            <RechartsTooltip
+                              formatter={(value: any) => [`${Number(value).toFixed(1)}%`, 'Alto Risco']}
+                              {...TOOLTIP_STYLE}
+                            />
+                            <Bar dataKey="pctAltoRisco" fill={PALETA.azul} radius={[0, 4, 4, 0]} />
+                          </BarChart>
+                        </ResponsiveContainer>
+                      </div>
+                    </div>
+
+                    <div>
+                      <h4 className="text-sm font-semibold text-zinc-600 mb-2">Por Categoria</h4>
+                      <div className="h-64 w-full">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <BarChart data={noshowGrupoQuery.data.porCategoria} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                            <XAxis dataKey="categoria" tick={{ ...TICK, fontSize: 10 }} />
+                            <YAxis tick={TICK} unit="%" />
+                            <RechartsTooltip
+                              formatter={(value: any) => [`${Number(value).toFixed(1)}%`, 'Alto Risco']}
+                              {...TOOLTIP_STYLE}
+                            />
+                            <Bar dataKey="pctAltoRisco" radius={[4, 4, 0, 0]}>
+                              {noshowGrupoQuery.data.porCategoria.map((_, i) => (
+                                <Cell key={`cat-${i}`} fill={CORES_SCATTER[i % CORES_SCATTER.length]} />
+                              ))}
+                            </Bar>
+                          </BarChart>
+                        </ResponsiveContainer>
+                      </div>
+                    </div>
+                  </div>
+                ) : null}
+              </CardContent>
+            </Card>
+
+            {/* SEÇÃO 3 — Modelo de Receita */}
+            <Card className="border-border/50 shadow-sm bg-white">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <TrendingUp className="w-5 h-5" style={{ color: PALETA.azul }} /> Modelo de Receita
+                </CardTitle>
+                <CardDescription>Relação entre preço efetivo e receita real por categoria — o tamanho do ponto reflete a capacidade.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {receitaScatterQuery.isLoading ? (
+                  <div className="flex items-center justify-center py-12">
+                    <Loader2 className="w-6 h-6 animate-spin text-zinc-400" />
+                  </div>
+                ) : receitaScatterQuery.error ? (
+                  <ErrorDisplay error={receitaScatterQuery.error} />
+                ) : (
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <Label className="text-xs whitespace-nowrap">Filtrar por categoria:</Label>
+                      <select
+                        className="flex h-9 w-full max-w-sm rounded-md border border-input bg-background px-3 py-1 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                        value={categoriaScatter}
+                        onChange={(e) => setCategoriaScatter(e.target.value)}
+                      >
+                        <option value="TODAS">Todas as categorias</option>
+                        {CATEGORIAS_SCATTER.map((c) => <option key={c} value={c}>{c}</option>)}
+                      </select>
+                    </div>
+
+                    <div className="h-96 w-full">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <ScatterChart margin={{ top: 10, right: 20, bottom: 30, left: 10 }}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                          <XAxis
+                            type="number"
+                            dataKey="precoEfetivo"
+                            name="Preço Efetivo"
+                            unit=" R$"
+                            tick={TICK}
+                            label={{ value: 'Preço Efetivo (R$)', position: 'insideBottom', offset: -10, style: { fontSize: 11, fill: '#52525b' } }}
+                          />
+                          <YAxis
+                            type="number"
+                            dataKey="receitaReal"
+                            name="Receita Real"
+                            unit=" R$"
+                            tick={TICK}
+                            label={{ value: 'Receita Real (R$)', angle: -90, position: 'insideLeft', style: { fontSize: 11, fill: '#52525b' } }}
+                          />
+                          <ZAxis type="number" dataKey="capacidade" range={[40, 400]} name="Capacidade" />
+                          <RechartsTooltip
+                            cursor={{ strokeDasharray: '3 3' }}
+                            formatter={(value: any, name: any) => {
+                              if (name === 'Preço Efetivo' || name === 'Receita Real') {
+                                return [`R$ ${Number(value).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`, name];
+                              }
+                              if (name === 'Capacidade') return [Number(value).toLocaleString('pt-BR'), name];
+                              return [value, name];
+                            }}
+                            {...TOOLTIP_STYLE}
+                          />
+                          {CATEGORIAS_SCATTER.map((cat, i) => {
+                            const pontos = scatterPorCategoria[cat] || [];
+                            if (!pontos.length) return null;
+                            return (
+                              <Scatter
+                                key={cat}
+                                name={cat}
+                                data={pontos}
+                                fill={CORES_SCATTER[i]}
+                                fillOpacity={0.7}
+                              />
+                            );
+                          })}
+                        </ScatterChart>
+                      </ResponsiveContainer>
+                    </div>
+
+                    <div className="flex flex-wrap gap-3 justify-center pt-2">
+                      {CATEGORIAS_SCATTER.map((cat, i) => (
+                        <div key={cat} className="flex items-center gap-1.5 text-xs text-zinc-600">
+                          <span className="w-2.5 h-2.5 rounded-full" style={{ background: CORES_SCATTER[i] }} />
+                          {cat}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* SEÇÃO 4 — Avaliação do Classificador */}
+            <Card className="border-border/50 shadow-sm bg-white">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <Activity className="w-5 h-5" style={{ color: PALETA.laranja }} /> Avaliação do Classificador
+                </CardTitle>
+                <CardDescription>Métricas de desempenho, matriz de confusão, importância de variáveis e curvas ROC/PR.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {metricasClassificadorQuery.isLoading ? (
+                  <div className="flex items-center justify-center py-12">
+                    <Loader2 className="w-6 h-6 animate-spin text-zinc-400" />
+                  </div>
+                ) : metricasClassificadorQuery.error ? (
+                  <ErrorDisplay error={metricasClassificadorQuery.error} />
+                ) : metricasClassificadorQuery.data ? (
+                  (() => {
+                    const m = metricasClassificadorQuery.data;
+                    const fmtPct = (v: number) => `${(v * 100).toFixed(1)}%`;
+                    const cards = [
+                      { label: 'Acurácia', valor: m.acuracia, icone: Target, destaque: false },
+                      { label: 'Precisão', valor: m.precisao, icone: Award, destaque: false },
+                      { label: 'Recall', valor: m.recall, icone: Zap, destaque: true },
+                      { label: 'F1-Score', valor: m.f1, icone: CheckCircle2, destaque: false },
+                    ];
+                    const cm = m.confusaoMatrix || [[0, 0], [0, 0]];
+
+                    return (
+                      <div className="space-y-6">
+                        {/* (a) Cards de métricas */}
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                          {cards.map(({ label, valor, icone: Icone, destaque }) => {
+                            const cor = destaque ? PALETA.laranja : PALETA.azul;
+                            return (
+                              <div
+                                key={label}
+                                className="rounded-xl border-2 p-4 bg-white shadow-sm"
+                                style={{ borderColor: cor }}
+                              >
+                                <div className="flex items-center gap-2 mb-2">
+                                  <Icone className="w-4 h-4" style={{ color: cor }} />
+                                  <span className="text-xs font-semibold uppercase tracking-wider text-zinc-500">{label}</span>
+                                </div>
+                                <p className="text-3xl font-black tracking-tight" style={{ color: cor }}>
+                                  {fmtPct(valor)}
+                                </p>
+                              </div>
+                            );
+                          })}
+                        </div>
+
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                          {/* (b) Matriz de confusão */}
+                          <div>
+                            <h4 className="text-sm font-semibold text-zinc-600 mb-3">Matriz de Confusão</h4>
+                            <div className="border border-zinc-200 rounded-lg overflow-hidden">
+                              <div className="grid grid-cols-[80px_1fr_1fr] text-xs">
+                                <div className="bg-zinc-100 p-2 font-semibold text-zinc-600 border-b border-r border-zinc-200" />
+                                <div className="bg-zinc-100 p-2 font-semibold text-zinc-600 text-center border-b border-r border-zinc-200">Previsto: BAIXO</div>
+                                <div className="bg-zinc-100 p-2 font-semibold text-zinc-600 text-center border-b border-zinc-200">Previsto: ALTO</div>
+
+                                <div className="bg-zinc-100 p-3 font-semibold text-zinc-600 border-r border-b border-zinc-200 flex items-center">Real: BAIXO</div>
+                                <div className="p-4 text-center bg-emerald-50 border-r border-b border-zinc-200">
+                                  <div className="text-xs text-emerald-700 font-medium">Verdadeiro Negativo</div>
+                                  <div className="text-2xl font-black text-emerald-700">{cm[0]?.[0] ?? 0}</div>
+                                </div>
+                                <div className="p-4 text-center bg-red-50 border-b border-zinc-200">
+                                  <div className="text-xs text-red-700 font-medium">Falso Positivo</div>
+                                  <div className="text-2xl font-black text-red-700">{cm[0]?.[1] ?? 0}</div>
+                                </div>
+
+                                <div className="bg-zinc-100 p-3 font-semibold text-zinc-600 border-r border-zinc-200 flex items-center">Real: ALTO</div>
+                                <div className="p-4 text-center bg-red-50 border-r border-zinc-200">
+                                  <div className="text-xs text-red-700 font-medium">Falso Negativo</div>
+                                  <div className="text-2xl font-black text-red-700">{cm[1]?.[0] ?? 0}</div>
+                                </div>
+                                <div className="p-4 text-center bg-emerald-50">
+                                  <div className="text-xs text-emerald-700 font-medium">Verdadeiro Positivo</div>
+                                  <div className="text-2xl font-black text-emerald-700">{cm[1]?.[1] ?? 0}</div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* (c) Feature importance */}
+                          <div>
+                            <h4 className="text-sm font-semibold text-zinc-600 mb-3">Importância de Variáveis</h4>
+                            <div className="h-72 w-full">
+                              <ResponsiveContainer width="100%" height="100%">
+                                <BarChart data={m.featureImportance} layout="vertical" margin={{ top: 5, right: 20, bottom: 5, left: 10 }}>
+                                  <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e2e8f0" />
+                                  <XAxis type="number" tick={TICK} />
+                                  <YAxis dataKey="feature" type="category" tick={{ ...TICK, fontSize: 10 }} width={120} />
+                                  <RechartsTooltip
+                                    formatter={(value: any) => [Number(value).toFixed(3), 'Importância']}
+                                    {...TOOLTIP_STYLE}
+                                  />
+                                  <Bar dataKey="importancia" fill={PALETA.azul} radius={[0, 4, 4, 0]} />
+                                </BarChart>
+                              </ResponsiveContainer>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* (d) ROC + PR */}
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                          <div>
+                            <h4 className="text-sm font-semibold text-zinc-600 mb-3">
+                              Curva ROC <span className="text-xs font-normal text-zinc-500 ml-2">AUC = {m.aucRoc.toFixed(3)}</span>
+                            </h4>
+                            <div className="h-64 w-full">
+                              <ResponsiveContainer width="100%" height="100%">
+                                <LineChart data={m.rocCurve} margin={{ top: 5, right: 20, bottom: 25, left: 0 }}>
+                                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                                  <XAxis
+                                    type="number"
+                                    dataKey="fpr"
+                                    tick={TICK}
+                                    domain={[0, 1]}
+                                    label={{ value: 'FPR', position: 'insideBottom', offset: -10, style: { fontSize: 11, fill: '#52525b' } }}
+                                  />
+                                  <YAxis
+                                    type="number"
+                                    dataKey="tpr"
+                                    tick={TICK}
+                                    domain={[0, 1]}
+                                    label={{ value: 'TPR', angle: -90, position: 'insideLeft', style: { fontSize: 11, fill: '#52525b' } }}
+                                  />
+                                  <RechartsTooltip
+                                    formatter={(value: any, name: any) => [Number(value).toFixed(3), name === 'tpr' ? 'TPR' : name === 'fpr' ? 'FPR' : name]}
+                                    {...TOOLTIP_STYLE}
+                                  />
+                                  <ReferenceLine segment={[{ x: 0, y: 0 }, { x: 1, y: 1 }]} stroke="#94a3b8" strokeDasharray="4 4" ifOverflow="extendDomain" />
+                                  <Line type="monotone" dataKey="tpr" stroke={PALETA.laranja} strokeWidth={2.5} dot={false} />
+                                </LineChart>
+                              </ResponsiveContainer>
+                            </div>
+                          </div>
+
+                          <div>
+                            <h4 className="text-sm font-semibold text-zinc-600 mb-3">
+                              Curva Precisão-Recall <span className="text-xs font-normal text-zinc-500 ml-2">AP = {m.averagePrecision.toFixed(3)}</span>
+                            </h4>
+                            <div className="h-64 w-full">
+                              <ResponsiveContainer width="100%" height="100%">
+                                <LineChart data={m.prCurve} margin={{ top: 5, right: 20, bottom: 25, left: 0 }}>
+                                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                                  <XAxis
+                                    type="number"
+                                    dataKey="recall"
+                                    tick={TICK}
+                                    domain={[0, 1]}
+                                    label={{ value: 'Recall', position: 'insideBottom', offset: -10, style: { fontSize: 11, fill: '#52525b' } }}
+                                  />
+                                  <YAxis
+                                    type="number"
+                                    dataKey="precisao"
+                                    tick={TICK}
+                                    domain={[0, 1]}
+                                    label={{ value: 'Precisão', angle: -90, position: 'insideLeft', style: { fontSize: 11, fill: '#52525b' } }}
+                                  />
+                                  <RechartsTooltip
+                                    formatter={(value: any, name: any) => [Number(value).toFixed(3), name === 'precisao' ? 'Precisão' : name === 'recall' ? 'Recall' : name]}
+                                    {...TOOLTIP_STYLE}
+                                  />
+                                  <Line type="monotone" dataKey="precisao" stroke={PALETA.laranja} strokeWidth={2.5} dot={false} />
+                                </LineChart>
+                              </ResponsiveContainer>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })()
+                ) : null}
+              </CardContent>
+            </Card>
+
           </div>
         )}
       </div>

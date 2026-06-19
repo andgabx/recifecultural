@@ -1,15 +1,27 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import {
   inteligenciaService,
   PrevisaoReceitaReq,
   PrevisaoReceitaRes,
   PrevisaoNoShowReq,
   PrevisaoNoShowRes,
-  AnaliseEventoResposta
+  AnaliseEventoResposta,
+  VisitacaoPonto,
+  NoshowPorGrupo,
+  MetricasClassificador,
+  ReceitaScatterPonto
 } from '@/services/bff/inteligencia';
 
 // Exportando os tipos para compatibilidade com outros arquivos (como page.tsx)
-export type { PrevisaoReceitaRes, PrevisaoNoShowRes, AnaliseEventoResposta };
+export type {
+  PrevisaoReceitaRes,
+  PrevisaoNoShowRes,
+  AnaliseEventoResposta,
+  VisitacaoPonto,
+  NoshowPorGrupo,
+  MetricasClassificador,
+  ReceitaScatterPonto
+};
 
 export function usePreverReceita() {
   return useMutation<PrevisaoReceitaRes, Error, PrevisaoReceitaReq>({
@@ -33,5 +45,37 @@ export function usePreverNoShow() {
 export function useAnalisarEvento() {
   return useMutation<AnaliseEventoResposta, Error, string>({
     mutationFn: (eventoId: string) => inteligenciaService.analisarEvento(eventoId),
+  });
+}
+
+export function useVisitacao() {
+  return useQuery({
+    queryKey: ['inteligencia', 'visitacao'],
+    queryFn: () => inteligenciaService.listarVisitacao(),
+    staleTime: 5 * 60_000,
+  });
+}
+
+export function useNoshowPorGrupo() {
+  return useQuery({
+    queryKey: ['inteligencia', 'noshow-por-grupo'],
+    queryFn: () => inteligenciaService.buscarNoshowPorGrupo(),
+    staleTime: 5 * 60_000,
+  });
+}
+
+export function useMetricasClassificador() {
+  return useQuery({
+    queryKey: ['inteligencia', 'metricas-classificador'],
+    queryFn: () => inteligenciaService.buscarMetricasClassificador(),
+    staleTime: 5 * 60_000,
+  });
+}
+
+export function useReceitaScatter() {
+  return useQuery({
+    queryKey: ['inteligencia', 'receita-scatter'],
+    queryFn: () => inteligenciaService.listarReceitaScatter(),
+    staleTime: 5 * 60_000,
   });
 }

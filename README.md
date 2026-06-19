@@ -12,6 +12,56 @@ Requisito: Docker (inclui Docker Compose). API em http://localhost:8080
 
 ---
 
+## Deploy
+
+Aplicação publicada em: https://recifecultural-frontend.onrender.com/
+
+Configuração declarativa em `render.yaml`: PostgreSQL gerenciado + backend Spring Boot (Docker) + frontend Next.js. Healthcheck via `/actuator/health`.
+
+---
+
+## Inteligência & Analytics (Sprint CC 6/8/9)
+
+Dashboard `/gestor/inteligencia` com simuladores de IA (inferência ONNX em tempo real) e visualizações analíticas. O pipeline de treino vive em repositório separado (`ml-recife-cultural`) e produz os modelos `.onnx` e os JSONs consumidos aqui.
+
+### Simuladores (CC 6) — inferência ONNX
+
+Modelos treinados em scikit-learn, exportados via `skl2onnx`, carregados em `@PostConstruct` e servidos via Spring.
+
+| Arquivo | Papel |
+|---|---|
+| `aplicacao/src/main/java/recifecultural/aplicacao/inteligencia/InteligenciaServicoAplicacao.java` | Carrega `receita_model.onnx` e `noshow_model.onnx` em memória (via `byte[]` p/ compatibilidade fat-jar) e executa inferência via `OrtSession.run()` |
+| `aplicacao/src/main/resources/models/receita_model.onnx` | Regressão linear: `(orcamentoMarketing, patrocinio) → receitaEstimada` |
+| `aplicacao/src/main/resources/models/noshow_model.onnx` | GradientBoostingClassifier: `(precoInteira, diaSemana, isFimDeSemana) → probabilidadeFalta` |
+| `apresentacao-backend/src/main/java/recifecultural/apresentacao/bff/inteligencia/InteligenciaBffControlador.java` | BFF — `/api/bff/inteligencia/{prever-receita,prever-noshow,analisar-evento}` |
+| `apresentacao-frontend/src/app/gestor/inteligencia/page.tsx` | Dashboard React (Recharts) com abas Simuladores, Análise de Evento e Visualizações |
+
+### Visualizações Analíticas (CC 8/9)
+
+Quatro seções Recharts alimentadas por endpoints BFF dedicados.
+
+| Endpoint | Fonte | Conteúdo |
+|---|---|---|
+| `/api/bff/inteligencia/visitacao` | DB (real) com fallback em `visitacao.json` | Demanda Real — visitantes por teatro × mês |
+| `/api/bff/inteligencia/noshow-por-grupo` | `noshow_grupos.json` | Perfil de no-show por tipo, faixa de preço e categoria |
+| `/api/bff/inteligencia/metricas-classificador` | `metricas_classificador.json` | Acurácia 73,5% · Recall 59,0% · AUC 79,5% · matriz de confusão · ROC · PR · feature importance |
+| `/api/bff/inteligencia/receita-scatter` | `receita_scatter.json` | Preço efetivo × receita real, segmentado por categoria (escala = capacidade) |
+
+A consulta de visitação real (`infraestrutura/src/main/java/recifecultural/infraestrutura/persistencia/inteligencia/VisitacaoConsultaImpl.java`) agrega `ingresso JOIN evento JOIN espaco` por mês — soma todos os anos para capturar sazonalidade histórica. Quando o banco está vazio, o controlador serve o JSON estático com dados públicos de 2023.
+
+### Pipeline de treino (CC 4/5 — `ml-recife-cultural`)
+
+Scripts Python notebook-style (células `# %%`) que produzem os artefatos consumidos por este projeto.
+
+| Script | Sprint | Saída |
+|---|---|---|
+| `regressao.py` | CC 4 | `receita_model.onnx` |
+| `classificador.py` | CC 5 | `noshow_model.onnx` + métricas em `metricas_classificador.json` |
+| `eda.py` | — | Análise exploratória dos datasets |
+| `exportar_resultados.py` | — | 4 JSONs copiados para `apresentacao-backend/src/main/resources/inteligencia/` |
+
+---
+
 ## Padrões de Projeto
 
 O projeto distribui os 6 padrões GoF entre 7 pares de features (um padrão é reutilizado). Cada par é de responsabilidade de um integrante.

@@ -10,14 +10,20 @@ public class PreReservaServico {
     private final IPreReservaRepositorio preReservaRepositorio;
     private final ISetorRepositorio setorRepositorio;
 
+    private final ConfirmarPreReservaOperacao confirmar;
+    private final CancelarPreReservaOperacao cancelar;
+    private final ExpirarPreReservaOperacao expirar;
+
     public PreReservaServico(IPreReservaRepositorio preReservaRepositorio,
                              ISetorRepositorio setorRepositorio) {
         if (preReservaRepositorio == null) throw new IllegalArgumentException("Repositório de pré-reservas é obrigatório.");
         if (setorRepositorio == null) throw new IllegalArgumentException("Repositório de setores é obrigatório.");
         this.preReservaRepositorio = preReservaRepositorio;
         this.setorRepositorio = setorRepositorio;
+        this.confirmar = new ConfirmarPreReservaOperacao(preReservaRepositorio);
+        this.cancelar  = new CancelarPreReservaOperacao(preReservaRepositorio);
+        this.expirar   = new ExpirarPreReservaOperacao(preReservaRepositorio);
     }
-
 
     public PreReservaId reservar(UUID setorId, UUID assentoId, UUID usuarioId, UUID eventoId,
                                  DuracaoPreReserva duracao) {
@@ -34,19 +40,11 @@ public class PreReservaServico {
     }
 
     public void cancelar(PreReservaId preReservaId) {
-        PreReserva preReserva = preReservaRepositorio.obterPorId(preReservaId)
-                .orElseThrow(() -> new IllegalArgumentException("Pré-reserva não encontrada."));
-
-        preReserva.cancelar();
-        preReservaRepositorio.atualizar(preReserva);
+        cancelar.executar(preReservaId);
     }
 
     public void confirmar(PreReservaId preReservaId) {
-        PreReserva preReserva = preReservaRepositorio.obterPorId(preReservaId)
-                .orElseThrow(() -> new IllegalArgumentException("Pré-reserva não encontrada."));
-
-        preReserva.confirmar();
-        preReservaRepositorio.atualizar(preReserva);
+        confirmar.executar(preReservaId);
     }
 
     public List<PreReserva> listarAtivasPorEvento(UUID eventoId) {
@@ -57,8 +55,7 @@ public class PreReservaServico {
         LocalDateTime agora = LocalDateTime.now();
         List<PreReserva> vencidas = preReservaRepositorio.listarAtivasExpiradas(agora);
         for (PreReserva pr : vencidas) {
-            pr.expirar(agora);
-            preReservaRepositorio.atualizar(pr);
+            expirar.executar(pr);
         }
     }
 }

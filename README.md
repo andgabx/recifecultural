@@ -81,112 +81,129 @@ O projeto distribui os 6 padrões GoF entre 7 pares de features (um padrão é r
 ---
 
 ### Par 1 — Compra/Reembolso · Patrocínio
-**Padrão:** Strategy
-**Responsável:** Anderson Gabriel
+**Padrão:** Strategy · **Responsável:** Anderson Gabriel
 
 | Arquivo | Papel |
 |---|---|
-| `EstrategiaProcessamentoReembolso.java` | Interface (Strategy) |
-| `EstrategiaReembolsoImediato.java` | ConcreteStrategy — PIX: reembolso imediato |
-| `EstrategiaReembolsoBancario.java` | ConcreteStrategy — Cartão: até 2 dias úteis |
-| `SeletorEstrategiaReembolso.java` | Context — seleciona estratégia por `MetodoPagamento` |
-| `EstrategiaCancelamentoPatrocinio.java` | Interface (Strategy) |
-| `EstrategiaCancelamentoPorEvento.java` | ConcreteStrategy — >7d: 100% · 2-7d: 50% · <2d: 0% |
-| `EstrategiaCancelamentoPorPatrocinador.java` | ConcreteStrategy — >15d: 100% · ≤15d: 80% + 20% multa |
-| `Patrocinio.java` | Context — delega cálculo de cancelamento à estratégia |
+| [`EstrategiaProcessamentoReembolso.java`](dominio-ingressos/src/main/java/recifecultural/dominio/ingressos/EstrategiaProcessamentoReembolso.java) | Interface (Strategy) |
+| [`EstrategiaReembolsoImediato.java`](dominio-ingressos/src/main/java/recifecultural/dominio/ingressos/EstrategiaReembolsoImediato.java) | ConcreteStrategy — PIX: reembolso imediato |
+| [`EstrategiaReembolsoBancario.java`](dominio-ingressos/src/main/java/recifecultural/dominio/ingressos/EstrategiaReembolsoBancario.java) | ConcreteStrategy — Cartão: até 2 dias úteis |
+| [`SeletorEstrategiaReembolso.java`](dominio-ingressos/src/main/java/recifecultural/dominio/ingressos/SeletorEstrategiaReembolso.java) | Context — seleciona estratégia por `MetodoPagamento` |
+| [`EstrategiaCancelamentoPatrocinio.java`](dominio-patrocinio/src/main/java/recifecultural/dominio/patrocinio/EstrategiaCancelamentoPatrocinio.java) | Interface (Strategy) |
+| [`EstrategiaCancelamentoPorEvento.java`](dominio-patrocinio/src/main/java/recifecultural/dominio/patrocinio/EstrategiaCancelamentoPorEvento.java) | ConcreteStrategy — >7d: 100% · 2-7d: 50% · <2d: 0% |
+| [`EstrategiaCancelamentoPorPatrocinador.java`](dominio-patrocinio/src/main/java/recifecultural/dominio/patrocinio/EstrategiaCancelamentoPorPatrocinador.java) | ConcreteStrategy — >15d: 100% · ≤15d: 80% + 20% multa |
+| [`Patrocinio.java`](dominio-patrocinio/src/main/java/recifecultural/dominio/patrocinio/Patrocinio.java) | Context — delega cálculo de cancelamento à estratégia |
+
+**Testes:** [`reembolsar_ingresso.feature`](dominio-ingressos/src/test/resources/features/reembolsar_ingresso.feature) · [`cancelar_patrocinio.feature`](dominio-patrocinio/src/test/resources/features/cancelar_patrocinio.feature) · [`PatrocinioTest.java`](dominio-patrocinio/src/test/java/recifecultural/dominio/patrocinio/PatrocinioTest.java)
 
 ---
 
 ### Par 2 — Espaços · Equipamento
-**Padrão:** Proxy
-**Responsável:** Debora Souza
+**Padrão:** Proxy · **Responsável:** Debora Souza
 
 | Arquivo | Papel |
 |---|---|
-| `IEspacoRepositorio.java` | Subject (interface) |
-| `EspacoRepositorioProxyCache.java` | Proxy — cache em memória sobre `IEspacoRepositorio` |
-| `IEquipamentoRepositorio.java` | Subject (interface) |
-| `EquipamentoRepositorioProxyCache.java` | Proxy — cache em memória sobre `IEquipamentoRepositorio` |
+| [`IEspacoRepositorio.java`](dominio-espaco/src/main/java/recifecultural/dominio/espaco/espaco/IEspacoRepositorio.java) | Subject (interface) |
+| [`EspacoRepositorioProxyCache.java`](infraestrutura/src/main/java/recifecultural/infraestrutura/padroes/EspacoRepositorioProxyCache.java) | Proxy — cache em memória sobre `IEspacoRepositorio` |
+| [`IEquipamentoRepositorio.java`](dominio-agenda/src/main/java/recifecultural/dominio/agenda/equipamento/IEquipamentoRepositorio.java) | Subject (interface) |
+| [`EquipamentoRepositorioProxyCache.java`](infraestrutura/src/main/java/recifecultural/infraestrutura/padroes/EquipamentoRepositorioProxyCache.java) | Proxy — cache em memória sobre `IEquipamentoRepositorio` |
 
 ---
 
 ### Par 3 — Bloqueios · Notificações
-**Padrão:** Observer
-**Responsável:** Filipe Macedo
+**Padrão:** Observer · **Responsável:** Filipe Macedo
 
 | Arquivo | Papel |
 |---|---|
-| `EventoBarramento.java` | Subject (interface do barramento) |
-| `EventoObservador.java` | Observer (interface) |
-| `EventoCanceladoPorBloqueioEvento.java` | Evento de domínio publicado pelo Bloqueio |
-| `BloqueioAdministrativoServico.java` | Publicador — posta `EventoCanceladoPorBloqueioEvento` no barramento |
-| `BloqueioNotificacaoObservador.java` | ConcreteObserver — reage ao evento e dispara notificações |
-| `EventoBarramentoImpl.java` | ConcreteSubject — implementação com Spring `ApplicationEventPublisher` |
+| [`EventoBarramento.java`](dominio-compartilhado/src/main/java/recifecultural/dominio/compartilhado/evento/EventoBarramento.java) | Subject (interface do barramento) |
+| [`EventoBarramentoImpl.java`](infraestrutura/src/main/java/recifecultural/infraestrutura/evento/EventoBarramentoImpl.java) | ConcreteSubject — Spring `ApplicationEventPublisher` |
+| [`BloqueioAdministrativoServico.java`](dominio-agenda/src/main/java/recifecultural/dominio/agenda/bloqueioadministrativo/BloqueioAdministrativoServico.java) | Publicador de eventos de domínio |
+| [`BloqueioNotificacaoObservador.java`](aplicacao/src/main/java/recifecultural/aplicacao/agenda/bloqueioadministrativo/BloqueioNotificacaoObservador.java) | ConcreteObserver — dispara notificações ao produtor |
+| [`IngressoNotificacaoObservador.java`](aplicacao/src/main/java/recifecultural/aplicacao/agenda/bloqueioadministrativo/IngressoNotificacaoObservador.java) | ConcreteObserver — invalida ingressos ao reembolsar |
+
+**Testes:** [`BloqueioAdministrativo.feature`](dominio-agenda/src/test/resources/features/BloqueioAdministrativo.feature)
 
 ---
 
 ### Par 4 — Aprovação · Comentários
-**Padrão:** Decorator
-**Responsável:** Pedro Gusmao
+**Padrão:** Decorator · **Responsável:** Pedro Gusmao
 
 | Arquivo | Papel |
 |---|---|
-| `IEventoRepositorio.java` | Componente (interface decorada) |
-| `EventoRepositorioComAuditoria.java` | Decorator — registra trilha de criação, transição de status e remoção |
-| `ComentarioRepositorio.java` | Componente (interface decorada) |
-| `ComentarioRepositorioComModeracao.java` | Decorator — substitui palavras vetadas antes de persistir |
+| [`IEventoRepositorio.java`](dominio-agenda/src/main/java/recifecultural/dominio/agenda/evento/IEventoRepositorio.java) | Componente (interface decorada) |
+| [`EventoRepositorioComAuditoria.java`](dominio-agenda/src/main/java/recifecultural/dominio/agenda/evento/EventoRepositorioComAuditoria.java) | Decorator — registra trilha de aprovação/reprovação |
+| [`ComentarioRepositorio.java`](dominio-agenda/src/main/java/recifecultural/dominio/agenda/comentario/ComentarioRepositorio.java) | Componente (interface decorada) |
+| [`ComentarioRepositorioComModeracao.java`](dominio-agenda/src/main/java/recifecultural/dominio/agenda/comentario/ComentarioRepositorioComModeracao.java) | Decorator — filtra palavras vetadas antes de persistir |
+
+**Testes:** [`aprovar_reprovar_evento.feature`](dominio-agenda/src/test/resources/features/aprovar_reprovar_evento.feature) · [`discutir_eventos.feature`](dominio-agenda/src/test/resources/features/discutir_eventos.feature)
 
 ---
 
-### Par 5 — Artistas/Produtores · Setores/Suporte
-**Padrão:** Iterator
-**Responsável:** Rafael Peixoto
+### Par 5 — Artistas · Setores
+**Padrão:** Iterator · **Responsável:** Rafael Peixoto
 
 | Arquivo | Papel |
 |---|---|
-| `Iterador.java` | Interface do Iterator (`temProximo()` + `proximo()`) |
-| `IArtistaRepositorio.java` | Aggregate — fábrica de iteradores (`iterarTodos()`) |
-| `IteradorPaginadoArtistas.java` | ConcreteIterator — percorre o repositório em páginas via JPA (`findAll(Pageable)`), sem materializar a tabela inteira em memória |
+| [`Iterador.java`](dominio-artista/src/main/java/recifecultural/dominio/artista/artista/Iterador.java) | Interface do Iterator (`temProximo()` + `proximo()`) |
+| [`IArtistaRepositorio.java`](dominio-artista/src/main/java/recifecultural/dominio/artista/artista/IArtistaRepositorio.java) | Aggregate — fábrica de iteradores (`iterarTodos()`) |
+| [`IteradorPaginadoArtistas.java`](infraestrutura/src/main/java/recifecultural/infraestrutura/persistencia/artista/artista/IteradorPaginadoArtistas.java) | ConcreteIterator — percorre o repositório em páginas via JPA |
+
+**Testes:** [`cadastro_artista.feature`](dominio-artista/src/test/resources/features/cadastro_artista.feature) · [`cadastro_produtor.feature`](dominio-artista/src/test/resources/features/cadastro_produtor.feature)
 
 ---
 
 ### Par 6 — Sorteio · Acessibilidade
-**Padrão:** Template Method
-**Responsável:** Yuri Cavalcanti
+**Padrão:** Template Method · **Responsável:** Yuri Cavalcanti
 
 | Arquivo | Papel |
 |---|---|
-| `OperacaoDominioTemplate.java` | AbstractClass genérica — esqueleto fixo: `buscar → aplicarRegra → persistir → notificar` |
-| `OperacaoSorteioTemplate.java` | AbstractClass — especializa `buscar()` e `persistir()` para `Sorteio` |
-| `ApurarOperacao.java` | ConcreteClass — `sorteio.apurar()` + notifica ganhadores |
-| `InscreverOperacao.java` | ConcreteClass — `sorteio.inscrever(espectadorId)` |
-| `DesistirOperacao.java` | ConcreteClass — `sorteio.desistir(espectadorId)` + notifica suplente promovido |
-| `CancelarOperacao.java` | ConcreteClass — `sorteio.cancelar()` + broadcast de cancelamento |
-| `OperacaoRecursoAcessibilidadeTemplate.java` | AbstractClass — especializa `buscar()` e `persistir()` para `RecursoAcessibilidade` |
-| `RemocaoRecursoAcessibilidadeOperacao.java` | ConcreteClass — `recurso.remover(justificativa)` + broadcast ACESSIBILIDADE_REMOVIDA |
+| [`OperacaoDominioTemplate.java`](dominio-agenda/src/main/java/recifecultural/dominio/agenda/comum/OperacaoDominioTemplate.java) | AbstractClass genérica — esqueleto: `buscar → aplicarRegra → persistir → notificar` |
+| [`OperacaoSorteioTemplate.java`](dominio-agenda/src/main/java/recifecultural/dominio/agenda/sorteio/OperacaoSorteioTemplate.java) | AbstractClass — especializa buscar/persistir para Sorteio |
+| [`ApurarOperacao.java`](dominio-agenda/src/main/java/recifecultural/dominio/agenda/sorteio/ApurarOperacao.java) | ConcreteClass — apura ganhadores e suplentes |
+| [`InscreverOperacao.java`](dominio-agenda/src/main/java/recifecultural/dominio/agenda/sorteio/InscreverOperacao.java) | ConcreteClass — inscreve espectador |
+| [`DesistirOperacao.java`](dominio-agenda/src/main/java/recifecultural/dominio/agenda/sorteio/DesistirOperacao.java) | ConcreteClass — desistência + promoção de suplente |
+| [`CancelarOperacao.java`](dominio-agenda/src/main/java/recifecultural/dominio/agenda/sorteio/CancelarOperacao.java) | ConcreteClass — cancelamento + broadcast |
+| [`OperacaoRecursoAcessibilidadeTemplate.java`](dominio-agenda/src/main/java/recifecultural/dominio/agenda/acessibilidade/OperacaoRecursoAcessibilidadeTemplate.java) | AbstractClass — especializa para RecursoAcessibilidade |
+| [`RemocaoRecursoAcessibilidadeOperacao.java`](dominio-agenda/src/main/java/recifecultural/dominio/agenda/acessibilidade/RemocaoRecursoAcessibilidadeOperacao.java) | ConcreteClass — remove recurso + broadcast |
+
+**Testes:** [`OperacaoSorteioTemplateTest.java`](dominio-agenda/src/test/java/recifecultural/dominio/agenda/sorteio/OperacaoSorteioTemplateTest.java) · [`sorteio.feature`](dominio-agenda/src/test/resources/features/sorteio.feature) · [`acessibilidade.feature`](dominio-agenda/src/test/resources/features/acessibilidade.feature)
 
 ---
 
 ### Par 7 — Cupom · Catraca
-**Padrão:** Decorator *(reutilizado — um padrão repete entre 7 pares e 6 padrões)*
-**Responsável:** Raphael Vilela
+**Padrão:** Decorator *(reutilizado)* · **Responsável:** Raphael Vilela
 
 | Arquivo | Papel |
 |---|---|
-| `ValidadorCupom.java` | Componente (interface do pipeline) |
-| `ValidadorCupomBase.java` | Componente concreto — base vazia da cadeia |
-| `ValidadorCupomDecorator.java` | Decorator abstrato — encapsula `validadorInterno` e delega |
-| `ValidarVigenciaDecorator.java` | Camada 1 — `dataInicio ≤ agora ≤ dataFim` |
-| `ValidarMinimoDecorator.java` | Camada 2 — `valorPedido ≥ valorMinimoPedido` |
-| `ValidarCategoriaDecorator.java` | Camada 3 — categoria permitida |
-| `ValidarEscassezGlobalDecorator.java` | Camada 4 — limite global de usos |
-| `ValidarLimiteCpfDecorator.java` | Camada 5 — limite por CPF |
-| `AplicarCupomServico.java` | Monta o pipeline no construtor e executa |
-| `ValidadorAcesso.java` | Componente (interface do pipeline de acesso) |
-| `ValidadorAcessoBase.java` | Componente concreto — base vazia da cadeia |
-| `ValidadorAcessoDecorator.java` | Decorator abstrato de acesso |
-| `ValidarEstornoDecorator.java` | Camada 1 — rejeita se reembolsado |
-| `ValidarDuplaEntradaDecorator.java` | Camada 2 — rejeita se já utilizado |
-| `ValidarPortaoDecorator.java` | Camada 3 — rejeita se portão errado |
-| `ValidarToleranciaAtrasoDecorator.java` | Camada 4 — rejeita se fora da janela de horário |
-| `CatracaServico.java` | Monta o pipeline no construtor e executa `validarAcesso()` |
+| [`ValidadorCupom.java`](dominio-ingressos/src/main/java/recifecultural/dominio/cupom/validacoes/ValidadorCupom.java) | Componente (interface do pipeline) |
+| [`ValidadorCupomBase.java`](dominio-ingressos/src/main/java/recifecultural/dominio/cupom/validacoes/ValidadorCupomBase.java) | Componente concreto — base vazia |
+| [`ValidadorCupomDecorator.java`](dominio-ingressos/src/main/java/recifecultural/dominio/cupom/validacoes/ValidadorCupomDecorator.java) | Decorator abstrato |
+| [`ValidarVigenciaDecorator.java`](dominio-ingressos/src/main/java/recifecultural/dominio/cupom/validacoes/ValidarVigenciaDecorator.java) | Camada 1 — validade do cupom |
+| [`ValidarMinimoDecorator.java`](dominio-ingressos/src/main/java/recifecultural/dominio/cupom/validacoes/ValidarMinimoDecorator.java) | Camada 2 — valor mínimo do pedido |
+| [`ValidarCategoriaDecorator.java`](dominio-ingressos/src/main/java/recifecultural/dominio/cupom/validacoes/ValidarCategoriaDecorator.java) | Camada 3 — categoria do evento |
+| [`ValidarEscassezGlobalDecorator.java`](dominio-ingressos/src/main/java/recifecultural/dominio/cupom/validacoes/ValidarEscassezGlobalDecorator.java) | Camada 4 — limite global de usos |
+| [`ValidarLimiteCpfDecorator.java`](dominio-ingressos/src/main/java/recifecultural/dominio/cupom/validacoes/ValidarLimiteCpfDecorator.java) | Camada 5 — limite por CPF |
+| [`AplicarCupomServico.java`](dominio-ingressos/src/main/java/recifecultural/dominio/cupom/AplicarCupomServico.java) | Monta o pipeline e executa |
+| [`ValidadorAcesso.java`](dominio-ingressos/src/main/java/recifecultural/dominio/catraca/validacoes/ValidadorAcesso.java) | Componente (interface do pipeline de acesso) |
+| [`ValidarEstornoDecorator.java`](dominio-ingressos/src/main/java/recifecultural/dominio/catraca/validacoes/ValidarEstornoDecorator.java) | Camada 1 — rejeita se reembolsado |
+| [`ValidarDuplaEntradaDecorator.java`](dominio-ingressos/src/main/java/recifecultural/dominio/catraca/validacoes/ValidarDuplaEntradaDecorator.java) | Camada 2 — rejeita se já utilizado |
+| [`ValidarPortaoDecorator.java`](dominio-ingressos/src/main/java/recifecultural/dominio/catraca/validacoes/ValidarPortaoDecorator.java) | Camada 3 — rejeita portão incorreto |
+| [`ValidarToleranciaAtrasoDecorator.java`](dominio-ingressos/src/main/java/recifecultural/dominio/catraca/validacoes/ValidarToleranciaAtrasoDecorator.java) | Camada 4 — janela de horário |
+| [`CatracaServico.java`](dominio-ingressos/src/main/java/recifecultural/dominio/catraca/CatracaServico.java) | Monta e executa o pipeline de acesso |
+
+**Testes:** [`CatracaDecoratorTest.java`](dominio-ingressos/src/test/java/recifecultural/dominio/catraca/CatracaDecoratorTest.java) · [`validacao_catraca.feature`](dominio-ingressos/src/test/resources/features/validacao_catraca.feature) · [`aplicar_cupom.feature`](dominio-ingressos/src/test/resources/features/aplicar_cupom.feature)
+
+---
+
+### Pré-Reserva — Mapeamento de Assentos
+**Padrão:** Template Method *(aplicação interna — viabiliza isolamento do mapa de assentos por evento)*
+
+| Arquivo | Papel |
+|---|---|
+| [`OperacaoPreReservaTemplate.java`](dominio-agenda/src/main/java/recifecultural/dominio/agenda/prereserva/OperacaoPreReservaTemplate.java) | AbstractClass — esqueleto: `buscar → aplicarTransicao → persistir → notificar` |
+| [`ConfirmarPreReservaOperacao.java`](dominio-agenda/src/main/java/recifecultural/dominio/agenda/prereserva/ConfirmarPreReservaOperacao.java) | ConcreteClass — `preReserva.confirmar()` |
+| [`CancelarPreReservaOperacao.java`](dominio-agenda/src/main/java/recifecultural/dominio/agenda/prereserva/CancelarPreReservaOperacao.java) | ConcreteClass — `preReserva.cancelar()` |
+| [`ExpirarPreReservaOperacao.java`](dominio-agenda/src/main/java/recifecultural/dominio/agenda/prereserva/ExpirarPreReservaOperacao.java) | ConcreteClass — `preReserva.expirar(agora)` |
+| [`PreReservaServico.java`](dominio-agenda/src/main/java/recifecultural/dominio/agenda/prereserva/PreReservaServico.java) | Orquestra as operações |
+
+**Testes:** [`OperacaoPreReservaTemplateTest.java`](dominio-agenda/src/test/java/recifecultural/dominio/agenda/prereserva/OperacaoPreReservaTemplateTest.java) · [`mapeamento_assentos.feature`](dominio-agenda/src/test/resources/features/mapeamento_assentos.feature)

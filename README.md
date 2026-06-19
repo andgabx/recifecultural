@@ -54,7 +54,7 @@ A consulta de visitação real (`VisitacaoConsultaImpl.java`) agrega `ingresso J
 Scripts Python notebook-style (células `# %%`) que produzem os artefatos consumidos por este projeto.
 
 | Script | Saída |
-|---|---|---|
+|---|---|
 | `regressao.py` | `receita_model.onnx` |
 | `classificador.py` | `noshow_model.onnx` + métricas em `metricas_classificador.json` |
 | `eda.py` | Análise exploratória dos datasets |

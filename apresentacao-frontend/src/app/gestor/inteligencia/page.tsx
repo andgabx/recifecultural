@@ -249,7 +249,7 @@ export default function InteligenciaDashboardPage() {
             </div>
             
             <div className="h-32 w-full">
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                 <BarChart data={chartData} layout="vertical" margin={{ top: 0, right: 20, bottom: 0, left: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#e2e8f0" />
                   <XAxis type="number" hide />
@@ -300,7 +300,7 @@ export default function InteligenciaDashboardPage() {
         {isKnownFormat ? (
           <div className="flex flex-col md:flex-row items-center gap-6">
             <div className="h-40 w-40 shrink-0 relative">
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                 <PieChart>
                   <Pie
                     data={chartData} innerRadius={55} outerRadius={75} paddingAngle={2} dataKey="value" stroke="none"
@@ -369,7 +369,7 @@ export default function InteligenciaDashboardPage() {
             <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-5 shadow-sm">
               <h4 className="text-sm font-semibold text-zinc-500 uppercase tracking-wider mb-2">Taxa de Ocupação</h4>
               <div className="h-32 w-full relative -mb-6">
-                <ResponsiveContainer width="100%" height="100%">
+                <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                   <PieChart>
                     <Pie
                       data={ocupacaoData} cx="50%" cy="100%" startAngle={180} endAngle={0}
@@ -395,7 +395,7 @@ export default function InteligenciaDashboardPage() {
             <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-5 shadow-sm flex flex-col">
               <h4 className="text-sm font-semibold text-zinc-500 uppercase tracking-wider mb-4">Adesão por Público</h4>
               <div className="flex-1 min-h-[120px]">
-                <ResponsiveContainer width="100%" height="100%">
+                <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                   <BarChart data={publicoChartData} layout="vertical" margin={{ top: 0, right: 20, bottom: 0, left: -20 }}>
                     <XAxis type="number" hide />
                     <YAxis dataKey="name" type="category" tick={{ ...TICK, fontSize: 10 }} axisLine={false} tickLine={false} />
@@ -557,11 +557,11 @@ export default function InteligenciaDashboardPage() {
         {activeTab === 'visualizacoes' && (
           <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
 
-            {/* SEÇÃO 1 — Demanda Real (2023) */}
+            {/* SEÇÃO 1 — Demanda Real */}
             <Card className="border-border/50 shadow-sm bg-white">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg">
-                  <BarChart3 className="w-5 h-5" style={{ color: PALETA.azul }} /> Demanda Real (2023)
+                  <BarChart3 className="w-5 h-5" style={{ color: PALETA.azul }} /> Demanda Real
                 </CardTitle>
                 <CardDescription>Visitantes por teatro e evolução mensal — base histórica de demanda.</CardDescription>
               </CardHeader>
@@ -590,7 +590,7 @@ export default function InteligenciaDashboardPage() {
                       <div>
                         <h4 className="text-sm font-semibold text-zinc-600 mb-2">Total de Visitantes por Teatro</h4>
                         <div className="h-72 w-full">
-                          <ResponsiveContainer width="100%" height="100%">
+                          <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                             <BarChart data={totalPorTeatro} layout="vertical" margin={{ top: 5, right: 20, bottom: 5, left: 10 }}>
                               <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e2e8f0" />
                               <XAxis type="number" tick={TICK} />
@@ -610,7 +610,7 @@ export default function InteligenciaDashboardPage() {
                           Visitantes por Mês {teatroSelecionado ? `— ${teatroSelecionado}` : '(todos os teatros)'}
                         </h4>
                         <div className="h-72 w-full">
-                          <ResponsiveContainer width="100%" height="100%">
+                          <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                             <AreaChart data={visitantesPorMes} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
                               <defs>
                                 <linearGradient id="gradVisitantes" x1="0" y1="0" x2="0" y2="1">
@@ -657,7 +657,7 @@ export default function InteligenciaDashboardPage() {
                     <div>
                       <h4 className="text-sm font-semibold text-zinc-600 mb-2">Por Tipo de Ingresso</h4>
                       <div className="h-64 w-full">
-                        <ResponsiveContainer width="100%" height="100%">
+                        <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                           <BarChart data={noshowGrupoQuery.data.porTipo ?? []} layout="vertical" margin={{ top: 5, right: 20, bottom: 5, left: 10 }}>
                             <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e2e8f0" />
                             <XAxis type="number" tick={TICK} unit="%" />
@@ -675,7 +675,7 @@ export default function InteligenciaDashboardPage() {
                     <div>
                       <h4 className="text-sm font-semibold text-zinc-600 mb-2">Por Faixa de Preço</h4>
                       <div className="h-64 w-full">
-                        <ResponsiveContainer width="100%" height="100%">
+                        <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                           <BarChart data={noshowGrupoQuery.data.porFaixaPreco ?? []} layout="vertical" margin={{ top: 5, right: 20, bottom: 5, left: 10 }}>
                             <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e2e8f0" />
                             <XAxis type="number" tick={TICK} unit="%" />
@@ -693,7 +693,7 @@ export default function InteligenciaDashboardPage() {
                     <div>
                       <h4 className="text-sm font-semibold text-zinc-600 mb-2">Por Categoria</h4>
                       <div className="h-64 w-full">
-                        <ResponsiveContainer width="100%" height="100%">
+                        <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                           <BarChart data={noshowGrupoQuery.data.porCategoria ?? []} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                             <XAxis dataKey="categoria" tick={{ ...TICK, fontSize: 10 }} />
@@ -746,7 +746,7 @@ export default function InteligenciaDashboardPage() {
                     </div>
 
                     <div className="h-96 w-full">
-                      <ResponsiveContainer width="100%" height="100%">
+                      <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                         <ScatterChart margin={{ top: 10, right: 20, bottom: 30, left: 10 }}>
                           <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                           <XAxis
@@ -898,7 +898,7 @@ export default function InteligenciaDashboardPage() {
                           <div>
                             <h4 className="text-sm font-semibold text-zinc-600 mb-3">Importância de Variáveis</h4>
                             <div className="h-72 w-full">
-                              <ResponsiveContainer width="100%" height="100%">
+                              <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                                 <BarChart data={featureImportance} layout="vertical" margin={{ top: 5, right: 20, bottom: 5, left: 10 }}>
                                   <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e2e8f0" />
                                   <XAxis type="number" tick={TICK} />
@@ -921,7 +921,7 @@ export default function InteligenciaDashboardPage() {
                               Curva ROC <span className="text-xs font-normal text-zinc-500 ml-2">AUC = {(m.aucRoc ?? 0).toFixed(3)}</span>
                             </h4>
                             <div className="h-64 w-full">
-                              <ResponsiveContainer width="100%" height="100%">
+                              <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                                 <LineChart data={rocCurve} margin={{ top: 5, right: 20, bottom: 25, left: 0 }}>
                                   <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                                   <XAxis
@@ -954,7 +954,7 @@ export default function InteligenciaDashboardPage() {
                               Curva Precisão-Recall <span className="text-xs font-normal text-zinc-500 ml-2">AP = {(m.averagePrecision ?? 0).toFixed(3)}</span>
                             </h4>
                             <div className="h-64 w-full">
-                              <ResponsiveContainer width="100%" height="100%">
+                              <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                                 <LineChart data={prCurve} margin={{ top: 5, right: 20, bottom: 25, left: 0 }}>
                                   <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                                   <XAxis

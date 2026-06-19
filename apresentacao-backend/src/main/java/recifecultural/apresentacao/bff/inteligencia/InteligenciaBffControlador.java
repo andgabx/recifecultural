@@ -1,7 +1,8 @@
 package recifecultural.apresentacao.bff.inteligencia;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.core.io.ClassPathResource;
@@ -20,7 +21,7 @@ import java.util.concurrent.ConcurrentMap;
 @RequestMapping("/api/bff/inteligencia")
 public class InteligenciaBffControlador extends AbstractBffControlador {
 
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private static final ObjectMapper OBJECT_MAPPER = JsonMapper.builder().build();
     private static final ConcurrentMap<String, JsonNode> CACHE_JSON = new ConcurrentHashMap<>();
 
     private final InteligenciaServicoAplicacao inteligenciaServico;

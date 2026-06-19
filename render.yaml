@@ -37,6 +37,11 @@ services:
         value: update
       - key: JAVA_TOOL_OPTIONS
         value: -XX:MaxRAMPercentage=75
+      - key: CORS_ALLOWED_ORIGINS
+        sync: false
+        # Apos o primeiro deploy do frontend, preencha com a URL publica:
+        # https://recifecultural-frontend.onrender.com
+        # (multiplos: separa por virgula sem espacos)
 
   - type: web
     name: recifecultural-frontend

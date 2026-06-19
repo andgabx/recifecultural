@@ -153,7 +153,7 @@ export default function InteligenciaDashboardPage() {
   }, [analiseData]);
 
   // ===== Derivações para a aba de Visualizações =====
-  const visitacaoData = visitacaoQuery.data ?? [];
+  const visitacaoData = Array.isArray(visitacaoQuery.data) ? visitacaoQuery.data : [];
 
   const teatrosUnicos = useMemo(() => {
     const set = new Set<string>();
@@ -190,7 +190,7 @@ export default function InteligenciaDashboardPage() {
   }, [visitacaoData, teatroSelecionado]);
 
   const scatterFiltrado = useMemo(() => {
-    const all = receitaScatterQuery.data ?? [];
+    const all = Array.isArray(receitaScatterQuery.data) ? receitaScatterQuery.data : [];
     if (categoriaScatter === 'TODAS') return all;
     return all.filter((p) => p.categoria === categoriaScatter);
   }, [receitaScatterQuery.data, categoriaScatter]);
@@ -655,7 +655,7 @@ export default function InteligenciaDashboardPage() {
                       <h4 className="text-sm font-semibold text-zinc-600 mb-2">Por Tipo de Ingresso</h4>
                       <div className="h-64 w-full">
                         <ResponsiveContainer width="100%" height="100%">
-                          <BarChart data={noshowGrupoQuery.data.porTipo} layout="vertical" margin={{ top: 5, right: 20, bottom: 5, left: 10 }}>
+                          <BarChart data={noshowGrupoQuery.data.porTipo ?? []} layout="vertical" margin={{ top: 5, right: 20, bottom: 5, left: 10 }}>
                             <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e2e8f0" />
                             <XAxis type="number" tick={TICK} unit="%" />
                             <YAxis dataKey="tipo" type="category" tick={{ ...TICK, fontSize: 10 }} width={100} />
@@ -673,7 +673,7 @@ export default function InteligenciaDashboardPage() {
                       <h4 className="text-sm font-semibold text-zinc-600 mb-2">Por Faixa de Preço</h4>
                       <div className="h-64 w-full">
                         <ResponsiveContainer width="100%" height="100%">
-                          <BarChart data={noshowGrupoQuery.data.porFaixaPreco} layout="vertical" margin={{ top: 5, right: 20, bottom: 5, left: 10 }}>
+                          <BarChart data={noshowGrupoQuery.data.porFaixaPreco ?? []} layout="vertical" margin={{ top: 5, right: 20, bottom: 5, left: 10 }}>
                             <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e2e8f0" />
                             <XAxis type="number" tick={TICK} unit="%" />
                             <YAxis dataKey="faixa" type="category" tick={{ ...TICK, fontSize: 10 }} width={100} />
@@ -691,7 +691,7 @@ export default function InteligenciaDashboardPage() {
                       <h4 className="text-sm font-semibold text-zinc-600 mb-2">Por Categoria</h4>
                       <div className="h-64 w-full">
                         <ResponsiveContainer width="100%" height="100%">
-                          <BarChart data={noshowGrupoQuery.data.porCategoria} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+                          <BarChart data={noshowGrupoQuery.data.porCategoria ?? []} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                             <XAxis dataKey="categoria" tick={{ ...TICK, fontSize: 10 }} />
                             <YAxis tick={TICK} unit="%" />
@@ -700,7 +700,7 @@ export default function InteligenciaDashboardPage() {
                               {...TOOLTIP_STYLE}
                             />
                             <Bar dataKey="pctAltoRisco" radius={[4, 4, 0, 0]}>
-                              {noshowGrupoQuery.data.porCategoria.map((_, i) => (
+                              {(noshowGrupoQuery.data.porCategoria ?? []).map((_, i) => (
                                 <Cell key={`cat-${i}`} fill={CORES_SCATTER[i % CORES_SCATTER.length]} />
                               ))}
                             </Bar>
@@ -822,14 +822,17 @@ export default function InteligenciaDashboardPage() {
                 ) : metricasClassificadorQuery.data ? (
                   (() => {
                     const m = metricasClassificadorQuery.data;
-                    const fmtPct = (v: number) => `${(v * 100).toFixed(1)}%`;
+                    const fmtPct = (v: number | undefined) => `${((v ?? 0) * 100).toFixed(1)}%`;
                     const cards = [
                       { label: 'Acurácia', valor: m.acuracia, icone: Target, destaque: false },
                       { label: 'Precisão', valor: m.precisao, icone: Award, destaque: false },
                       { label: 'Recall', valor: m.recall, icone: Zap, destaque: true },
                       { label: 'F1-Score', valor: m.f1, icone: CheckCircle2, destaque: false },
                     ];
-                    const cm = m.confusaoMatrix || [[0, 0], [0, 0]];
+                    const cm = Array.isArray(m.confusaoMatrix) ? m.confusaoMatrix : [[0, 0], [0, 0]];
+                    const featureImportance = Array.isArray(m.featureImportance) ? m.featureImportance : [];
+                    const rocCurve = Array.isArray(m.rocCurve) ? m.rocCurve : [];
+                    const prCurve = Array.isArray(m.prCurve) ? m.prCurve : [];
 
                     return (
                       <div className="space-y-6">
@@ -893,7 +896,7 @@ export default function InteligenciaDashboardPage() {
                             <h4 className="text-sm font-semibold text-zinc-600 mb-3">Importância de Variáveis</h4>
                             <div className="h-72 w-full">
                               <ResponsiveContainer width="100%" height="100%">
-                                <BarChart data={m.featureImportance} layout="vertical" margin={{ top: 5, right: 20, bottom: 5, left: 10 }}>
+                                <BarChart data={featureImportance} layout="vertical" margin={{ top: 5, right: 20, bottom: 5, left: 10 }}>
                                   <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e2e8f0" />
                                   <XAxis type="number" tick={TICK} />
                                   <YAxis dataKey="feature" type="category" tick={{ ...TICK, fontSize: 10 }} width={120} />
@@ -912,11 +915,11 @@ export default function InteligenciaDashboardPage() {
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                           <div>
                             <h4 className="text-sm font-semibold text-zinc-600 mb-3">
-                              Curva ROC <span className="text-xs font-normal text-zinc-500 ml-2">AUC = {m.aucRoc.toFixed(3)}</span>
+                              Curva ROC <span className="text-xs font-normal text-zinc-500 ml-2">AUC = {(m.aucRoc ?? 0).toFixed(3)}</span>
                             </h4>
                             <div className="h-64 w-full">
                               <ResponsiveContainer width="100%" height="100%">
-                                <LineChart data={m.rocCurve} margin={{ top: 5, right: 20, bottom: 25, left: 0 }}>
+                                <LineChart data={rocCurve} margin={{ top: 5, right: 20, bottom: 25, left: 0 }}>
                                   <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                                   <XAxis
                                     type="number"
@@ -945,11 +948,11 @@ export default function InteligenciaDashboardPage() {
 
                           <div>
                             <h4 className="text-sm font-semibold text-zinc-600 mb-3">
-                              Curva Precisão-Recall <span className="text-xs font-normal text-zinc-500 ml-2">AP = {m.averagePrecision.toFixed(3)}</span>
+                              Curva Precisão-Recall <span className="text-xs font-normal text-zinc-500 ml-2">AP = {(m.averagePrecision ?? 0).toFixed(3)}</span>
                             </h4>
                             <div className="h-64 w-full">
                               <ResponsiveContainer width="100%" height="100%">
-                                <LineChart data={m.prCurve} margin={{ top: 5, right: 20, bottom: 25, left: 0 }}>
+                                <LineChart data={prCurve} margin={{ top: 5, right: 20, bottom: 25, left: 0 }}>
                                   <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                                   <XAxis
                                     type="number"

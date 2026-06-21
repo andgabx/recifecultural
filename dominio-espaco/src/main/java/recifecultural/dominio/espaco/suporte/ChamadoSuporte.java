@@ -3,21 +3,36 @@ package recifecultural.dominio.espaco.suporte;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import recifecultural.dominio.espaco.setor.MotivoIndisponibilidadeAssento;
+import recifecultural.dominio.espaco.setor.MotivoIndisponibilidade;
+import recifecultural.dominio.espaco.suporte.TipoChamado;
 
 public class ChamadoSuporte {
     private final UUID id;
     private final UUID assentoId;
+    private TipoChamado tipo;
+    private final MotivoIndisponibilidade motivo;
     private final String descricao;
-    private final MotivoIndisponibilidadeAssento motivo;
+
     private StatusChamado status;
-    private LocalDateTime dataAbertura;
+    private String tecnicoResponsavel;
+    private String solucaoAplicada;
 
-    public ChamadoSuporte(UUID assentoId, MotivoIndisponibilidadeAssento motivo, String descricao) {
-        if (assentoId == null) throw new IllegalArgumentException("Assento ID é obrigatório.");
-        if (motivo == null) throw new IllegalArgumentException("Motivo é obrigatório.");
-        if (descricao == null || descricao.isBlank()) throw new IllegalArgumentException("Descrição é obrigatória.");
+    private final LocalDateTime dataAbertura;
+    private LocalDateTime dataInicioAtendimento;
+    private LocalDateTime dataResolucao;
 
+
+    public ChamadoSuporte(UUID assentoId, TipoChamado tipo, MotivoIndisponibilidade motivo, String descricao) {
+        this.id = UUID.randomUUID();
+        this.assentoId = assentoId;
+        this.tipo = tipo;
+        this.motivo = motivo;
+        this.descricao = descricao;
+        this.status = StatusChamado.ABERTO;
+        this.dataAbertura = LocalDateTime.now();
+    }
+
+    public ChamadoSuporte(UUID id, UUID assentoId, MotivoIndisponibilidade motivo, String descricao, StatusChamado status, LocalDateTime dataAbertura, TipoChamado tipo) {
         this.id = UUID.randomUUID();
         this.assentoId = assentoId;
         this.motivo = motivo;
@@ -26,18 +41,17 @@ public class ChamadoSuporte {
         this.dataAbertura = LocalDateTime.now();
     }
 
-    public ChamadoSuporte(UUID id, UUID assentoId, MotivoIndisponibilidadeAssento motivo,
-                          String descricao, StatusChamado status, LocalDateTime dataAbertura) {
-        this.id = id;
-        this.assentoId = assentoId;
-        this.motivo = motivo;
-        this.descricao = descricao;
-        this.status = status;
-        this.dataAbertura = dataAbertura;
-    }
-
     public AbertoEvento eventoAbertura() {
         return new AbertoEvento(this);
+    }
+
+    public void aceitarChamado(String nomeTecnico) {
+        if (this.status != StatusChamado.ABERTO && this.status != StatusChamado.ESCALADO) {
+            throw new IllegalStateException("Apenas chamados abertos ou escalados podem ser aceitos.");
+        }
+        this.status = StatusChamado.EM_ANDAMENTO;
+        this.tecnicoResponsavel = nomeTecnico;
+        this.dataInicioAtendimento = LocalDateTime.now();
     }
 
     public void resolver() {
@@ -59,7 +73,8 @@ public class ChamadoSuporte {
 
     public UUID getId() { return id; }
     public UUID getAssentoId() { return assentoId; }
-    public MotivoIndisponibilidadeAssento getMotivo() { return motivo; }
+    public TipoChamado getTipo() { return tipo; }
+    public MotivoIndisponibilidade getMotivo() { return motivo; }
     public String getDescricao() { return descricao; }
     public StatusChamado getStatus() { return status; }
     public LocalDateTime getDataAbertura() { return dataAbertura; }

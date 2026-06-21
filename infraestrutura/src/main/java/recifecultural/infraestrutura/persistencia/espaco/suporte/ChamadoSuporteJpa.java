@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import recifecultural.dominio.espaco.setor.MotivoIndisponibilidadeAssento;
+import recifecultural.dominio.espaco.setor.MotivoIndisponibilidade;
 import recifecultural.dominio.espaco.suporte.StatusChamado;
 
 import java.time.LocalDateTime;
@@ -20,7 +20,7 @@ public class ChamadoSuporteJpa {
     @Column(length = 1000)
     String descricao;
     @Enumerated(EnumType.STRING)
-    MotivoIndisponibilidadeAssento motivo;
+    MotivoIndisponibilidade motivo;
     @Enumerated(EnumType.STRING)
     StatusChamado status;
     LocalDateTime dataAbertura;

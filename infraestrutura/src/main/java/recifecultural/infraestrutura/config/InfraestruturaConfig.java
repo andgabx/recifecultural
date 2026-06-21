@@ -64,7 +64,6 @@ import recifecultural.dominio.espaco.espaco.IEspacoRepositorio;
 import recifecultural.dominio.espaco.setor.GestaoAmbienteInternoServico;
 import recifecultural.dominio.espaco.setor.ISetorRepositorio;
 import recifecultural.dominio.espaco.suporte.IChamadoSuporteRepositorio;
-import recifecultural.dominio.espaco.suporte.SuporteTecnicoServico;
 import recifecultural.dominio.financeiro.DesempenhoTeatroServico;
 import recifecultural.dominio.financeiro.IDespesaRepositorio;
 import recifecultural.dominio.financeiro.IOrcamentoRepositorio;

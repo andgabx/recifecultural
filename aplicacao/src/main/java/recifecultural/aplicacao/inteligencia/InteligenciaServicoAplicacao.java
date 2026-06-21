@@ -13,21 +13,19 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
-
-// Assuma que esta interface existe no seu domínio para buscar o evento
 import recifecultural.dominio.agenda.evento.Evento;
-import recifecultural.dominio.agenda.evento.EventoRepositorio;
+import recifecultural.dominio.agenda.evento.IEventoRepositorio;
 
 @Service
 public class InteligenciaServicoAplicacao {
 
-    private final EventoRepositorio eventoRepositorio;
+    private final IEventoRepositorio eventoRepositorio;
 
     private OrtEnvironment env;
     private OrtSession receitaSession;
     private OrtSession noShowSession;
 
-    public InteligenciaServicoAplicacao(EventoRepositorio eventoRepositorio) {
+    public InteligenciaServicoAplicacao(IEventoRepositorio eventoRepositorio) {
         this.eventoRepositorio = eventoRepositorio;
     }
 

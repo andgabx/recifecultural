@@ -7,6 +7,7 @@ import recifecultural.dominio.espaco.espaco.StatusEspaco;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class GestaoAmbienteInternoServico {
     private final ISetorRepositorio setorRepositorio;
@@ -107,5 +108,22 @@ public class GestaoAmbienteInternoServico {
 
     public List<Setor> listarPorEspaco(EspacoId espacoId) {
         return setorRepositorio.listarPorEspaco(espacoId);
+    }
+
+    public void bloquearAssento(SetorId setorId, UUID assentoId, MotivoIndisponibilidade motivo, String observacao) {
+        Setor setor = setorRepositorio.obterPorId(setorId).orElseThrow();
+        Assento assento = setor.obterAssento(assentoId)
+                .orElseThrow(() -> new IllegalArgumentException("Cadeira não encontrada no setor."));
+        
+        assento.bloquearAdministrativamente(motivo, observacao);
+        setorRepositorio.atualizar(setor);
+    }
+
+    public void desbloquearAssento(SetorId setorId, UUID assentoId) {
+        Setor setor = setorRepositorio.obterPorId(setorId).orElseThrow();
+        Assento assento = setor.obterAssento(assentoId).orElseThrow();
+        
+        assento.desbloquearAdministrativamente();
+        setorRepositorio.atualizar(setor);
     }
 }

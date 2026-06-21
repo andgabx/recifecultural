@@ -5,7 +5,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import recifecultural.dominio.agenda.prereserva.PreReservaServico;
-import recifecultural.dominio.espaco.suporte.SuporteTecnicoServico;
 
 import java.time.LocalDateTime;
 

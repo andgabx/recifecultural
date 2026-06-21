@@ -3,7 +3,7 @@ package recifecultural.infraestrutura.persistencia.espaco.setor;
 import jakarta.persistence.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import recifecultural.dominio.espaco.setor.MotivoIndisponibilidadeAssento;
+import recifecultural.dominio.espaco.setor.MotivoIndisponibilidade;
 import recifecultural.dominio.espaco.setor.StatusAssento;
 import recifecultural.dominio.espaco.setor.TipoSetor;
 
@@ -38,7 +38,7 @@ class AssentoJpa {
     @Enumerated(EnumType.STRING)
     StatusAssento status;
     @Enumerated(EnumType.STRING)
-    MotivoIndisponibilidadeAssento motivoIndisponibilidade;
+    MotivoIndisponibilidade motivoIndisponibilidade;
     int versao;
 }
 

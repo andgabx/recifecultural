@@ -1,10 +1,7 @@
 package recifecultural.dominio.espaco.suporte;
 
 import recifecultural.dominio.compartilhado.notificacao.INotificacaoServico;
-import recifecultural.dominio.espaco.setor.ISetorRepositorio;
-import recifecultural.dominio.espaco.setor.MotivoIndisponibilidadeAssento;
-import recifecultural.dominio.espaco.setor.Setor;
-import recifecultural.dominio.espaco.setor.SetorId;
+import recifecultural.dominio.espaco.setor.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -26,15 +23,15 @@ public class SuporteTecnicoServico {
         this.notificacaoServico = notificacaoServico;
     }
 
-    public ChamadoSuporte abrirChamado(SetorId setorId, UUID assentoId,
-                                        MotivoIndisponibilidadeAssento motivo, String descricao) {
+    public ChamadoSuporte abrirChamado(SetorId setorId, UUID assentoId, TipoChamado tipo,
+                                       MotivoIndisponibilidade motivo, String descricao) {
         Setor setor = setorRepositorio.obterPorId(setorId)
                 .orElseThrow(() -> new IllegalArgumentException("Setor não encontrado."));
 
         setor.bloquearAssento(assentoId, motivo);
         setorRepositorio.atualizar(setor);
 
-        ChamadoSuporte chamado = new ChamadoSuporte(assentoId, motivo, descricao);
+        ChamadoSuporte chamado = new ChamadoSuporte(assentoId, tipo, motivo, descricao);
         chamadoRepositorio.salvar(chamado);
 
         String mensagem = String.format(
@@ -56,5 +53,29 @@ public class SuporteTecnicoServico {
                     chamado.getId(), slaHoras);
             notificacaoServico.enviarBroadcast(mensagem, CONTEXTO_SUPORTE, chamado.getId());
         }
+    }
+
+    public void aceitarChamado(UUID chamadoId, SetorId setorId, UUID assentoId, String tecnico) {
+        ChamadoSuporte chamado = chamadoRepositorio.obterPorId(chamadoId).orElseThrow(() -> new IllegalArgumentException("Chamado não encontrado"));
+        Setor setor = setorRepositorio.obterPorId(setorId).orElseThrow(() -> new IllegalArgumentException("Setor não encontrado"));
+        Assento assento = setor.obterAssento(assentoId).orElseThrow(() -> new IllegalArgumentException("Assento não encontrado"));
+
+        chamado.aceitarChamado(tecnico);
+        assento.iniciarManutencao();
+
+        setorRepositorio.atualizar(setor);
+        chamadoRepositorio.atualizar(chamado);
+    }
+
+    public void resolverChamado(UUID chamadoId, SetorId setorId, UUID assentoId, String solucao) {
+        ChamadoSuporte chamado = chamadoRepositorio.obterPorId(chamadoId).orElseThrow(() -> new IllegalArgumentException("Chamado não encontrado"));
+        Setor setor = setorRepositorio.obterPorId(setorId).orElseThrow(() -> new IllegalArgumentException("Setor não encontrado"));
+        Assento assento = setor.obterAssento(assentoId).orElseThrow(() -> new IllegalArgumentException("Assento não encontrado"));
+
+        chamado.resolver();
+        assento.resolverManutencao(); 
+
+        setorRepositorio.atualizar(setor);
+        chamadoRepositorio.atualizar(chamado);
     }
 }

@@ -22,7 +22,7 @@ import recifecultural.dominio.espaco.setor.TipoSetor;
 import recifecultural.dominio.espaco.setor.ISetorRepositorio;
 import recifecultural.dominio.espaco.setor.GestaoAmbienteInternoServico;
 import recifecultural.dominio.espaco.setor.Assento;
-import recifecultural.dominio.espaco.setor.MotivoIndisponibilidadeAssento;
+import recifecultural.dominio.espaco.setor.MotivoIndisponibilidade;
 import recifecultural.dominio.espaco.setor.StatusAssento;
 import recifecultural.dominio.agenda.prereserva.PreReservaServico;
 import recifecultural.dominio.agenda.prereserva.PreReserva;
@@ -35,7 +35,6 @@ import recifecultural.dominio.agenda.prereserva.StatusPreReserva;
 import java.util.Optional;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.UUID;
 import java.time.LocalDateTime;
 
@@ -56,7 +55,7 @@ public class PassosMapeamentoAssentos {
     private Setor setorMock;
     private UUID setorIdMock = UUID.randomUUID();
     private UUID assentoIdMock = UUID.randomUUID();
-    
+
     public PassosMapeamentoAssentos() {
         MockitoAnnotations.openMocks(this);
         setorServico = new GestaoAmbienteInternoServico(setorRepositorio, espacoRepositorio);
@@ -96,7 +95,7 @@ public class PassosMapeamentoAssentos {
 
     @Dado("que o assento {string} está {string}")
     public void queOAssentoEstá(String codigoAssento, String status) {
-        assentoMock = new Assento(assentoIdMock, codigoAssento, "A", 1, StatusAssento.valueOf(status), MotivoIndisponibilidadeAssento.OUTRO, 0);
+        assentoMock = new Assento(assentoIdMock, codigoAssento, "A", 1, StatusAssento.valueOf(status), MotivoIndisponibilidade.OUTRO, 0);
         setorMock = new Setor(SetorId.de(setorIdMock.toString()), EspacoId.novo(), "Setor 1", TipoSetor.PLATEIA, 10, 10, List.of(assentoMock), 0);
         when(setorRepositorio.obterPorId(any(SetorId.class))).thenReturn(Optional.of(setorMock));
         when(preReservaRepositorio.listarAtivasPorAssento(any(UUID.class))).thenReturn(new ArrayList<>());
@@ -139,7 +138,7 @@ public class PassosMapeamentoAssentos {
 
     @Dado("que o assento {string} tem uma pré-reserva expirada no passado")
     public void queOAssentoTemUmaPréReservaExpiradaNoPassado(String assentoCodigo) {
-        assentoMock = new Assento(assentoIdMock, assentoCodigo, "B", 2, StatusAssento.PRE_RESERVADO, MotivoIndisponibilidadeAssento.OUTRO, 0);
+        assentoMock = new Assento(assentoIdMock, assentoCodigo, "B", 2, StatusAssento.PRE_RESERVADO, MotivoIndisponibilidade.OUTRO, 0);
         setorMock = new Setor(SetorId.de(setorIdMock.toString()), EspacoId.novo(), "Setor 1", TipoSetor.PLATEIA, 10, 10, List.of(assentoMock), 0);
         
         PreReserva pr = new PreReserva(PreReservaId.novo(), assentoIdMock, setorIdMock, UUID.randomUUID(), LocalDateTime.now().minusMinutes(20), LocalDateTime.now().minusMinutes(10), StatusPreReserva.ATIVA, 0);
@@ -161,7 +160,7 @@ public class PassosMapeamentoAssentos {
 
     @Dado("que o assento {string} tem uma pré-reserva {string} para o usuário {string}")
     public void queOAssentoTemUmaPréReservaParaOUsuário(String assentoCodigo, String status, String usuario) {
-        assentoMock = new Assento(assentoIdMock, assentoCodigo, "B", 2, StatusAssento.PRE_RESERVADO, MotivoIndisponibilidadeAssento.OUTRO, 0);
+        assentoMock = new Assento(assentoIdMock, assentoCodigo, "B", 2, StatusAssento.PRE_RESERVADO, MotivoIndisponibilidade.OUTRO, 0);
         setorMock = new Setor(SetorId.de(setorIdMock.toString()), EspacoId.novo(), "Setor 1", TipoSetor.PLATEIA, 10, 10, List.of(assentoMock), 0);
         
         prAtiva = new PreReserva(PreReservaId.novo(), assentoIdMock, setorIdMock, UUID.randomUUID(), LocalDateTime.now().minusMinutes(5), LocalDateTime.now().plusMinutes(5), StatusPreReserva.valueOf(status), 0);
@@ -198,7 +197,7 @@ public class PassosMapeamentoAssentos {
 
     @Quando("o administrador bloquear o assento {string}")
     public void oAdministradorBloquearOAssento(String assentoCodigo) {
-        setorMock.bloquearAssento(assentoIdMock, MotivoIndisponibilidadeAssento.OUTRO);
+        setorMock.bloquearAssento(assentoIdMock, MotivoIndisponibilidade.OUTRO);
     }
 
     @Quando("a compra for confirmada e o assento {string} for ocupado")

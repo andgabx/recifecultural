@@ -66,6 +66,7 @@ const corAssento = (
   switch (status) {
     case "LIVRE":         return "bg-emerald-500 hover:bg-emerald-400 cursor-pointer text-white";
     case "PRE_RESERVADO": return "bg-amber-400 cursor-not-allowed opacity-60 text-white";
+    case "INDISPONIVEL":  return "bg-amber-400 cursor-not-allowed opacity-60 text-white";
     case "OCUPADO":       return "bg-rose-500 cursor-not-allowed opacity-60 text-white";
     case "BLOQUEADO":     return "bg-zinc-400 cursor-not-allowed opacity-50 text-white";
   }

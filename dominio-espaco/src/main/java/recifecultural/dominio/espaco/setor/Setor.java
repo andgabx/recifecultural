@@ -1,9 +1,6 @@
 package recifecultural.dominio.espaco.setor;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import recifecultural.dominio.espaco.espaco.EspacoId;
 
@@ -74,7 +71,7 @@ public class Setor {
         return assento;
     }
 
-    public Assento bloquearAssento(UUID assentoId, MotivoIndisponibilidadeAssento motivo) {
+    public Assento bloquearAssento(UUID assentoId, MotivoIndisponibilidade motivo) {
         Assento assento = encontrarAssento(assentoId);
         assento.bloquear(motivo);
         return assento;
@@ -88,6 +85,10 @@ public class Setor {
     }
 
     public int capacidade() { return assentos.size(); }
+
+    public Optional<Assento> obterAssento(UUID assentoId) {
+        return this.assentos.stream().filter(a -> a.getId().equals(assentoId)).findFirst();
+    }
 
     public long contarAssentosDisponiveis() {
         return assentos.stream().filter(a -> a.getStatus() == StatusAssento.LIVRE).count();
@@ -124,7 +125,7 @@ public class Setor {
 
         if (dimensoesMudaram) {
             boolean temReserva = assentos.stream().anyMatch(a ->
-                    a.getStatus() == StatusAssento.OCUPADO
+                    a.getStatus() == StatusAssento.INDISPONIVEL
                             || a.getStatus() == StatusAssento.PRE_RESERVADO);
             if (temReserva) {
                 throw new IllegalStateException(

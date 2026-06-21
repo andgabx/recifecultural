@@ -1,6 +1,6 @@
 package recifecultural.dominio.espaco.setor;
 
-public enum MotivoIndisponibilidadeAssento {
+public enum MotivoIndisponibilidade {
     QUEBRADO,
     MANUTENCAO,
     RESERVADO_VIP,

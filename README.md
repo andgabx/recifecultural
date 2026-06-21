@@ -128,3 +128,6 @@ O projeto distribui os 6 padrões GoF entre 7 pares de features (um padrão é r
 | `dominio-ingressos/src/main/java/recifecultural/dominio/catraca/validacoes/ValidarPortaoDecorator.java` | Camada 3 — rejeita se portão errado |
 | `dominio-ingressos/src/main/java/recifecultural/dominio/catraca/validacoes/ValidarToleranciaAtrasoDecorator.java` | Camada 4 — rejeita se fora da janela de horário |
 | `dominio-ingressos/src/main/java/recifecultural/dominio/catraca/CatracaServico.java` | Monta o pipeline no construtor e executa `validarAcesso()` |
+
+
+![Build deu super certo](ata.jpg)
